@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80476a57f45547909dbf3d454bbde062, type: 3}
+  m_Name: SO_BoardRollConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_BoardRollConfig
+  Enabled: 1
+  DieScale: 0.8
+  DieColor: {r: 0.96, g: 0.93, b: 0.98, a: 1}
+  PipColor: {r: 0.141, g: 0.082, b: 0.184, a: 1}
+  FountainStagger: 0.06
+  FountainDuration: 0.7
+  FountainHeight: {x: 2.2, y: 3.2}
+  FountainTurns: 2.5
+  ScatterExtent: {x: 3.5, y: 1.8}
+  MinSpacing: 1
+  RollTurns: 3
+  RollTurnDuration: 0.1
+  RollSlowdown: 1.35
+  RollMaxTurnDuration: 0.4
+  ConfirmDuration: 0.3
+  ConfirmScale: 1.4
+  FlyStagger: 0.12
+  FlyDuration: 0.55
+  FlyHeight: 4
+  SinkDepth: -0.4
+  SinkScale: 0.3
+  SinkPortion: 0.25
+  ChipDelay: 0.1
+  ChipInterval: 0.07
+  ChipMaxTotal: 1
+  ChipFallDuration: 0.18
+  ChipDropHeight: 2
+  ChipSquash: 0.25
+  ChipSquashDuration: 0.12
+  EndDelay: 0.15

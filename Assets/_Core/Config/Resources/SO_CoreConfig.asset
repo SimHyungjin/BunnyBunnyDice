@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1938fdbfb920c5a45ae6e32b09c6443a, type: 3}
+  m_Name: SO_CoreConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_CoreConfig
+  MobileTargetFrameRate: 120
+  FallbackRefreshRate: 120
+  PreventScreenSleepOnMobile: 1
+  HapticWeakMs: 20
+  HapticSoftMs: 30
+  HapticMediumMs: 60
+  HapticHardMs: 100
+  OverlayOrder: 0
+  HudOrder: 1000
+  PopupOrder: 2000
+  SceneOrder: 10000
+  PopupOrderStep: 10
+  UIAnimationDuration: 0.3
+  PopupGuardFadeDuration: 0.2
+  PopupGuardAlpha: 0.6
+  PopupCloseTimeout: 3
+  SfxPoolSize: 8
+  BgmCrossfadeDuration: 1
+  BgmStopFadeDuration: 0.5
+  AudioLoopEndMargin: 0.05
+  PoolDefaultMaxSize: 1024

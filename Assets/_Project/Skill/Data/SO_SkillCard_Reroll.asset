@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38c4d9b8939144b4ebdf049ae9824054, type: 3}
+  m_Name: SO_SkillCard_Reroll
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Reroll
+  DisplayName: "다시 굴리기"
+  Description: "주사위 하나를 다시 굴린다. 면체는 그대로다."
+  StrongAgainst: ""
+  Icon: {fileID: 0}
+  IconColor: {r: 0.85, g: 0.85, b: 0.92, a: 1}
+  Weight: 1

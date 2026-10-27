@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f015daa71e54458bd94b4d3d9ca8fe9, type: 3}
+  m_Name: SO_HeroCharacter_Builder
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
+  DisplayName: "\uAC74\uC124\uAC00"
+  Trait: {fileID: 11400000, guid: f1b2da36c3904bb885bad8be1fe423c0, type: 2}
+  Prefab: {fileID: 4410266125371801001, guid: 6fa39e4f77ad426da0394d707210a162, type: 3}
+  ModelHeight: 0
+  Color: {r: 1, g: 1, b: 1, a: 1}
+  TintModel: 1
+  AddOutline: 1
+  ShellMaterial: {fileID: 0}
+  Animations: {fileID: 11400000, guid: 3a58be4d92324348adb5061f2b3108d4, type: 2}
+  Portrait: {fileID: 0}
+  PortraitFocusY: 0.5
+  Attack: 60
+  AttackSpeed: 2
+  MoveSpeed: 3
+  Range: 1.6
+  CritChance: 0.1
+  CritDamage: 2.5

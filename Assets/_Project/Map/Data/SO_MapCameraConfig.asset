@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26f41302eb4171439b971d023c63918, type: 3}
+  m_Name: SO_MapCameraConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MapCameraConfig
+  TiltAngle: 60
+  YawAngle: 0
+  FieldOfView: 35
+  CharacterHeadroom: 0.4
+  AutoOrient: 1
+  OrientYawOffset: 90
+  MarginTop: 0.1
+  MarginBottom: 0.25
+  EmptyHandMarginBottom: 0.25
+  MarginSide: 0.025
+  PortraitMarginTop: 0.08
+  PortraitMarginBottom: 0.16
+  PortraitEmptyHandMarginBottom: 0.16
+  PortraitMarginSide: 0.05
+  EmptyHandTiltAngle: 60
+  EmptyHandDelay: 0
+  SearchMinDistance: 1
+  SearchMaxDistance: 200
+  SearchIterations: 30
+  RecenterPasses: 2

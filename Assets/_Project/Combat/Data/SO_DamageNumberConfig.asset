@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224c95d35d8342b7bf7a3c769c913ea4, type: 3}
+  m_Name: SO_DamageNumberConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DamageNumberConfig
+  Enabled: 1
+  Font: {fileID: 11400000, guid: 743e12e08f2c09549b7a59ee5599b03e, type: 2}
+  Material: {fileID: 2100000, guid: ac6f320ad5cd3fd46b2690a9f3f9afa8, type: 2}
+  FontSize: 3
+  CriticalScale: 2
+  NormalColor: {r: 1, g: 1, b: 1, a: 1}
+  CriticalColor: {r: 1, g: 0.6, b: 0.15, a: 1}
+  ReducedColor: {r: 0.6, g: 0.6, b: 0.65, a: 1}
+  PoisonColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
+  FireColor: {r: 1, g: 0.4, b: 0.2, a: 1}
+  BonusExpColor: {r: 1, g: 0.85, b: 0.25, a: 1}
+  Duration: 1
+  StartHeight: 0.6
+  LaunchSpeed: {x: 3.5, y: 5}
+  SideSpeed: 1.2
+  Gravity: 10
+  Stretch: 0.3
+  PopDuration: 0.01
+  FadeRatio: 0.35
+  InitialCapacity: 32

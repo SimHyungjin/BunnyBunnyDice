@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cef4b3b8617ae1970e51154b14cf1ae, type: 3}
+  m_Name: SO_MonsterConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MonsterConfig
+  Radius: 0.3
+  TurnSpeed: 540
+  HitHeight: 0.3
+  MinDamageRatio: 0.2
+  EmergeDuration: 0.4
+  EmergeStartScale: 0.25
+  EmergeDepth: -0.35
+  EmergeHop: 0.3
+  PoisonTickInterval: 0.5
+  PoisonColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
+  SlowColor: {r: 0.96, g: 0.85, b: 0.2, a: 1}
+  FreezeColor: {r: 0.4, g: 0.8, b: 0.96, a: 1}
+  VulnerableColor: {r: 1, g: 1, b: 1, a: 1}
+  InitialCapacity: 128
+  SplitOffset: 0.15
+  HealthBarMaterial: {fileID: 2100000, guid: b70259bca3f14d8093f061d8611eccfd, type: 2}
+  HealthBarHeight: 0.75
+  HealthBarWidth: 0.55
+  HealthBarThickness: 0.07
+  HealthBarBorder: 0.012
+  HealthBarBackColor: {r: 0.05, g: 0.03, b: 0.08, a: 0.85}
+  HealthBarFullColor: {r: 0.35, g: 0.95, b: 0.4, a: 1}
+  HealthBarLowColor: {r: 1, g: 0.25, b: 0.2, a: 1}
+  HideFullHealthBar: 0
+  StatusSlotFill: 0.6
+  StatusRowGap: 0

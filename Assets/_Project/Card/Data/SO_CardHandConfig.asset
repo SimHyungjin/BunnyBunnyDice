@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf783c3ebb0cb394b87409b82b3db9ae, type: 3}
+  m_Name: SO_CardHandConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_CardHandConfig
+  CardPrefab: {fileID: 4736661341644948997, guid: 01e448317bee41e4b0503aba3b47f06c, type: 3}
+  StartHand:
+  - Faces: 6
+    Colors: 1
+  - Faces: 6
+    Colors: 2
+  - Faces: 6
+    Colors: 4
+  - Faces: 6
+    Colors: 0
+  - Faces: 6
+    Colors: 0
+  MaxStacks: 99
+  CardHeightRatio: 0.222
+  DiceCardColor: {r: 0.961, g: 0.02, b: 0.424, a: 1}
+  ChipCardColor: {r: 1, g: 0.729, b: 0.2, a: 1}
+  ChipSubText: "\uCE69 \uCE74\uB4DC"
+  ChipKindLabel: "\uce69"
+  ChipKindText: "칸에 놓는다. 칩 위 주사위가 효과를 받는다. 빈 칸에 놓으면 길을 막는다. 칸마다 하나만 놓을 수 있다."
+  TitleBackAlpha: 0.25
+  StrongTagColor: {r: 0.247, g: 0.878, b: 1, a: 1}
+  StrongTagTextColor: {r: 0, g: 0, b: 0, a: 1}
+  WeakTagColor: {r: 0.353, g: 0.227, b: 0.416, a: 1}
+  TextColor: {r: 0.984, g: 0.933, b: 0.988, a: 1}
+  TagPadding: 8
+  TagGap: 8
+  InspectScale: 2.2
+  InspectOffset: {x: 0, y: 1.5}
+  FanRadius: 6.67
+  AnglePerCard: 5
+  MaxFanAngle: 20
+  HandHeight: 0.54
+  LowerOnHold: 0.375
+  HoldScale: 1.15
+  FollowSharpness: 14
+  NewCardFrom: {x: 0, y: 2.25}
+  NewCardFromScale: 1.3

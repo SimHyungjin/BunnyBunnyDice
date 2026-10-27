@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 477e0d9b78a6e27222460d9c22839b60, type: 3}
+  m_Name: SO_Dice_White
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Pulse
+  Colors: -1
+  DisplayName: "\uD558\uC591"
+  Color: {r: 1, g: 1, b: 1, a: 1}
+  AttackName: "\uD30C\uB3D9"
+  Description: "\uC8FC\uBCC0\uC758 \uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C
+    \uC900\uB2E4. \uC0AC\uAC70\uB9AC\uAC00 \uC9E7\uB2E4."
+  StrongAgainst: "\uBE60\uB984"
+  WeakAgainst: "\uAC70\uB300"
+  AwakenDescription: "\uD30C\uB3D9\uC774 \uB450 \uACB9\uC73C\uB85C \uD37C\uC9C4\uB2E4"
+  Damage: 10
+  DamageGrowth: 0.5
+  AttackSpeed: 0.7
+  AttackSpeedGrowth: 0
+  Range: 1.8
+  AwakenPulseDelay: 0.2
+  AwakenPulseRatio: 0.5

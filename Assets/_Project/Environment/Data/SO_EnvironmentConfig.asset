@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa3d4d59d06055b4e80f93930a0939ed, type: 3}
+  m_Name: SO_EnvironmentConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_EnvironmentConfig
+  TablePrefab: {fileID: 919132149155446097, guid: 5d9fca4751a3b8b49913873e77d9de11, type: 3}
+  TableMaterial: {fileID: 2100000, guid: bec1f74515334731886f02ba2bd36846, type: 2}
+  FloorExtent: 40
+  FloorHeight: -4
+  CarpetTileSize: 2
+  CarpetTextureSize: 256
+  CarpetBaseColor: {r: 0.06, g: 0.03, b: 0.08, a: 1}
+  CarpetLineColor: {r: 0.22, g: 0.05, b: 0.13, a: 1}
+  CarpetAccentColor: {r: 0.04, g: 0.15, b: 0.18, a: 1}
+  CarpetLineWidth: 0.03
+  CarpetAccentSize: 0.1
+  CarpetSmoothness: 0.05
+  CornerPocketOffset: {x: 0.24, y: 0.3}
+  SidePocketOffset: 0.22
+  PocketGlowColor: {r: 1, g: 0.32, b: 0.42, a: 1}
+  PocketGlowIntensity: 2.5
+  CornerGlowRadius: 0.3
+  SideGlowRadius: 0.2
+  PocketGlowDepth: -0.15
+  PocketSegments: 32

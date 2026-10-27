@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e39487e2128c41d4ba2f8cbedd4671c9, type: 3}
+  m_Name: SO_HeroSpotlightConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroSpotlightConfig
+  Lobby:
+    KeyLightBrightness: 1.6
+    KeyLightRadius: 0.8
+    RimLightOffset: {x: 0.6, y: 1.2, z: -1}
+    RimLightBrightness: 2.2
+    RimLightAngle: 40
+    RoomDim: 0.4
+    PoolRadius: 0.4
+    PoolBrightness: 0.8
+    BeamBrightness: 0.12
+    BeamBottom: 0.3
+    BeamTop: 1
+  Game:
+    KeyLightBrightness: 0.6
+    KeyLightRadius: 0.6
+    RimLightOffset: {x: 0.6, y: 1.2, z: -1}
+    RimLightBrightness: 0
+    RimLightAngle: 40
+    RoomDim: 0.9
+    PoolRadius: 0.7
+    PoolBrightness: 0.5
+    BeamBrightness: 0.08
+    BeamBottom: 1
+    BeamTop: 0
+  SourceOffset: {x: -4, y: 20, z: -4}
+  KeyLightColor: {r: 1, g: 0.95, b: 0.88, a: 1}
+  RimLightColor: {r: 1, g: 0.35, b: 0.65, a: 1}
+  PoolShader: {fileID: 4800000, guid: e5fdb90ca27e38946adce114a79a195b, type: 3}
+  PoolSoftness: 1
+  PoolLift: 0.01
+  PoolMaxStretch: 1.8
+  BeamShader: {fileID: 4800000, guid: 2b38d14ebef78994f91d7a7ee1db349f, type: 3}
+  BeamTopRatio: 0.1
+  BeamEdgeSoftness: 1.5
+  BeamFloorFade: 0.8

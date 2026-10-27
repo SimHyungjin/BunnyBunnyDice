@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae61283e138eaeb4ebcb8bb15e9e5137, type: 3}
+  m_Name: SO_SkillCard_Jackpot
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Jackpot
+  DisplayName: "잭팟"
+  Description: "주사위의 눈을 최대로 올린다. 이십면체면 바로 각성한다."
+  StrongAgainst: ""
+  Icon: {fileID: 0}
+  IconColor: {r: 1, g: 0.82, b: 0.2, a: 1}
+  Weight: 1

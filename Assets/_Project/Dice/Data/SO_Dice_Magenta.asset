@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9adda36713b09fea0ab598f3a8c88ed, type: 3}
+  m_Name: SO_Dice_Magenta
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Pierce
+  Colors: 5
+  DisplayName: "\uC790\uD64D"
+  Color: {r: 0.9, g: 0.25, b: 0.75, a: 1}
+  AttackName: "관통"
+  Description: "사거리 끝까지 일직선으로 꿰뚫는다. 가장 많은 적을 꿰뚫는 방향을 노린다."
+  StrongAgainst: "단단함, 보스"
+  WeakAgainst: ""
+  AwakenDescription: "관통선이 {AwakenWidthScale}배 굵어진다"
+  Damage: 27
+  DamageGrowth: 0.5
+  AttackSpeed: 0.4
+  AttackSpeedGrowth: 0
+  Range: 5.5
+  HalfWidth: 0.15
+  AwakenWidthScale: 2

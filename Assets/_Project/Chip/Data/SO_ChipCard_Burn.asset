@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16639ee6f62ca424c984235970b2beab, type: 3}
+  m_Name: SO_ChipCard_Burn
+  m_EditorClassIdentifier: Assembly-CSharp::SO_ChipCard_Burn
+  DisplayName: "화상"
+  Description: "맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입는다. 방어력을 무시한다. 보스는 절반만 입는다."
+  StrongAgainst: "보스"
+  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  IconColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
+  Weight: 1
+  MaxHealthRatio: 0.02
+  Duration: 4

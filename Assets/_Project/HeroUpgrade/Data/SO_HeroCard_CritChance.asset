@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d17acd3d50754a4c997ac27de0b70f6a, type: 3}
+  m_Name: SO_HeroCard_CritChance
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCard
+  DisplayName: "치명타 확률"
+  Description: "영웅 공격과 스킬의 치명타 확률이 오른다. 여러 장은 합산되고, 100%를 넘는 몫은 치명타 피해가 된다."
+  StrongAgainst: 
+  Icon: {fileID: 0}
+  IconColor: {r: 1, g: 1, b: 1, a: 1}
+  Weight: 1
+  Stat: 4
+  Amount: 0.2
+  Flat: 1

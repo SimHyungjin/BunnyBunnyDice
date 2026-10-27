@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b72afef38d14d4982b233374285dfbc, type: 3}
+  m_Name: SO_MetaDiceConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MetaDiceConfig
+  TumbleDuration: 0.7
+  DecelDuration: 0.45
+  SpinSpeed: 1080
+  TumbleBounce: 0.1
+  LandPopScale: 1.3
+  LandDuration: 0.18
+  SuccessColor: {r: 1, g: 0.88, b: 0.29, a: 1}
+  SuccessDuration: 0.35
+  FailHold: 0.3
+  FailAlpha: 0.35
+  FailShakeAngle: 12
+  FailShakeDuration: 0.3
+  Stagger: 0.1
+  RewardDelay: 0.35
+  CountUpDuration: 0.4
+  GatherDuration: 0.3
+  GatherDelay: 0.35
+  RevealDuration: 0.5
+  RevealPopScale: 1.08

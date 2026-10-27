@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd5e7d9b36a649e183c9836e10e2c7c3, type: 3}
+  m_Name: SO_LevelUpConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_LevelUpConfig
+  BaseExp: 5
+  ExpPerLevel: 3
+  ChoiceCount: 3
+  ChoiceTimeScale: 0.05
+  CopyPopScale: 1.15
+  InputLockDuration: 0.3
+  PeekFadeDuration: 0.15
+  ColorWeights:
+  - Colors: 0
+    Weight: 1
+  - Colors: 1
+    Weight: 1
+  - Colors: 2
+    Weight: 1
+  - Colors: 4
+    Weight: 1
+  - Colors: 3
+    Weight: 1
+  - Colors: 5
+    Weight: 1
+  - Colors: 6
+    Weight: 1
+  - Colors: 7
+    Weight: 1
+  FacesWeights:
+  - Faces: 6
+    Weight: 1
+  - Faces: 12
+    Weight: 1
+  - Faces: 20
+    Weight: 1
+  SkillCards:
+  - {fileID: 11400000, guid: ff4f1bf89d544b53993645061c19192e, type: 2}
+  - {fileID: 11400000, guid: 7fa39e64475040b29d80e3315c7f34bf, type: 2}
+  - {fileID: 11400000, guid: b25541fdb62d49fba9cd0615fe6dec61, type: 2}
+  - {fileID: 11400000, guid: 8fc898e7540b4a749bc953072f4fb550, type: 2}
+  - {fileID: 11400000, guid: d90e9a3965b04cc3abeb268101b1cd14, type: 2}
+  - {fileID: 11400000, guid: 288d03818a5e4f508cf9586a1aec8181, type: 2}
+  - {fileID: 11400000, guid: 0c51ab42271249aaad48a67130761783, type: 2}
+  - {fileID: 11400000, guid: c1a357f1384d445bb45865006881395f, type: 2}
+  - {fileID: 11400000, guid: 20e1982a0963453c84de62ac874cece6, type: 2}
+  - {fileID: 11400000, guid: a6e3bc4dcfc94b28bb32b477f9e27c9e, type: 2}
+  - {fileID: 11400000, guid: eb0a1dead4e142769abbc279aafbc738, type: 2}
+  - {fileID: 11400000, guid: 9031cb4797bc48e8ab2d1b34e05c5247, type: 2}
+  - {fileID: 11400000, guid: c610641857af491c8d59e004743e120e, type: 2}
+  - {fileID: 11400000, guid: 7117b4fcebde49fba183be7928c7f448, type: 2}
+  - {fileID: 11400000, guid: 49d316269918439a8435998ac387b58e, type: 2}
+  - {fileID: 11400000, guid: 4c04bff79f374b82a1c728c87342cc3d, type: 2}
+  ChipCards:
+  - {fileID: 11400000, guid: 8a8873dcf6964162b85c80cc937d5985, type: 2}
+  - {fileID: 11400000, guid: 48e1711dd4bc48c09a1ec28d285cfce8, type: 2}
+  - {fileID: 11400000, guid: 4d29b19413e44eefb1707d3f35e0d42a, type: 2}
+  - {fileID: 11400000, guid: b9558d2b850147a182387c2fc3f65199, type: 2}
+  - {fileID: 11400000, guid: 4ce5d1a30c944a24a35a5b3a2a6843cb, type: 2}
+  - {fileID: 11400000, guid: f5fe4fd6ba32474ab4dba0498d2f3064, type: 2}
+  - {fileID: 11400000, guid: d9678aadcae949ebbf204fe059183e0f, type: 2}
+  HeroCards:
+  - {fileID: 11400000, guid: 328d62f9c28d490cbf864ad369a8c68e, type: 2}
+  - {fileID: 11400000, guid: 16490eae36304a569ac174827e9c4d5b, type: 2}
+  - {fileID: 11400000, guid: 0dd5f0cc5b9e4ec0b9059635d9c44299, type: 2}
+  - {fileID: 11400000, guid: 52af82f8217746cb9d3b34ecc836a5c0, type: 2}
+  - {fileID: 11400000, guid: 5266b21f1c794b38a0f9d660b365bb9c, type: 2}
+  - {fileID: 11400000, guid: b89cbe22720b4f418b60f0485e679722, type: 2}
+  - {fileID: 11400000, guid: 6020b7ea861b4bc9aaa2a4ff956873d1, type: 2}
+  - {fileID: 11400000, guid: a2a8e3d37796432a933f97e86ba464e4, type: 2}

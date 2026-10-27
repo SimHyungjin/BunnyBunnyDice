@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b773da6c5a445b8b0ae6724a3920dde, type: 3}
+  m_Name: SO_HeroTrait_NoMiddle
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_NoMiddle
+  DisplayName: "극과 극"
+  Description: "주사위를 굴릴 때 가운데 {MiddleExcludeRatio%}의 눈은 나오지 않는다."
+  MiddleExcludeRatio: 0.333

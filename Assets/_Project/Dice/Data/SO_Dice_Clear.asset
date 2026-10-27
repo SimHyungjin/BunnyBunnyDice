@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13e60b7779d17903344ee712a350138e, type: 3}
+  m_Name: SO_Dice_Clear
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Basic
+  Colors: 0
+  DisplayName: 검정
+  Color: {r: 0.2, g: 0.2, b: 0.23, a: 1}
+  AttackName: "기본 공격"
+  Description: "적 하나를 약하게 공격한다. 색 주사위를 얹으면 쌓인 눈 그대로 그 색이 된다."
+  StrongAgainst: ""
+  WeakAgainst: ""
+  AwakenDescription: "없음. 눈이 20이 되면 무작위 색으로 바뀌어 바로 각성한다."
+  Damage: 32
+  DamageGrowth: 0.5
+  AttackSpeed: 1.2
+  AttackSpeedGrowth: 0
+  Range: 2.8

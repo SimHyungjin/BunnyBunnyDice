@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de7b678f87054542b03491f595d0f22, type: 3}
+  m_Name: SO_MapViewConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MapViewConfig
+  BlockPrefab: {fileID: 6544984200840657953, guid: 3d41d8b13ab64391a939cf757f740669, type: 3}
+  GoalMarkerPrefab: {fileID: 0}
+  GroundThickness: 0.5
+  ChipHeight: 0.12
+  WallHeight: 0
+  Gap: 0.04
+  GridMaterial: {fileID: 2100000, guid: dfc196ed1aea4d54834d6111dc4f3cce, type: 2}
+  GridLineWidth: 0.03
+  GridLineLift: 0.003
+  GridLineColor: {r: 0.75, g: 0.6, b: 1, a: 1}
+  GridIdleAlpha: 0
+  GridShownAlpha: 0.35
+  GridFadeDuration: 0.15
+  ChipDiameter: 0.86
+  ChipBevelRatio: 0.4
+  ChipSegments: 32
+  ChipRingColor: {r: 0.06, g: 0.04, b: 0.08, a: 1}
+  ChipRingOuter: 0.64
+  ChipRingInner: 0.56
+  ChipSmoothness: 0.55
+  GoalChipDiameter: 0.95
+  GoalChipHeight: 0.18
+  GoalChipColor: {r: 0.247, g: 0.878, b: 1, a: 1}
+  GoalRingColor: {r: 1, g: 0.82, b: 0.3, a: 1}
+  GoalRingOuter: 0.78
+  GoalRingInner: 0.64
+  PrintLift: 0.002

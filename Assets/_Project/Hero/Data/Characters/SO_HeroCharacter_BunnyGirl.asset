@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f015daa71e54458bd94b4d3d9ca8fe9, type: 3}
+  m_Name: SO_HeroCharacter_BunnyGirl
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
+  DisplayName: "\uBC14\uB2C8\uAC78"
+  Trait: {fileID: 11400000, guid: 14ea47de257c42ceaf5d6e7d35f01a19, type: 2}
+  Prefab: {fileID: -1728013695380148634, guid: fbb59e628b4e06848975ad12bcd0273c, type: 3}
+  ModelHeight: 0.9
+  Color: {r: 0.95, g: 0.85, b: 0.3, a: 1}
+  TintModel: 0
+  AddOutline: 1
+  ShellMaterial: {fileID: 2100000, guid: 313265d5107e84645add84576d94bf96, type: 2}
+  Animations: {fileID: 11400000, guid: 3a58be4d92324348adb5061f2b3108d4, type: 2}
+  Portrait: {fileID: 2800000, guid: 69d443b87fa0b1a4e9031477d0557985, type: 3}
+  PortraitFocusY: 0.45
+  Attack: 60
+  AttackSpeed: 2
+  MoveSpeed: 3
+  Range: 1.6
+  CritChance: 0.1
+  CritDamage: 2.5

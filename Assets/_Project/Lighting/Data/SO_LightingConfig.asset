@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd2cf1d17f54203977247fa8fbd22ee, type: 3}
+  m_Name: SO_LightingConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_LightingConfig
+  SunRotation: {x: 62, y: -30, z: 0}
+  SunColor: {r: 1, g: 0.95, b: 0.98, a: 1}
+  SunIntensity: 1.2
+  ShadowStrength: 0.75
+  AmbientSky: {r: 0.34, g: 0.29, b: 0.4, a: 1}
+  AmbientEquator: {r: 0.2, g: 0.15, b: 0.25, a: 1}
+  AmbientGround: {r: 0.07, g: 0.04, b: 0.09, a: 1}
+  ReflectionSize: 64
+  ReflectionIntensity: 1
+  ReflectionTop: {r: 0.34, g: 0.29, b: 0.38, a: 1}
+  ReflectionHorizon: {r: 0.08, g: 0.05, b: 0.1, a: 1}
+  ReflectionBottom: {r: 0.01, g: 0.01, b: 0.012, a: 1}
+  SoftboxColor: {r: 0.984, g: 0.933, b: 0.988, a: 1}
+  SoftboxIntensity: 2.5
+  SoftboxHalfSize: {x: 0.9, y: 0.35}
+  BackgroundColor: {r: 0.035, g: 0.02, b: 0.05, a: 1}
+  VolumePriority: 10
+  Tonemapping: 1
+  PostExposure: 0
+  Contrast: 15
+  Saturation: 20
+  BloomIntensity: 0.5
+  BloomThreshold: 1
+  BloomScatter: 0.7
+  VignetteIntensity: 0.45
+  VignetteColor: {r: 0.035, g: 0.02, b: 0.05, a: 1}
+  VignetteSmoothness: 0.45
+  OutlineShader: {fileID: 4800000, guid: 5414a7151ca54a3c9a44e8d879f1bdb0, type: 3}
+  OutlineColor: {r: 0.05, g: 0.03, b: 0.07, a: 1}
+  OutlineWidth: 0.0025
+  OutlineDepthBias: 0.04

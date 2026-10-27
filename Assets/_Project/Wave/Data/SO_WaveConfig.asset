@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5236359ce19606ddda6236c15656c4f7, type: 3}
+  m_Name: SO_WaveConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_WaveConfig
+  WaveDelay: 0
+  SpawnInterval: 0.2
+  BaseCount: 6
+  CountPerWave: 6
+  BossCount: 1
+  HealthGrowth: 0
+  HealthCompound: 0.1
+  Monster: {fileID: 11400000, guid: 5146a3e9cb23695a2f38411fc7059de9, type: 2}
+  Waves:
+  - Monsters: []
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters: []
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters: []
+    HasBoss: 1
+    Boss:
+      Traits:
+      - {fileID: 11400000, guid: a0d0a8141c3049f58b1bf780cf3c2b23, type: 2}
+      - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: f61636042c5342a7bffb0df7d922be1c, type: 2}
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
+    - Traits:
+      - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
+    - Traits:
+      - {fileID: 11400000, guid: f61636042c5342a7bffb0df7d922be1c, type: 2}
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
+    - Traits:
+      - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
+    - Traits:
+      - {fileID: 11400000, guid: f61636042c5342a7bffb0df7d922be1c, type: 2}
+    HasBoss: 0
+    Boss:
+      Traits: []
+  - Monsters:
+    - Traits:
+      - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
+    - Traits:
+      - {fileID: 11400000, guid: f61636042c5342a7bffb0df7d922be1c, type: 2}
+    HasBoss: 1
+    Boss:
+      Traits:
+      - {fileID: 11400000, guid: a0d0a8141c3049f58b1bf780cf3c2b23, type: 2}
+      - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
+  RandomTraits:
+  - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
+  - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
+  - {fileID: 11400000, guid: f61636042c5342a7bffb0df7d922be1c, type: 2}
+  - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
+  RandomVariants: 2
+  RandomTraitMin: 1
+  RandomTraitMax: 2
+  BossInterval: 5
+  BossTraits:
+  - {fileID: 11400000, guid: a0d0a8141c3049f58b1bf780cf3c2b23, type: 2}
+  BossRandomTraits: 1
+  BossHealthShare: 0.5
+  BossRewardChoices: 1
+  JackpotChance: 0.25
+  JackpotTraits:
+  - {fileID: 11400000, guid: 89b9115dd6bf4701aa23839d2bcd9f0a, type: 2}
+  JackpotRewardChoices: 2

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b10cbeadfc6414795b8c4a0adcaa33, type: 3}
+  m_Name: SO_PlacementPreviewConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_PlacementPreviewConfig
+  HighlightPrefab: {fileID: 1536216519705477977, guid: c23d08be00224b8c97fc459678a93a34, type: 3}
+  ValidColor: {r: 0.3, g: 0.95, b: 0.4, a: 1}
+  InvalidColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  GhostHover: 0.15
+  RangeMaterial: {fileID: 2100000, guid: 18bcddbfebd440cbaef8adc931057a03, type: 2}
+  RangeColor: {r: 1, g: 1, b: 1, a: 0.7}
+  RangeWidth: 0.05
+  RangeSegments: 64
+  RangeLift: 0.03
+  SkillAreaWidth: 0.08
+  SkillMarkRadius: 0.3
+  SkillMarkWidth: 0.06
+  SkillKingMarkRadius: 0.5
+  MazeTargetDice: 20
+  MazeIterations: 20000
+  MazeFrameBudgetMs: 2
+  MazeAssumedRange: 2.8
+  MazeCoverageWeight: 0.3
+  MazeBossWeight: 1
+  MazeStartTemperature: 3
+  MazeEndTemperature: 0.05
+  MazeProbeIterations: 3000

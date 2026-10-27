@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 462b3ea10b364555b0258e79b7ad5c5d, type: 3}
+  m_Name: SO_HeroAnimationSet_Default
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroAnimationSet
+  Idle: {fileID: 1827226128182048838, guid: cddb98760f1b90944adbc37358d5ffdf, type: 3}
+  Run: {fileID: 1827226128182048838, guid: 9d5bd6fa48dcdd7469e5fd7de69684e3, type: 3}
+  RunLeft: {fileID: 1827226128182048838, guid: 95f17f759e850d14db350e92d9ad7af1, type: 3}
+  RunRight: {fileID: 1827226128182048838, guid: 9bd3955d8a1a05e41b489b0c0c7e52ba, type: 3}
+  Sit: {fileID: 7400000, guid: 41da35552f2e3c546b972dc5844e1e41, type: 2}
+  Jump: {fileID: 1827226128182048838, guid: 5d8c92044437ddc49a065ede569f8d1d, type: 3}
+  Attack: {fileID: 7400000, guid: a6ae95450583a694ea67242ecbb5a97b, type: 3}
+  AttackRelease: 0.33
+  AttackMaxRate: 2
+  AttackFade: 0.08
+  AttackHand: 18
+  AttackAimYaw: 0
+  AimMaxTwist: 70
+  AimMaxBodyOffset: 90
+  AimTwistShares: {x: 0.4, y: 0.4, z: 0.2}
+  AimTurnSpeed: 900
+  FadeDuration: 0.2
+  RunReferenceSpeed: 3
+  RunSideRate: 1.5
+  MoveThreshold: 0.05
+  RunSpeedRange: {x: 0.6, y: 1.8}
+  JumpTakeoff: 0.3
+  JumpLand: 0.7

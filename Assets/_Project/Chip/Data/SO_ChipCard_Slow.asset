@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67c3eac5822af3a47a15e1711775f067, type: 3}
+  m_Name: SO_ChipCard_Slow
+  m_EditorClassIdentifier: Assembly-CSharp::SO_ChipCard_Slow
+  DisplayName: "둔화"
+  Description: "맞은 적이 {Duration}초 동안 {Ratio%} 느려진다."
+  StrongAgainst: "빠름"
+  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  IconColor: {r: 0.96, g: 0.85, b: 0.2, a: 1}
+  Weight: 1
+  Ratio: 0.4
+  Duration: 1.5

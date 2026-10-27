@@ -1,0 +1,193 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Default Local Group
+  m_GUID: 67ff2b18c3b754a46bcf4329567eded7
+  m_SerializeEntries:
+  - m_GUID: 0c41283355ea492584c2c7ed11b35e64
+    m_Address: UI_LobbyPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ec8e30cd8da46c6af9b7e1bc2f353ba
+    m_Address: SO_MapPathViewConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15122d17657848269ef43501f842999f
+    m_Address: SO_CardHandConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1860f0d0339cc734ba6722ef28046595
+    m_Address: SO_CharacterSelectConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19a6b0f7b79b46d1bca9a58092eecbda
+    m_Address: SO_DamageNumberConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ba06a0a976340f0af26de93d8b76339
+    m_Address: SO_DiceStatsConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cd3b59ba7864f5a9d6b3e6763c663b0
+    m_Address: SO_AttackEffectConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cedf315f354d044cb9e75146062d7dd
+    m_Address: UI_TestPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4201cd83f99e4c84837f659694df7f5a
+    m_Address: SO_LevelUpConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4622f7a045d52f244ab3ae0ec7bf7676
+    m_Address: LocalizationTable
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c090efca3074e039e3510da71160aba
+    m_Address: SO_LobbyConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d0a4b8c3e6f4a1b0c9d5e4f3a2b1c0d
+    m_Address: SO_GameSpeedConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef01ed1e6df7430e83aeedcb02759b39
+    m_Address: SO_BotConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d8b9106bb5c5cb41b08020ba6f33632
+    m_Address: SO_MetaConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 789080c1929b45d0b80d09dee6c91781
+    m_Address: SO_MetaDiceConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 632c7c3e437f4594a8d382966ef86d9e
+    m_Address: SO_DiceConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79d883fcc30149f7b4d567f4010a3167
+    m_Address: SO_MapViewConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a84777236604524a847ee9e648b990f
+    m_Address: UI_CharacterSelectPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9536c3352c9f43a4b996cd60002acfa6
+    m_Address: UI_SettingsPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8aa6d9f4b87349beadcdd7647c423a37
+    m_Address: SO_EnvironmentConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c746c47bf91448d9a08e4ec207b4c2d
+    m_Address: UI_LevelUpPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94549ec224084015be0dba8d4f214a97
+    m_Address: SO_MapGenConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ad4af41cfba421c9a88c073db2e8478
+    m_Address: SO_HeroConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e0a824b512a01ce8162ee1c4b543d46
+    m_Address: SO_GoalConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a658d5fb9fdc4406b0da550fa7a51565
+    m_Address: SO_LightingConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6aff0a91d61431a801a9ea55ea24bf1
+    m_Address: UI_ResultPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2b2268572994192876a3f2ed3c2a649
+    m_Address: SO_MapCameraConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce0f400b3faa4dabb23d34ffb8e64c4b
+    m_Address: UI_GameHud
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf75e1b00c4147059ddfec540333967c
+    m_Address: SO_CardDragConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d273e7330b504cf2a750e5a7d40603ff
+    m_Address: SO_BoardRollConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d799726a4bf5531f5cdacb1c07d31fe4
+    m_Address: SO_WaveConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9ce778fcd0c4ca681f9ab035cb21e7a
+    m_Address: SO_PlacementPreviewConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f04ecb1676fe1f9e7773a35e611ce8d2
+    m_Address: SO_MonsterConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 36fc74af7d57aec4881b551ffce077f3, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 95ca08bf4c29f254baa78549f54e0c51, type: 2}
+    - {fileID: 11400000, guid: a5e3df57c5529a6458addec9df09589f, type: 2}
+    m_SchemaDisplayOrder:
+    - Default Local Group_ContentUpdateGroupSchema
+    - Default Local Group_BundledAssetGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

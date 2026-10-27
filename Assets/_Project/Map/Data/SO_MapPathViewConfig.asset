@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 443008564128e904caa16e8c63696a13, type: 3}
+  m_Name: SO_MapPathViewConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MapPathViewConfig
+  HeadPrefab: {fileID: 5520881930021407001, guid: 2f2b6c56e2c542308632dd451ca63992, type: 3}
+  TrailMaterial: {fileID: 2100000, guid: 23afd394176a48bab0145365143b62e5, type: 2}
+  PathColors:
+  - {r: 2, g: 1.7, b: 0.4, a: 1}
+  - {r: 0.6, g: 2, b: 1, a: 1}
+  - {r: 2, g: 0.8, b: 1.8, a: 1}
+  - {r: 0.8, g: 1.8, b: 2, a: 1}
+  RunSpeed: 5
+  SendInterval: 1.5
+  TrailTime: 0.8
+  TrailWidth: 0.22
+  TrailCornerVertices: 3
+  BaseLineWidth: 0.07
+  BaseLineAlpha: 0.35
+  Lift: 0.05

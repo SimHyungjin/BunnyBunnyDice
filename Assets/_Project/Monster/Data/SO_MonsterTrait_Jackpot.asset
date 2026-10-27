@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: accd0aa5c06c4916b6b34cdb148da423, type: 3}
+  m_Name: SO_MonsterTrait_Jackpot
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MonsterTrait
+  DisplayName: "잭팟"
+  Tint: {r: 1, g: 0.8, b: 0.15, a: 1}
+  VisualScale: 1.1
+  HealthScale: 1
+  SpeedScale: 1
+  ImpairResist: 0
+  Armor: 0
+  RegenRatio: 0
+  GoalDamageBonus: 0
+  ExpBonus: 0
+  SplitCount: 0
+  SplitHealthRatio: 0.5
+  PieceGoalDamage: 1
+  PieceExp: 0

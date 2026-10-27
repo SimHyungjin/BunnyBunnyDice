@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b188aa8ca7af1ff8399fc770ac08d7, type: 3}
+  m_Name: SO_Dice_Cyan
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Chain
+  Colors: 6
+  DisplayName: "\uD558\uB298"
+  Color: {r: 0.4, g: 0.8, b: 0.96, a: 1}
+  AttackName: "체인"
+  Description: "맨 앞의 적을 맞힌 뒤 가까운 적에게 튕긴다. 튕길 때마다 피해가 {Falloff%}로 줄고, {MinJumpDamage}보다 작아지면 멈춘다."
+  StrongAgainst: ""
+  WeakAgainst: "단단함"
+  AwakenDescription: "튕길 때마다 {1-AwakenFalloff%}만 줄어든다"
+  Damage: 12
+  DamageGrowth: 0.5
+  AttackSpeed: 2
+  AttackSpeedGrowth: 0
+  Range: 3.8
+  JumpRange: 1.6
+  Falloff: 0.65
+  MinJumpDamage: 2
+  AwakenFalloff: 0.85

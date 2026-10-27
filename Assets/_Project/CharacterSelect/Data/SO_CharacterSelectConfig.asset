@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba6753ee5d588e146b58798d2a24569d, type: 3}
+  m_Name: SO_CharacterSelectConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_CharacterSelectConfig
+  GuardAlpha: 0.88
+  PortraitSize: {x: 640, y: 498}
+  PortraitTop: 0.86
+  PortraitBodyRatio: 0.42
+  PortraitMargin: 0.02
+  PortraitFieldOfView: 20
+  PortraitYaw: 20
+  PortraitPoseTime: 0
