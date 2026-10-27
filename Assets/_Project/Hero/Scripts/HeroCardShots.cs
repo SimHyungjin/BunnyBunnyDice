@@ -45,12 +45,12 @@ public sealed class HeroCardShots : IDisposable
         _root.SetParent(parent, false);
         _mesh = CreateCardMesh();
         for (int i = 0; i < config.InitialCapacity; i++) _idle.Push(CreateCard());
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
     public void Dispose()
     {
-        Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= Tick;
         UnityEngine.Object.Destroy(_mesh);
     }
 
@@ -99,9 +99,9 @@ public sealed class HeroCardShots : IDisposable
     }
 
     // 게임 시간을 따른다 — 공격 판정과 같은 빠르기로 날아간다.
-    private void Tick(float _)
+    // 꼬리(TrailRenderer)만 Unity 시간(늘 1배)으로 사라지지만, 0.08초 남짓이라 멈춤·배속에서 어긋나도 보이지 않는다.
+    private void Tick(float deltaTime)
     {
-        float deltaTime = Time.deltaTime;
         for (int i = _active.Count - 1; i >= 0; i--)
         {
             Card card = _active[i];

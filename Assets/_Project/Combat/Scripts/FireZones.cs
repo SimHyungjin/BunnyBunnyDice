@@ -27,10 +27,10 @@ public sealed class FireZones : IDisposable
     {
         _monsters = monsters;
         _effects = effects;
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
-    public void Dispose() => Core.Loop.OnUpdate -= Tick;
+    public void Dispose() => Core.Loop.OnGameUpdate -= Tick;
 
     /// <param name="interval">피해를 주는 간격.</param>
     /// <param name="ground">불길을 그릴 바닥 윗면 높이.</param>
@@ -44,10 +44,9 @@ public sealed class FireZones : IDisposable
     public void Clear() => _zones.Clear();
 
     // 게임 시간을 따른다. 몬스터가 멈추면(게임 오버) 불길도 멈춘다.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
         if (_zones.Count == 0 || _monsters.Paused) return;
-        float deltaTime = Time.deltaTime;
         MonsterState[] states = _monsters.States;
 
         for (int z = _zones.Count - 1; z >= 0; z--)

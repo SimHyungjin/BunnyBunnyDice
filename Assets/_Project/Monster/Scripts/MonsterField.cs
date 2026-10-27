@@ -54,12 +54,12 @@ public sealed class MonsterField : IDisposable
         _viewConfig = viewConfig;
         _states = new MonsterState[config.InitialCapacity];
         _renderer = new MonsterRenderer(parent, config, viewConfig, config.InitialCapacity, outline);
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
     public void Dispose()
     {
-        Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= Tick;
         Clear();
     }
 
@@ -222,10 +222,9 @@ public sealed class MonsterField : IDisposable
     }
 
     // 게임 시간을 따른다 — 카드를 집는 동안의 감속(게임 속도 50%)을 몬스터도 똑같이 받는다.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
         if (_map == null) return;
-        float deltaTime = Time.deltaTime;
         RemoveDead();
         if (!Paused) Step(deltaTime);
         _renderer.Sync(_states, _count, deltaTime);

@@ -860,6 +860,7 @@
   3. 판 결과에 영향을 주는 난수는 시드로 재현할 수 있게 한다 — 수치만 바꿨을 때의 차이를 같은 판으로 비교하게.
   4. 측정할 값(피해 출처, 웨이브 정리 시간, 새어 나간 적·목표물 피해, 고른 카드)은 이벤트로 내보낸다 — 기록기를 붙이기만 하면 되게.
 - 기존 코드(곳곳의 `Time.deltaTime`·`UnityEngine.Random`, 드래그·팝업에 묶인 행동)는 시스템이 거의 다 만들어졌을 때 한 번에 정리한다.
+- **시간 구조 1단계**(2026-10-28, `time-refactor` 갈래): 멈춤·배속·감속이 게임만 바꾼다. `GameSpeed`는 `Time.timeScale`을 1로 두고 코어의 게임 배율 채널(`Core.Loop.OnGameUpdate`)만 바꾼다. 판 시스템(웨이브·몬스터·주사위 공격·영웅·투사체·공격선·피해 숫자·주사위 굴림·기록·봇 행동)은 OnGameUpdate가 넘기는 시간으로 돌고 `Time.deltaTime`을 읽지 않는다. UI·카메라·판 주사위 연출·길 표시·그리드·목표물 반응은 실제 시간(OnUpdate) — 멈춘 동안에도 움직인다. 봇 다시 하기 기다림도 실제 시간.
 - **측정 기록 붙임**(2026-10-26, 4번): `Measure/WaveLog`가 웨이브마다 정리 시간(시작 → 다 잡음, 게임 시간)·다 잡았는지·처치·새어 나간 적·목표물 피해(무적이어도 받았을 피해)·목표물 체력·레벨·출처별 피해·고른 카드를 모은다.
   - 출처(`DamageSource`) 12가지: 주사위 8색(Black~White) · Hero · Skill · Burn(화상 칩 독) · Fire(빨강 각성 불길). 실제로 깎인 체력만 센다(넘친 피해 제외).
   - 판 시스템은 이벤트만 낸다: `MonsterField.DamageDealt`, `WaveSpawner.WaveCleared`, `LevelUpChoice.CardChosen`. 연결은 GameScene.

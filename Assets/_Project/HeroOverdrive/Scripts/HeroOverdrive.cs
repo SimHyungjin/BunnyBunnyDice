@@ -36,13 +36,13 @@ public sealed class HeroOverdrive : IDisposable
         _diceCombat = diceCombat;
         _monsters = monsters;
         _diceField.DiceRemoved += OnDiceRemoved;
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
     public void Dispose()
     {
         _diceField.DiceRemoved -= OnDiceRemoved;
-        Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= Tick;
         _diceCombat.ClearBoost();
     }
 
@@ -55,10 +55,9 @@ public sealed class HeroOverdrive : IDisposable
 
     private void OnDiceRemoved(int index, Vector2Int cell) => _elapsed.Remove(cell);
 
-    private void Tick(float _)
+    // 게임 시간을 따른다 — 카드를 집는 동안의 감속을 똑같이 받는다(DiceCombat과 같다).
+    private void Tick(float deltaTime)
     {
-        // 게임 시간을 따른다 — 카드를 집는 동안의 감속을 똑같이 받는다(DiceCombat과 같다).
-        float deltaTime = Time.deltaTime;
         // 뛰어오르는 중에는 아직 올라탄 게 아니다 — 지나가며 깡총 밟은 주사위가 깎이지 않게.
         Vector2Int cell = GridCircle.CellOf(_hero.Position);
         bool onDice = _diceField.TryGetPlaced(cell, out PlacedDice placed);

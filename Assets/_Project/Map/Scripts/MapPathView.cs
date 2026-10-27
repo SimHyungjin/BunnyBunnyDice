@@ -59,10 +59,10 @@ public sealed class MapPathView : IDisposable
         _lanes.Clear();
     }
 
-    // 게임 시간을 따른다 — 꼬리(TrailRenderer)가 사라지는 시간도 게임 시간이라 둘이 어긋나지 않게.
-    private void Tick(float _)
+    // 실제 시간을 따른다 — 길 표시는 판 정보라 멈춘 동안에도 흘러야 길을 읽으며 계획한다.
+    // 꼬리(TrailRenderer)도 Unity 시간(Time.timeScale은 늘 1 — GameSpeed)을 따르므로 둘이 어긋나지 않는다.
+    private void Tick(float deltaTime)
     {
-        float deltaTime = Time.deltaTime;
         for (int i = 0; i < _lanes.Count; i++) _lanes[i].Tick(deltaTime);
     }
 }

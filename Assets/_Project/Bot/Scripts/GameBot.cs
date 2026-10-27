@@ -86,11 +86,13 @@ public sealed class GameBot : IDisposable
         _canAct = canAct;
         _retry = retry;
         Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += GameTick;
     }
 
     public void Dispose()
     {
         Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= GameTick;
         SetEnabled(false);
     }
 
@@ -226,24 +228,25 @@ public sealed class GameBot : IDisposable
     // 미로를 다 지었는지 — 목표 배치에 놓을 칸이 남지 않았으면 다 지은 것이다.
     private bool MazeBuilt() => !_planner.HasPlannedCell();
 
-    private void Tick(float _)
+    // 다시 하기는 실제 시간으로 기다린다 — 판이 끝난 뒤라 게임 시간이 멈춰 있어도 넘어가게.
+    private void Tick(float deltaTime)
     {
-        if (!Enabled) return;
-        if (_retryTimer >= 0f)
+        if (!Enabled || _retryTimer < 0f) return;
+        _retryTimer -= deltaTime;
+        if (_retryTimer < 0f)
         {
-            _retryTimer -= Time.unscaledDeltaTime;
-            if (_retryTimer < 0f)
-            {
-                _hasHeroCell = false;
-                _retry();
-            }
-            return;
+            _hasHeroCell = false;
+            _retry();
         }
+    }
+
+    // 게임 시간을 따른다 — 빠르게 돌려도 같은 빠르기로 손을 쓴다.
+    private void GameTick(float deltaTime)
+    {
+        if (!Enabled || _retryTimer >= 0f) return;
         MapData map = _getMap();
         if (map == null || !_canAct() || _hand.Held != null) return;
 
-        // 게임 시간을 따른다 — 빠르게 돌려도 같은 빠르기로 손을 쓴다.
-        float deltaTime = Time.deltaTime;
         _actTimer -= deltaTime;
         if (_actTimer <= 0f)
         {

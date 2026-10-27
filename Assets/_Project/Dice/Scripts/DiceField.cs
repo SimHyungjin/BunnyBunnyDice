@@ -59,10 +59,15 @@ public sealed class DiceField : IDisposable
         _outline = outline;
         _root = new GameObject("Dice").transform;
         _root.SetParent(parent, false);
+        Core.Loop.OnGameUpdate += Tick;
         Core.Loop.OnLateUpdate += LateTick;
     }
 
-    public void Dispose() => Core.Loop.OnLateUpdate -= LateTick;
+    public void Dispose()
+    {
+        Core.Loop.OnGameUpdate -= Tick;
+        Core.Loop.OnLateUpdate -= LateTick;
+    }
 
     public bool TryGetPlaced(Vector2Int cell, out PlacedDice placed)
     {
@@ -269,11 +274,14 @@ public sealed class DiceField : IDisposable
     }
 
     // 굴리는 연출을 진행하고, 카메라가 돌았을 때만(화면 회전) 눈 글자를 다시 돌린다.
+    // 굴리는 연출은 게임 시간을 따르고(DiceView.Tick), 카메라를 마주 보는 것은 카메라가 움직인 뒤(LateUpdate)에 한다.
+    private void Tick(float deltaTime)
+    {
+        for (int i = 0; i < _views.Count; i++) _views[i].Tick(deltaTime, _config);
+    }
+
     private void LateTick(float _)
     {
-        float deltaTime = Time.deltaTime;
-        for (int i = 0; i < _views.Count; i++) _views[i].Tick(deltaTime, _config);
-
         Camera camera = _getCamera();
         if (camera == null) return;
         float yaw = camera.transform.eulerAngles.y;

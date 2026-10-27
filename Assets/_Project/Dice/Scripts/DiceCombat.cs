@@ -41,13 +41,13 @@ public sealed class DiceCombat : IDisposable
         _monsters = monsters;
         _attack = attack;
         _diceField.DiceRemoved += OnDiceRemoved;
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
     public void Dispose()
     {
         _diceField.DiceRemoved -= OnDiceRemoved;
-        Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= Tick;
     }
 
     // 주사위 번호가 앞으로 당겨지므로 붙여 둔 상태도 같은 자리를 빼서 맞춘다.
@@ -126,14 +126,13 @@ public sealed class DiceCombat : IDisposable
     }
 
     // 게임 시간을 따른다 — 카드를 집는 동안의 감속(게임 속도 50%)을 공격도 똑같이 받는다.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         SyncSlots(placed.Count);
 
         // 게임 오버로 몬스터가 멈추면 공격도 멈춘다(뚫린 자리를 그대로 보여 주게).
         if (_monsters.Paused || _monsters.Route == null) return;
-        float deltaTime = Time.deltaTime;
 
         for (int i = 0; i < placed.Count; i++)
         {

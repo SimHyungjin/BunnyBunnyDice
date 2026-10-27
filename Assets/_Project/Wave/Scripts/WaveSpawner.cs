@@ -63,10 +63,10 @@ public sealed class WaveSpawner : IDisposable
         _spawn = spawn;
         _spawnBoss = spawnBoss;
         _getAliveCount = getAliveCount;
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
-    public void Dispose() => Core.Loop.OnUpdate -= Tick;
+    public void Dispose() => Core.Loop.OnGameUpdate -= Tick;
 
     /// <summary>
     /// 처음 상태로 되돌리고 멈춘다(새 판). 시작은 Begin으로 따로 한다
@@ -107,10 +107,9 @@ public sealed class WaveSpawner : IDisposable
     }
 
     // 게임 시간을 따른다 — 카드를 집는 동안 몬스터가 느려지면 나오는 간격도 같이 늘어야 몰리지 않는다.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
         if (!_running) return;
-        float deltaTime = Time.deltaTime;
 
         if (_pending.Count == 0)
         {

@@ -39,10 +39,10 @@ public sealed class WaveLog : IDisposable
         _getLevel = getLevel;
         _isRiding = isRiding;
         _getDice = getDice;
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
-    public void Dispose() => Core.Loop.OnUpdate -= Tick;
+    public void Dispose() => Core.Loop.OnGameUpdate -= Tick;
 
     /// <summary>새 판. 파일 이름에 캐릭터와 맵 시드를 넣는다 — 같은 맵으로 수치만 바꿔 비교할 때 찾기 쉽게.</summary>
     public void Begin(string character, int seed)
@@ -127,11 +127,11 @@ public sealed class WaveLog : IDisposable
     }
 
     // 게임 시간을 따른다 — 판 중 설정(멈춤)·카드 고르기(감속) 동안 정리 시간이 실제보다 길어지지 않게.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
         if (_current == null || _current.Cleared) return;
-        _current.Seconds += Time.deltaTime;
-        if (_isRiding()) _current.RideSeconds += Time.deltaTime;
+        _current.Seconds += deltaTime;
+        if (_isRiding()) _current.RideSeconds += deltaTime;
     }
 
     private void Close()

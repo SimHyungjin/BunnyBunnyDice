@@ -31,12 +31,12 @@ public sealed class Hero : IDisposable
         _getFloor = getFloor;
         _motor = new HeroMotor(config);
         _view = new HeroView(parent, config, stats, outline);
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
     public void Dispose()
     {
-        Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= Tick;
         _view.Destroy();
     }
 
@@ -118,13 +118,12 @@ public sealed class Hero : IDisposable
 
     private void ClearDestination() => _hasDestination = false;
 
-    private void Tick(float _)
+    // 게임 시간을 따른다 — 카드를 집는 동안의 감속(게임 속도 50%)을 영웅도 똑같이 받는다.
+    private void Tick(float deltaTime)
     {
         MapData map = _getMap();
         if (map == null) return;
 
-        // 게임 시간을 따른다 — 카드를 집는 동안의 감속(게임 속도 50%)을 영웅도 똑같이 받는다.
-        float deltaTime = Time.deltaTime;
         // 붙잡혀 있으면 몸은 연출이 놓고, 동작만 흘린다.
         if (Held)
         {

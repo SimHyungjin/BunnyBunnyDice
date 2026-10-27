@@ -70,10 +70,10 @@ public sealed class DiceAttack : IDisposable
         _viewConfig = viewConfig;
         _monsters = monsters;
         _effects = effects;
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
-    public void Dispose() => Core.Loop.OnUpdate -= Tick;
+    public void Dispose() => Core.Loop.OnGameUpdate -= Tick;
 
     /// <summary>쏜다. 사거리 안에 맞힐 몬스터가 없어 쏘지 않았으면 false — 쏘는 쪽은 재사용 대기를 걸지 않고 다음에 다시 본다.</summary>
     public bool Fire(in Shot shot)
@@ -326,10 +326,9 @@ public sealed class DiceAttack : IDisposable
     }
 
     // 게임 시간을 따른다. 몬스터가 멈추면(게임 오버) 두 번째 파동도 멈춘다.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
         if (_pulses.Count == 0 || _monsters.Paused) return;
-        float deltaTime = Time.deltaTime;
         for (int i = _pulses.Count - 1; i >= 0; i--)
         {
             PendingPulse pulse = _pulses[i];

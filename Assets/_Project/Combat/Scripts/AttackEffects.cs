@@ -51,12 +51,12 @@ public sealed class AttackEffects : IDisposable
         _root = new GameObject("AttackEffects").transform;
         _root.SetParent(parent, false);
         for (int i = 0; i < config.InitialCapacity; i++) _idle.Push(CreateLine());
-        Core.Loop.OnUpdate += Tick;
+        Core.Loop.OnGameUpdate += Tick;
     }
 
     public void Dispose()
     {
-        Core.Loop.OnUpdate -= Tick;
+        Core.Loop.OnGameUpdate -= Tick;
         for (int i = 0; i < _meshes.Count; i++) UnityEngine.Object.Destroy(_meshes[i]);
         _meshes.Clear();
     }
@@ -130,9 +130,8 @@ public sealed class AttackEffects : IDisposable
     }
 
     // 게임 시간을 따른다 — 카드를 집는 동안 공격도 느려지므로 선도 같은 빠르기로 사라진다.
-    private void Tick(float _)
+    private void Tick(float deltaTime)
     {
-        float deltaTime = Time.deltaTime;
         for (int i = _active.Count - 1; i >= 0; i--)
         {
             Shot shot = _active[i];

@@ -39,10 +39,15 @@ public sealed class DamageNumbers : IDisposable
         _root = new GameObject("DamageNumbers").transform;
         _root.SetParent(parent, false);
         for (int i = 0; i < config.InitialCapacity; i++) _idle.Push(Create());
+        Core.Loop.OnGameUpdate += Tick;
         Core.Loop.OnLateUpdate += LateTick;
     }
 
-    public void Dispose() => Core.Loop.OnLateUpdate -= LateTick;
+    public void Dispose()
+    {
+        Core.Loop.OnGameUpdate -= Tick;
+        Core.Loop.OnLateUpdate -= LateTick;
+    }
 
     /// <param name="position">맞은 몬스터의 맵 로컬 (x, z).</param>
     /// <param name="ground">그 자리 바닥 윗면 높이.</param>
@@ -86,16 +91,9 @@ public sealed class DamageNumbers : IDisposable
     }
 
     // 게임 시간을 따른다 — 카드를 집는 동안 공격도 느려지므로 숫자도 같은 빠르기로 흐른다.
-    private void LateTick(float _)
+    // 배속에서도 화면에 남는 숫자 수가 늘지 않고, 멈추면 맞은 순간 그대로 멈춘다.
+    private void Tick(float deltaTime)
     {
-        if (_active.Count == 0) return;
-        float deltaTime = Time.deltaTime;
-        Camera camera = _getCamera();
-        Quaternion facing = camera != null ? camera.transform.rotation : Quaternion.identity;
-        // 화면 좌우를 맵 로컬로 옮긴다(맵 루트가 돌아 있어도 화면 기준으로 튀게).
-        Vector3 right = _root.InverseTransformDirection(facing * Vector3.right);
-        Vector3 up = _root.InverseTransformDirection(Vector3.up);
-
         for (int i = _active.Count - 1; i >= 0; i--)
         {
             Number number = _active[i];
@@ -111,7 +109,23 @@ public sealed class DamageNumbers : IDisposable
             number.UpVelocity -= _config.Gravity * deltaTime;
             number.Side += number.SideVelocity * deltaTime;
             number.Height += number.UpVelocity * deltaTime;
+            _active[i] = number;
+        }
+    }
 
+    // 놓는 것은 카메라가 움직인 뒤에 한다 — 숫자는 늘 카메라를 정면으로 본다.
+    private void LateTick(float _)
+    {
+        if (_active.Count == 0) return;
+        Camera camera = _getCamera();
+        Quaternion facing = camera != null ? camera.transform.rotation : Quaternion.identity;
+        // 화면 좌우를 맵 로컬로 옮긴다(맵 루트가 돌아 있어도 화면 기준으로 튀게).
+        Vector3 right = _root.InverseTransformDirection(facing * Vector3.right);
+        Vector3 up = _root.InverseTransformDirection(Vector3.up);
+
+        for (int i = 0; i < _active.Count; i++)
+        {
+            Number number = _active[i];
             Transform t = number.Text.transform;
             t.localPosition = number.Origin + right * number.Side + up * number.Height;
             t.rotation = facing;
@@ -126,7 +140,6 @@ public sealed class DamageNumbers : IDisposable
             float remaining = (_config.Duration - number.Age) / _config.Duration;
             color.a = Mathf.Clamp01(remaining / _config.FadeRatio);
             number.Text.color = color;
-            _active[i] = number;
         }
     }
 
