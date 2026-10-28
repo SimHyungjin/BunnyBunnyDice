@@ -12,13 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f015daa71e54458bd94b4d3d9ca8fe9, type: 3}
   m_Name: SO_HeroCharacter_Princess
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
-  DisplayName: "토끼공듀"
+  DisplayName: "\uD1A0\uB07C\uACF5\uB4C0"
   Trait: {fileID: 0}
   Prefab: {fileID: 4410266125371801001, guid: 6fa39e4f77ad426da0394d707210a162, type: 3}
+  ModelHeight: 0
   Color: {r: 1, g: 0.6, b: 0.8, a: 1}
+  TintModel: 1
+  AddOutline: 1
+  ShellMaterial: {fileID: 0}
+  Animations: {fileID: 0}
+  Portrait: {fileID: 0}
+  PortraitFocusY: 0.5
   Attack: 80
   AttackSpeed: 2.6
   MoveSpeed: 3.6
-  Range: 1.9
+  Range: 2.5
   CritChance: 0.2
-  CritDamage: 2.5
+  CritDamage: 3.5
