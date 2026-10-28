@@ -101,6 +101,20 @@ public sealed class MazePlanner : IDisposable
         for (int i = 0; i < placed.Count; i++) _towers.Add(placed[i].Cell);
     }
 
+    /// <summary>
+    /// 지금 판의 탐색을 끝까지(MazeIterations 걸음) 마친다 — 봇이 계획을 읽기 직전에 부른다.
+    /// 프레임마다 시간으로 끊어 도는 탐색(Searching)은 읽는 순간 몇 걸음까지 갔는지가 기기·프레임에 따라 달라,
+    /// 같은 시드·같은 선택이라도 봇이 다른 칸을 고른다(시뮬레이션 재현이 깨진다). 끝까지 돌리면 계획은 판 상태만으로 정해진다.
+    /// 한 번에 몰아 계산하므로 놓을 때마다 잠깐 멈출 수 있다 — 봇(시뮬레이션) 전용이다.
+    /// </summary>
+    public void CompleteSearch()
+    {
+        MapData map = _getMap();
+        if (map == null) return;
+        Refresh(map);
+        while (_iteration < _config.MazeIterations) Step(map);
+    }
+
     private void Tick(float _)
     {
         MapData map = _getMap();
@@ -117,6 +131,8 @@ public sealed class MazePlanner : IDisposable
     {
         int signature = Signature(map);
         if (map == _map && signature == _signature) return;
+        // 새 맵(새 판)이면 지난 판의 계획을 이어 쓰지 않는다 — 이어 쓰면 같은 시드라도 지난 판이 어떻게 끝났는지에 따라 계획이 달라진다.
+        if (map != _map) _best.Clear();
         _map = map;
         _signature = signature;
         _random = new System.Random(signature);

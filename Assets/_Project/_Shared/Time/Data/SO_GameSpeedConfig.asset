@@ -16,3 +16,5 @@ MonoBehaviour:
   - 1
   - 2
   - 3
+  FixedStep: 0.016666668
+  MaxStepsPerFrame: 12

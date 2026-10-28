@@ -179,9 +179,20 @@ public sealed class GameBot : IDisposable
         return index < _rotation.Count ? _rotation[index] : null;
     }
 
-    // 내다본 최선으로 돌 때만 계획을 찾게 한다(꺼져 있으면 사람이 놓을 때 렉만 생긴다).
-    // 어시스트가 생기면 둘 중 하나라도 쓰면 켜지도록 바꾼다.
-    private void UpdateSearching() => _planner.Searching = Enabled;
+    // 봇은 프레임마다 시간으로 끊어 도는 탐색(Searching)을 쓰지 않고, 계획을 읽기 직전에 끝까지 탐색한다(MazePlanner.CompleteSearch)
+    // — 같은 시드·같은 선택이면 같은 판이어야 한다(시뮬레이션). 어시스트가 생기면 그쪽이 Searching을 켠다.
+    private void UpdateSearching() => _planner.Searching = false;
+
+    /// <summary>
+    /// 새 판을 시작한다(GameScene.StartBattle). 손 타이머를 비운다 — 지난 판에서 남은 값으로 시작하면
+    /// 같은 시드라도 첫 손 시각이 판마다 달라 처음부터 갈라진다.
+    /// </summary>
+    public void BeginRun()
+    {
+        _actTimer = 0f;
+        _heroTimer = 0f;
+        _hasHeroCell = false;
+    }
 
     /// <summary>판이 끝났다. 켜져 있으면 요약에 더하고, 정한 판 수를 채웠으면 요약을 남기고 멈추고, 아니면 잠시 뒤 다시 한다.</summary>
     /// <param name="records">그 판의 웨이브 기록(WaveLog.Records).</param>
@@ -226,7 +237,11 @@ public sealed class GameBot : IDisposable
         BotCardChoice.Choose(_config, Mathf.Max(_getWave(), 1), candidates, copies, MazeBuilt(), CurrentSet(_report.Count));
 
     // 미로를 다 지었는지 — 목표 배치에 놓을 칸이 남지 않았으면 다 지은 것이다.
-    private bool MazeBuilt() => !_planner.HasPlannedCell();
+    private bool MazeBuilt()
+    {
+        _planner.CompleteSearch();
+        return !_planner.HasPlannedCell();
+    }
 
     // 다시 하기는 실제 시간으로 기다린다 — 판이 끝난 뒤라 게임 시간이 멈춰 있어도 넘어가게.
     private void Tick(float deltaTime)
@@ -292,6 +307,7 @@ public sealed class GameBot : IDisposable
     {
         if (MazeBuilt() && TryFindStack(card.Dice, out Vector2Int stack))
             return _placement.TryPlace(map, stack, card);
+        _planner.CompleteSearch();
         return _planner.TryGetNext(out Vector2Int cell) && _placement.TryPlace(map, cell, card);
     }
 

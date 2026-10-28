@@ -377,6 +377,9 @@ public sealed class GameScene : SceneBase
         RefreshPlayPause();
         speedConfig.Changed += _speedToggle.Reset;
         _speedToggle.Reset();
+        // 판 시스템(OnGameUpdate)은 고정 걸음으로 돈다 — 같은 시드·같은 선택이면 같은 판(시뮬레이션, 기획서 11.2).
+        ApplyFixedStep(speedConfig);
+        speedConfig.Changed += () => ApplyFixedStep(speedConfig);
         diceConfig.Changed += () =>
         {
             _diceField.RebuildViews(_map);
@@ -472,8 +475,13 @@ public sealed class GameScene : SceneBase
         _levelUp?.Cancel();
         _result?.Close();
         _speed.Dispose();
+        // 다른 씬(코어 점검 씬 등)은 원래 방식(프레임마다 한 번)으로 돌게 끈다.
+        Core.Loop?.SetGameFixedStep(0f, 1);
         _tuning.Dispose();
     }
+
+    private static void ApplyFixedStep(SO_GameSpeedConfig config) =>
+        Core.Loop.SetGameFixedStep(config.FixedStep > 0f ? config.FixedStep : 0f, config.MaxStepsPerFrame);
 
     // 맵 생성은 두 단계다(MapGenerator): 굴림 + 첫 칩 배치(수 ms)는 그 자리에서 하고 판을 바로 세운다(판 주사위 연출도 바로 시작).
     // 미로 검사·칩 다시 놓기(0.2~2초)는 워커 스레드에서 돌린다 — 메인 스레드에서 돌리면 연출 직전에 화면이 멈췄다.
@@ -646,6 +654,7 @@ public sealed class GameScene : SceneBase
     {
         // 판 운(주사위 눈·치명타·카드·웨이브 특성)도 맵 시드로 — 같은 시드에 같은 선택이면 같은 판이 된다(봇 비교·시뮬레이션).
         GameRandom.Begin(_seed);
+        _bot?.BeginRun();
         ResetRun();
         _waveLog.Begin(_heroStats.Character != null ? _heroStats.Character.name : "None", _seed);
         // 판 주사위 연출(굴림 결과를 보여 줌)이 끝나면 웨이브를 시작한다. 그동안 경로 표시를 숨기고(결과가 미리 드러나지 않게)

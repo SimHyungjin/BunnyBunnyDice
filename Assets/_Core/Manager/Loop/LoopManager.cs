@@ -78,20 +78,73 @@ public class LoopManager : Manager
 
     #endregion
 
+    #region Fixed Game Step
+
+    /// <summary>OnGameUpdate 한 번의 게임 시간(초). 0이면 고정 걸음을 쓰지 않고 프레임마다 한 번, 흐른 시간 그대로 부른다(기본).</summary>
+    public float GameFixedStep { get; private set; }
+
+    /// <summary>한 프레임에 OnGameUpdate를 부르는 최대 횟수(고정 걸음일 때).</summary>
+    public int MaxGameStepsPerFrame { get; private set; } = 1;
+
+    /// <summary>
+    /// 아직 걸음으로 쓰이지 않고 남은 게임 시간 ÷ 걸음(0~1). 표시가 직전 걸음과 다음 걸음 사이를 보간할 때 쓴다.
+    /// 고정 걸음이 아니면 늘 0.
+    /// </summary>
+    public float GameStepAlpha => GameFixedStep > 0f ? _gameAccumulated / GameFixedStep : 0f;
+
+    private float _gameAccumulated;
+
+    /// <summary>
+    /// OnGameUpdate를 고정 걸음으로 바꾼다. 흐른 게임 시간(실제 시간 × 플레이어 배율)을 모았다가 step씩 잘라 부른다.
+    /// 쓰는 이유: 프레임마다 시간 조각이 다르면 같은 입력·같은 시드라도 판정 순서가 어긋나 결과가 재현되지 않는다(시뮬레이션·리플레이).
+    /// 한 프레임에 maxStepsPerFrame번을 넘으면 남은 시간을 버린다 — 걸음 계산이 걸음 시간보다 오래 걸리는 기기에서
+    /// 밀린 걸음이 계속 쌓여 멈춘 것처럼 되지 않게. 버려도 걸음 크기는 같으니 결과의 재현성은 그대로다(게임이 느려질 뿐).
+    /// step이 0 이하면 끈다(프레임마다 흐른 시간 그대로).
+    /// </summary>
+    public void SetGameFixedStep(float step, int maxStepsPerFrame)
+    {
+        GameFixedStep = Mathf.Max(0f, step);
+        MaxGameStepsPerFrame = Mathf.Max(1, maxStepsPerFrame);
+        _gameAccumulated = 0f;
+    }
+
+    #endregion
+
     #region Tick (Core가 매 프레임 호출)
 
     public void Tick(float unscaledDt)     => _update.Invoke(unscaledDt);
-    public void GameTick(float unscaledDt) => _gameUpdate.Invoke(unscaledDt * PlayerTimeScale);
     public void LateTick(float unscaledDt) => _lateUpdate.Invoke(unscaledDt);
+
+    public void GameTick(float unscaledDt)
+    {
+        float elapsed = unscaledDt * PlayerTimeScale;
+        if (GameFixedStep <= 0f)
+        {
+            _gameUpdate.Invoke(elapsed);
+            return;
+        }
+
+        _gameAccumulated += elapsed;
+        int steps = 0;
+        while (_gameAccumulated >= GameFixedStep && steps < MaxGameStepsPerFrame)
+        {
+            _gameUpdate.Invoke(GameFixedStep);
+            _gameAccumulated -= GameFixedStep;
+            steps++;
+        }
+        // 상한에 걸려 남은 몫은 한 걸음 미만만 남긴다(다음 프레임에 몰아서 따라잡지 않는다).
+        if (_gameAccumulated >= GameFixedStep) _gameAccumulated = GameFixedStep * 0.999f;
+    }
 
     #endregion
 
     public override void Clear()
     {
-        // 씬이 바뀌면 시간 배율은 기본으로 되돌린다.
+        // 씬이 바뀌면 시간 배율은 기본으로 되돌린다. 고정 걸음 설정은 남기지만 모아 둔 시간은 버린다(이전 씬의 시간이 새 씬으로 넘어가지 않게).
         // 이벤트 구독은 지우지 않는다 — 씬을 넘어 살아있는 매니저(카메라 등)의 구독까지 끊기면
         // 다음 씬에서 그들의 갱신이 멈춘다. 씬에 속한 구독자는 각자 사라질 때 스스로 해제한다.
         ResumeAll();
+        _gameAccumulated = 0f;
     }
 
     /// <summary>
