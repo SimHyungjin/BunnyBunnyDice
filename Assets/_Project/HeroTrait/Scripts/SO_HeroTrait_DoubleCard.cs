@@ -11,5 +11,5 @@ public sealed class SO_HeroTrait_DoubleCard : SO_HeroTrait, ILevelUpCopies
     [Tooltip("후보 카드 하나에 x2가 붙을 확률. 3장 중 하나라도 붙을 확률은 1 − (1 − 이 값)³(5%면 약 14%).")]
     [Range(0f, 1f)] public float Chance = 0.05f;
 
-    public int RollCopies(HandCard candidate) => Random.value < Chance ? 2 : 1;
+    public int RollCopies(HandCard candidate) => GameRandom.Cards.Value < Chance ? 2 : 1;
 }

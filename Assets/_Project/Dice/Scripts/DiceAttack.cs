@@ -357,7 +357,7 @@ public sealed class DiceAttack : IDisposable
     // 치명타 배율은 방어력보다 먼저 곱한다(MonsterDamage) — 큰 주사위가 단단한 적에게 강한 이유.
     private bool HitDirect(int slot, float damage, float critChance)
     {
-        bool critical = UnityEngine.Random.value < critChance;
+        bool critical = GameRandom.Crit.Value < critChance;
         Hit(slot, damage * (critical ? _statsConfig.CritMultiplier : 1f), critical);
         return critical;
     }

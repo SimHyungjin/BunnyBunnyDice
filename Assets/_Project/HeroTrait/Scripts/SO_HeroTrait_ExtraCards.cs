@@ -18,11 +18,11 @@ public sealed class SO_HeroTrait_ExtraCards : SO_HeroTrait, ICandidateOverwrite
 
     public SO_Card RollOverwrite()
     {
-        if (UnityEngine.Random.value >= Chance) return null;
+        if (GameRandom.Cards.Value >= Chance) return null;
         float total = 0f;
         for (int i = 0; i < Cards.Count; i++)
             if (Cards[i] != null) total += Cards[i].Weight;
-        float roll = UnityEngine.Random.value * total;
+        float roll = GameRandom.Cards.Value * total;
         SO_Card picked = null;
         for (int i = 0; i < Cards.Count; i++)
         {

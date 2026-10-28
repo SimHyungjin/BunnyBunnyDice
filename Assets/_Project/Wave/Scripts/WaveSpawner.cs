@@ -23,7 +23,6 @@ public sealed class WaveSpawner : IDisposable
     private readonly List<List<SO_MonsterTrait>> _regular = new List<List<SO_MonsterTrait>>();
     private readonly List<SO_MonsterTrait> _boss = new List<SO_MonsterTrait>();
     private readonly List<MonsterKind> _waveKinds = new List<MonsterKind>();
-    private System.Random _random = new System.Random();
     private readonly List<SO_MonsterTrait> _bossTraits = new List<SO_MonsterTrait>();
     // 앞 웨이브가 다 나오기 전에 다음 웨이브가 시작되면(테스트 키) 뒤에 이어 붙인다.
     // 체력은 나오는 시점이 아니라 속한 웨이브로 정하므로 줄 세울 때 체력 배율을 같이 든다.
@@ -83,7 +82,6 @@ public sealed class WaveSpawner : IDisposable
         Wave = 0;
         _pending.Clear();
         CancelJackpot();
-        _random = new System.Random();
         _clearReported = true;
         _spawnCount = 0;
         _waveTimer = _config.WaveDelay;
@@ -163,7 +161,7 @@ public sealed class WaveSpawner : IDisposable
         SO_MonsterType type = _config.Monster;
         if (type != null)
         {
-            bool hasBoss = WaveComposition.Compose(_config, Wave, _random, _regular, _boss);
+            bool hasBoss = WaveComposition.Compose(_config, Wave, GameRandom.Wave, _regular, _boss);
             _waveKinds.Clear();
             for (int i = 0; i < _regular.Count; i++) _waveKinds.Add(GetKind(type, _regular[i], false));
             // 여러 가지면 번갈아 내보낸다 — 한 가지가 몰려 나오면 그 특성에 맞는 주사위 하나로 다 막힌다.
@@ -187,7 +185,7 @@ public sealed class WaveSpawner : IDisposable
     // 보스를 일반 몬스터 뒤에 줄 세운다. 체력은 이번 웨이브 일반 몬스터 체력 합(total)의 몫 — 특성 체력 배율은 나눠 지운다.
     private void EnqueueBoss(SO_MonsterType type, float total)
     {
-        bool jackpot = _forceJackpot || _random.NextDouble() < _config.JackpotChance;
+        bool jackpot = _forceJackpot || GameRandom.Wave.NextDouble() < _config.JackpotChance;
         _forceJackpot = false;
         _bossTraits.Clear();
         _bossTraits.AddRange(_boss);

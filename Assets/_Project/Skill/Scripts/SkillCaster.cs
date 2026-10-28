@@ -162,7 +162,7 @@ public sealed class SkillCaster
             float multiplier = card.DamageMultiplier + (slot == king ? kingExtra : 0f);
             if (multiplier <= 0f) continue;
             float damage = _heroStats.Attack * multiplier;
-            bool critical = UnityEngine.Random.value < _heroStats.CritChance;
+            bool critical = GameRandom.Crit.Value < _heroStats.CritChance;
             ref MonsterState state = ref _monsters.States[slot];
             float before = state.Health;
             _monsters.Hit(slot, critical ? damage * _heroStats.CritMultiplier : damage, DamageSource.Skill, 0f, critical);
@@ -201,7 +201,7 @@ public sealed class SkillCaster
             int slot = _targets[i];
             if (_monsters.KindOf(slot).IsBoss) continue;
             // 한 점에 완전히 겹치면 한 마리로 보이므로 둘레에 흩어 세운다. 흩은 자리가 설 수 없는 칸이면 모음점 그대로.
-            Vector2 to = gather + UnityEngine.Random.insideUnitCircle * card.Scatter;
+            Vector2 to = gather + GameRandom.Skill.InsideUnitCircle() * card.Scatter;
             if (!SkillRules.IsWalkable(route, to)) to = gather;
             // 끌려 들어가므로 점점 빨라진다.
             _monsters.Displace(slot, to, card.SlideDuration, true);

@@ -644,6 +644,8 @@ public sealed class GameScene : SceneBase
     // 새 판은 새 맵과 함께 시작한다(뛰어들기 끝·R 키·맵 설정 변경·결과 화면의 다시 하기). 손패도 시작 손패로 되돌린다.
     private void StartBattle()
     {
+        // 판 운(주사위 눈·치명타·카드·웨이브 특성)도 맵 시드로 — 같은 시드에 같은 선택이면 같은 판이 된다(봇 비교·시뮬레이션).
+        GameRandom.Begin(_seed);
         ResetRun();
         _waveLog.Begin(_heroStats.Character != null ? _heroStats.Character.name : "None", _seed);
         // 판 주사위 연출(굴림 결과를 보여 줌)이 끝나면 웨이브를 시작한다. 그동안 경로 표시를 숨기고(결과가 미리 드러나지 않게)

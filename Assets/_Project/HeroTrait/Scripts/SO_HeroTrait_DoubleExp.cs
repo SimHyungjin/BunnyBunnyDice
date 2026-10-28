@@ -10,5 +10,5 @@ public sealed class SO_HeroTrait_DoubleExp : SO_HeroTrait, IKillExpModifier
     [Tooltip("경험치가 두 배가 될 확률(처치마다).")]
     [Range(0f, 1f)] public float Chance = 0.1f;
 
-    public int ModifyExp(int exp) => exp > 0 && Random.value < Chance ? exp * 2 : exp;
+    public int ModifyExp(int exp) => exp > 0 && GameRandom.Exp.Value < Chance ? exp * 2 : exp;
 }

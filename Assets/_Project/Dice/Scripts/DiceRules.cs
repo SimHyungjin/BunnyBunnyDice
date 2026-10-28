@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public static class DiceRules
 {
-    public static int Roll(int faces) => Random.Range(1, faces + 1);
+    public static int Roll(int faces) => GameRandom.Dice.Range(1, faces + 1);
 
     /// <summary>빈 칸에 놓을 때. 굴린 눈이 그대로 눈이 된다.</summary>
     public static DiceState Create(DiceCard card, int roll) =>
@@ -45,6 +45,6 @@ public static class DiceRules
     public static void ResolveBlack(ref DiceState dice, int awakenPips)
     {
         if (dice.Colors != DiceColor.Clear || dice.Pips < awakenPips) return;
-        dice.Colors = (DiceColor)Random.Range(1, (int)DiceColors.All + 1);
+        dice.Colors = (DiceColor)GameRandom.Dice.Range(1, (int)DiceColors.All + 1);
     }
 }

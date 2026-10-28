@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 /// <summary>
 /// 레벨업 후보 카드 뽑기. 먼저 카드 종류(주사위·스킬·칩·영웅 강화)를 고르고, 그 종류 안에서 한 장을 고른다.
@@ -51,7 +50,7 @@ public static class CardRoll
         if (replacement == null) return;
         HandCard card = HandCard.Of(replacement);
         if (result.Contains(card)) return;
-        result[Random.Range(0, result.Count)] = card;
+        result[GameRandom.Cards.Next(result.Count)] = card;
     }
 
     /// <param name="picked">이번 선택에서 이미 뽑힌 후보(종류 몫 갈고리가 본다).</param>
@@ -74,7 +73,7 @@ public static class CardRoll
         if (total <= 0f) return false;
 
         // 종류를 고른 뒤 그 안에서 다시 굴린다 — 종류 몫이 가중치 합과 달라도(갈고리) 종류 안의 희귀도는 그대로 지켜진다.
-        float roll = Random.value * total;
+        float roll = GameRandom.Cards.Value * total;
         if (roll < dice || skill + chip + hero <= 0f)
         {
             card = HandCard.Of(RollDice(config, colorTotal, facesTotal));
@@ -85,7 +84,7 @@ public static class CardRoll
             : roll - skill < chip || hero <= 0f ? Chips
             : Heroes;
         // 갈고리가 카드 없는 종류에 몫을 주면 고를 것이 없다.
-        SO_Card chosen = PickWeighted(pool, Random.value * SumWeights(pool));
+        SO_Card chosen = PickWeighted(pool, GameRandom.Cards.Value * SumWeights(pool));
         if (chosen == null) return false;
         card = HandCard.Of(chosen);
         return true;
@@ -117,7 +116,7 @@ public static class CardRoll
         return total;
     }
 
-    // Random.value는 1을 포함하므로 끝까지 못 고르는 경우가 있다. 그때는 가중치가 있는 마지막 항목을 쓴다(0인 항목은 나오지 않게).
+    // 굴림 값이 합계에 닿으면(부동소수 오차) 끝까지 못 고르는 경우가 있다. 그때는 가중치가 있는 마지막 항목을 쓴다(0인 항목은 나오지 않게).
     private static SO_Card PickWeighted(List<SO_Card> cards, float roll)
     {
         SO_Card picked = null;
@@ -134,7 +133,7 @@ public static class CardRoll
 
     private static DiceCard RollDice(SO_LevelUpConfig config, float colorTotal, float facesTotal)
     {
-        float colorRoll = Random.value * colorTotal;
+        float colorRoll = GameRandom.Cards.Value * colorTotal;
         DiceColor colors = DiceColor.Clear;
         for (int i = 0; i < config.ColorWeights.Count; i++)
         {
@@ -145,7 +144,7 @@ public static class CardRoll
             colorRoll -= weight;
         }
 
-        float facesRoll = Random.value * facesTotal;
+        float facesRoll = GameRandom.Cards.Value * facesTotal;
         int faces = 0;
         for (int i = 0; i < config.FacesWeights.Count; i++)
         {

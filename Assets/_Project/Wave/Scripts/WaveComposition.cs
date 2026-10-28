@@ -9,7 +9,7 @@ public static class WaveComposition
     /// <param name="regular">일반 몬스터 가지마다 특성 목록. 비어 있지 않게 채운다(최소 한 가지).</param>
     /// <param name="boss">보스 특성. 보스가 없으면 비운다.</param>
     /// <returns>보스가 나오는지.</returns>
-    public static bool Compose(SO_WaveConfig config, int wave, System.Random random,
+    public static bool Compose(SO_WaveConfig config, int wave, RandomStream random,
         List<List<SO_MonsterTrait>> regular, List<SO_MonsterTrait> boss)
     {
         regular.Clear();
@@ -29,7 +29,7 @@ public static class WaveComposition
         {
             List<SO_MonsterTrait> traits = new List<SO_MonsterTrait>();
             int max = config.RandomTraitMax < config.RandomTraitMin ? config.RandomTraitMin : config.RandomTraitMax;
-            AddRandom(traits, config.RandomTraits, random.Next(config.RandomTraitMin, max + 1), random);
+            AddRandom(traits, config.RandomTraits, random.Range(config.RandomTraitMin, max + 1), random);
             regular.Add(traits);
         }
         if (wave % config.BossInterval != 0) return false;
@@ -54,7 +54,7 @@ public static class WaveComposition
 
     // 후보에서 이미 붙은 것을 빼고 count개를 겹치지 않게 고른다. 후보가 모자라면 있는 만큼만.
     // 보스는 분열을 받지 않는다 — 보스 체력은 웨이브 몫이라 조각이 그만한 체력을 또 나눠 가져 보스가 두 배가 된다.
-    private static void AddRandom(List<SO_MonsterTrait> target, List<SO_MonsterTrait> pool, int count, System.Random random, bool boss = false)
+    private static void AddRandom(List<SO_MonsterTrait> target, List<SO_MonsterTrait> pool, int count, RandomStream random, bool boss = false)
     {
         List<SO_MonsterTrait> candidates = new List<SO_MonsterTrait>();
         for (int i = 0; i < pool.Count; i++)

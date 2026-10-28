@@ -124,7 +124,7 @@ public sealed class HeroAttack : IDisposable
             if (slot < 0) break;
 
             // 치명타는 영웅 공격과 스킬에만 있는 영웅 능력치다(기획서 10.2) — 주사위 치명타(SO_DiceStatsConfig)와 따로 굴린다.
-            bool critical = UnityEngine.Random.value < _stats.CritChance;
+            bool critical = GameRandom.Crit.Value < _stats.CritChance;
             _monsters.Hit(slot, _stats.Attack * (critical ? _stats.CritMultiplier : 1f), DamageSource.Hero, 0f, critical);
             // 디버프 카드(칩 디버프의 센 버전)는 카드마다 건다 — 투사체가 늘면 거는 적도 는다.
             for (int d = 0; d < _stats.DebuffCount; d++)

@@ -229,7 +229,7 @@ public sealed class CardHand
         }
         if (candidates == 0) return;
 
-        int pick = UnityEngine.Random.Range(0, candidates);
+        int pick = GameRandom.Cards.Next(candidates);
         for (int i = 0; i < _cards.Count; i++)
         {
             if (Held != null && _cards[i].Card == Held.Card) continue;

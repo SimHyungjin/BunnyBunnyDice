@@ -18,7 +18,7 @@ public sealed class SO_HeroTrait_NoMiddle : SO_HeroTrait, IDicePipRoller
         excluded = Mathf.Clamp(excluded, 0, Mathf.Max(faces - 2, 0));
         int remaining = faces - excluded;
         int low = remaining / 2;
-        int pick = Random.Range(0, remaining);
+        int pick = GameRandom.Dice.Next(remaining);
         return pick < low ? pick + 1 : faces - (remaining - 1 - pick);
     }
 }
