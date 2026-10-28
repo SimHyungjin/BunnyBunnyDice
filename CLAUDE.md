@@ -68,7 +68,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - 게임 시간은 갱신 함수가 받는 시간 값을 쓴다(`Time.deltaTime`을 곳곳에서 직접 읽지 않는다).
     - 판 시스템(몬스터·주사위·영웅·웨이브·기록·봇 행동)은 `Core.Loop.OnGameUpdate`를 구독한다 — 멈춤·배속·감속이 걸린 시간이 들어온다. UI·카메라·판 밖 연출은 `OnUpdate`(실제 시간). `Time.timeScale`은 늘 1이다(`_Shared/Time/GameSpeed`) — 멈춰도 UI·연출은 움직인다.
   - 게임 행동(주사위 놓기·카드 고르기·스킬 쓰기·영웅 이동)은 UI를 거치지 않고 코드로 부를 수 있게 둔다(봇이 조작한다).
-  - 판 결과에 영향을 주는 난수는 시드로 재현할 수 있게 한다 — `GameRandom`(`_Shared/Random`)의 시스템별 줄(Dice·Crit·Cards·Exp·Skill·Wave)을 쓴다. 판 시작 때 맵 시드로 `Begin`된다. `UnityEngine.Random`은 연출(흔들림·구르는 축·피해 숫자)과 판 밖(메타)에만 쓴다.
+  - 판 결과에 영향을 주는 난수는 시드로 재현할 수 있게 한다 — `GameRandom`(`_Shared/Random`)의 시스템별 줄(Dice·Crit·Cards·Exp·Skill·Wave — 줄 하나는 코어의 `RandomStream`)을 쓴다. 판 시작 때 맵 시드로 `Begin`된다. `UnityEngine.Random`은 연출(흔들림·구르는 축·피해 숫자)과 판 밖(메타)에만 쓴다.
   - 측정할 값(피해 출처, 웨이브 정리 시간, 새어 나간 적, 고른 카드)은 이벤트로 내보낸다.
 - **화면 글은 번역을 거친다(한국어·영어, `_Core/_Docs` Localization).** 원문(한국어)이 키다. SO의 글 필드는 `[Localized]`를 붙이고 보일 때 `App.Localize`를 부른다. 프리팹의 고정 글은 `UI_LocalizedText`를 붙인다. 코드에 적는 글은 `App.Localize("원문")`처럼 호출 안에 문자열을 바로 적고, 숫자는 `{0}` 자리로 둔다(문자열을 이어 붙이지 않는다 — 어순이 언어마다 다르다). 글을 더하거나 고친 뒤에는 `Tools/Localization/Update Table`로 번역표(`_Shared/Localization/LocalizationTable.csv`)를 맞추고 빈 `en` 칸을 채운다. 테스트 창(F1)·디버그 글은 번역하지 않는다.
   - 언어는 재시작 없이 바뀐다. 코드가 글을 채우는 표시(`CardView`, `UI_GameHud` 등)는 `Core.Localization.OnLanguageChanged`를 OnEnable/OnDisable에서 구독해 자기 글을 다시 채운다.

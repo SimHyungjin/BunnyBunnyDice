@@ -97,6 +97,12 @@
 - `CoreTween`: 외부 트윈 의존 없이 코어가 쓰는 최소 트윈(스케일·로컬 위치·anchoredPosition·알파·오디오 볼륨). 게임 쪽은 PrimeTween 등을 써도 된다.
 - `await tween`은 완료면 true, 중단(Stop·대상 파괴·같은 대상·속성의 새 트윈)이면 false. 같은 대상의 같은 속성에 새 트윈을 걸면 기존 것은 중단된다.
 
+## Random
+
+- `RandomStream`: 시드로 다시 만들 수 있는 난수 한 줄(`Value`·`Range`·`Next`·`InsideUnitCircle` — `UnityEngine.Random`과 같은 모양). 재현이 필요한 난수(판 결과·시뮬레이션·리플레이)에 쓰고, 연출은 `UnityEngine.Random`을 그대로 쓴다 — 전역 한 줄을 같이 쓰면 표시를 고쳐도 결과가 바뀐다.
+- 어떤 줄을 둘지는 게임이 정한다. 게임 쪽 정적 클래스가 시스템마다 한 줄씩 필드로 들고(문자열로 찾지 않는다 — 오타가 컴파일 에러로 잡히게), 시작 때 `Reset(RandomStream.DeriveSeed(시드, 줄 번호))`로 줄마다 동떨어진 시드를 준다. 줄을 나누면 한 시스템이 더 굴려도 다른 시스템의 수열이 밀리지 않는다.
+- 메인 스레드 전용이다(스레드마다 자기 `RandomStream`을 쓴다).
+
 ## 로그
 
 - **전역 `Debug` 래퍼(`Debug.cs`)** 가 `UnityEngine.Debug`를 가린다(Core 어셈블리에 있어도 게임 코드의 `Debug.Log`를 잡는다). `Debug.Log`/`LogFormat`/`Assert`/`Draw*`/`Break`는 `DEBUG_ENABLE` 심볼이 없으면 `[Conditional]`로 호출째 제거된다. 경고·에러·예외는 유지된다.

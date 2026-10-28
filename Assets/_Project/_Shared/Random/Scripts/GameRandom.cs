@@ -2,6 +2,7 @@
 /// 판 결과에 영향을 주는 난수(기획서 11.2 — 시뮬레이션으로 밸런스를 맞추려면 같은 시드 + 같은 선택 = 같은 판이어야 한다).
 /// 판을 시작할 때 맵 시드로 Begin한다. 맵·칩은 이미 그 시드로 만들어지므로, 판 하나가 시드 하나로 통째로 정해진다.
 ///
+/// 줄 하나하나는 코어의 RandomStream이고, 여기는 이 게임의 시스템 목록만 둔다(어떤 줄이 있는지는 게임 규칙이라).
 /// 시스템마다 줄을 나누는 이유: 한 줄을 같이 쓰면 치명타를 한 번 더 굴리는 것만으로 카드 후보·웨이브 특성이 밀려
 /// 카드 하나를 바꾼 비교가 맵 운까지 바꾼다. 줄이 따로면 바꾼 시스템만 달라진다.
 /// 연출(흔들림·구르는 축·피해 숫자 위치)은 여기를 쓰지 않고 UnityEngine.Random을 쓴다 — 표시를 고쳐도 판 결과가 그대로이게.
@@ -24,28 +25,14 @@ public static class GameRandom
 
     static GameRandom() => Begin(System.Environment.TickCount);
 
-    /// <summary>모든 줄을 seed에서 다시 시작한다. 줄마다 다른 시드를 섞어 내 같은 수열이 되지 않게 한다.</summary>
+    /// <summary>모든 줄을 seed에서 다시 시작한다. 줄 번호는 바꾸지 않는다 — 바꾸면 같은 시드의 예전 기록과 판이 달라진다.</summary>
     public static void Begin(int seed)
     {
-        Dice.Reset(Mix(seed, 1));
-        Crit.Reset(Mix(seed, 2));
-        Cards.Reset(Mix(seed, 3));
-        Exp.Reset(Mix(seed, 4));
-        Skill.Reset(Mix(seed, 5));
-        Wave.Reset(Mix(seed, 6));
-    }
-
-    // splitmix64 한 걸음 — 이웃한 시드(맵 시드는 TickCount라 붙어 있다)와 줄 번호에서 서로 동떨어진 시드를 낸다.
-    // System.Random은 이웃한 시드의 첫 값들이 비슷해 그대로 넣으면 줄끼리·판끼리 닮는다.
-    private static int Mix(int seed, int stream)
-    {
-        unchecked
-        {
-            ulong z = (ulong)(uint)seed + (ulong)stream * 0x9E3779B97F4A7C15UL;
-            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
-            z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
-            z ^= z >> 31;
-            return (int)z;
-        }
+        Dice.Reset(RandomStream.DeriveSeed(seed, 1));
+        Crit.Reset(RandomStream.DeriveSeed(seed, 2));
+        Cards.Reset(RandomStream.DeriveSeed(seed, 3));
+        Exp.Reset(RandomStream.DeriveSeed(seed, 4));
+        Skill.Reset(RandomStream.DeriveSeed(seed, 5));
+        Wave.Reset(RandomStream.DeriveSeed(seed, 6));
     }
 }
