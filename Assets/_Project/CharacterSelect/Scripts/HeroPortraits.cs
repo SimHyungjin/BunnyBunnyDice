@@ -18,13 +18,15 @@ public sealed class HeroPortraits : IDisposable
     private const int StudioLayer = 31;
 
     private readonly SO_CharacterSelectConfig _config;
+    private readonly SO_HeroConfig _heroConfig;
     private readonly Material _outline;
     private readonly Dictionary<string, RenderTexture> _cache = new Dictionary<string, RenderTexture>();
 
     /// <param name="outline">툰 아웃라인 머티리얼(판 위 영웅과 같은 모습으로 찍으려고). 없으면 null.</param>
-    public HeroPortraits(SO_CharacterSelectConfig config, Material outline)
+    public HeroPortraits(SO_CharacterSelectConfig config, SO_HeroConfig heroConfig, Material outline)
     {
         _config = config;
+        _heroConfig = heroConfig;
         _outline = outline;
         _config.Changed += Clear;
     }
@@ -68,7 +70,7 @@ public sealed class HeroPortraits : IDisposable
         // 모델 앞(+Z)을 카메라 쪽으로 두고 조금 돌린다.
         model.transform.localRotation = Quaternion.Euler(0f, _config.PortraitYaw, 0f);
         // 동작이 없으면 기본 자세(모델 그대로)로 찍는다.
-        HeroAnimation animation = new HeroAnimation(model, character.Animations);
+        HeroAnimation animation = new HeroAnimation(model, _heroConfig.Animations);
         animation.SetPose(HeroPose.Locomotion);
         animation.Tick(_config.PortraitPoseTime, 0f, 0f);
         SetLayer(studio.transform, StudioLayer);

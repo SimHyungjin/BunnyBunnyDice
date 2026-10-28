@@ -20,7 +20,6 @@ MonoBehaviour:
   TintModel: 1
   AddOutline: 1
   ShellMaterial: {fileID: 0}
-  Animations: {fileID: 0}
   Portrait: {fileID: 0}
   PortraitFocusY: 0.5
   Attack: 80

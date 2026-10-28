@@ -41,8 +41,6 @@ public sealed class SO_HeroCharacter : SO_Config
     public bool AddOutline = true;
     [Tooltip("모델 안에 든 아웃라인 껍데기의 재질(Blender 등에서 만든 뒤집힌 메시). 지정하면 그 부분을 그리지 않는다 — 굵기가 모델 크기를 따라가 다른 물체의 아웃라인과 맞지 않는다. 메시의 마지막 재질이어야 한다.")]
     public Material ShellMaterial;
-    [Tooltip("동작 묶음(Humanoid). 비우거나 모델이 Humanoid가 아니면 움직이지 않는 모델로 둔다.")]
-    public SO_HeroAnimationSet Animations;
 
     [Header("초상화 (캐릭터 선택 창)")]
     [Tooltip("배경이 투명한 그림. 비우면 3D 모델을 찍은 사진을 쓴다(HeroPortraits). 잠긴 캐릭터는 이 그림을 검게 칠해 실루엣으로 쓴다.")]
@@ -67,7 +65,6 @@ public sealed class SO_HeroCharacter : SO_Config
     public override void SwapNested(Func<SO_Config, SO_Config> swap)
     {
         Trait = (SO_HeroTrait)swap(Trait);
-        Animations = (SO_HeroAnimationSet)swap(Animations);
     }
 
     public float GetMax(HeroStat stat)

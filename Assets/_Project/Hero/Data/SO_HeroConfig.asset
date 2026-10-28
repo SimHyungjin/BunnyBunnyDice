@@ -23,6 +23,7 @@ MonoBehaviour:
   CritOverflowToDamage: 1
   TurnSpeed: 720
   Spotlight: {fileID: 11400000, guid: a675750a5a744b5ab7a072f44dc3a9cd, type: 2}
+  Animations: {fileID: 11400000, guid: 3a58be4d92324348adb5061f2b3108d4, type: 2}
   Radius: 0.25
   ArriveDistance: 0.05
   AttackHeight: 0.6

@@ -90,8 +90,8 @@ public sealed class HeroView
         Height = height;
         Animator animator = _instance.GetComponentInChildren<Animator>();
         _hips = animator != null && animator.isHuman ? animator.GetBoneTransform(HumanBodyBones.Hips) : null;
-        _hand = animator != null && animator.isHuman && character.Animations != null ? animator.GetBoneTransform(character.Animations.AttackHand) : null;
-        _animation = new HeroAnimation(_instance, character.Animations);
+        _hand = animator != null && animator.isHuman && _config.Animations != null ? animator.GetBoneTransform(_config.Animations.AttackHand) : null;
+        _animation = new HeroAnimation(_instance, _config.Animations);
         _animation.SetPose(_pose);
     }
 
@@ -143,7 +143,7 @@ public sealed class HeroView
         // 0이 아니어도 아주 작은 이동(목적지에 거의 닿았을 때·벽에 비벼질 때)으로는 돌지 않는다 — 떨림으로 방향이 흔들리지 않게.
         // 기준은 Unity의 정규화 하한(kEpsilon)이라 조정 대상이 아니다.
         bool moving = moveDelta.sqrMagnitude > Vector3.kEpsilon;
-        SO_HeroAnimationSet set = _stats.Character.Animations;
+        SO_HeroAnimationSet set = _config.Animations;
         bool aiming = set != null && _animation != null && _animation.IsAttacking;
         if (!moving && !aiming)
         {

@@ -24,6 +24,9 @@ public sealed class SO_HeroConfig : SO_Config
     public float TurnSpeed = 720f;
     [Tooltip("영웅을 따라다니는 스포트라이트(로비·게임). 비우면 없다.")]
     public SO_HeroSpotlightConfig Spotlight;
+    [Tooltip("동작 묶음(Humanoid). 모든 캐릭터가 같이 쓴다 — 공격 준비 시간(AttackWindup)이 판정 시각을 정하므로, 캐릭터마다 다르면 겉모습이 판 결과를 바꾼다. "
+        + "비우거나 모델이 Humanoid가 아니면 움직이지 않는 모델로 둔다.")]
+    public SO_HeroAnimationSet Animations;
 
     [Header("이동")]
     [Tooltip("충돌 반지름. 0.5에 가까울수록 한 칸 통로를 지나기 빡빡해진다.")]
@@ -61,5 +64,6 @@ public sealed class SO_HeroConfig : SO_Config
         if (Overdrive != null) Overdrive = (SO_SkillCard_Overdrive)swap(Overdrive);
         if (Spotlight != null) Spotlight = (SO_HeroSpotlightConfig)swap(Spotlight);
         if (CardShot != null) CardShot = (SO_HeroCardShotConfig)swap(CardShot);
+        if (Animations != null) Animations = (SO_HeroAnimationSet)swap(Animations);
     }
 }

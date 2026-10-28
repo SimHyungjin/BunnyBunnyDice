@@ -74,8 +74,8 @@ public sealed class Hero : IDisposable
     /// <summary>붙잡힌 동안 몸을 놓는다(맵 로컬). scale은 판 위 크기의 배수 — 놓아주기 전에 1로 되돌린다.</summary>
     public void PlaceView(Vector3 localPosition, Quaternion localRotation, float scale) => _view.Place(localPosition, localRotation, scale);
 
-    /// <summary>지금 캐릭터의 동작 묶음(없으면 null). 연출이 점프 클립 구간을 맞출 때 쓴다.</summary>
-    public SO_HeroAnimationSet Animations => _stats.Character.Animations;
+    /// <summary>동작 묶음(모든 캐릭터 공용, 없으면 null). 연출이 점프 클립 구간을 맞출 때 쓴다.</summary>
+    public SO_HeroAnimationSet Animations => _config.Animations;
 
     /// <summary>연출이 시키는 동작(앉기·점프). 판에서는 Locomotion — 이동 속도로 서기·달리기를 고른다.</summary>
     public void SetPose(HeroPose pose) => _view.SetPose(pose);
