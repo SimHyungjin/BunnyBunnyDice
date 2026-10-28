@@ -670,11 +670,13 @@ public sealed class GameScene : SceneBase
         if (paused) _speed.Request(this, 0f);
         else _speed.Release(this);
         RefreshPlayPause();
+        RefreshGrid();
     }
 
     private void RefreshPlayPause() => _hud?.ShowPlayPause(_paused || _rolling || (_waveStart != null && _waveStart.Waiting));
 
-    private void RefreshGrid() => _grid.SetShown(_placing || (_waveStart != null && _waveStart.Waiting));
+    // 멈춘 동안에도 켠다 — 멈춤은 칸을 세며 다음 배치를 계획하는 시간이다(첫 웨이브 기다림과 같다).
+    private void RefreshGrid() => _grid?.SetShown(_placing || _paused || (_waveStart != null && _waveStart.Waiting));
 
     private void SetBoardRollLock(bool locked)
     {

@@ -125,7 +125,7 @@ public sealed class DiceView
         body.localPosition = new Vector3(_cell.x, _top + _halfHeight * fromScale, _cell.y);
     }
 
-    /// <summary>굴리는 연출을 진행한다. 게임 시간을 따른다(감속 중이면 같이 느려진다).</summary>
+    /// <summary>굴리는 연출을 진행한다. 실제 시간을 따른다(멈춤·배속·감속과 상관없이 같은 빠르기 — DiceField).</summary>
     public void Tick(float deltaTime, SO_DiceConfig config)
     {
         if (_popTime >= 0f)
