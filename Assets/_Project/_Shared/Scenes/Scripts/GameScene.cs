@@ -249,7 +249,7 @@ public sealed class GameScene : SceneBase
         _level = new PlayerLevel(levelUpConfig);
         // 측정 기록(기획서 11.2): 웨이브마다 정리 시간·새어 나간 적·피해 출처·고른 카드를 모아 CSV로 남긴다.
         _waveLog = new WaveLog(() => _goal.Current, () => _level.Level, () => _heroOverdrive.Active, () => _diceField.Placed);
-        _waves.WaveStarted += _waveLog.OnWaveStarted;
+        _waves.WaveStarted += wave => _waveLog.OnWaveStarted(wave, _waves.WaveKinds, _waves.WaveBoss);
         _waves.WaveCleared += _waveLog.OnWaveCleared;
         _monsters.DamageDealt += _waveLog.CountDamage;
         _heroOverdrive.PipDrained += _waveLog.CountPipDrained;

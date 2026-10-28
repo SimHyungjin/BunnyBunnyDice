@@ -19,6 +19,11 @@ public sealed class WaveRecord
     public readonly float[] Damage = new float[DamageSource.Count];
     /// <summary>이 웨이브 동안 고른 카드(에셋 이름, 받은 장수가 2 이상이면 "x2"를 붙인다).</summary>
     public readonly List<string> Cards = new List<string>();
+    /// <summary>
+    /// 나온 몬스터 특성(웨이브 시작 때). 모양마다 특성을 "+"로 잇고 모양끼리는 "|", 보스는 "Boss:"를 붙인다. 특성 없으면 "Normal".
+    /// 11웨이브부터 특성이 무작위라, 특성별 정리 시간·피해를 비교하려면 웨이브마다 남겨야 한다(2026-10-28 — 빠름이 보너스처럼 느껴진다는 사용자 체감 확인용).
+    /// </summary>
+    public string Monsters = string.Empty;
     /// <summary>오버드라이브 상태의 주사위가 낸 피해(DamageBoost 순서, None 칸은 비워 둔다). Damage의 색 몫과 겹친다 — 그중 얼마가 오버드라이브였는지.</summary>
     public readonly float[] BoostDamage = new float[BoostCount];
     /// <summary>영웅이 주사위에 올라타 있던 시간(Seconds와 같은 동안만 잰다).</summary>

@@ -40,6 +40,12 @@ public sealed class WaveSpawner : IDisposable
 
     public int Wave { get; private set; }
 
+    /// <summary>이번 웨이브의 일반 몬스터 모양(번갈아 나오는 순서). 측정 기록이 웨이브마다 어떤 특성이 나왔는지 남긴다.</summary>
+    public IReadOnlyList<MonsterKind> WaveKinds => _waveKinds;
+
+    /// <summary>이번 웨이브의 보스 모양. 보스가 없는 웨이브면 null.</summary>
+    public MonsterKind WaveBoss { get; private set; }
+
     public event Action<int> WaveStarted;
 
     /// <summary>
@@ -153,6 +159,7 @@ public sealed class WaveSpawner : IDisposable
         Wave++;
         _clearReported = false;
         CancelJackpot();
+        WaveBoss = null;
         SO_MonsterType type = _config.Monster;
         if (type != null)
         {
@@ -190,6 +197,7 @@ public sealed class WaveSpawner : IDisposable
                 if (_config.JackpotTraits[i] != null && !_bossTraits.Contains(_config.JackpotTraits[i])) _bossTraits.Add(_config.JackpotTraits[i]);
         }
         MonsterKind boss = GetKind(type, _bossTraits, true, jackpot);
+        WaveBoss = boss;
         float healthScale = total * _config.BossHealthShare / Mathf.Max(type.Health * boss.HealthScale, 1f);
         for (int i = 0; i < _config.BossCount; i++) _pending.Enqueue((boss, healthScale));
         if (!jackpot) return;

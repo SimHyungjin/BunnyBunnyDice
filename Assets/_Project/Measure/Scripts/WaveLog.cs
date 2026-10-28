@@ -61,11 +61,48 @@ public sealed class WaveLog : IDisposable
         Write();
     }
 
-    public void OnWaveStarted(int wave)
+    /// <param name="kinds">이번 웨이브 일반 몬스터 모양(WaveSpawner.WaveKinds).</param>
+    /// <param name="boss">이번 웨이브 보스 모양. 없으면 null.</param>
+    public void OnWaveStarted(int wave, IReadOnlyList<MonsterKind> kinds, MonsterKind boss)
     {
         if (_current != null) Close();
-        _current = new WaveRecord { Wave = wave };
+        _current = new WaveRecord { Wave = wave, Monsters = DescribeMonsters(kinds, boss) };
         Write();
+    }
+
+    private string DescribeMonsters(IReadOnlyList<MonsterKind> kinds, MonsterKind boss)
+    {
+        _builder.Clear();
+        for (int i = 0; i < kinds.Count; i++)
+        {
+            if (i > 0) _builder.Append('|');
+            AppendTraits(kinds[i]);
+        }
+        if (boss != null)
+        {
+            if (_builder.Length > 0) _builder.Append('|');
+            _builder.Append("Boss:");
+            AppendTraits(boss);
+        }
+        return _builder.ToString();
+    }
+
+    // 에셋 이름에서 공통 앞머리를 떼어 짧게 쓴다(SO_MonsterTrait_Fast → Fast).
+    private void AppendTraits(MonsterKind kind)
+    {
+        const string prefix = "SO_MonsterTrait_";
+        IReadOnlyList<SO_MonsterTrait> traits = kind.Traits;
+        if (traits.Count == 0)
+        {
+            _builder.Append("Normal");
+            return;
+        }
+        for (int i = 0; i < traits.Count; i++)
+        {
+            if (i > 0) _builder.Append('+');
+            string name = traits[i].name;
+            _builder.Append(name.StartsWith(prefix, StringComparison.Ordinal) ? name.Substring(prefix.Length) : name);
+        }
     }
 
     public void OnWaveCleared(int wave)
@@ -167,7 +204,7 @@ public sealed class WaveLog : IDisposable
         }
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(",dice_").Append(DamageSource.NameOf(i));
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(",pips_").Append(DamageSource.NameOf(i));
-        _builder.Append(",cards\n");
+        _builder.Append(",monsters,cards\n");
         for (int r = 0; r < _records.Count; r++) AppendRow(_records[r]);
 
         try
@@ -210,7 +247,8 @@ public sealed class WaveLog : IDisposable
         }
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(',').Append(record.DiceCount[i]);
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(',').Append(record.PipSum[i]);
-        // 카드 이름에 쉼표가 들어가도 칸이 밀리지 않게 따옴표로 감싼다.
+        // 이름에 쉼표가 들어가도 칸이 밀리지 않게 따옴표로 감싼다.
+        _builder.Append(",\"").Append(record.Monsters.Replace("\"", "\"\"")).Append('"');
         _builder.Append(",\"").Append(string.Join("|", record.Cards).Replace("\"", "\"\"")).Append("\"\n");
     }
 }
