@@ -50,6 +50,6 @@ public sealed class SO_DamageNumberConfig : SO_Config
     [Tooltip("남은 시간이 이 비율 아래로 내려가면 흐려지기 시작한다.")]
     [Range(0.05f, 1f)] public float FadeRatio = 0.35f;
 
-    [Tooltip("처음 잡아 두는 숫자 수. 모자라면 더 만든다.")]
+    [Tooltip("처음 잡아 두는 숫자 자리 수. 모자라면 늘어난다(개수 제한은 없다 — 막으면 후반에 숫자가 계속 갈려 읽히지 않는다).")]
     [Min(1)] public int InitialCapacity = 32;
 }

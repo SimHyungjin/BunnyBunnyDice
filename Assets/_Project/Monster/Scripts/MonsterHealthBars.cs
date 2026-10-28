@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 /// 마리마다 오브젝트(UI·스프라이트)를 두지 않아 MonsterRenderer를 GPU 인스턴싱으로 바꿀 때도 그대로 쓸 수 있다.
 /// 바는 카메라를 마주 보게 카메라의 오른쪽·위 방향으로 펼친다. 상태는 읽기만 한다(MonsterField의 배열).
 /// 움직임이 끝난 뒤 그리도록 LateUpdate에서 채운다.
-/// 바 아래에 딱 붙여 걸린 상태 이상을 작은 네모로 보인다(위는 솟아오르는 피해 숫자에 덮인다) — 걸린 것만 왼쪽부터 채우고 순서는 늘 취약·둔화·얼림·화상, 색은 거는 칩 색.
+/// 바 아래에 딱 붙여 걸린 상태 이상을 작은 네모로 보인다(위는 솟아오르는 피해 숫자와 겹친다) — 걸린 것만 왼쪽부터 채우고 순서는 늘 취약·둔화·얼림·화상, 색은 거는 칩 색.
 /// 눈에 띌 필요는 없고 보면 알 수 있으면 된다(칩이 일하는지, 디버프가 끊기는 곳이 어딘지).
 /// 몸 색으로 보이던 이전 방식은 여러 개가 겹치면 하나만 보였고 특성 색(몸 색)을 덮었다.
 /// </summary>
@@ -43,6 +43,9 @@ public sealed class MonsterHealthBars : IDisposable
         _renderer = go.AddComponent<MeshRenderer>();
         _renderer.shadowCastingMode = ShadowCastingMode.Off;
         _renderer.receiveShadows = false;
+        // 피해 숫자(DamageNumbers, 1)보다 늘 위에 그린다 — 숫자가 많이 떠도 중요한 것은 남은 체력이다(2026-10-28 사용자).
+        // 둘 다 판 전체를 덮는 투명 메시 하나라 거리로 정렬하면 프레임마다 앞뒤가 깜빡여 순서를 못 박는다.
+        _renderer.sortingOrder = 2;
         Core.Loop.OnLateUpdate += LateTick;
     }
 
