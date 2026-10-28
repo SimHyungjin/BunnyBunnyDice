@@ -56,6 +56,16 @@ public sealed class LobbyScreen
         popup.Show(_stats, _meta, _diceConfig, OnStart, _selectCharacter, _openSettings);
     }
 
+    /// <summary>
+    /// "게임 시작"을 누른 것과 같다(봇이 로비에서 판을 시작할 때 — 사람과 같은 길로 들어가야 로비 화면이 닫히고 뛰어들기 연출이 돈다).
+    /// 로비 화면이 떠 있지 않으면(이미 시작했거나 판 중) 아무 일도 없다.
+    /// </summary>
+    public void Start()
+    {
+        if (_popup == null) return;
+        OnStart();
+    }
+
     private void OnStart()
     {
         Close();

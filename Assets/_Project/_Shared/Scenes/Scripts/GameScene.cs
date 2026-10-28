@@ -55,6 +55,11 @@ public sealed class GameScene : SceneBase
     // 미로 검사가 도는 중 — 시작 칩 자리가 아직 바뀔 수 있다(굴림은 확정).
     private bool _mapPending;
     private GameBot _bot;
+    private SO_BotConfig _botConfig;
+    private SO_GameSpeedConfig _speedConfig;
+    // 빠른 시뮬 동안 판 카메라가 그리던 층(되돌릴 값). 모든 층(Everything)이 -1이라 값으로 시뮬 여부를 가리지 않는다.
+    private bool _simCulling;
+    private int _simSavedCulling;
     private HeroTapInput _tapInput;
     // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.9)와 그 표시.
     private HeroOverdrive _heroOverdrive;
@@ -335,7 +340,9 @@ public sealed class GameScene : SceneBase
         _levelUp.Opened += _drag.Cancel;
         _mazePlanner = new MazePlanner(previewConfig, () => _map, _diceField);
         _bot = new GameBot(botConfig, () => _map, () => _waves.Wave, _heroStats, heroConfig.Characters, _diceField, _chips, _hand, _placement, _skills, _monsters, _hero, diceConfig,
-            _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, Retry);
+            _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
+        _botConfig = botConfig;
+        _bot.EnabledChanged += _ => ApplySimMode();
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
         DealStartHand();
         // 손패를 다 쓰면 판을 아래로 넓히고, 카드가 들어오면 되돌린다(아래 여백만 섞는다).
@@ -379,8 +386,9 @@ public sealed class GameScene : SceneBase
         speedConfig.Changed += _speedToggle.Reset;
         _speedToggle.Reset();
         // 판 시스템(OnGameUpdate)은 고정 걸음으로 돈다 — 같은 시드·같은 선택이면 같은 판(시뮬레이션, 기획서 11.2).
-        ApplyFixedStep(speedConfig);
-        speedConfig.Changed += () => ApplyFixedStep(speedConfig);
+        _speedConfig = speedConfig;
+        ApplyFixedStep();
+        speedConfig.Changed += ApplyFixedStep;
         diceConfig.Changed += () =>
         {
             _diceField.RebuildViews(_map);
@@ -415,8 +423,10 @@ public sealed class GameScene : SceneBase
         keys.Add(Key.L, false, "언어 바꾸기(한국어↔영어)", CycleLanguage);
         // 로비·뛰어들기 연출을 되풀이해 보려고. 결과 화면의 "로비로"와 같은 길이다(판을 접고 새 테이블).
         keys.Add(Key.B, false, "로비로(판을 접는다)", EnterLobby);
-        // 판 중에 켠다. 지면 다시 하기를 눌러 계속 돌고, 판마다 측정 기록 CSV가 남는다(기획서 11.2).
-        keys.Add(Key.A, false, "자동 플레이(봇 — 판 중에 켠다, SO_BotConfig.BatchRuns판 뒤 요약을 남기고 멈춘다)", () => _bot.SetEnabled(!_bot.Enabled), () => _bot.Enabled);
+        // 로비·판 어디서나 켠다. 지면 다시 하기를 눌러 계속 돌고, 판마다 측정 기록 CSV가 남는다(기획서 11.2).
+        // 보면서 돌리기는 봇 행동을 눈으로 확인하려고(행동 원칙을 고칠 때), 빠른 시뮬은 판 수를 많이 돌리려고 나눴다 — 결과는 같다.
+        keys.Add(Key.A, false, "자동 플레이(봇, 보면서 — SO_BotConfig.BatchRuns판 뒤 요약을 남기고 멈춘다)", () => ToggleBot(false), () => _bot.Enabled && !_bot.Fast);
+        keys.Add(Key.A, true, "빠른 시뮬(봇, 화면을 그리지 않는다 — 결과는 A와 같다)", () => ToggleBot(true), () => _bot.Enabled && _bot.Fast);
         // 원하는 카드를 골라 넣는 테스트 창(F1).
         GameDebugPanel panel = _mapRoot.gameObject.AddComponent<GameDebugPanel>();
         panel.Init(levelUpConfig, diceConfig, keys.Bindings, _hand.Add, () =>
@@ -481,8 +491,52 @@ public sealed class GameScene : SceneBase
         _tuning.Dispose();
     }
 
-    private static void ApplyFixedStep(SO_GameSpeedConfig config) =>
-        Core.Loop.SetGameFixedStep(config.FixedStep > 0f ? config.FixedStep : 0f, config.MaxStepsPerFrame);
+    // 빠른 시뮬 중이면 걸음 크기는 그대로(결과가 같게) 한 프레임 걸음 수만 시뮬 값으로.
+    private void ApplyFixedStep()
+    {
+        bool sim = _bot != null && _bot.Enabled && _bot.Fast;
+        Core.Loop.SetGameFixedStep(_speedConfig.FixedStep > 0f ? _speedConfig.FixedStep : 0f,
+            sim ? _botConfig.SimStepsPerFrame : _speedConfig.MaxStepsPerFrame);
+    }
+
+    // 빠른 시뮬: 판 카메라가 아무 층도 그리지 않게 하고(그리기 비용이 걸음 계산을 잡아먹지 않게) 한 프레임에 걸음을 많이 돈다.
+    // 봇이 꺼지면(정한 판 수를 채워도) 되돌린다. UI(HUD 웨이브 수·결과 화면)는 그대로 그려져 진행은 보인다.
+    // 카메라를 끄지 않는 이유: 끄면 화면을 지우는 카메라가 없어 UI가 지나간 자리가 겹겹이 남는다 — 층만 비우면 배경으로 지우기는 한다.
+    private void ApplySimMode()
+    {
+        ApplyFixedStep();
+        Camera camera = Core.Camera != null ? Core.Camera.MainCamera : null;
+        if (camera == null) return;
+        bool sim = _bot.Enabled && _bot.Fast;
+        if (sim == _simCulling) return;
+        _simCulling = sim;
+        if (sim) _simSavedCulling = camera.cullingMask;
+        camera.cullingMask = sim ? 0 : _simSavedCulling;
+    }
+
+    // 봇 켜기(A = 보면서, Shift+A = 빠른 시뮬). 로비에서 켜면 "게임 시작"과 같은 길로 들어간다 — 로비 화면이 닫히고 영웅이 뛰어든 뒤 봇이 손을 쓴다.
+    private void ToggleBot(bool fast)
+    {
+        if (_bot.Enabled)
+        {
+            _bot.SetEnabled(false);
+            return;
+        }
+        _bot.SetEnabled(true, fast);
+        if (_lobbyStage.IsActive) _lobbyScreen.Start();
+    }
+
+    // 봇이 새 판을 시작한다(판이 끝난 뒤·비교 묶음의 첫 판). 판 중이면 다시 하기와 같은 길,
+    // 로비면 테이블만 정해 둔 맵으로 바꾼다 — 뒤이어 "게임 시작"으로 뛰어들면 그 판으로 시작한다(로비에서 판 치우기를 하지 않게).
+    private void BotRetry()
+    {
+        if (!_lobbyStage.IsActive)
+        {
+            Retry();
+            return;
+        }
+        GenerateMap(_bot.TryTakeSeed(out int seed) ? seed : System.Environment.TickCount);
+    }
 
     // 맵 생성은 두 단계다(MapGenerator): 굴림 + 첫 칩 배치(수 ms)는 그 자리에서 하고 판을 바로 세운다(판 주사위 연출도 바로 시작).
     // 미로 검사·칩 다시 놓기(0.2~2초)는 워커 스레드에서 돌린다 — 메인 스레드에서 돌리면 연출 직전에 화면이 멈췄다.

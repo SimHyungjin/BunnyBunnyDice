@@ -52,6 +52,12 @@ public sealed class GameBot : IDisposable
     /// <summary>켜져 있는지. 켜면 게임을 빠르게 돌리고 레벨업을 대신 고른다.</summary>
     public bool Enabled { get; private set; }
 
+    /// <summary>빠른 시뮬(화면을 그리지 않고 한 프레임에 걸음을 많이 돈다)로 켜졌는지. 켜고 끄는 것은 GameScene이 EnabledChanged로 한다.</summary>
+    public bool Fast { get; private set; }
+
+    /// <summary>켜지거나 꺼졌다(정한 판 수를 채워 스스로 꺼질 때도). 빠른 시뮬이면 GameScene이 그리기·걸음 수를 바꾼다.</summary>
+    public event Action<bool> EnabledChanged;
+
 
     /// <summary>봇이 끝낸 판 수(켠 뒤로).</summary>
     public int Runs => _report.Count;
@@ -96,11 +102,19 @@ public sealed class GameBot : IDisposable
         SetEnabled(false);
     }
 
-    public void SetEnabled(bool enabled)
+    /// <summary>켜고 끈다. fast면 빠른 시뮬(그리기·걸음 수는 GameScene이 EnabledChanged를 듣고 바꾼다).</summary>
+    public void SetEnabled(bool enabled, bool fast = false)
+    {
+        Fast = enabled && fast;
+        Switch(enabled);
+        EnabledChanged?.Invoke(enabled);
+    }
+
+    private void Switch(bool enabled)
     {
         Enabled = enabled;
         _levelUp.AutoChoose = enabled ? ChooseLevelUp : (Func<IReadOnlyList<HandCard>, IReadOnlyList<int>, int>)null;
-        _speed.FastForward = enabled ? _config.FastForward : 1f;
+        _speed.FastForward = !enabled ? 1f : Fast ? _config.SimSpeed : _config.FastForward;
         _retryTimer = -1f;
         _hasHeroCell = false;
         if (enabled) _report.Clear();

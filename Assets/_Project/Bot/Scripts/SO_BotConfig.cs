@@ -127,8 +127,15 @@ public sealed class SO_BotConfig : SO_Config
     public List<int> Seeds = new List<int>();
     [Tooltip("판이 끝난 뒤 다시 하기까지(초, 실제 시간).")]
     [Min(0f)] public float RetryDelay = 1.5f;
-    [Tooltip("봇이 켜져 있는 동안의 게임 속도 배율.")]
+    [Tooltip("봇이 켜져 있는 동안의 게임 속도 배율(보면서 돌리기 — A).")]
     [Min(0.1f)] public float FastForward = 3f;
+
+    [Header("빠른 시뮬 (Shift+A — 화면을 그리지 않는다)")]
+    [Tooltip("한 프레임에 도는 게임 걸음 수(SO_GameSpeedConfig.FixedStep 하나가 한 걸음). 판 그리기를 끄고 이만큼씩 돌린다 — 클수록 빠르지만 프레임이 길어져 창이 굼떠진다. "
+        + "걸음 크기는 보면서 돌리기와 같아 결과가 같다.")]
+    [Min(1)] public int SimStepsPerFrame = 200;
+    [Tooltip("빠른 시뮬의 게임 속도 배율. 실제 빠르기는 위 걸음 수가 정한다(넘는 시간은 버린다) — 그 상한을 늘 채울 만큼 크게 둔다.")]
+    [Min(1f)] public float SimSpeed = 1000f;
 
     /// <summary>wave에 쓸 점수 구간. 구간이 없으면 null.</summary>
     public PhaseScores GetPhase(int wave)
