@@ -25,9 +25,15 @@ public static class MapGenerator
     // Refine이 칩을 다시 놓을 난수를 굴림과 따로 두려고 시드에 섞는 값(조정 대상이 아니다).
     private const int RefineSeedSalt = 0x5f3759df;
 
-    /// <summary>Roll + Refine을 한 번에(그 자리에서). 첫 맵·테스트용.</summary>
-    public static MapData Generate(SO_MapGenConfig settings, int seed, IMapRouteProbe probe = null) =>
-        Refine(settings, seed, Roll(settings, seed), probe);
+    /// <summary>Roll + Refine을 한 번에(그 자리에서). 첫 맵·테스트용. 검사가 지은 미로는 맵의 MazePlan에 붙인다.</summary>
+    public static MapData Generate(SO_MapGenConfig settings, int seed, IMapRouteProbe probe = null)
+    {
+        List<Vector2Int> plan = new List<Vector2Int>();
+        MapData map = Refine(settings, seed, Roll(settings, seed), probe, plan);
+        map.MazePlan.Clear();
+        map.MazePlan.AddRange(plan);
+        return map;
+    }
 
     /// <summary>
     /// 판 주사위를 굴리고 합만큼 칩을 놓는다. 못 놓으면(길이 끊기거나 자리가 모자람) 주사위부터 다시 — 여기서 통과한 굴림은 연출에 그대로 나간다.
@@ -51,10 +57,14 @@ public static class MapGenerator
     /// <summary>
     /// 미로 검사를 넘을 때까지 굴림은 두고 칩만 다시 놓는다(rolled 그대로가 첫 후보). 못 넘으면 가장 짧은 구멍이 가장 길었던 맵.
     /// 워커 스레드에서 불린다 — rolled를 고치지 않고 새 맵을 만든다.
+    /// plan에는 돌려준 맵에서 검사가 지은 미로를 담는다(검사가 없으면 비운다). 맵에 바로 붙이지 않는 이유: 통과한 맵이 rolled 그대로면
+    /// 메인 스레드가 이미 쓰는 맵이라, 붙이는 일은 결과를 받은 메인 스레드가 한다.
     /// </summary>
-    public static MapData Refine(SO_MapGenConfig settings, int seed, MapData rolled, IMapRouteProbe probe)
+    public static MapData Refine(SO_MapGenConfig settings, int seed, MapData rolled, IMapRouteProbe probe, List<Vector2Int> plan)
     {
+        plan.Clear();
         if (probe == null || settings.MinShortestRoute <= 0f) return rolled;
+        List<Vector2Int> tried = new List<Vector2Int>();
 
         System.Random random = new System.Random(seed ^ RefineSeedSalt);
         List<float> lengths = new List<float>();
@@ -77,15 +87,22 @@ public static class MapGenerator
             float best = float.MinValue;
             for (int t = 0; t < tries; t++)
             {
-                probe.Measure(map, seed + attempt * tries + t, lengths);
+                probe.Measure(map, seed + attempt * tries + t, lengths, tried);
                 float shortest = Shortest(lengths);
-                if (shortest > best) best = shortest;
-                if (shortest >= settings.MinShortestRoute) return map;
-            }
-            if (best > fallbackRoute)
-            {
+                if (shortest >= settings.MinShortestRoute)
+                {
+                    plan.Clear();
+                    plan.AddRange(tried);
+                    return map;
+                }
+                if (shortest <= best) continue;
+                best = shortest;
+                if (best <= fallbackRoute) continue;
+                // 못 넘으면 쓰는 맵(가장 짧은 구멍이 가장 길었던 것)의 미로를 남긴다.
                 fallbackRoute = best;
                 fallback = map;
+                plan.Clear();
+                plan.AddRange(tried);
             }
         }
         Debug.LogWarning($"[MapGenerator] {rerolls}번 다시 놓아도 가장 짧은 구멍이 {settings.MinShortestRoute}칸에 못 미쳤다 — 가장 나은 맵({fallbackRoute:0.0}칸)을 쓴다.");

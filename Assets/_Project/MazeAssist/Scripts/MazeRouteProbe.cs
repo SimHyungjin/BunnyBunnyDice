@@ -18,9 +18,10 @@ public sealed class MazeRouteProbe : IMapRouteProbe
 
     public MazeRouteProbe(SO_PlacementPreviewConfig config) => _config = config;
 
-    public void Measure(MapData map, int seed, List<float> lengths)
+    public void Measure(MapData map, int seed, List<float> lengths, List<Vector2Int> plan)
     {
         lengths.Clear();
+        plan.Clear();
         System.Random random = new System.Random(seed);
         _plan.Clear();
         _free.Clear();
@@ -78,6 +79,7 @@ public sealed class MazeRouteProbe : IMapRouteProbe
 
         Score(map, _best);
         for (int i = 0; i < map.Spawns.Count; i++) lengths.Add(_evaluator.DistanceAt(map, map.Spawns[i]));
+        plan.AddRange(_best);
     }
 
     // 빈 맵이라 사거리로 덮는 칸 = 계획한 칸뿐이다.

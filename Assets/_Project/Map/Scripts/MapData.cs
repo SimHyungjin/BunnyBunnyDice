@@ -32,6 +32,11 @@ public sealed class MapData
     /// </summary>
     public Vector2Int BossPocket = new Vector2Int(-1, -1);
     public RectInt GoalRect;
+    /// <summary>
+    /// 맵 생성 검사(기획서 3.3)가 이 판에 지어 본 미로 — 주사위를 놓을 칸들. 검사는 "이 미로로 풀린다"고 보고 판을 통과시켰으니
+    /// 봇의 첫 계획도 이것이다(MazePlanner). 검사가 없었으면 비어 있다.
+    /// </summary>
+    public readonly List<Vector2Int> MazePlan = new List<Vector2Int>();
 
     private readonly TileType[] _tiles;
     // 지형(TileType)과 따로 둔다 — 주사위·칩은 판 중에 놓이지만 지형은 생성 후 고정이다.
@@ -46,6 +51,23 @@ public sealed class MapData
         _tiles = new TileType[width * height];
         _dice = new bool[width * height];
         _chips = new bool[width * height];
+    }
+
+    /// <summary>지금 모습 그대로의 사본. 워커 스레드가 판 중에 바뀌는 맵을 읽지 않게 넘길 때 쓴다(MazePlanner).</summary>
+    public MapData Clone()
+    {
+        MapData copy = new MapData(Width, Height);
+        copy.Pockets.AddRange(Pockets);
+        copy.Roll.AddRange(Roll);
+        copy.Spawns.AddRange(Spawns);
+        copy.SpawnGates.AddRange(SpawnGates);
+        copy.BossPocket = BossPocket;
+        copy.GoalRect = GoalRect;
+        copy.MazePlan.AddRange(MazePlan);
+        System.Array.Copy(_tiles, copy._tiles, _tiles.Length);
+        System.Array.Copy(_dice, copy._dice, _dice.Length);
+        System.Array.Copy(_chips, copy._chips, _chips.Length);
+        return copy;
     }
 
     public bool InBounds(int x, int y) => x >= 0 && y >= 0 && x < Width && y < Height;

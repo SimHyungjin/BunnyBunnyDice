@@ -104,7 +104,6 @@ public sealed class GameBot : IDisposable
         _retryTimer = -1f;
         _hasHeroCell = false;
         if (enabled) _report.Clear();
-        UpdateSearching();
         if (!enabled)
         {
             RestoreStages();
@@ -179,10 +178,6 @@ public sealed class GameBot : IDisposable
         return index < _rotation.Count ? _rotation[index] : null;
     }
 
-    // 봇은 프레임마다 시간으로 끊어 도는 탐색(Searching)을 쓰지 않고, 계획을 읽기 직전에 끝까지 탐색한다(MazePlanner.CompleteSearch)
-    // — 같은 시드·같은 선택이면 같은 판이어야 한다(시뮬레이션). 어시스트가 생기면 그쪽이 Searching을 켠다.
-    private void UpdateSearching() => _planner.Searching = false;
-
     /// <summary>
     /// 새 판을 시작한다(GameScene.StartBattle). 손 타이머를 비운다 — 지난 판에서 남은 값으로 시작하면
     /// 같은 시드라도 첫 손 시각이 판마다 달라 처음부터 갈라진다.
@@ -237,11 +232,7 @@ public sealed class GameBot : IDisposable
         BotCardChoice.Choose(_config, Mathf.Max(_getWave(), 1), candidates, copies, MazeBuilt(), CurrentSet(_report.Count));
 
     // 미로를 다 지었는지 — 목표 배치에 놓을 칸이 남지 않았으면 다 지은 것이다.
-    private bool MazeBuilt()
-    {
-        _planner.CompleteSearch();
-        return !_planner.HasPlannedCell();
-    }
+    private bool MazeBuilt() => !_planner.HasPlannedCell();
 
     // 다시 하기는 실제 시간으로 기다린다 — 판이 끝난 뒤라 게임 시간이 멈춰 있어도 넘어가게.
     private void Tick(float deltaTime)
@@ -262,6 +253,9 @@ public sealed class GameBot : IDisposable
         MapData map = _getMap();
         if (map == null || !_canAct() || _hand.Held != null) return;
 
+        // 미로 계획은 손을 쓸 수 있는 걸음에서만 진행한다 — 판 주사위 연출(실제 시간) 동안 생각 시간이 흐르면
+        // 첫 계획을 받는 시각이 기기마다 달라진다.
+        _planner.Advance(deltaTime, _config.MazeThinkTime);
         _actTimer -= deltaTime;
         if (_actTimer <= 0f)
         {
@@ -305,9 +299,10 @@ public sealed class GameBot : IDisposable
 
     private bool TryPlaceDice(MapData map, HandCard card)
     {
+        // 생각 중(판이 바뀐 뒤 새 계획을 아직 받지 않음)이면 주사위는 쥐고 있는다 — 칩·스킬은 그대로 쓴다.
+        if (_planner.Busy) return false;
         if (MazeBuilt() && TryFindStack(card.Dice, out Vector2Int stack))
             return _placement.TryPlace(map, stack, card);
-        _planner.CompleteSearch();
         return _planner.TryGetNext(out Vector2Int cell) && _placement.TryPlace(map, cell, card);
     }
 

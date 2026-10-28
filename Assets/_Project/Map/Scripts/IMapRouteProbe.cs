@@ -5,6 +5,8 @@ using System.Collections.Generic;
 /// </summary>
 public interface IMapRouteProbe
 {
-    /// <summary>lengths[i] = map.Spawns[i]에서 목표물까지의 길 길이(칸). 같은 맵·시드면 같은 값.</summary>
-    void Measure(MapData map, int seed, List<float> lengths);
+    /// <summary>
+    /// lengths[i] = map.Spawns[i]에서 목표물까지의 길 길이(칸), plan = 그 길을 낸 미로(주사위를 놓을 칸들). 같은 맵·시드면 같은 값.
+    /// </summary>
+    void Measure(MapData map, int seed, List<float> lengths, List<UnityEngine.Vector2Int> plan);
 }

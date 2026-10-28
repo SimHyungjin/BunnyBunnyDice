@@ -80,6 +80,10 @@ public sealed class SO_BotConfig : SO_Config
     [Header("손")]
     [Tooltip("카드 한 장을 쓰는 간격(초, 게임 시간) — 손이 느린 사람 정도.")]
     [Min(0.05f)] public float ActInterval = 0.4f;
+    [Tooltip("판이 바뀐 뒤(주사위·칩을 놓은 뒤) 미로 계획을 다시 받기까지(초, 게임 시간) — 생각하는 시간. 그동안 새 주사위는 놓지 않고 칩·스킬은 쓴다. "
+        + "탐색은 워커 스레드에서 돌고, 이 시간이 지났는데 안 끝났으면 게임이 멈춰 기다린다(결과는 같다 — 시뮬레이션 재현). "
+        + "배속에서 이 시간(÷ 배속)이 탐색 시간보다 짧으면 멈춤이 잦아진다.")]
+    [Min(0f)] public float MazeThinkTime = 0.5f;
     [Tooltip("영웅이 움직일 곳을 다시 고르는 간격(초). 평소엔 가장 앞선 적을 쫓고, 뚫릴 때만 주사위에 올라탄다.")]
     [Min(0.05f)] public float HeroInterval = 1f;
     [Tooltip("지금 주사위보다 이만큼 나아야 옮긴다 — 비슷한 주사위 사이를 오가며 걷기만 하지 않게.")]

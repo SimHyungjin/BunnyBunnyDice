@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -507,7 +508,11 @@ public sealed class GameScene : SceneBase
         if (wait)
         {
             _mapPending = false;
-            ApplyMap(MapGenerator.Refine(_genConfig, seed, rolled, probe));
+            List<Vector2Int> plan = new List<Vector2Int>();
+            MapData refined = MapGenerator.Refine(_genConfig, seed, rolled, probe, plan);
+            refined.MazePlan.Clear();
+            refined.MazePlan.AddRange(plan);
+            ApplyMap(refined);
             return;
         }
         // 검사가 끝날 때까지 판 주사위 연출이 칩을 떨어뜨리지 않고 판도 시작하지 않는다.
@@ -518,8 +523,12 @@ public sealed class GameScene : SceneBase
 
     private async UniTaskVoid RefineMapAsync(int seed, int job, MapData rolled, MazeRouteProbe probe)
     {
-        MapData map = await UniTask.RunOnThreadPool(() => MapGenerator.Refine(_genConfig, seed, rolled, probe));
+        List<Vector2Int> plan = new List<Vector2Int>();
+        MapData map = await UniTask.RunOnThreadPool(() => MapGenerator.Refine(_genConfig, seed, rolled, probe, plan));
         if (job != _mapJob) return;
+        // 검사가 지은 미로는 여기(메인 스레드)서 붙인다 — 통과한 맵이 rolled 그대로면 이미 판에 올라가 쓰이는 맵이다.
+        map.MazePlan.Clear();
+        map.MazePlan.AddRange(plan);
         // 칩을 다시 놓았으면 바꿔 그린다. 굴림·구멍은 같아 연출(날아갈 구멍)은 그대로 이어진다.
         if (map != rolled) SwapMap(map);
         _mapPending = false;

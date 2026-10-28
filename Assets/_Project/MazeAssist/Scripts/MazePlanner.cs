@@ -1,13 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// 미로 계획(기획서 11.4). 판이 바뀔 때마다(맵·주사위·칩) 목표 배치를 담금질로 찾는다 — 계획한 칸 하나를 다른 빈 칸으로 옮겨 보고
-/// 점수(MazeEvaluator)가 오르면 받아들이고, 내려가도 처음엔 가끔 받아들여 국소 최선에 갇히지 않게 한다. 한 프레임에 조금씩 돌린다.
+/// 미로 계획(기획서 11.4). 목표 배치(주사위를 놓을 칸들)를 들고, 봇이 그 칸부터 짓게 한다.
 /// 봇과 어시스트가 같은 계산을 쓴다 — 봇의 실력과 어시스트의 추천이 함께 오른다.
-/// 탐색은 무거워(걸음마다 길 전체 계산) 내다본 최선을 쓰는 쪽이 있을 때만(Searching) 돌리고, 한 프레임에 쓸 시간을 정해 끊는다.
+///
+/// 첫 계획은 맵 생성 검사가 지은 미로(MapData.MazePlan)다 — 검사가 "이 미로로 풀린다"고 보고 판을 통과시켰으니 그 미로를 짓는 것이 일관된다.
+/// 다시 찾는 것은 벽이 계획과 다르게 바뀔 때뿐이다: 계획 밖 칸에 벽이 생기거나 벽이 없어질 때. 계획한 칸에 벽이 생긴 것은 계획대로 지은 것이라
+/// 최선이 그대로다(매번 다시 찾으면 탐색 대부분이 이미 아는 답을 다시 찾는다). 벽은 주사위·칩을 가리지 않는다 — 미로에서는 둘 다 막는 칸이다.
+/// 다시 찾을 때는 담금질로 받은 계획에서 이어 찾는다 — 계획한 칸 하나를 다른 빈 칸으로 옮겨 보고 점수(MazeEvaluator)가 오르면 받아들이고,
+/// 내려가도 처음엔 가끔 받아들여 국소 최선에 갇히지 않게 한다.
+///
+/// 탐색은 무거워(걸음마다 길 전체 계산, 끝까지 약 1.6초) 판 사본을 워커 스레드에 넘겨 돌린다.
+/// 결과는 끝난 순간이 아니라 시작하고 정해진 게임 시간(thinkTime)이 지난 걸음에 받는다 — 끝나는 순간은 실제 시간이라
+/// 그때 받으면 같은 시드·같은 선택이라도 기기·프레임에 따라 받는 걸음이 달라 판이 갈라진다(시뮬레이션 재현, 기획서 11.2).
+/// 그 걸음까지 안 끝났으면 그 자리에서 기다린다(배속이 생각 시간보다 빠를 때만 멈춘다).
+/// 시작·받기는 게임 걸음 안(Advance)에서만 하므로 언제 무엇을 계획하는지가 게임 상태만으로 정해진다.
 /// </summary>
 public sealed class MazePlanner : IDisposable
 {
@@ -15,52 +25,97 @@ public sealed class MazePlanner : IDisposable
     private readonly Func<MapData> _getMap;
     private readonly DiceField _diceField;
     private readonly MazeEvaluator _evaluator = new MazeEvaluator();
-    private readonly List<Vector2Int> _plan = new List<Vector2Int>();
+    // 받은 계획(아직 놓이지 않은 칸들). 탐색 중에도 직전에 받은 것을 그대로 보여 준다.
     private readonly List<Vector2Int> _best = new List<Vector2Int>();
-    private readonly List<Vector2Int> _free = new List<Vector2Int>();
     private readonly List<Vector2Int> _towers = new List<Vector2Int>();
     private readonly List<Vector2Int> _single = new List<Vector2Int>(1);
-    private System.Random _random = new System.Random(0);
+    // 지금 계획(_best)이 바탕으로 한 판과, 마지막으로 본 칸마다의 벽(놓인 주사위·칩) — 계획 밖에서 바뀌었는지 볼 때 비교한다.
     private MapData _map;
-    private int _signature;
-    private int _iteration;
-    private float _score;
-    private float _bestScore;
-    private readonly Stopwatch _watch = new Stopwatch();
+    private bool[] _walls = new bool[0];
+    private Search _search;
+    private float _searchAge;
 
-    /// <summary>찾아 둔 목표 배치(아직 놓이지 않은 칸들). 탐색 중이면 지금까지 가장 좋았던 것.</summary>
+    /// <summary>받은 목표 배치(아직 놓이지 않은 칸들). 탐색 중이면 직전에 받은 것.</summary>
     public IReadOnlyList<Vector2Int> Plan => _best;
 
-    /// <summary>
-    /// 목표 배치를 찾아 둘지 — 내다본 최선을 쓰는 쪽(봇·개발용 어시스트)이 켠다. 아무도 안 쓰는데 돌면 놓을 때마다 프레임이 끊긴다.
-    /// </summary>
-    public bool Searching { get; set; }
+    /// <summary>탐색 중이라 지금 계획이 판과 맞지 않는지. 봇은 이 동안 새 주사위를 놓지 않는다(생각 중).</summary>
+    public bool Busy => _search != null;
 
-    /// <summary>이 판의 탐색을 마쳤는지.</summary>
-    public bool Ready => _iteration >= _config.MazeIterations;
+    /// <summary>받은 탐색 수와, 생각 시간 안에 못 끝나 기다린 실제 시간의 합(초) — 배속·걸음 수를 정할 때 본다.</summary>
+    public int AdoptCount { get; private set; }
+    public double WaitSeconds { get; private set; }
 
     public MazePlanner(SO_PlacementPreviewConfig config, Func<MapData> getMap, DiceField diceField)
     {
         _config = config;
         _getMap = getMap;
         _diceField = diceField;
-        Core.Loop.OnUpdate += Tick;
     }
 
-    public void Dispose() => Core.Loop.OnUpdate -= Tick;
+    public void Dispose() => Cancel();
 
     /// <summary>
-    /// 다음에 놓을 새 칸: 판 전체를 탐색해 둔 목표 배치 중 지금 놓았을 때 점수가 가장 높은 칸.
+    /// 게임 걸음마다 부른다(쓰는 쪽 — 봇 — 의 OnGameUpdate 안). 새 판이면 검사가 지은 미로를 계획으로 받고,
+    /// 벽이 계획 밖에서 바뀌었으면 새 탐색을 시작하고, 탐색을 시작한 지 thinkTime(게임 시간)이 지났으면 결과를 받는다(안 끝났으면 기다린다).
+    /// </summary>
+    public void Advance(float deltaTime, float thinkTime)
+    {
+        MapData map = _getMap();
+        if (map == null) return;
+
+        if (_search != null)
+        {
+            _searchAge += deltaTime;
+            if (_searchAge >= thinkTime) Adopt();
+        }
+
+        if (map != _map)
+        {
+            // 새 판: 지난 판의 계획·탐색은 버린다 — 이어 쓰면 같은 시드라도 지난 판이 어떻게 끝났는지에 따라 계획이 달라진다.
+            Cancel();
+            _map = map;
+            _best.Clear();
+            _best.AddRange(map.MazePlan);
+            ReadWalls(map);
+            // 검사가 없던 판(검사를 끈 설정)만 처음부터 찾는다.
+            if (_best.Count == 0) Start(map);
+            return;
+        }
+        if (ReadWalls(map)) Start(map);
+    }
+
+    // 칸마다 벽(놓인 주사위·칩)을 읽어 지난번과 비교한다. 계획 밖에 벽이 생겼거나 벽이 없어졌으면 true(다시 찾는다).
+    // 계획한 칸에 벽이 생긴 것은 계획대로 지은 것이라 넘어간다. 얹기·주사위 위 칩은 벽이 그대로라 아무 일도 없다.
+    private bool ReadWalls(MapData map)
+    {
+        int count = map.Width * map.Height;
+        bool fresh = _walls.Length != count;
+        if (fresh) _walls = new bool[count];
+        bool offPlan = false;
+        for (int y = 0; y < map.Height; y++)
+        {
+            for (int x = 0; x < map.Width; x++)
+            {
+                int index = map.ToIndex(x, y);
+                bool wall = map.HasDice(x, y) || map.HasChip(x, y);
+                if (wall == _walls[index]) continue;
+                _walls[index] = wall;
+                if (fresh || (wall && _best.Contains(new Vector2Int(x, y)))) continue;
+                offPlan = true;
+            }
+        }
+        return offPlan;
+    }
+
+    /// <summary>
+    /// 다음에 놓을 새 칸: 받은 목표 배치 중 지금 놓았을 때 점수가 가장 높은 칸.
     /// 놓을 칸이 없으면(목표 배치를 다 지었거나 길을 막는 칸뿐) false.
-    /// 한 장만 보고 모든 빈 칸 중 당장 가장 좋은 칸을 고르는 방식(당장의 최선)도 있었는데, 주사위를 한 줄로 늘어놓을 뿐 미로를 거의 못 지어
-    /// 기준선으로도 비교군으로도 쓸 데가 없어 지웠다(2026-10-28).
     /// </summary>
     public bool TryGetNext(out Vector2Int cell)
     {
         cell = default;
         MapData map = _getMap();
         if (map == null) return false;
-        Refresh(map);
         CollectTowers();
         float best = float.MinValue;
         for (int i = 0; i < _best.Count; i++) Consider(map, _best[i], ref best, ref cell);
@@ -72,12 +127,48 @@ public sealed class MazePlanner : IDisposable
     {
         MapData map = _getMap();
         if (map == null) return false;
-        Refresh(map);
         for (int i = 0; i < _best.Count; i++)
         {
             if (DicePlacement.Check(map, _best[i]) == PlacementResult.Ok) return true;
         }
         return false;
+    }
+
+    // 탐색 시작: 판 사본·놓인 주사위·지금 계획·설정 값을 넘긴다(워커는 Unity 객체와 판 원본을 읽지 않는다).
+    // 판이 또 바뀌어 새로 시작하면 하던 탐색은 버린다(결과를 받지 않고 멈추라고 알린다).
+    private void Start(MapData map)
+    {
+        Cancel();
+        CollectTowers();
+        Search search = new Search(map.Clone(), new List<Vector2Int>(_towers), new List<Vector2Int>(_best), Signature(map),
+            Mathf.Max(_config.MazeTargetDice - _towers.Count, 0), _config.MazeIterations, _config.MazeAssumedRange,
+            _config.MazeCoverageWeight, _config.MazeBossWeight, _config.MazeStartTemperature, _config.MazeEndTemperature);
+        search.Task = Task.Run(search.Run);
+        _search = search;
+        _searchAge = 0f;
+    }
+
+    private void Adopt()
+    {
+        Search search = _search;
+        _search = null;
+        // 생각 시간 안에 못 끝냈으면 여기서 기다린다 — 기다리는 동안 게임이 멈출 뿐 결과는 같다.
+        if (!search.Task.IsCompleted)
+        {
+            System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
+            search.Task.Wait();
+            WaitSeconds += watch.Elapsed.TotalSeconds;
+        }
+        AdoptCount++;
+        _best.Clear();
+        _best.AddRange(search.Best);
+    }
+
+    private void Cancel()
+    {
+        if (_search == null) return;
+        _search.Cancelled = true;
+        _search = null;
     }
 
     private void Consider(MapData map, Vector2Int candidate, ref float best, ref Vector2Int cell)
@@ -101,125 +192,10 @@ public sealed class MazePlanner : IDisposable
         for (int i = 0; i < placed.Count; i++) _towers.Add(placed[i].Cell);
     }
 
-    /// <summary>
-    /// 지금 판의 탐색을 끝까지(MazeIterations 걸음) 마친다 — 봇이 계획을 읽기 직전에 부른다.
-    /// 프레임마다 시간으로 끊어 도는 탐색(Searching)은 읽는 순간 몇 걸음까지 갔는지가 기기·프레임에 따라 달라,
-    /// 같은 시드·같은 선택이라도 봇이 다른 칸을 고른다(시뮬레이션 재현이 깨진다). 끝까지 돌리면 계획은 판 상태만으로 정해진다.
-    /// 한 번에 몰아 계산하므로 놓을 때마다 잠깐 멈출 수 있다 — 봇(시뮬레이션) 전용이다.
-    /// </summary>
-    public void CompleteSearch()
-    {
-        MapData map = _getMap();
-        if (map == null) return;
-        Refresh(map);
-        while (_iteration < _config.MazeIterations) Step(map);
-    }
-
-    private void Tick(float _)
-    {
-        MapData map = _getMap();
-        if (!Searching || map == null) return;
-        Refresh(map);
-        // 걸음 수가 아니라 시간으로 끊는다 — 맵 크기·기기에 따라 한 걸음 비용이 달라 걸음 수로는 렉을 막지 못한다.
-        _watch.Restart();
-        double budget = _config.MazeFrameBudgetMs;
-        while (_iteration < _config.MazeIterations && _watch.Elapsed.TotalMilliseconds < budget) Step(map);
-    }
-
-    // 판이 바뀌었으면(맵·주사위·칩) 지금 계획에서 이어 다시 찾는다 — 놓인 칸은 계획에서 빠지고 모자란 만큼 채운다.
-    private void Refresh(MapData map)
-    {
-        int signature = Signature(map);
-        if (map == _map && signature == _signature) return;
-        // 새 맵(새 판)이면 지난 판의 계획을 이어 쓰지 않는다 — 이어 쓰면 같은 시드라도 지난 판이 어떻게 끝났는지에 따라 계획이 달라진다.
-        if (map != _map) _best.Clear();
-        _map = map;
-        _signature = signature;
-        _random = new System.Random(signature);
-        _iteration = 0;
-
-        _plan.Clear();
-        for (int i = 0; i < _best.Count; i++)
-        {
-            if (map.InBounds(_best[i].x, _best[i].y) && IsFree(map, _best[i])) _plan.Add(_best[i]);
-        }
-        _free.Clear();
-        for (int y = 0; y < map.Height; y++)
-        {
-            for (int x = 0; x < map.Width; x++)
-            {
-                Vector2Int cell = new Vector2Int(x, y);
-                if (IsFree(map, cell) && !_plan.Contains(cell)) _free.Add(cell);
-            }
-        }
-
-        CollectTowers();
-        int target = Mathf.Max(_config.MazeTargetDice - _diceField.Placed.Count, 0);
-        while (_plan.Count > target) _plan.RemoveAt(_plan.Count - 1);
-        _score = Score(map);
-        // 길을 막지 않는 칸으로만 하나씩 채운다.
-        int guard = _free.Count * 2;
-        while (_plan.Count < target && _free.Count > 0 && guard-- > 0)
-        {
-            int index = _random.Next(_free.Count);
-            Vector2Int cell = _free[index];
-            _plan.Add(cell);
-            float score = Score(map);
-            if (score == float.MinValue)
-            {
-                _plan.RemoveAt(_plan.Count - 1);
-                continue;
-            }
-            _free.RemoveAt(index);
-            _score = score;
-        }
-        if (_score == float.MinValue) _plan.Clear();
-        _best.Clear();
-        _best.AddRange(_plan);
-        _bestScore = _score;
-    }
-
-    // 담금질 한 걸음: 계획한 칸 하나를 빈 칸으로 옮겨 본다.
-    private void Step(MapData map)
-    {
-        _iteration++;
-        if (_plan.Count == 0 || _free.Count == 0) return;
-        int planIndex = _random.Next(_plan.Count);
-        int freeIndex = _random.Next(_free.Count);
-        Vector2Int from = _plan[planIndex];
-        Vector2Int to = _free[freeIndex];
-        _plan[planIndex] = to;
-        float score = Score(map);
-        float t = _iteration / (float)Mathf.Max(_config.MazeIterations, 1);
-        float temperature = Mathf.Lerp(_config.MazeStartTemperature, _config.MazeEndTemperature, t);
-        bool accept = score > float.MinValue
-            && (score >= _score || _random.NextDouble() < Math.Exp((score - _score) / temperature));
-        if (!accept)
-        {
-            _plan[planIndex] = from;
-            return;
-        }
-        _free[freeIndex] = from;
-        _score = score;
-        if (score <= _bestScore) return;
-        _bestScore = score;
-        _best.Clear();
-        _best.AddRange(_plan);
-    }
-
-    private float Score(MapData map)
-    {
-        // 사거리로 덮는 것은 놓인 주사위 + 계획한 칸(칩은 쏘지 않는다).
-        CollectTowers();
-        _towers.AddRange(_plan);
-        return _evaluator.Evaluate(map, _plan, _towers, _config.MazeAssumedRange, _config.MazeCoverageWeight,
-            _config.MazeBossWeight);
-    }
-
     private static bool IsFree(MapData map, Vector2Int cell) =>
         map.IsBuildable(cell.x, cell.y) && !map.HasDice(cell.x, cell.y) && !map.HasChip(cell.x, cell.y);
 
-    // 판의 벽 모양 — 바뀌면 다시 찾는다. 같은 판이면 같은 수라 같은 계획이 나온다(시드 재현).
+    // 판의 벽 모양 — 탐색 난수의 시드다. 같은 판이면 같은 수라 같은 계획이 나온다(시드 재현). 주사위·칩은 같은 벽으로 센다.
     private static int Signature(MapData map)
     {
         int hash = map.Width * 31 + map.Height;
@@ -227,11 +203,126 @@ public sealed class MazePlanner : IDisposable
         {
             for (int x = 0; x < map.Width; x++)
             {
-                int wall = map.HasDice(x, y) ? 1 : map.HasChip(x, y) ? 2 : map.IsBuildable(x, y) ? 0 : 3;
+                int wall = map.HasDice(x, y) || map.HasChip(x, y) ? 1 : map.IsBuildable(x, y) ? 0 : 3;
                 hash = hash * 31 + wall;
                 for (int i = 0; i < map.Spawns.Count; i++) if (map.Spawns[i].x == x && map.Spawns[i].y == y) hash = hash * 7 + 5;
             }
         }
         return hash;
+    }
+
+    /// <summary>
+    /// 탐색 하나(워커 스레드). 받은 사본만 읽고 결과는 Best에 남긴다. 난수는 판 모양(signature)으로 정해 같은 판이면 같은 계획이 나온다.
+    /// Unity API를 쓰지 않는다(Mathf·Vector2Int 같은 값 계산만 — MazeRouteProbe와 같다).
+    /// </summary>
+    private sealed class Search
+    {
+        private readonly MapData _map;
+        private readonly List<Vector2Int> _towers;
+        private readonly List<Vector2Int> _plan;
+        private readonly List<Vector2Int> _free = new List<Vector2Int>();
+        private readonly List<Vector2Int> _scoreTowers = new List<Vector2Int>();
+        private readonly MazeEvaluator _evaluator = new MazeEvaluator();
+        private readonly System.Random _random;
+        private readonly int _target;
+        private readonly int _iterations;
+        private readonly float _range;
+        private readonly float _coverageWeight;
+        private readonly float _bossWeight;
+        private readonly float _startTemperature;
+        private readonly float _endTemperature;
+
+        public readonly List<Vector2Int> Best = new List<Vector2Int>();
+        public Task Task;
+        public volatile bool Cancelled;
+
+        public Search(MapData map, List<Vector2Int> towers, List<Vector2Int> previous, int signature, int target, int iterations,
+            float range, float coverageWeight, float bossWeight, float startTemperature, float endTemperature)
+        {
+            _map = map;
+            _towers = towers;
+            _plan = previous;
+            _random = new System.Random(signature);
+            _target = target;
+            _iterations = iterations;
+            _range = range;
+            _coverageWeight = coverageWeight;
+            _bossWeight = bossWeight;
+            _startTemperature = startTemperature;
+            _endTemperature = endTemperature;
+        }
+
+        public void Run()
+        {
+            // 받은 계획에서 이미 막힌 칸(놓인 주사위·칩)을 빼고, 남은 빈 칸을 모은다.
+            for (int i = _plan.Count - 1; i >= 0; i--)
+            {
+                if (!_map.InBounds(_plan[i].x, _plan[i].y) || !IsFree(_map, _plan[i])) _plan.RemoveAt(i);
+            }
+            for (int y = 0; y < _map.Height; y++)
+            {
+                for (int x = 0; x < _map.Width; x++)
+                {
+                    Vector2Int cell = new Vector2Int(x, y);
+                    if (IsFree(_map, cell) && !_plan.Contains(cell)) _free.Add(cell);
+                }
+            }
+
+            while (_plan.Count > _target) _plan.RemoveAt(_plan.Count - 1);
+            float score = Score();
+            // 길을 막지 않는 칸으로만 하나씩 채운다.
+            int guard = _free.Count * 2;
+            while (_plan.Count < _target && _free.Count > 0 && guard-- > 0)
+            {
+                int index = _random.Next(_free.Count);
+                _plan.Add(_free[index]);
+                float next = Score();
+                if (next == float.MinValue)
+                {
+                    _plan.RemoveAt(_plan.Count - 1);
+                    continue;
+                }
+                _free.RemoveAt(index);
+                score = next;
+            }
+            if (score == float.MinValue) _plan.Clear();
+            Best.AddRange(_plan);
+            float bestScore = score;
+
+            // 담금질: 계획한 칸 하나를 빈 칸으로 옮겨 본다.
+            for (int i = 1; i <= _iterations && !Cancelled; i++)
+            {
+                if (_plan.Count == 0 || _free.Count == 0) break;
+                int planIndex = _random.Next(_plan.Count);
+                int freeIndex = _random.Next(_free.Count);
+                Vector2Int from = _plan[planIndex];
+                _plan[planIndex] = _free[freeIndex];
+                float next = Score();
+                float t = i / (float)Mathf.Max(_iterations, 1);
+                float temperature = Mathf.Lerp(_startTemperature, _endTemperature, t);
+                bool accept = next > float.MinValue
+                    && (next >= score || _random.NextDouble() < Math.Exp((next - score) / temperature));
+                if (!accept)
+                {
+                    _plan[planIndex] = from;
+                    continue;
+                }
+                _free[freeIndex] = from;
+                score = next;
+                if (score <= bestScore) continue;
+                bestScore = score;
+                Best.Clear();
+                Best.AddRange(_plan);
+            }
+        }
+
+        // 사거리로 덮는 것은 놓인 주사위 + 계획한 칸(칩은 쏘지 않는다).
+        private float Score()
+        {
+            _scoreTowers.Clear();
+            _scoreTowers.AddRange(_towers);
+            _scoreTowers.AddRange(_plan);
+            return _evaluator.Evaluate(_map, _plan, _scoreTowers, _range, _coverageWeight, _bossWeight);
+        }
     }
 }

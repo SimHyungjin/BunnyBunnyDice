@@ -27,7 +27,6 @@ MonoBehaviour:
   SkillKingMarkRadius: 0.5
   MazeTargetDice: 20
   MazeIterations: 20000
-  MazeFrameBudgetMs: 2
   MazeAssumedRange: 2.8
   MazeCoverageWeight: 0.3
   MazeBossWeight: 1
