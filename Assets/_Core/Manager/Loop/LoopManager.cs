@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.Profiling;
 using UnityEngine;
 
 /// <summary>
@@ -104,17 +105,41 @@ public class LoopManager : Manager
     ///
     /// 순회 중 구독·해제도 안전하다. 해제된 자리는 비워 두었다가 순회가 끝나면 정리하고,
     /// 순회 중 새로 구독한 것은 다음 프레임부터 불린다.
+    ///
+    /// 구독자마다 프로파일러 표식("타입.메서드")을 붙인다(ENABLE_PROFILER — 에디터·개발 빌드).
+    /// 없으면 모든 갱신이 Core.Update 한 덩어리로 잡혀 어느 시스템이 무거운지 보이지 않는다.
+    /// 표식은 메서드마다 한 번만 만든다 — 풀링 오브젝트가 구독을 오갈 때마다 이름 문자열을 만들지 않게.
     /// </summary>
     private sealed class Channel
     {
         private readonly List<Action<float>> _handlers = new();
+#if ENABLE_PROFILER
+        private readonly List<ProfilerMarker> _markers = new();
+        private static readonly Dictionary<MethodInfo, ProfilerMarker> _markerByMethod = new();
+#endif
         private int _iterating;
         private bool _hasHoles;
 
         public void Add(Action<float> handler)
         {
-            if (handler != null) _handlers.Add(handler);
+            if (handler == null) return;
+            _handlers.Add(handler);
+#if ENABLE_PROFILER
+            _markers.Add(MarkerOf(handler));
+#endif
         }
+
+#if ENABLE_PROFILER
+        private static ProfilerMarker MarkerOf(Action<float> handler)
+        {
+            MethodInfo method = handler.Method;
+            if (_markerByMethod.TryGetValue(method, out ProfilerMarker marker)) return marker;
+            string type = method.DeclaringType != null ? method.DeclaringType.Name : "?";
+            marker = new ProfilerMarker(ProfilerCategory.Scripts, type + "." + method.Name);
+            _markerByMethod[method] = marker;
+            return marker;
+        }
+#endif
 
         // 델리게이트의 -=와 같게, 가장 나중에 구독한 같은 핸들러 하나를 뺀다.
         public void Remove(Action<float> handler)
@@ -133,6 +158,9 @@ public class LoopManager : Manager
                 else
                 {
                     _handlers.RemoveAt(i);
+#if ENABLE_PROFILER
+                    _markers.RemoveAt(i);
+#endif
                 }
                 return;
             }
@@ -152,7 +180,11 @@ public class LoopManager : Manager
 
                     try
                     {
+#if ENABLE_PROFILER
+                        using (_markers[i].Auto()) handler(dt);
+#else
                         handler(dt);
+#endif
                     }
                     catch (Exception e)
                     {
@@ -172,10 +204,18 @@ public class LoopManager : Manager
             int write = 0;
             for (int read = 0; read < _handlers.Count; read++)
             {
-                if (_handlers[read] != null) _handlers[write++] = _handlers[read];
+                if (_handlers[read] == null) continue;
+                _handlers[write] = _handlers[read];
+#if ENABLE_PROFILER
+                _markers[write] = _markers[read];
+#endif
+                write++;
             }
 
             _handlers.RemoveRange(write, _handlers.Count - write);
+#if ENABLE_PROFILER
+            _markers.RemoveRange(write, _markers.Count - write);
+#endif
             _hasHoles = false;
         }
     }

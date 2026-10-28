@@ -27,6 +27,7 @@
 ## Loop · AppState
 
 - `LoopManager`의 `OnUpdate`(unscaled) / `OnGameUpdate`(플레이어 배율) / `OnLateUpdate`. 구독자는 하나씩 예외 격리되어 불리고, 구독·해제에 할당이 없다. `WorldTimeScale`은 `Time.timeScale` 그 자체다.
+- 구독자마다 프로파일러 표식(`타입.메서드`, `ENABLE_PROFILER` — 에디터·개발 빌드)이 붙는다. 프로파일러에서 Core.Update 아래로 시스템별 시간이 보인다.
 - `LoopMonoBehaviour`를 상속하면 override한 갱신 메서드의 채널만 구독한다.
 - `AppStateManager`: 포그라운드/백그라운드 전환(`OnEnterForeground`/`OnEnterBackground`), 억제와 무관한 저장용 `OnBackgroundRaw`(전환당 1회). 광고·결제창 동안의 전환 억제는 `using (Core.AppState.SuppressStateEvents()) { ... }`(카운터·스코프, 겹쳐도 안전, 무시가 아니라 연기).
 

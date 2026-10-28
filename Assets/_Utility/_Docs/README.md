@@ -15,6 +15,7 @@
 | `AddressableAutoName/Editor/` | Addressable 자동 이름(전용 asmdef — 선택 패키지) |
 | `Transform/Editor/` | Tools/Transform/* |
 | `Model/Editor/` | Tools/Model/* |
+| `Profiler/Editor/` | Tools/Profiler/Export Captured Frames |
 | `UI/` | uGUI 컴포넌트(런타임만, 에디터 코드 없음) |
 | `Shader/` | Shader Graph(`Fill`, `WorldSpaceUV`) |
 | `_Shared/Editor/` | 툴 여럿이 같이 쓰는 것(`UtilityMenuPriority`) |
@@ -42,6 +43,7 @@
 - **Tools/Transform/Round Selected Transform** — 위치·회전은 정수, 스케일은 소수점 2자리로 반올림(AwayFromZero).
 - **Tools/Model/Batch Extract Materials from FBX** — 선택한 FBX들의 머티리얼을 추출하고 리매핑한다.
 - **Tools/Model/AnimationInPlace** — 독립 `.anim` 클립(Humanoid)의 루트 XZ 이동을 0으로 만든 복사본을 만든다. FBX 안의 클립은 Ctrl+D로 먼저 추출한다. Generic 리그는 지원하지 않는다.
+- **Tools/Profiler/Export Captured Frames** — 프로파일러 창에 녹화된 프레임(메인 스레드)을 모두 훑어 함수별 시간을 텍스트 하나로 남긴다(`output/Profiler/profile_<시각>.txt`, 경로는 콘솔에). 프레임 시간 평균·중간·95%·최대, 자기 시간 상위 40(이름별), 호출 나무(프레임당 평균 0.1ms 이상). 창의 Hierarchy는 한 프레임씩만 보이고 복사가 안 돼 여러 프레임 평균을 보거나 남에게 넘기기 어려워서 만들었다. 대화창은 띄우지 않는다(자동화가 끊긴다).
 
 ## 설정 SO 실행 중 조정 (`Tuning/`)
 
