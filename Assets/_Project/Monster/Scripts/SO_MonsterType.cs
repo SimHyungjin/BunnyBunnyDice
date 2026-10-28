@@ -10,7 +10,7 @@ public sealed class SO_MonsterType : ScriptableObject
     public string DisplayName;
     [Tooltip("발밑이 피벗인 프리팹. 앞(+Z)이 이동 방향을 향하도록 돌린다.")]
     public GameObject Prefab;
-    [Tooltip("임시 외형 색.")]
+    [Tooltip("특성 없는 몹의 공 색. 특성 색도 이 색에 섞는다(SO_MonsterTrait.Tint).")]
     public Color Color = Color.red;
 
     [Tooltip("초당 칸 수.")]

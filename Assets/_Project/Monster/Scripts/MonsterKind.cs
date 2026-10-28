@@ -131,19 +131,36 @@ public sealed class MonsterKind
         }
     }
 
-    /// <summary>기본 색에 특성 색을 차례로 섞는다(임시 외형).</summary>
-    public Color Color
+    /// <summary>
+    /// 띠 공의 두 색(띠·양끝). 색이 있는 특성(Tint 알파 &gt; 0)마다 기본 색에 섞은 색 하나 — 없으면 기본 색, 하나면 그 색 단색(띠 = 양끝),
+    /// 둘이면 띠 = 앞, 양끝 = 뒤. 셋째부터는 보이지 않는다(웨이브 설정이 색 있는 특성을 둘까지로 둔다).
+    /// 색 섞기 대신 나눠 칠하는 이유: 섞으면 두 특성이 겹친 몹이 제3의 색이 되어 어느 특성인지 읽을 수 없다.
+    /// 앞뒤를 에셋 이름 순서로 정하는 이유: 조합 순서는 무작위라, 그대로 쓰면 같은 조합이 띠·양끝이 뒤바뀌어 다른 몹처럼 보인다.
+    /// </summary>
+    public void GetBallColors(out Color band, out Color cap)
     {
-        get
+        SO_MonsterTrait first = null;
+        SO_MonsterTrait second = null;
+        for (int i = 0; i < _traits.Count; i++)
         {
-            Color color = Base.Color;
-            for (int i = 0; i < _traits.Count; i++)
+            SO_MonsterTrait trait = _traits[i];
+            if (trait.Tint.a <= 0f) continue;
+            if (first == null || string.CompareOrdinal(trait.name, first.name) < 0)
             {
-                Color tint = _traits[i].Tint;
-                color = Color.Lerp(color, new Color(tint.r, tint.g, tint.b, 1f), tint.a);
+                second = first;
+                first = trait;
             }
-            return color;
+            else if (second == null || string.CompareOrdinal(trait.name, second.name) < 0) second = trait;
         }
+
+        band = first != null ? Blend(first) : Base.Color;
+        cap = second != null ? Blend(second) : band;
+    }
+
+    private Color Blend(SO_MonsterTrait trait)
+    {
+        Color tint = trait.Tint;
+        return Color.Lerp(Base.Color, new Color(tint.r, tint.g, tint.b, 1f), tint.a);
     }
 
     /// <summary>나뉘는 특성(없으면 null). 여러 개면 첫 번째만 쓴다.</summary>

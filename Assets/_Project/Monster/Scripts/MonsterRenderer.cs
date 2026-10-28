@@ -120,10 +120,10 @@ public sealed class MonsterRenderer
             // 오브젝트는 재사용하므로 만들 때 한 번만 붙인다.
             OutlineMesh.AttachToModel(go, _outline);
         }
-        // 몸 색은 특성 색뿐이다 — 상태 이상은 체력바 아래에 따로 보인다(MonsterHealthBars).
+        // 몸 무늬는 특성 색뿐이다 — 상태 이상은 체력바 아래에 따로 보인다(MonsterHealthBars).
         // 꺼낼 때마다 색·크기를 다시 읽는 이유: 플레이 중 특성 SO를 고치면 다음에 나오는 몬스터부터 반영되게.
-        Color color = kind.Color;
-        RendererTint.Apply(go, color);
+        kind.GetBallColors(out Color band, out Color cap);
+        RendererTint.Apply(go, Color.white, GetBallTexture(band, cap));
         go.transform.localScale = Vector3.one * kind.VisualScale;
 
         _active[slot] = go;
@@ -313,6 +313,38 @@ public sealed class MonsterRenderer
         position.y += Mathf.Sin(progress * Mathf.PI) * _config.EmergeHop;
         t.localPosition = position;
         t.localScale = Vector3.one * (_scale[slot] * Mathf.Lerp(_config.EmergeStartScale, 1f, eased));
+    }
+
+    // 띠 공 무늬 텍스처: 세로 한 줄(구 메시의 V = 남극 → 북극). 띠는 적도 둘레, 나머지는 양끝 색.
+    // 프리팹의 몸통 구체는 극이 옆(진행 방향에 수직)을 향하게 돌려 두어, 굴러가는 축과 띠의 축이 같다 — 굴려도 겉모습이 변하지 않아 구르기 연출이 필요 없다.
+    // 셰이더를 따로 두지 않고 Lit 텍스처로 칠하는 이유: 판 위 조명(팔로우 스포트)·그림자를 다른 물체와 똑같이 받게.
+    // 같은 색 조합은 하나를 같이 쓴다(조합은 웨이브마다 몇 가지뿐). 띠 각도도 키에 넣어 GameTuning에서 고치면 새로 만든다.
+    private const int BallTextureHeight = 128;
+    private readonly Dictionary<(Color, Color, float), Texture2D> _ballTextures = new Dictionary<(Color, Color, float), Texture2D>();
+    private readonly Color[] _ballPixels = new Color[BallTextureHeight];
+
+    private Texture2D GetBallTexture(Color band, Color cap)
+    {
+        float halfAngle = _config.BandHalfAngle;
+        var key = (band, cap, halfAngle);
+        if (_ballTextures.TryGetValue(key, out Texture2D texture)) return texture;
+
+        for (int y = 0; y < BallTextureHeight; y++)
+        {
+            // V는 위도에 비례한다(-90° → 0, 90° → 1).
+            float latitude = ((y + 0.5f) / BallTextureHeight - 0.5f) * 180f;
+            _ballPixels[y] = Mathf.Abs(latitude) < halfAngle ? band : cap;
+        }
+        texture = new Texture2D(1, BallTextureHeight, TextureFormat.RGBA32, false)
+        {
+            name = "MonsterBall",
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear,
+        };
+        texture.SetPixels(_ballPixels);
+        texture.Apply(false, true);
+        _ballTextures.Add(key, texture);
+        return texture;
     }
 
     private void Place(Transform t, in MonsterState state) =>

@@ -65,6 +65,11 @@ public sealed class SO_MonsterConfig : SO_Config
     [Tooltip("분열한 조각들이 죽은 자리에서 걷던 방향으로 벌어지는 거리(칸). 완전히 겹치면 한 마리로 보인다.")]
     [Min(0f)] public float SplitOffset = 0.15f;
 
+    [Header("공 무늬 (띠 공)")]
+    [Tooltip("띠가 가운데에서 위아래로 덮는 각도(도). 30이면 띠와 양끝이 겉넓이를 반씩 나눈다 — 특성 둘 중 어느 쪽도 작아 보이지 않게. "
+        + "특성이 하나면 무늬 없이 그 색 단색 공이다.")]
+    [Range(5f, 85f)] public float BandHalfAngle = 30f;
+
     [Header("체력바")]
     [Tooltip("정점 색을 쓰는 반투명 셰이더(파티클 Unlit, 알파 블렌드). 비우면 체력바를 그리지 않는다.")]
     public Material HealthBarMaterial;

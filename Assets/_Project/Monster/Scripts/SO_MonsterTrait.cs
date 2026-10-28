@@ -10,7 +10,8 @@ using UnityEngine;
 public sealed class SO_MonsterTrait : ScriptableObject
 {
     public string DisplayName;
-    [Tooltip("기본 색에 섞는 색. 알파가 섞는 정도(0이면 색을 바꾸지 않는다). 임시 외형 — 모델이 생기면 뺀다.")]
+    [Tooltip("띠 공에 칠하는 색(기본 색에 섞은 값). 알파가 섞는 정도이고 0이면 색이 없는 특성(거대 — 크기로 보인다). "
+        + "색 있는 특성이 둘이면 에셋 이름 순서로 앞이 띠, 뒤가 양끝(MonsterKind.GetBallColors).")]
     public Color Tint = new Color(1f, 1f, 1f, 0f);
     [Tooltip("겉모습 크기 배율. 걷는 길 계산의 반지름은 바꾸지 않는다(SO_MonsterConfig.Radius를 모두 같이 쓴다).")]
     [Min(0.1f)] public float VisualScale = 1f;

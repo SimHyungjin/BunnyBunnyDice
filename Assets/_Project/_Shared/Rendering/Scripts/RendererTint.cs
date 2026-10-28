@@ -8,12 +8,18 @@ public static class RendererTint
 {
     // URP Lit·Unlit의 기본 색 속성.
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+    private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
     private static MaterialPropertyBlock _block;
 
-    public static void Apply(GameObject target, Color color)
+    public static void Apply(GameObject target, Color color) => Apply(target, color, null);
+
+    /// <summary>색과 함께 기본 텍스처도 바꾼다(몬스터 띠 공 무늬). texture가 null이면 머티리얼의 텍스처를 그대로 쓴다.</summary>
+    public static void Apply(GameObject target, Color color, Texture texture)
     {
         _block ??= new MaterialPropertyBlock();
+        _block.Clear();
         _block.SetColor(BaseColorId, color);
+        if (texture != null) _block.SetTexture(BaseMapId, texture);
 
         Renderer[] renderers = target.GetComponentsInChildren<Renderer>(true);
         for (int i = 0; i < renderers.Length; i++) renderers[i].SetPropertyBlock(_block);
