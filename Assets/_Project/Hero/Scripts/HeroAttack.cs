@@ -26,6 +26,8 @@ public sealed class HeroAttack : IDisposable
     private readonly List<int> _pendingTargets = new List<int>();
     // 손을 떠날 때 고른 대상 슬롯들(가까운 순). 매번 비워 다시 쓴다.
     private readonly List<int> _targets = new List<int>();
+    // _targets(고정 대상 다음부터)와 같은 순서의 거리 제곱 — 가까운 순으로 끼워 넣을 자리를 찾는다.
+    private readonly List<float> _targetSqr = new List<float>();
 
     public HeroAttack(SO_HeroConfig config, HeroStats stats, Hero hero, MonsterField monsters, HeroCardShots cards, Func<Vector2Int, float> standingRange)
     {
@@ -135,28 +137,38 @@ public sealed class HeroAttack : IDisposable
     }
 
     // 이번에 던질 대상 슬롯들을 _targets에 가까운 순으로 담는다(최대 count마리, 같은 적은 한 번).
+    // 몬스터를 한 번만 훑으며 가까운 count마리를 끼워 넣는다 — 장마다 전체를 다시 훑으면 투사체·공속이 오를수록
+    // (공격 수 × 장 수 × 마릿수) 무거워졌다(몬스터를 모은 시험에서 프레임당 4ms — 2026-10-28 프로파일).
     private void CollectTargets(Vector2 position, float range, int lockedId, int count)
     {
         _targets.Clear();
+        _targetSqr.Clear();
         int locked = FindLocked(lockedId, position, range * _config.AttackKeepRangeScale);
         if (locked >= 0) _targets.Add(locked);
+        int start = _targets.Count;
+        int wanted = count - start;
+        if (wanted <= 0) return;
 
         MonsterState[] states = _monsters.States;
         float rangeSqr = range * range;
-        while (_targets.Count < count)
+        for (int i = 0; i < _monsters.Count; i++)
         {
-            int best = -1;
-            float bestSqr = rangeSqr;
-            for (int i = 0; i < _monsters.Count; i++)
+            if (i == locked || !states[i].IsAlive) continue;
+            float sqr = (states[i].Position - position).sqrMagnitude;
+            if (sqr > rangeSqr) continue;
+            int found = _targetSqr.Count;
+            if (found == wanted && sqr >= _targetSqr[found - 1]) continue;
+
+            // 가까운 순 자리에 끼우고, 넘치면 가장 먼 것을 뺀다. 같은 거리면 먼저 본 것을 앞에 둔다.
+            int at = found;
+            while (at > 0 && _targetSqr[at - 1] > sqr) at--;
+            _targetSqr.Insert(at, sqr);
+            _targets.Insert(start + at, i);
+            if (_targetSqr.Count > wanted)
             {
-                if (!states[i].IsAlive || _targets.Contains(i)) continue;
-                float sqr = (states[i].Position - position).sqrMagnitude;
-                if (sqr > bestSqr) continue;
-                bestSqr = sqr;
-                best = i;
+                _targetSqr.RemoveAt(wanted);
+                _targets.RemoveAt(start + wanted);
             }
-            if (best < 0) break;
-            _targets.Add(best);
         }
     }
 
