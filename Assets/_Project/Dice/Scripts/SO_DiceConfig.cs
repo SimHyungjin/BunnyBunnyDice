@@ -76,6 +76,14 @@ public sealed class SO_DiceConfig : SO_Config
     [Tooltip("각성(색이 있고 눈이 상한)한 주사위의 눈 색 — 각성을 한눈에 알아보게.")]
     public Color AwakenedPipColor = new Color(1f, 0.82f, 0.2f);
 
+    [Header("각성 표시")]
+    [Tooltip("각성한 주사위의 툰 외곽선 색 — 숫자를 읽지 않아도 모양으로 알아보게. 켜져 있는 동안은 이것만 바뀐다(주사위가 많아 계속 빛나면 시끄럽다).")]
+    public Color AwakenedOutlineColor = new Color(1f, 0.82f, 0.2f);
+    [Tooltip("각성이 켜지는 순간 한 번 퍼지는 고리 색.")]
+    public Color AwakenRingColor = new Color(1f, 0.82f, 0.2f);
+    [Tooltip("각성 고리가 퍼지는 반지름(칸 = 1).")]
+    [Min(0f)] public float AwakenRingRadius = 0.7f;
+
     /// <summary>면체의 모델. 없으면 임시 큐브(Prefab)를 쓴다.</summary>
     public FaceModel GetModel(int faces)
     {

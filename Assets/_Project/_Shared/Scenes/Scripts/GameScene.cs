@@ -59,6 +59,7 @@ public sealed partial class GameScene : SceneBase
     // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.5)와 그 표시.
     private HeroOverdrive _heroOverdrive;
     private HeroOverdriveView _heroOverdriveView;
+    private DiceAwakenEffect _diceAwakenEffect;
     private MonsterField _monsters;
     private AttackEffects _attackEffects;
     private HeroCardShots _heroCards;
@@ -233,6 +234,7 @@ public sealed partial class GameScene : SceneBase
         _damageNumbers = new DamageNumbers(_mapRoot, damageNumberConfig, () => Core.Camera.MainCamera);
         _diceAttack = new DiceAttack(diceStatsConfig, _monsterConfig, _viewConfig, _monsters, _attackEffects);
         _diceCombat = new DiceCombat(_viewConfig, diceStatsConfig, diceConfig, _diceField, _chips, _monsters, _diceAttack);
+        _diceAwakenEffect = new DiceAwakenEffect(diceConfig, _diceField, _attackEffects);
         _heroOverdrive = new HeroOverdrive(heroConfig, _hero, _diceField, _diceCombat, _monsters);
         _heroOverdriveView = new HeroOverdriveView(heroConfig, _viewConfig, _heroOverdrive, _attackEffects);
         _expBoost = new ExpBoost();
@@ -431,6 +433,7 @@ public sealed partial class GameScene : SceneBase
         _expBoost?.Dispose();
         _skillPreview?.Dispose();
         _heroOverdriveView?.Dispose();
+        _diceAwakenEffect?.Dispose();
         _heroOverdrive?.Dispose();
         _diceCombat?.Dispose();
         _diceAttack?.Dispose();

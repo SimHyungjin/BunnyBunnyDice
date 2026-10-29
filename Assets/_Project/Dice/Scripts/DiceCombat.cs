@@ -81,10 +81,18 @@ public sealed class DiceCombat : IDisposable
     }
 
     /// <summary>세븐스 헤븐: duration초 동안 판 위 모든 주사위가 각성으로 쏜다. 다시 걸면 긴 쪽을 남긴다.</summary>
-    public void AwakenAll(float duration) => _awakenAllTime = Mathf.Max(_awakenAllTime, duration);
+    public void AwakenAll(float duration)
+    {
+        _awakenAllTime = Mathf.Max(_awakenAllTime, duration);
+        _diceField.SetBoardAwakened(_awakenAllTime > 0f);
+    }
 
     /// <summary>판이 바뀌면 판 전체에 걸린 상태(세븐스 헤븐)를 지운다. 주사위마다 붙은 상태는 주사위가 비면 같이 비워진다.</summary>
-    public void Clear() => _awakenAllTime = 0f;
+    public void Clear()
+    {
+        _awakenAllTime = 0f;
+        _diceField.SetBoardAwakened(false);
+    }
 
     /// <summary>
     /// 오버드라이브: index번째 주사위가 duration초 동안 공격력 damageScale배·공속 speedScale배로 쏜다. 다시 걸면 시간이 새로 시작한다(겹쳐 세지 않음).
@@ -162,6 +170,7 @@ public sealed class DiceCombat : IDisposable
         if (_monsters.Paused || _monsters.Route == null) return;
 
         _awakenAllTime = Mathf.Max(_awakenAllTime - deltaTime, 0f);
+        if (_awakenAllTime <= 0f) _diceField.SetBoardAwakened(false);
         for (int i = 0; i < placed.Count; i++)
         {
             _overdriveTimes[i] = Mathf.Max(_overdriveTimes[i] - deltaTime, 0f);

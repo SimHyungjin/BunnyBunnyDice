@@ -27,6 +27,13 @@ public sealed class DiceView
     private Vector3 _rollAxis;
     // 눈 글자의 원래 자리. 얹기 고스트 중(ShowOverGhost)에는 고스트 위로 옮겼다가 되돌린다.
     private Vector3 _pipPosition;
+    // 각성 표시(기획서 6.8): 켜져 있는 동안은 눈 색·외곽선 색만 바꾸고, 켜지는 순간에만 고리를 한 번 띄운다(DiceField.AwakenRevealed)
+    // — 판에 주사위가 수십 개라 계속 빛나는 효과는 판을 시끄럽게 한다.
+    private bool _awakened;
+    // 새로 각성했는데 아직 보여 주지 않았다. 굴리는 중에 각성이 드러나면 눈보다 먼저 결과를 알려 주므로 멈춘 뒤에 켠다(SyncAwakened).
+    private bool _revealPending;
+    private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
+    private static MaterialPropertyBlock _outlineBlock;
 
     public bool IsRolling => _rollTime >= 0f || _popTime >= 0f;
 
@@ -66,7 +73,9 @@ public sealed class DiceView
         RendererTint.Apply(_body, config.GetColor(dice.Colors));
 
         _pips.fontSize = config.PipFontSize * model.PipScale;
-        _pips.color = awakened ? config.AwakenedPipColor : config.PipColor;
+        SetAwakened(awakened, config);
+        // 몸체를 새로 만들었으니 외곽선은 기본색이다 — 이미 보여 준 각성만 바로 다시 입힌다(새 각성은 멈춘 뒤 SyncAwakened가).
+        TintOutline(_awakened && !_revealPending, config);
         // 면체는 모델 모양으로 보이므로 숫자만 둔다(기획서 6.8).
         // 눈을 다 태운 주사위는 숫자를 비운다 — 꺼진 것을 몸 색이 아니라 눈으로 보인다(색은 공격 방식이라 그대로 둔다).
         _pips.text = dice.IsSpent ? string.Empty : dice.Pips.ToString();
@@ -186,6 +195,51 @@ public sealed class DiceView
         body.localPosition = new Vector3(_cell.x, _top + _halfHeight, _cell.y);
         body.localRotation = Quaternion.identity;
         _pips.gameObject.SetActive(true);
+    }
+
+    /// <summary>각성으로 보일지 정한다. 꺼지는 것은 바로, 켜지는 것은 굴림이 끝난 뒤(SyncAwakened)에 외곽선에 드러난다.</summary>
+    public void SetAwakened(bool awakened, SO_DiceConfig config)
+    {
+        if (awakened && !_awakened) _revealPending = true;
+        if (!awakened)
+        {
+            _revealPending = false;
+            if (_awakened) TintOutline(false, config);
+        }
+        _awakened = awakened;
+        // 눈 글자는 굴리는 동안 숨겨져 있어 바로 바꿔도 미리 드러나지 않는다.
+        _pips.color = awakened ? config.AwakenedPipColor : config.PipColor;
+    }
+
+    /// <summary>굴리는 중이 아니면 새 각성을 외곽선에 드러낸다. 지금 드러냈으면 true(켜지는 순간 연출을 띄울 때).</summary>
+    public bool SyncAwakened(SO_DiceConfig config)
+    {
+        if (!_revealPending || IsRolling || _body == null) return false;
+        _revealPending = false;
+        TintOutline(true, config);
+        return true;
+    }
+
+    /// <summary>각성 고리를 띄울 자리(칸 중심, 주사위가 선 바닥 높이 — 맵 로컬).</summary>
+    public Vector3 BasePosition => new Vector3(_cell.x, _top, _cell.y);
+
+    // 외곽선은 공용 머티리얼(SceneLighting)이라 복제하지 않고 그 자리(머티리얼 번호)에만 블록으로 색을 넣는다
+    // — 조명 설정이 바꾸는 굵기는 그대로 따라온다. 끌 때는 빈 블록으로 공용 색으로 돌린다.
+    private void TintOutline(bool awakened, SO_DiceConfig config)
+    {
+        if (_body == null || _outline == null) return;
+        _outlineBlock ??= new MaterialPropertyBlock();
+        _outlineBlock.Clear();
+        if (awakened) _outlineBlock.SetColor(OutlineColorId, config.AwakenedOutlineColor);
+        Renderer[] renderers = _body.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Material[] materials = renderers[i].sharedMaterials;
+            for (int m = 0; m < materials.Length; m++)
+            {
+                if (materials[m] == _outline) renderers[i].SetPropertyBlock(_outlineBlock, m);
+            }
+        }
     }
 
     /// <summary>
