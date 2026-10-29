@@ -16,7 +16,7 @@ public sealed class DiceCombat : IDisposable
     private readonly ChipField _chips;
     private readonly MonsterField _monsters;
     private readonly DiceAttack _attack;
-    // 모두 DiceField.Placed와 같은 번호. 철거(폴드)되면 같은 자리를 지우고(OnDiceRemoved), 판이 바뀌어 비면 같이 비운다.
+    // 모두 DiceField.Placed와 같은 번호. 거둬지면(캐시 아웃) 같은 자리를 지우고(OnDiceRemoved), 판이 바뀌어 비면 같이 비운다.
     private readonly List<float> _cooldowns = new List<float>();
     // 지금까지 쏜 횟수(저격 각성의 "N번째마다").
     private readonly List<int> _shotCounts = new List<int>();

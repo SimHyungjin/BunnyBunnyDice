@@ -9,7 +9,6 @@ using UnityEngine;
 /// 어떤 특성 조합이 나올지는 WaveComposition이 정하고, 여기서는 조합을 몬스터 모양(MonsterKind)으로 바꿔 줄 세운다.
 /// 보스는 일반 몬스터 뒤에 보스 포켓(MapData.BossPocket)에서 나오고, 체력은 그 웨이브 일반 몬스터 체력 합의 몫이다(기획서 11.3).
 /// 보스는 확률로 잭팟 보스가 된다 — 보스 웨이브가 시작될 때 정해 알리고(JackpotWarned), 보스가 나오면 끝을 알린다.
-/// 따로 나오던 잭팟 몬스터는 없앴다: 일반 체력이라 미로에서 나오자마자 죽어 아무 느낌이 없었다.
 /// </summary>
 public sealed class WaveSpawner : IDisposable
 {

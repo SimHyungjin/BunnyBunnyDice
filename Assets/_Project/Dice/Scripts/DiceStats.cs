@@ -9,8 +9,6 @@ public struct DiceStats
     public float Damage;
     /// <summary>한 방마다 더하는 피해의 맞은 적 최대 체력 비율(SO_DiceType.MaxHealthDamage — 각성·오버드라이브·칩 배율은 고정 피해와 함께 곱한다).</summary>
     public float MaxHealthRatio;
-    /// <summary>보스에게는 최대 체력 피해가 들어가지 않는다.</summary>
-    public bool MaxHealthBossImmune;
     /// <summary>공격 간격(초).</summary>
     public float AttackInterval;
     /// <summary>칩 보너스를 뺀 사거리(종류마다 고정, 눈으로 자라지 않는다 — 그래서 따로 상한을 두지 않는다). 파랑은 각성하면 늘어난다.</summary>
@@ -40,7 +38,6 @@ public struct DiceStats
         {
             Damage = type.Damage * (1f + type.DamageGrowth * growth) * awaken,
             MaxHealthRatio = type.MaxHealthDamage * awaken,
-            MaxHealthBossImmune = type.MaxHealthBossImmune,
             AttackInterval = 1f / speed,
             Range = range,
             CritChance = Mathf.Clamp01(dice.Pips * config.CritChancePerPip),

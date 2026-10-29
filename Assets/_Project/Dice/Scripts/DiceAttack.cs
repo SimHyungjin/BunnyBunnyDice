@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,7 +42,6 @@ public sealed class DiceAttack : IDisposable
         public float Range;
         public float Damage;
         public float MaxHealthRatio;
-        public bool MaxHealthBossImmune;
         public float CritChance;
         public Color Color;
         public float Delay;
@@ -121,7 +120,7 @@ public sealed class DiceAttack : IDisposable
     // 강타(빨강): 각성하면 매 공격 확정 치명타(배율은 공통 배율 그대로) — 강한 한 방이 늘 두 배로 들어간다.
     private bool FireSnipe(in Shot shot, SO_DiceType_Snipe type, bool awaken, Color color)
     {
-        int target = FindSingle(shot, type);
+        int target = FindFirst(shot);
         if (target < 0) return false;
         Vector2 position = _monsters.States[target].Position;
         float damage = DamageOn(shot, target, 1f);
@@ -135,7 +134,7 @@ public sealed class DiceAttack : IDisposable
     // 속사(초록): 같은 적을 이어 맞힐 때마다 피해가 쌓인다. 주사위 칸으로 누구를 몇 번 맞혔는지 기억한다.
     private bool FireRapid(in Shot shot, SO_DiceType_Rapid type, Color color)
     {
-        int target = FindSingle(shot, type);
+        int target = FindFirst(shot);
         if (target < 0) return false;
         MonsterState state = _monsters.States[target];
         Vector2Int cell = Vector2Int.RoundToInt(shot.Origin);
@@ -149,7 +148,7 @@ public sealed class DiceAttack : IDisposable
     // 저격(파랑): 멀리 있는 적일수록 세다 — 사거리 끝에서 (1 + FarDamageBonus)배.
     private bool FireLongRange(in Shot shot, SO_DiceType_LongRange type, Color color)
     {
-        int target = FindSingle(shot, type);
+        int target = FindFirst(shot);
         if (target < 0) return false;
         Vector2 position = _monsters.States[target].Position;
         float distance = shot.Range > 0f ? Mathf.Clamp01((position - shot.Origin).magnitude / shot.Range) : 0f;
@@ -294,7 +293,7 @@ public sealed class DiceAttack : IDisposable
     // (반경을 늘리면 짧은 사거리라는 약점을 메우게 되므로 같은 자리에서 두 겹으로 친다.)
     private bool FirePulse(in Shot shot, SO_DiceType_Pulse type, bool awaken, Color color)
     {
-        if (!Pulse(shot.Origin, shot.Range, shot.Stats.Damage, shot.Stats.MaxHealthRatio, shot.Stats.MaxHealthBossImmune, shot.Stats.CritChance, color))
+        if (!Pulse(shot.Origin, shot.Range, shot.Stats.Damage, shot.Stats.MaxHealthRatio, shot.Stats.CritChance, color))
             return false;
         if (awaken)
         {
@@ -304,7 +303,6 @@ public sealed class DiceAttack : IDisposable
                 Range = shot.Range,
                 Damage = shot.Stats.Damage * type.AwakenPulseRatio,
                 MaxHealthRatio = shot.Stats.MaxHealthRatio * type.AwakenPulseRatio,
-                MaxHealthBossImmune = shot.Stats.MaxHealthBossImmune,
                 CritChance = shot.Stats.CritChance,
                 Color = color,
                 Delay = type.AwakenPulseDelay,
@@ -316,7 +314,7 @@ public sealed class DiceAttack : IDisposable
     }
 
     // 범위 안에 아무도 없으면 터지지 않는다(첫 파동은 쏘지 않은 것으로 본다).
-    private bool Pulse(Vector2 center, float range, float damage, float maxHealthRatio, bool bossImmune, float critChance, Color color)
+    private bool Pulse(Vector2 center, float range, float damage, float maxHealthRatio, float critChance, Color color)
     {
         MonsterState[] states = _monsters.States;
         float rangeSqr = range * range;
@@ -324,7 +322,7 @@ public sealed class DiceAttack : IDisposable
         for (int i = 0; i < _monsters.Count; i++)
         {
             if (!states[i].IsAlive || (states[i].Position - center).sqrMagnitude > rangeSqr) continue;
-            HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio, bossImmune), critChance);
+            HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio), critChance);
             any = true;
         }
         if (any) _effects.ShowBurst(new Vector3(center.x, _viewConfig.GetTileTop(TileType.Ground), center.y), range, color);
@@ -346,7 +344,7 @@ public sealed class DiceAttack : IDisposable
             }
             _attachment = pulse.Attachment;
             _source = pulse.Source;
-            Pulse(pulse.Center, pulse.Range, pulse.Damage, pulse.MaxHealthRatio, pulse.MaxHealthBossImmune, pulse.CritChance, pulse.Color);
+            Pulse(pulse.Center, pulse.Range, pulse.Damage, pulse.MaxHealthRatio, pulse.CritChance, pulse.Color);
             _pulses[i] = _pulses[_pulses.Count - 1];
             _pulses.RemoveAt(_pulses.Count - 1);
         }
@@ -355,19 +353,13 @@ public sealed class DiceAttack : IDisposable
     private int FindFirst(in Shot shot) =>
         MonsterTargeting.FindFirst(_monsters.States, _monsters.Count, shot.Origin, shot.Range, _monsters.Route);
 
-    // 단일형: 종류가 켜 두면 최대 체력이 가장 큰 적부터(SO_DiceType.PreferToughest), 아니면 선두.
-    private int FindSingle(in Shot shot, SO_DiceType type) => type.PreferToughest
-        ? MonsterTargeting.FindToughest(_monsters.States, _monsters.Count, shot.Origin, shot.Range, _monsters.Route)
-        : FindFirst(shot);
-
     // 한 방 피해 = (고정 + 맞은 적 최대 체력 × 비율) × scale. 공격 방식의 배율(이어 맞히기·거리·폭발 주변·체인 감쇠)은 최대 체력 피해에도 똑같이 곱한다.
     private float DamageOn(in Shot shot, int slot, float scale) =>
-        (shot.Stats.Damage + MaxHealthBonus(slot, shot.Stats.MaxHealthRatio, shot.Stats.MaxHealthBossImmune)) * scale;
+        (shot.Stats.Damage + MaxHealthBonus(slot, shot.Stats.MaxHealthRatio)) * scale;
 
-    // 범위형은 보스에게 최대 체력 피해를 주지 않는다(잡몹 담당 — SO_DiceType.MaxHealthBossImmune). 분열 조각은 보스가 아니다.
-    private float MaxHealthBonus(int slot, float ratio, bool bossImmune)
+    private float MaxHealthBonus(int slot, float ratio)
     {
-        if (ratio <= 0f || (bossImmune && _monsters.KindOf(slot).IsBoss)) return 0f;
+        if (ratio <= 0f) return 0f;
         return _monsters.States[slot].MaxHealth * ratio;
     }
 

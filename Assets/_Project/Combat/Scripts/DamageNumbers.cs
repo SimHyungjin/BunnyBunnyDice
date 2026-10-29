@@ -137,8 +137,7 @@ public sealed class DamageNumbers : IDisposable
         Color color = kind == DamageKind.BonusExp ? _config.BonusExpColor
             : kind == DamageKind.Critical ? _config.CriticalColor
             : kind == DamageKind.Reduced ? _config.ReducedColor
-            : kind == DamageKind.Poison ? _config.PoisonColor
-            : kind == DamageKind.Fire ? _config.FireColor : _config.NormalColor;
+            : kind == DamageKind.Poison ? _config.PoisonColor : _config.NormalColor;
 
         float launch = UnityEngine.Random.Range(_config.LaunchSpeed.x, _config.LaunchSpeed.y);
         _active.Add(new Number

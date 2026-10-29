@@ -96,7 +96,7 @@ public sealed class PlacementPreview
         else if (_ring != null) _ring.gameObject.SetActive(false);
     }
 
-    /// <summary>칸 대상 스킬(폴드)을 끄는 동안 — 칸 하이라이트만 보인다(없어질 주사위·칩은 그대로 보여 무엇이 사라지는지 알게).</summary>
+    /// <summary>칸 대상 스킬(캐시 아웃)을 끄는 동안 — 칸 하이라이트만 보인다(거둘 주사위·칩은 그대로 보여 무엇이 사라지는지 알게).</summary>
     public void ShowCell(Vector2Int cell, bool valid)
     {
         ShowHighlight(cell, _viewConfig.GetTileTop(TileType.Ground), valid);

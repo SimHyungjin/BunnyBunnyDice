@@ -64,9 +64,6 @@ public sealed class UI_LobbyStatCell : MonoBehaviour
         _die.Roll(config, success ? _stage : rolled, success, delay, Apply);
     }
 
-    /// <summary>굴림을 건너뛴다(새 값으로 바로 놓는다).</summary>
-    public void FinishRoll() => _die.Finish();
-
     private void LateUpdate()
     {
         if (_dirty && !_die.IsTumbling) Apply();

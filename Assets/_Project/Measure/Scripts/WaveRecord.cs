@@ -30,7 +30,7 @@ public sealed class WaveRecord
     public float RideSeconds;
     /// <summary>영웅 오버드라이브로 깎인 눈 수.</summary>
     public int PipsDrained;
-    /// <summary>쓴 스킬 카드 수(폴드 포함).</summary>
+    /// <summary>쓴 스킬 카드 수(모든 대상).</summary>
     public int SkillUses;
     /// <summary>레벨업 후보로 나온 카드 수(CardKind 순서) — 고른 것만으로는 "안 나왔는지 안 골랐는지"가 안 갈려서.</summary>
     public readonly int[] Offers = new int[OfferKinds];

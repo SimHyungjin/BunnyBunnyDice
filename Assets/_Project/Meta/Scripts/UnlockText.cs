@@ -7,7 +7,7 @@ public static class UnlockText
         {
             case UnlockKind.BestWave: return App.Localize("웨이브 {0} 클리어", rule.Target);
             case UnlockKind.Awakenings: return App.Localize("주사위 각성 {0}회", rule.Target);
-            case UnlockKind.JackpotKills: return App.Localize("잭팟 몬스터 {0}마리 처치", rule.Target);
+            case UnlockKind.JackpotKills: return App.Localize("잭팟 보스 {0}마리 처치", rule.Target);
             case UnlockKind.RunCount: return App.Localize("{0}판 플레이", rule.Target);
             case UnlockKind.DicePlaced: return App.Localize("주사위 {0}개 배치", rule.Target);
             default: return string.Empty;

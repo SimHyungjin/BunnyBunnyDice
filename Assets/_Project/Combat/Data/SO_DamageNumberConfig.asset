@@ -21,7 +21,6 @@ MonoBehaviour:
   CriticalColor: {r: 1, g: 0.6, b: 0.15, a: 1}
   ReducedColor: {r: 0.6, g: 0.6, b: 0.65, a: 1}
   PoisonColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
-  FireColor: {r: 1, g: 0.4, b: 0.2, a: 1}
   BonusExpColor: {r: 1, g: 0.85, b: 0.25, a: 1}
   Duration: 1
   StartHeight: 0.6

@@ -26,9 +26,7 @@ MonoBehaviour:
   AttackSpeed: 2
   AttackSpeedGrowth: 0
   Range: 2.3
-  PreferToughest: 0
   MaxHealthDamage: 0.001
-  MaxHealthBossImmune: 0
   ExplosionRadius: 0.9
   ExplosionRadiusGrowth: 0.1
   MaxExplosionRadius: 2

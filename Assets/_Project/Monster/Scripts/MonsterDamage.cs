@@ -7,8 +7,7 @@ public enum DamageKind
     Critical,
     Reduced, // 방어력에 깎였다
     Poison,  // 독(지속 피해)
-    Fire,    // 바닥 불길(FireZones — 지금은 쓰는 곳 없음)
-    BonusExp, // 피해가 아니라 특성(럭키보이)으로 더 받은 경험치 — 같은 튀는 숫자로 "+N"을 보인다
+    BonusExp, // 피해가 아니라 하우스 엣지(ExpBoost)로 더 받은 경험치 — 같은 튀는 숫자로 "+N"을 보인다
 }
 
 /// <summary>

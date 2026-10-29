@@ -150,10 +150,6 @@ public sealed class MonsterField : IDisposable
     public void Hold(int slot, float duration) =>
         MonsterStatus.Hold(ref _states[slot], duration * KindOf(slot).ImpairScale);
 
-    /// <summary>불길 같은 범위 피해에 쓴다. 효과 피해라 치명타는 없다.</summary>
-    public void HitEffect(int slot, float damage, float penetration, DamageKind kind, DamageSource source) =>
-        ApplyDamage(slot, damage, penetration, kind, source);
-
     public void Slow(int slot, float ratio, float duration) =>
         MonsterStatus.Slow(ref _states[slot], ratio * KindOf(slot).ImpairScale, duration);
 

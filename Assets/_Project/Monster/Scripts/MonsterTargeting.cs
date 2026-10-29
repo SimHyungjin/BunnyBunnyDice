@@ -29,31 +29,6 @@ public static class MonsterTargeting
     }
 
     /// <summary>
-    /// 사거리 안에서 최대 체력이 가장 큰 몬스터(보스 등), 같으면 선두. 없으면 -1.
-    /// 단일형 주사위(SO_DiceType.PreferToughest)가 쓴다 — 선두만 노리면 떼 속 보스를 거의 맞히지 못한다.
-    /// </summary>
-    public static int FindToughest(MonsterState[] states, int count, Vector2 center, float range, GridRouteField route)
-    {
-        float rangeSqr = range * range;
-        int best = -1;
-        float bestHealth = 0f;
-        float bestRemaining = float.MaxValue;
-        for (int i = 0; i < count; i++)
-        {
-            ref MonsterState state = ref states[i];
-            if (!state.IsAlive || (state.Position - center).sqrMagnitude > rangeSqr) continue;
-            if (state.MaxHealth < bestHealth) continue;
-
-            float remaining = GetRemainingDistance(state, route);
-            if (state.MaxHealth == bestHealth && remaining >= bestRemaining) continue;
-            bestHealth = state.MaxHealth;
-            bestRemaining = remaining;
-            best = i;
-        }
-        return best;
-    }
-
-    /// <summary>
     /// 사거리 안에서 선두부터 result 길이만큼 고른다(다중 타겟). 고른 수를 돌려주고, result 앞에서부터 선두 순서로 채운다.
     /// remaining은 result와 같은 길이의 작업 공간이다(호출하는 쪽이 들고 있어 할당 없이 쓰게).
     /// </summary>

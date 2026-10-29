@@ -11,14 +11,13 @@ public readonly struct DamageSource
     private const int HeroIndex = DiceCount;
     private const int SkillIndex = DiceCount + 1;
     private const int BurnIndex = DiceCount + 2;
-    private const int FireIndex = DiceCount + 3;
-    public const int Count = DiceCount + 4;
+    public const int Count = DiceCount + 3;
 
     // 기록(CSV) 머리글에 쓴다 — 번역하지 않는다(테스트·분석용).
     private static readonly string[] Names =
     {
         "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White",
-        "Hero", "Skill", "Burn", "Fire",
+        "Hero", "Skill", "Burn",
     };
 
     public readonly int Index;
@@ -35,10 +34,8 @@ public readonly struct DamageSource
         new DamageSource((int)DiceColors.Normalize(colors), boost);
     public static readonly DamageSource Hero = new DamageSource(HeroIndex);
     public static readonly DamageSource Skill = new DamageSource(SkillIndex);
-    /// <summary>화상 칩의 독(지속 피해). 칩 위 주사위 색과 따로 센다 — 칩이 얼마나 일하는지 보려고.</summary>
+    /// <summary>화상(지속 피해 — 화상 칩·틸트 카드). 주사위 색과 따로 센다 — 화상이 얼마나 일하는지 보려고.</summary>
     public static readonly DamageSource Burn = new DamageSource(BurnIndex);
-    /// <summary>바닥 불길(FireZones). 지금은 쓰는 곳이 없다 — 스킬로 옮길 때 다시 쓴다.</summary>
-    public static readonly DamageSource Fire = new DamageSource(FireIndex);
 
     public static string NameOf(int index) => Names[index];
 }

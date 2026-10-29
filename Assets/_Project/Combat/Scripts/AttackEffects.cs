@@ -32,7 +32,7 @@ public sealed class AttackEffects : IDisposable
         public float Radius;
         public float Duration;
         public float Remaining;
-        /// <summary>퍼지는 고리(폭발)인지, 제자리에 머무는 고리(불길 구역)인지.</summary>
+        /// <summary>퍼지는 고리(폭발)인지, 제자리에 머무는 고리(스킬 지속 구역)인지.</summary>
         public bool Expand;
     }
 
@@ -84,7 +84,7 @@ public sealed class AttackEffects : IDisposable
     public void ShowBurst(Vector3 center, float radius, Color color) =>
         AddRing(center, radius, color, _config.BurstDuration, true);
 
-    /// <summary>duration 동안 제자리에 머물며 흐려지는 고리(불길이 남은 구역 등).</summary>
+    /// <summary>duration 동안 제자리에 머물며 흐려지는 고리(오버드라이브·풀 하우스 지속 등).</summary>
     public void ShowRing(Vector3 center, float radius, Color color, float duration) =>
         AddRing(center, radius, color, duration, false);
 

@@ -27,6 +27,4 @@ MonoBehaviour:
   AttackSpeed: 1.2
   AttackSpeedGrowth: 0
   Range: 2.8
-  PreferToughest: 0
   MaxHealthDamage: 0
-  MaxHealthBossImmune: 0

@@ -9,7 +9,7 @@ public enum SkillTarget
     Area,
     /// <summary>판 위 아무 곳에나 놓으면 판 전체(올인 — 적이 아니라 주사위·목표물에).</summary>
     Board,
-    /// <summary>주사위나 칩이 있는 칸 하나(폴드). 주사위 대상과 같이 칸을 겨눈다.</summary>
+    /// <summary>주사위나 칩이 있는 칸 하나(캐시 아웃). 주사위 대상과 같이 칸을 겨눈다.</summary>
     Cell,
 }
 

@@ -37,7 +37,7 @@ public sealed class ChipField
     /// <summary>판 중에 칩이 놓였다. 빈 칸이면 길이 막혔을 수 있고, 주사위 칸이면 주사위가 칩 위로 올라앉는다.</summary>
     public event Action<Vector2Int> ChipPlaced;
 
-    /// <summary>칩이 없어졌다(폴드). 빈 칸의 칩은 벽이었으므로 길이 바뀐다.</summary>
+    /// <summary>칩이 없어졌다(캐시 아웃). 빈 칸의 칩은 벽이었으므로 길이 바뀐다.</summary>
     public event Action<Vector2Int> ChipRemoved;
 
     /// <summary>칩 표시들(피벗은 칸 바닥 가운데). 시작 칩이 왼쪽 열부터 앞에 온다. 판 주사위 연출이 숨겼다가 하나씩 떨어뜨린다.</summary>
@@ -102,7 +102,7 @@ public sealed class ChipField
         ChipPlaced?.Invoke(cell);
     }
 
-    /// <summary>cell의 칩을 없앤다(폴드). 칩이 없으면 false.</summary>
+    /// <summary>cell의 칩을 없앤다(캐시 아웃). 칩이 없으면 false.</summary>
     public bool Remove(Vector2Int cell)
     {
         for (int i = 0; i < _chips.Count; i++)

@@ -35,9 +35,6 @@ public sealed class MazePlanner : IDisposable
     private Search _search;
     private float _searchAge;
 
-    /// <summary>받은 목표 배치(아직 놓이지 않은 칸들). 탐색 중이면 직전에 받은 것.</summary>
-    public IReadOnlyList<Vector2Int> Plan => _best;
-
     /// <summary>탐색 중이라 지금 계획이 판과 맞지 않는지. 봇은 이 동안 새 주사위를 놓지 않는다(생각 중).</summary>
     public bool Busy => _search != null;
 

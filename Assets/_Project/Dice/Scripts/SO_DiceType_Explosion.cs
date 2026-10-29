@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// 노랑 — 범위 폭발: 사거리 안에서 가장 많이 휘말리는 몬스터를 맞히고 그 자리에서 터져 반경 안 다른 몬스터에게도 피해(기획서 9.4).
-/// 2026-10-26 개편 전에는 빨강이었다. 각성의 불길은 뺐다(나중에 스킬로 — 범위형 각성은 모두 맞는 수를 늘리는 쪽으로 맞춘다).
+/// 각성은 반경을 키운다 — 범위형 각성은 모두 맞는 수를 늘리는 쪽으로 맞춘다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Dice/Type/Explosion", fileName = "SO_Dice_")]
 public sealed class SO_DiceType_Explosion : SO_DiceType

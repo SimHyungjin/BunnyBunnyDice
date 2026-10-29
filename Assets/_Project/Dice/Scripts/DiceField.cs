@@ -32,7 +32,7 @@ public sealed class DiceField : IDisposable
     public event Action<Vector2Int> DicePlaced;
 
     /// <summary>
-    /// 철거됐다(폴드). index는 지우기 전의 번호 — 같은 번호로 상태를 붙여 둔 쪽(DiceCombat)이 같은 자리를 지운다.
+    /// 거둬졌다(캐시 아웃). index는 지우기 전의 번호 — 같은 번호로 상태를 붙여 둔 쪽(DiceCombat)이 같은 자리를 지운다.
     /// 칸이 열려 길이 바뀌므로 경로 표시 등도 구독한다.
     /// </summary>
     public event Action<int, Vector2Int> DiceRemoved;
@@ -41,7 +41,7 @@ public sealed class DiceField : IDisposable
     public event Action<Vector2Int> DiceAwakened;
 
     /// <summary>
-    /// 앞에서부터 순서대로 놓인 주사위. 철거(폴드)는 순서를 지킨 채 그 자리만 빼고 DiceRemoved로 알린다
+    /// 앞에서부터 순서대로 놓인 주사위. 거두기(캐시 아웃)는 순서를 지킨 채 그 자리만 빼고 DiceRemoved로 알린다
     /// — 공격(DiceCombat)이 같은 번호로 자기 상태(재사용 대기)를 붙여 두므로 번호가 섞이면 안 된다.
     /// </summary>
     public IReadOnlyList<PlacedDice> Placed => _placed;
@@ -201,7 +201,7 @@ public sealed class DiceField : IDisposable
         return index >= 0 && _statsConfig.IsAwakened(_placed[index].Dice);
     }
 
-    /// <summary>cell의 주사위를 없앤다(폴드). 주사위가 없으면 false.</summary>
+    /// <summary>cell의 주사위를 없앤다(캐시 아웃). 주사위가 없으면 false.</summary>
     public bool Remove(Vector2Int cell)
     {
         int index = IndexOf(cell);

@@ -139,16 +139,4 @@ public sealed class BotBoard
             distance--;
         }
     }
-
-    /// <summary>cell에서 range(칸) 안에 들어오는 길 칸 수.</summary>
-    public int Coverage(Vector2Int cell, float range)
-    {
-        float sqr = range * range;
-        int count = 0;
-        for (int i = 0; i < _route.Count; i++)
-        {
-            if (((Vector2)(_route[i] - cell)).sqrMagnitude <= sqr) count++;
-        }
-        return count;
-    }
 }

@@ -26,9 +26,7 @@ public sealed class SO_DamageNumberConfig : SO_Config
     public Color ReducedColor = new Color(0.6f, 0.6f, 0.65f);
     [Tooltip("화상(독, 지속 피해). 화상 칩 색(자홍)과 같게 — 칩·상태 네모·숫자가 한 색이게(기획서 9.7).")]
     public Color PoisonColor = new Color(0.9f, 0.25f, 0.75f);
-    [Tooltip("바닥 불길(지금은 쓰는 곳 없음 — 스킬로 옮길 예정).")]
-    public Color FireColor = new Color(1f, 0.4f, 0.2f);
-    [Tooltip("특성(럭키보이)으로 더 받은 경험치(\"+N\"). 금색 — 피해 숫자와 구분된다. 크기는 치명타 배율.")]
+    [Tooltip("하우스 엣지로 더 받은 경험치(\"+N\"). 금색 — 피해 숫자와 구분된다. 크기는 치명타 배율.")]
     public Color BonusExpColor = new Color(1f, 0.85f, 0.25f);
 
     [Header("튀어 오르기")]

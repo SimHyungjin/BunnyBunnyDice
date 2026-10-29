@@ -67,9 +67,6 @@ public sealed class GameBot : IDisposable
     public event Action<bool> EnabledChanged;
 
 
-    /// <summary>봇이 끝낸 판 수(켠 뒤로).</summary>
-    public int Runs => _report.Count;
-
     /// <summary>마지막으로 남긴 요약 파일 경로(없으면 null).</summary>
     public string LastReportPath { get; private set; }
 
@@ -306,7 +303,7 @@ public sealed class GameBot : IDisposable
             context.HasFreeze = HasZoneChip<SO_ChipCard_Freeze>();
             context.HasVulnerable = HasZoneChip<SO_ChipCard_Vulnerable>();
             // 캐시 아웃는 미로를 어느 정도 지은 뒤(d20이 들어오기 시작할 때)에만, 한 장씩만 — 그 전에 고르면 채울 주사위가 오지 않아
-            // 손에서 썩고 주사위 자리만 뺏었다(건설가: 스킬 6.0장 골라 2.5장만 씀, 주사위 22장 대 다른 캐릭터 30장+, 2026-10-29).
+            // 손에서 썩고 주사위 자리만 뺏었다(빌더: 스킬 6.0장 골라 2.5장만 씀, 주사위 22장 대 다른 캐릭터 30장+, 2026-10-29).
             context.HasCashOutTarget = context.MazeEnough && !HoldsCashOut() && TryFindCashOutTarget(map, false, out _);
             context.HasBurnSpot = HasBurnSpot();
         }

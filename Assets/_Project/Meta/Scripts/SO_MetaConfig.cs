@@ -12,7 +12,7 @@ public enum UnlockKind
     BestWave,
     /// <summary>주사위 각성 누적 횟수.</summary>
     Awakenings,
-    /// <summary>잭팟 몬스터 누적 처치.</summary>
+    /// <summary>잭팟 보스 누적 처치.</summary>
     JackpotKills,
     /// <summary>누적 판 수.</summary>
     RunCount,

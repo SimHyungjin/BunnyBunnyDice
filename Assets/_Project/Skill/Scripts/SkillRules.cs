@@ -29,7 +29,7 @@ public static class SkillRules
         }
     }
 
-    /// <summary>칸 대상 스킬(폴드)을 이 칸에 쓸 수 있는지 — 없앨 주사위나 칩이 있어야 한다.</summary>
+    /// <summary>칸 대상 스킬(캐시 아웃)을 이 칸에 쓸 수 있는지 — 거둘 주사위나 칩이 있어야 한다.</summary>
     public static PlacementResult CheckCell(bool hasDice, bool hasChip) =>
         hasDice || hasChip ? PlacementResult.Upgrade : PlacementResult.NoEffect;
 

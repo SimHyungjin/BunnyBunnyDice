@@ -34,8 +34,6 @@ public sealed class PaletteMeshBuilder
         public int[] Triangles;
     }
 
-    public bool IsEmpty => _vertices.Count == 0;
-
     /// <summary>프리팹 안의 모든 메시를 placement 위치(부모 로컬)에 놓은 것처럼 넣는다.</summary>
     public void AddPrefab(GameObject prefab, Matrix4x4 placement, Color color)
     {

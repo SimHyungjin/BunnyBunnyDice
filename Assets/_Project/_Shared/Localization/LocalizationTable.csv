@@ -183,7 +183,7 @@
 {0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:93
 웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:99 | UnlockText.cs:8
 주사위 각성 {0}회,Dice awakenings: {0},UnlockText.cs:9
-잭팟 몬스터 {0}마리 처치,Jackpot monsters defeated: {0},UnlockText.cs:10
+잭팟 보스 {0}마리 처치,Jackpot bosses defeated: {0},UnlockText.cs:10
 {0}판 플레이,Runs played: {0},UnlockText.cs:11
 주사위 {0}개 배치,Dice placed: {0},UnlockText.cs:12
 {0} ({1}/{2}),{0} ({1}/{2}),UnlockText.cs:19

@@ -26,6 +26,5 @@ MonoBehaviour:
   AttackSpeedGrowth: 0
   Range: 2.8
   MaxHealthDamage: 0
-  MaxHealthBossImmune: 0
   AwakenPulseDelay: 0.2
   AwakenPulseRatio: 0.5

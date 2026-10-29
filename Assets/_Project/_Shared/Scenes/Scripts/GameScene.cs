@@ -275,7 +275,7 @@ public sealed class GameScene : SceneBase
             RebuildRoute();
         };
         // 빈 칸의 칩은 새 벽이고, 주사위 칸의 칩은 주사위를 올려 앉힌다(길은 그대로지만 같이 다시 계산해도 싸다).
-        // 폴드로 주사위·칩이 없어지면 칸이 열려 길이 바뀐다.
+        // 캐시 아웃으로 주사위·칩이 없어지면 칸이 열려 길이 바뀐다.
         _diceField.DiceRemoved += (_, _) => RebuildRoute();
         _diceField.DiceAwakened += _ => _run.CountAwakening();
         _chips.ChipRemoved += _ => RebuildRoute();
@@ -288,7 +288,7 @@ public sealed class GameScene : SceneBase
         {
             // 무적이어도 받았을 피해를 센다 — 무적으로 버티며 높은 웨이브를 잴 때도 얼마나 뚫렸는지 보이게.
             _waveLog.CountLeak(type.GoalDamage);
-            // 잭팟처럼 피해가 없는 몬스터는 맞는 연출도 없이 빠져나간다.
+            // 피해가 없는 몬스터는 맞는 연출도 없이 빠져나간다.
             if (type.GoalDamage <= 0) return;
             if (!_goalInvincible) _goal.Damage(type.GoalDamage);
             _goalHit.Play();
@@ -616,17 +616,13 @@ public sealed class GameScene : SceneBase
 
         // 검사는 판마다 새로 만든다 — 요청이 겹치면(R 키 연타·설정 변경) 두 생성이 버퍼를 함께 쓰지 않게.
         MazeRouteProbe probe = new MazeRouteProbe(_probeConfig);
-        MapData rolled = MapGenerator.Roll(_genConfig, seed);
         if (wait)
         {
             _mapPending = false;
-            List<Vector2Int> plan = new List<Vector2Int>();
-            MapData refined = MapGenerator.Refine(_genConfig, seed, rolled, probe, plan);
-            refined.MazePlan.Clear();
-            refined.MazePlan.AddRange(plan);
-            ApplyMap(refined);
+            ApplyMap(MapGenerator.Generate(_genConfig, seed, probe));
             return;
         }
+        MapData rolled = MapGenerator.Roll(_genConfig, seed);
         // 검사가 끝날 때까지 판 주사위 연출이 칩을 떨어뜨리지 않고 판도 시작하지 않는다.
         _mapPending = true;
         ApplyMap(rolled);

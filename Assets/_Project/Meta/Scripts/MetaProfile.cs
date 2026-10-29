@@ -241,7 +241,7 @@ public sealed class MetaProfile : IDisposable
         return firstUnlocked;
     }
 
-    // 조건이 없는 캐릭터는 처음부터 연다(12.4 — 바니걸). 조건이 있는 캐릭터는 채워도 여기서 열지 않는다(선택 창에서 연다).
+    // 조건이 없는 캐릭터는 처음부터 연다(기획서 12.4). 조건이 있는 캐릭터는 채워도 여기서 열지 않는다(선택 창에서 연다).
     private void UnlockFreeCharacters()
     {
         for (int i = 0; i < _config.Characters.Count; i++)
