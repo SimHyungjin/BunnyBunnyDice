@@ -23,16 +23,15 @@ public sealed class SO_PlacementPreviewConfig : SO_Config
     [Min(0f)] public float RangeLift = 0.03f;
 
     [Header("스킬 (기획서 5.3)")]
-    [Tooltip("적 대상 스킬을 끄는 손가락 밑 고리 반경(칸) — 판 위인지(쓸 수 있는지) 보이게. 스킬은 판 전체라 범위가 아니다.")]
-    [Min(0.05f)] public float SkillCursorRadius = 0.6f;
-    [Tooltip("손가락 밑 고리의 선 굵기(칸). 색은 쓸 수 있으면 ValidColor, 아니면 InvalidColor. 재질·점 수·띄우는 높이는 사거리와 같다.")]
-    [Min(0.005f)] public float SkillAreaWidth = 0.08f;
-    [Tooltip("레이크 모음점 밑에 그리는 작은 고리 반경(칸). 색은 카드 색(IconColor).")]
-    [Min(0.05f)] public float SkillMarkRadius = 0.3f;
-    [Tooltip("작은 고리의 선 굵기(칸).")]
-    [Min(0.005f)] public float SkillMarkWidth = 0.06f;
-    [Tooltip("체크메이트의 왕(큰 피해를 더 받는 적) 밑 고리 반경(칸) — 작은 고리 바깥에 하나 더 그려 누가 왕인지 보이게.")]
+    [Tooltip("적 대상 스킬을 끄는 동안 판 전체에 까는 색 — 모든 적이 대상이라는 것이 보이게. 주사위·적을 가리지 않게 아주 연하게(알파). " +
+             "손가락이 판 밖이면(쓸 수 없으면) 깔지 않는다. 재질·띄우는 높이는 사거리와 같다.")]
+    public Color SkillBoardColor = new Color(0.3f, 0.95f, 0.4f, 0.12f);
+    [Tooltip("레이크 모음점 밑 고리 반경(칸) — 레이크는 어디로 모으는지가 가장 중요한 정보라 크게. 색은 카드 색(IconColor).")]
+    [Min(0.05f)] public float SkillGatherMarkRadius = 0.7f;
+    [Tooltip("체크메이트의 왕(큰 피해를 받는 적) 밑 고리 반경(칸). 색은 카드 색(IconColor).")]
     [Min(0.05f)] public float SkillKingMarkRadius = 0.5f;
+    [Tooltip("모음점·왕 고리의 선 굵기(칸).")]
+    [Min(0.005f)] public float SkillMarkWidth = 0.06f;
 
 
     [Header("미로 계획 (기획서 11.4 — 어시스트·봇)")]
