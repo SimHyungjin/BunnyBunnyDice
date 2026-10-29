@@ -183,21 +183,4 @@ public sealed class SO_BotConfig : SO_Config
     [Tooltip("빠른 시뮬의 게임 속도 배율. 실제 빠르기는 위 걸음 수가 정한다(넘는 시간은 버린다) — 그 상한을 늘 채울 만큼 크게 둔다.")]
     [Min(1f)] public float SimSpeed = 1000f;
 
-    [Header("색 시험 (T — 미로 전부를 한 색 d20 눈 20으로, ColorPowerTest)")]
-    [Tooltip("돌릴 색. 맵마다 이 순서로 한 판씩. 검정은 눈 20이면 무작위 색으로 바뀌어 빼 둔다.")]
-    public List<DiceColor> TestColors = new List<DiceColor>
-    {
-        DiceColor.Red, DiceColor.Green, DiceColor.Blue,
-        DiceColor.Red | DiceColor.Green, DiceColor.Red | DiceColor.Blue, DiceColor.Green | DiceColor.Blue, DiceColors.All,
-    };
-    [Tooltip("돌릴 맵(시드). 맵마다 모든 색을 돈다.")]
-    public List<int> TestSeeds = new List<int> { 100581265, 56137937, 55854625 };
-    [Tooltip("시험 주사위 면체 — 눈은 상한까지 채운다(d20이면 각성).")]
-    [Min(1)] public int TestFaces = 20;
-    [Tooltip("모든 적의 이동 속도 배율 — 디버프가 늘 걸린 셈. 기본 = 둔화 25%(×0.75) × 얼림 0.7초/면역 2초(움직이는 시간 74.1%) ≈ 0.556.")]
-    [Range(0.05f, 1f)] public float TestSpeedScale = 0.556f;
-    [Tooltip("이 웨이브에 닿으면 그 판을 끝낸다.")]
-    [Min(1)] public int TestMaxWave = 100;
-    [Tooltip("웨이브 처리 비율(깎은 체력 ÷ 들어온 체력)이 이보다 낮아지면 그 판을 끝낸다.")]
-    [Range(0f, 1f)] public float TestStopRatio = 0.1f;
 }

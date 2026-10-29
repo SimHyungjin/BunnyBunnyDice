@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// 게임 씬 진입. 씬 파일에는 환경(카메라·조명·볼륨)만 두고, 게임 오브젝트는 전부 여기서 SO를 불러 만든다.
@@ -14,8 +13,10 @@ using UnityEngine.InputSystem;
 ///
 /// 설정은 원본 SO가 아니라 실행 중 복사본(ConfigTuning)을 쓴다. 복사본이 바뀌면(GameTuning 인스펙터 또는 원본 SO 수정)
 /// 그 설정을 쓰는 부분만 다시 적용한다.
+///
+/// 파일을 셋으로 나눈다: 여기(진입·판 흐름), GameScene.AutoPlay(봇·색 시험·빠른 시뮬), GameScene.Debug(테스트 키·창 — 개발 빌드만).
 /// </summary>
-public sealed class GameScene : SceneBase
+public sealed partial class GameScene : SceneBase
 {
     private readonly ConfigTuning _tuning = new ConfigTuning();
     private readonly GameSpeed _speed = new GameSpeed();
@@ -47,20 +48,13 @@ public sealed class GameScene : SceneBase
     private TraitHooks _traits;
     private Hero _hero;
     private CardPlacement _placement;
-    // 미로 계획(어시스트·봇, 기획서 11.4)과 자동 플레이 봇(테스트 키 A).
-    private MazePlanner _mazePlanner;
     // 맵 생성 검사(기획서 3.3)의 설정 — 미로를 지은 뒤 한 구멍만 아주 짧아지는 맵을 다시 굴리고 보스 구멍을 정한다.
     private SO_PlacementPreviewConfig _probeConfig;
     // 워커 스레드에서 도는 맵 생성의 차례 번호. 더 새 요청이 오거나 씬을 나가면 늘려, 늦게 끝난 옛 결과를 버린다.
     private int _mapJob;
     // 미로 검사가 도는 중 — 시작 칩 자리가 아직 바뀔 수 있다(굴림은 확정).
     private bool _mapPending;
-    private GameBot _bot;
-    private SO_BotConfig _botConfig;
     private SO_GameSpeedConfig _speedConfig;
-    // 빠른 시뮬 동안 판 카메라가 그리던 층(되돌릴 값). 모든 층(Everything)이 -1이라 값으로 시뮬 여부를 가리지 않는다.
-    private bool _simCulling;
-    private int _simSavedCulling;
     private HeroTapInput _tapInput;
     // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.5)와 그 표시.
     private HeroOverdrive _heroOverdrive;
@@ -105,16 +99,8 @@ public sealed class GameScene : SceneBase
     private BossHealthBar _bossBar;
     // 이번 판의 측정값(결과 화면·메타 해금 진행도).
     private readonly RunStats _run = new RunStats();
-    // 테스트용 경험치 막기(레벨업 팝업 없이 웨이브·스킬을 시험할 때). 켜는 곳은 테스트 키·창뿐이라 출시 빌드에서는 늘 꺼져 있다.
-    // PlayerLevel이 아니라 여기 두는 이유: 테스트 상태가 게임 규칙 클래스에 섞이지 않게(경험치를 넘기는 연결만 막는다).
-    private bool _expBlocked = false;
-    // 테스트용 무적(목표물이 피해를 받지 않는다). 경험치 막기와 같은 이유로 여기 둔다 — 목표물 규칙(GoalHealth)에 테스트 상태를 섞지 않게.
-    // 이전에는 목표물 체력을 아주 크게 두어 대신했지만, 그러면 사람 테스트에서 질 수가 없었다.
-    private bool _goalInvincible = false;
-    // 색 시험(테스트 — 미로 전부를 한 색 d20 눈 20으로). 켜는 동안 무적·경험치 막기·영웅 공격 끔·적 이속 배율을 걸고, 끄면 켤 때 값으로 되돌린다.
-    private ColorPowerTest _colorTest;
-    private bool _savedInvincible;
-    private bool _savedExpBlocked;
+    // 테스트 상태(경험치 막기·무적). 켜는 곳은 테스트 키·창뿐이라 출시 빌드에서는 늘 꺼져 있다(GameScene.Debug).
+    private readonly GameDebugFlags _debug = new GameDebugFlags();
     private MapData _map;
     private GridRouteField _route;
     private int _seed;
@@ -135,12 +121,13 @@ public sealed class GameScene : SceneBase
             Core.Resource.LoadAsync<SO_LightingConfig>(ct: token),
             Core.Resource.LoadAsync<SO_HeroConfig>(ct: token),
             Core.Resource.LoadAsync<SO_BoardRollConfig>(ct: token));
-        var (metaAsset, characterSelectAsset, metaDiceAsset, speedAsset, botAsset) = await UniTask.WhenAll(
+        var (metaAsset, characterSelectAsset, metaDiceAsset, speedAsset, botAsset, colorTestAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MetaConfig>(ct: token),
             Core.Resource.LoadAsync<SO_CharacterSelectConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MetaDiceConfig>(ct: token),
             Core.Resource.LoadAsync<SO_GameSpeedConfig>(ct: token),
-            Core.Resource.LoadAsync<SO_BotConfig>(ct: token));
+            Core.Resource.LoadAsync<SO_BotConfig>(ct: token),
+            Core.Resource.LoadAsync<SO_ColorTestConfig>(ct: token));
         var (monsterAsset, waveAsset, goalAsset, attackEffectAsset, levelUpAsset, diceAsset, diceStatsAsset, damageNumberAsset, lobbyAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MonsterConfig>(ct: token),
             Core.Resource.LoadAsync<SO_WaveConfig>(ct: token),
@@ -178,6 +165,7 @@ public sealed class GameScene : SceneBase
         _metaDiceConfig = _tuning.Copy(metaDiceAsset);
         SO_GameSpeedConfig speedConfig = _tuning.Copy(speedAsset);
         SO_BotConfig botConfig = _tuning.Copy(botAsset);
+        _colorTestConfig = _tuning.Copy(colorTestAsset);
 
         _lighting = new SceneLighting(lightingConfig);
         _lighting.Apply(Core.Camera.MainCamera);
@@ -290,7 +278,7 @@ public sealed class GameScene : SceneBase
             _waveLog.CountLeak(type.GoalDamage);
             // 피해가 없는 몬스터는 맞는 연출도 없이 빠져나간다.
             if (type.GoalDamage <= 0) return;
-            if (!_goalInvincible) _goal.Damage(type.GoalDamage);
+            if (!_debug.GoalInvincible) _goal.Damage(type.GoalDamage);
             _goalHit.Play();
         };
         _monsters.Killed += (type, position) =>
@@ -299,7 +287,7 @@ public sealed class GameScene : SceneBase
             _waveLog.CountKill();
             // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 9.4). 분열 조각은 보스가 아니다.
             // 경험치 막기는 보상 고르기도 막는다 — 고르기 창 없이 웨이브를 시험하려는 것이라.
-            if (type.IsBoss && !type.IsPiece && !_expBlocked)
+            if (type.IsBoss && !type.IsPiece && !_debug.ExpBlocked)
             {
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();
@@ -347,11 +335,7 @@ public sealed class GameScene : SceneBase
         _levelUp.CardChosen += _waveLog.CountCard;
         _levelUp.Offered += _waveLog.CountOffers;
         _levelUp.Opened += _drag.Cancel;
-        _mazePlanner = new MazePlanner(previewConfig, () => _map, _diceField);
-        _bot = new GameBot(botConfig, () => _map, () => _waves.Wave, _heroStats, heroConfig.Characters, _diceField, _chips, _hand, _placement, _skills, _monsters, _hero, diceConfig,
-            diceStatsConfig, () => heroConfig.Overdrive, _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
-        _botConfig = botConfig;
-        _bot.EnabledChanged += _ => ApplySimMode();
+        CreateBot(botConfig, previewConfig, heroConfig, diceConfig, diceStatsConfig);
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
         DealStartHand();
         // 손패를 다 쓰면 판을 아래로 넓히고, 카드가 들어오면 되돌린다(아래 여백만 섞는다).
@@ -379,7 +363,7 @@ public sealed class GameScene : SceneBase
         _speedToggle.Changed += _hud.ShowSpeed;
         _hud.SpeedClicked += _speedToggle.Next;
         // 배속 버튼 왼쪽의 시작·일시정지 버튼: 첫 웨이브 전엔 시작, 그 뒤로는 일시정지·재개.
-        _waveStart = new WaveStartGate(() => _waves.Begin(), () => (_bot != null && _bot.Enabled) || (_colorTest != null && _colorTest.Running));
+        _waveStart = new WaveStartGate(() => _waves.Begin(), () => IsAutoPlaying);
         _waveStart.WaitingChanged += _ =>
         {
             RefreshPlayPause();
@@ -417,42 +401,7 @@ public sealed class GameScene : SceneBase
 
         _lobbyScreen.Show();
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        // 테스트 키. 같은 목록이 테스트 창(F1)의 "기능" 탭에 버튼·키 안내로 나온다.
-        GameDebugKeys keys = _mapRoot.gameObject.AddComponent<GameDebugKeys>();
-        keys.Add(Key.R, false, "새 맵(새 판, 로비에서는 테이블만 바꾼다)", () => GenerateMap(System.Environment.TickCount));
-        keys.Add(Key.C, false, "바로 레벨업(다음 레벨까지 남은 경험치를 채운다)", LevelUpNow);
-        keys.Add(Key.U, false, "칩 카드 한 장씩 추가", () => AddAttachmentCards(levelUpConfig));
-        keys.Add(Key.K, false, "스킬 카드 한 장씩 추가", () => AddSkillCards(levelUpConfig));
-        keys.Add(Key.N, false, "다음 웨이브 바로 시작", () => SkipWaves(1));
-        keys.Add(Key.N, true, $"{LongSkip}웨이브 건너뛰기", () => SkipWaves(LongSkip));
-        keys.Add(Key.E, false, "경험치 막기", () => _expBlocked = !_expBlocked, () => _expBlocked);
-        keys.Add(Key.J, false, "다음 보스를 잭팟 보스로(보스 웨이브가 시작될 때 정해진다)", () => _waves.ForceJackpot());
-        keys.Add(Key.I, false, "무적(목표물이 피해를 받지 않는다)", () => _goalInvincible = !_goalInvincible, () => _goalInvincible);
-        keys.Add(Key.L, false, "언어 바꾸기(한국어↔영어)", CycleLanguage);
-        // 로비·뛰어들기 연출을 되풀이해 보려고. 결과 화면의 "로비로"와 같은 길이다(판을 접고 새 테이블).
-        keys.Add(Key.B, false, "로비로(판을 접는다)", EnterLobby);
-        // 로비·판 어디서나 켠다. 지면 다시 하기를 눌러 계속 돌고, 판마다 측정 기록 CSV가 남는다(기획서 11.2).
-        // 보면서 돌리기는 봇 행동을 눈으로 확인하려고(행동 원칙을 고칠 때), 빠른 시뮬은 판 수를 많이 돌리려고 나눴다 — 결과는 같다.
-        keys.Add(Key.A, false, "자동 플레이(봇, 보면서 — SO_BotConfig.BatchRuns판 뒤 요약을 남기고 멈춘다)", () => ToggleBot(false), () => _bot.Enabled && !_bot.Fast);
-        keys.Add(Key.A, true, "빠른 시뮬(봇, 화면을 그리지 않는다 — 결과는 A와 같다)", () => ToggleBot(true), () => _bot.Enabled && _bot.Fast);
-        // 색마다 순수 딜을 재는 시험(기획서 6.5 개편 준비). 빠른 시뮬로 SO_BotConfig.TestSeeds × TestColors판을 돌고 RunLogs/color_test_*.csv를 남긴다.
-        _colorTest = new ColorPowerTest(_botConfig, () => _map, _diceField, _monsters, _waves, TestRetry);
-        _colorTest.RunningChanged += SetColorTestMode;
-        keys.Add(Key.T, false, "색 시험(미로 전부를 한 색 d20 눈 20으로 — 영웅·칩 없이, 적은 늘 디버프)", ToggleColorTest, () => _colorTest.Running);
-        // 원하는 카드를 골라 넣는 테스트 창(F1).
-        GameDebugPanel panel = _mapRoot.gameObject.AddComponent<GameDebugPanel>();
-        panel.Init(levelUpConfig, diceConfig, keys.Bindings, _hand.Add, () =>
-        {
-            _drag.Cancel();
-            _hand.Clear();
-            _hand.Relayout();
-        });
-        // 캐릭터·능력치 단계를 바꿔 보는 "영웅" 탭(캐릭터 선택 창이 생기기 전까지 캐릭터를 고르는 곳 — 로비 패널도 따라 바뀐다).
-        panel.InitHero(heroConfig, _heroStats, levelUpConfig.HeroCards);
-        panel.InitMeta(_meta);
-        panel.InitLog(_waveLog);
-#endif
+        SetUpDebugTools(levelUpConfig, diceConfig, heroConfig);
     }
 
     public override void ExitScene()
@@ -468,10 +417,8 @@ public sealed class GameScene : SceneBase
         _meta?.Dispose();
         _screen?.Dispose();
         _handFraming?.Dispose();
-        _bot?.Dispose();
-        _colorTest?.Dispose();
+        DisposeAutoPlay();
         _bossBar?.Dispose();
-        _mazePlanner?.Dispose();
         _drag?.Dispose();
         _pathView?.Dispose();
         _grid?.Dispose();
@@ -504,93 +451,6 @@ public sealed class GameScene : SceneBase
         // 다른 씬(코어 점검 씬 등)은 원래 방식(프레임마다 한 번)으로 돌게 끈다.
         Core.Loop?.SetGameFixedStep(0f, 1);
         _tuning.Dispose();
-    }
-
-    // 빠른 시뮬 중이면 걸음 크기는 그대로(결과가 같게) 한 프레임 걸음 수만 시뮬 값으로.
-    private void ApplyFixedStep()
-    {
-        Core.Loop.SetGameFixedStep(_speedConfig.FixedStep > 0f ? _speedConfig.FixedStep : 0f,
-            IsSim ? _botConfig.SimStepsPerFrame : _speedConfig.MaxStepsPerFrame);
-    }
-
-    private bool IsSim => (_bot != null && _bot.Enabled && _bot.Fast) || (_colorTest != null && _colorTest.Running);
-
-    // 빠른 시뮬: 판 카메라가 아무 층도 그리지 않게 하고(그리기 비용이 걸음 계산을 잡아먹지 않게) 한 프레임에 걸음을 많이 돈다.
-    // 봇이 꺼지면(정한 판 수를 채워도) 되돌린다. UI(HUD 웨이브 수·결과 화면)는 그대로 그려져 진행은 보인다.
-    // 카메라를 끄지 않는 이유: 끄면 화면을 지우는 카메라가 없어 UI가 지나간 자리가 겹겹이 남는다 — 층만 비우면 배경으로 지우기는 한다.
-    private void ApplySimMode()
-    {
-        ApplyFixedStep();
-        Camera camera = Core.Camera != null ? Core.Camera.MainCamera : null;
-        if (camera == null) return;
-        bool sim = IsSim;
-        if (sim == _simCulling) return;
-        _simCulling = sim;
-        if (sim) _simSavedCulling = camera.cullingMask;
-        camera.cullingMask = sim ? 0 : _simSavedCulling;
-    }
-
-    // 봇 켜기(A = 보면서, Shift+A = 빠른 시뮬). 로비에서 켜면 "게임 시작"과 같은 길로 들어간다 — 로비 화면이 닫히고 영웅이 뛰어든 뒤 봇이 손을 쓴다.
-    private void ToggleBot(bool fast)
-    {
-        if (_bot.Enabled)
-        {
-            _bot.SetEnabled(false);
-            return;
-        }
-        _bot.SetEnabled(true, fast);
-        if (_lobbyStage.IsActive) _lobbyScreen.Start();
-    }
-
-    // 봇이 새 판을 시작한다(판이 끝난 뒤·비교 묶음의 첫 판). 판 중이면 다시 하기와 같은 길,
-    // 로비면 테이블만 정해 둔 맵으로 바꾼다 — 뒤이어 "게임 시작"으로 뛰어들면 그 판으로 시작한다(로비에서 판 치우기를 하지 않게).
-    private void BotRetry()
-    {
-        if (!_lobbyStage.IsActive)
-        {
-            Retry();
-            return;
-        }
-        GenerateMap(TakeSeed(out int seed) ? seed : System.Environment.TickCount);
-    }
-
-    // 정해 둔 다음 맵(색 시험·봇 비교 묶음). 없으면 false(무작위 맵).
-    private bool TakeSeed(out int seed)
-    {
-        if (_colorTest != null && _colorTest.TryTakeSeed(out seed)) return true;
-        if (_bot != null && _bot.TryTakeSeed(out seed)) return true;
-        seed = 0;
-        return false;
-    }
-
-    // 색 시험 켜기·끄기. 봇과 함께 돌지 않는다(둘 다 판을 다시 시작한다).
-    private void ToggleColorTest()
-    {
-        if (!_colorTest.Running && _bot.Enabled) _bot.SetEnabled(false);
-        _colorTest.Toggle();
-    }
-
-    // 색 시험의 다음 판: 봇과 같은 길이고, 로비면 테이블을 그 맵으로 바꾼 뒤 뛰어든다.
-    private void TestRetry()
-    {
-        BotRetry();
-        if (_lobbyStage.IsActive && !_lobbyStage.IsEntering) _lobbyScreen.Start();
-    }
-
-    // 색 시험 동안의 테스트 상태 — 주사위 딜만 남긴다(ColorPowerTest). 끄면 켤 때 값으로 되돌린다.
-    private void SetColorTestMode(bool on)
-    {
-        if (on)
-        {
-            _savedInvincible = _goalInvincible;
-            _savedExpBlocked = _expBlocked;
-        }
-        _goalInvincible = on || _savedInvincible;
-        _expBlocked = on || _savedExpBlocked;
-        _heroAttack.Enabled = !on;
-        _monsters.SpeedScale = on ? _botConfig.TestSpeedScale : 1f;
-        _speed.FastForward = on ? _botConfig.SimSpeed : 1f;
-        ApplySimMode();
     }
 
     // 맵 생성은 두 단계다(MapGenerator): 굴림 + 첫 칩 배치(수 ms)는 그 자리에서 하고 판을 바로 세운다(판 주사위 연출도 바로 시작).
@@ -771,7 +631,7 @@ public sealed class GameScene : SceneBase
     {
         // 판 운(주사위 눈·치명타·카드·웨이브 특성)도 맵 시드로 — 같은 시드에 같은 선택이면 같은 판이 된다(봇 비교·시뮬레이션).
         GameRandom.Begin(_seed);
-        _bot?.BeginRun();
+        AutoPlayRunStarting();
         ResetRun();
         _waveLog.Begin(_heroStats.Character != null ? _heroStats.Character.name : "None", _seed);
         // 판 주사위 연출(굴림 결과를 보여 줌)이 끝나면 웨이브를 시작한다. 그동안 경로 표시를 숨기고(결과가 미리 드러나지 않게)
@@ -785,7 +645,7 @@ public sealed class GameScene : SceneBase
         {
             SetBoardRollLock(false);
             _rolling = false;
-            _colorTest?.OnBattleReady();
+            AutoPlayBattleReady();
             _waveStart.Arm();
         }));
         DealStartHand();
@@ -829,7 +689,7 @@ public sealed class GameScene : SceneBase
         _waveLog.End();
         // 보상은 판이 끝날 때(Finish → Ended → MetaProfile.Record) 정해졌다.
         _result.Show(run, _meta.LastReward);
-        _bot?.OnGameOver(_waveLog.Records, _seed, run.Wave);
+        AutoPlayGameOver(run);
     }
 
     // 새 판은 시작 손패로 시작한다. 손패는 HUD가 뜬 뒤에 생기므로 그 전(첫 맵 생성)에는 건너뛰고, 손패를 만든 뒤 따로 부른다.
@@ -856,56 +716,6 @@ public sealed class GameScene : SceneBase
 
     private void GainExp(int exp)
     {
-        if (!_expBlocked) _level.AddExp(exp);
-    }
-
-    // Shift+N으로 건너뛰는 웨이브 수(테스트 편의 값이라 SO로 빼지 않는다).
-    private const int LongSkip = 10;
-
-    // 테스트용 웨이브 건너뛰기: 남은 적을 치우고(경험치 없이) 그 웨이브를 바로 시작한다. 로비·판 주사위 연출 중에는 웨이브가 멈춰 있어 무시된다.
-    private void SkipWaves(int count)
-    {
-        if (_lobbyStage.IsActive || _boardRoll.IsPlaying || _mapPending) return;
-        _monsters.Clear();
-        _waves.SkipWaves(count);
-        RefreshHud();
-    }
-
-    // 테스트용 레벨업: 실제 레벨업과 같은 흐름(레벨·HUD·후보 팝업·특성)을 지나게 경험치를 채운다.
-    // 경험치 막기(E)와 상관없이 오른다 — 막아 둔 채로 원할 때만 레벨업을 시험할 수 있게.
-    // 로비에서는 무시한다(판이 시작되지 않았는데 후보 팝업이 뜨지 않게).
-    private void LevelUpNow()
-    {
-        if (!_lobbyStage.IsActive) _level.AddExp(_level.ExpToNext - _level.Exp);
-    }
-
-    // 테스트용 언어 전환: 표의 다음 언어로 바꾼다. 화면 글은 언어 변경 이벤트를 받아 그 자리에서 바뀐다
-    // (설정 화면이 생기기 전까지의 확인용). 고른 언어는 설정에 저장된다.
-    private static void CycleLanguage()
-    {
-        LocalizationManager localization = Core.Localization;
-        if (localization == null || localization.Languages.Count < 2) return;
-        int index = 0;
-        for (int i = 0; i < localization.Languages.Count; i++)
-            if (localization.Languages[i] == localization.Language) index = i;
-        Core.Settings.Language = localization.Languages[(index + 1) % localization.Languages.Count];
-    }
-
-    // 스킬을 한 번에 시험하려고 스킬 카드를 한 장씩 넣는다(페인트 7색 포함).
-    private void AddSkillCards(SO_LevelUpConfig levelUpConfig)
-    {
-        for (int i = 0; i < levelUpConfig.SkillCards.Count; i++)
-        {
-            if (levelUpConfig.SkillCards[i] != null) _hand.Add(HandCard.Of(levelUpConfig.SkillCards[i]));
-        }
-    }
-
-    // 칩을 한 번에 시험하려고 칩 카드를 한 장씩 넣는다.
-    private void AddAttachmentCards(SO_LevelUpConfig levelUpConfig)
-    {
-        for (int i = 0; i < levelUpConfig.ChipCards.Count; i++)
-        {
-            if (levelUpConfig.ChipCards[i] != null) _hand.Add(HandCard.Of(levelUpConfig.ChipCards[i]));
-        }
+        if (!_debug.ExpBlocked) _level.AddExp(exp);
     }
 }

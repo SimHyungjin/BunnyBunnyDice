@@ -70,23 +70,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7d0a4b8c3e6f4a1b0c9d5e4f3a2b1c0d
-    m_Address: SO_GameSpeedConfig
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ef01ed1e6df7430e83aeedcb02759b39
-    m_Address: SO_BotConfig
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4d8b9106bb5c5cb41b08020ba6f33632
     m_Address: SO_MetaConfig
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 789080c1929b45d0b80d09dee6c91781
-    m_Address: SO_MetaDiceConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -95,18 +80,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 789080c1929b45d0b80d09dee6c91781
+    m_Address: SO_MetaDiceConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 79d883fcc30149f7b4d567f4010a3167
     m_Address: SO_MapViewConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8a84777236604524a847ee9e648b990f
-    m_Address: UI_CharacterSelectPopup
+  - m_GUID: 7d0a4b8c3e6f4a1b0c9d5e4f3a2b1c0d
+    m_Address: SO_GameSpeedConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9536c3352c9f43a4b996cd60002acfa6
-    m_Address: UI_SettingsPopup
+  - m_GUID: 8a84777236604524a847ee9e648b990f
+    m_Address: UI_CharacterSelectPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -122,6 +112,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 94549ec224084015be0dba8d4f214a97
     m_Address: SO_MapGenConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9536c3352c9f43a4b996cd60002acfa6
+    m_Address: UI_SettingsPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -160,6 +155,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cfaa6225036a54f468a45e7d54d3af8e
+    m_Address: SO_ColorTestConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d273e7330b504cf2a750e5a7d40603ff
     m_Address: SO_BoardRollConfig
     m_ReadOnly: 0
@@ -172,6 +172,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d9ce778fcd0c4ca681f9ab035cb21e7a
     m_Address: SO_PlacementPreviewConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef01ed1e6df7430e83aeedcb02759b39
+    m_Address: SO_BotConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
