@@ -57,7 +57,7 @@ public sealed class SO_BotConfig : SO_Config
         public float Reroll = 80f;
         public float Paint = 100f;
         public float AllIn = 50f;
-        [Tooltip("폴드(건설가) — 메인 딜 구간을 막는 칸이 있을 때만. 없으면 0.")]
+        [Tooltip("폴드(건설가) — 미로를 어느 정도 지은 뒤, 메인 딜 구간을 막는 칸이 있고 손에 폴드가 없을 때만. 아니면 0.")]
         public float Fold = 250f;
     }
 
@@ -154,6 +154,8 @@ public sealed class SO_BotConfig : SO_Config
     [Tooltip("캐릭터를 돌아가며 돌 때 모든 캐릭터에 거는 능력치 단계(HeroStat 순서, 비우면 세이브 그대로). 단계는 세이브에 남으므로 다 돌거나 끄면 캐릭터마다 되돌린다. " +
              "Seeds가 있으면 캐릭터마다 k번째 판을 Seeds[k]의 맵으로 — 같은 맵·같은 단계로 특성 차이만 본다.")]
     public int[] RotationStages = new int[0];
+    [Tooltip("비어 있지 않으면 이 캐릭터만 돈다 — 한 캐릭터만 고친 뒤 같은 맵으로 그 캐릭터만 다시 잴 때(나머지는 앞선 요약과 짝짓는다).")]
+    public List<SO_HeroCharacter> RotationOnly = new List<SO_HeroCharacter>();
     [Tooltip("비어 있지 않으면 지금 캐릭터로 묶음마다 RunsPerSet판씩 돌린다(BatchRuns·RotateCharacters 대신). " +
              "캐릭터를 넓히기 전에 한 캐릭터로 단계·카드 성향의 영향을 먼저 본다. 다 돌거나 봇을 끄면 켤 때의 단계로 되돌린다.")]
     public List<RunSet> RunSets = new List<RunSet>();

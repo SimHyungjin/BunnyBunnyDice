@@ -153,7 +153,12 @@ public sealed class GameBot : IDisposable
         // 맵(Seeds)이나 단계(RotationStages)를 맞춰 짝지어 비교할 때는 켤 때의 캐릭터도 같은 조건으로 다시 돈다 — 켤 때의 판은 조건이 다르다.
         bool paired = _config.Seeds.Count > 0 || _config.RotationStages.Length > 0;
         for (int i = 0; i < _characters.Count; i++)
-            if (_characters[i] != null && (paired || _characters[i] != _heroStats.Character)) _rotation.Add(_characters[i]);
+        {
+            SO_HeroCharacter character = _characters[i];
+            if (character == null || (!paired && character == _heroStats.Character)) continue;
+            if (_config.RotationOnly.Count > 0 && !_config.RotationOnly.Contains(character)) continue;
+            _rotation.Add(character);
+        }
         // 켜는 판은 지금 캐릭터라, 첫 캐릭터로 바꾸고 바로 새 판을 시작한다.
         if (_rotation.Count == 0) return;
         _rotationOrigin = _heroStats.Character;
@@ -300,7 +305,9 @@ public sealed class GameBot : IDisposable
             context.HasSlow = HasZoneChip<SO_ChipCard_Slow>();
             context.HasFreeze = HasZoneChip<SO_ChipCard_Freeze>();
             context.HasVulnerable = HasZoneChip<SO_ChipCard_Vulnerable>();
-            context.HasFoldTarget = TryFindFoldTarget(map, false, out _);
+            // 폴드는 미로를 어느 정도 지은 뒤(d20이 들어오기 시작할 때)에만, 한 장씩만 — 그 전에 고르면 채울 주사위가 오지 않아
+            // 손에서 썩고 주사위 자리만 뺏었다(건설가: 스킬 6.0장 골라 2.5장만 씀, 주사위 22장 대 다른 캐릭터 30장+, 2026-10-29).
+            context.HasFoldTarget = context.MazeEnough && !HoldsFold() && TryFindFoldTarget(map, false, out _);
             context.HasBurnSpot = HasBurnSpot();
         }
         return BotCardChoice.Choose(_config, candidates, copies, context, CurrentSet(_report.Count));
@@ -364,6 +371,14 @@ public sealed class GameBot : IDisposable
     private void PlayOneCard(MapData map)
     {
         if (!_board.Read(map, _config.KillZoneRadius)) return;
+        // 폴드는 채울 주사위보다 먼저 쓴다 — 주사위를 먼저 놓으면 손에 채울 것이 남지 않아 폴드를 쓸 때가 오지 않았다.
+        for (int i = 0; i < _hand.Count; i++)
+        {
+            HandCard card = _hand.GetCard(i);
+            if (!card.IsSkill || !(card.Skill is SO_SkillCard_Fold) || !TryCastFold(card.Skill)) continue;
+            _hand.TryRemove(card);
+            return;
+        }
         for (int pass = 0; pass < 2; pass++)
         {
             for (int i = 0; i < _hand.Count; i++)
@@ -693,7 +708,7 @@ public sealed class GameBot : IDisposable
     private bool TryFindFoldTarget(MapData map, bool needFiller, out Vector2Int cell)
     {
         cell = default;
-        if (!_board.HasKillZone || (needFiller && !HasZoneFiller())) return false;
+        if (!_board.HasKillZone || (needFiller && !HasZoneFiller(map))) return false;
         int radius = Mathf.CeilToInt(_config.KillZoneRadius);
         int bestTier = -1;
         float best = -1f;
@@ -717,12 +732,24 @@ public sealed class GameBot : IDisposable
         return bestTier >= 0;
     }
 
-    private bool HasZoneFiller()
+    // 구간에 빈 칸이 남아 있으면 치울 필요가 없다 — 주사위는 그 빈 칸으로 간다.
+    private bool HasZoneFiller(MapData map)
     {
         for (int i = 0; i < _hand.Count; i++)
         {
             HandCard card = _hand.GetCard(i);
-            if (card.IsDice && (card.Dice.Faces >= 20 || BotDice.IsArea(card.Dice.Colors))) return true;
+            if (!card.IsDice || (card.Dice.Faces < 20 && !BotDice.IsArea(card.Dice.Colors))) continue;
+            if (!TryFindZoneCell(map, card.Dice, out _)) return true;
+        }
+        return false;
+    }
+
+    private bool HoldsFold()
+    {
+        for (int i = 0; i < _hand.Count; i++)
+        {
+            HandCard card = _hand.GetCard(i);
+            if (card.IsSkill && card.Skill is SO_SkillCard_Fold) return true;
         }
         return false;
     }
