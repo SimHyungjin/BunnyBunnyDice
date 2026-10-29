@@ -11,14 +11,13 @@ public sealed class CharacterSelectScreen : IDisposable
     private readonly IReadOnlyList<SO_HeroCharacter> _characters;
     private readonly HeroStats _stats;
     private readonly MetaProfile _meta;
-    private readonly HeroPortraits _portraits;
     private readonly SO_CharacterSelectConfig _config;
     private readonly SO_MetaDiceConfig _diceConfig;
     private UI_CharacterSelectPopup _popup;
     private bool _loading;
     private int _generation;
 
-    public CharacterSelectScreen(IReadOnlyList<SO_HeroCharacter> characters, HeroStats stats, MetaProfile meta, HeroPortraits portraits,
+    public CharacterSelectScreen(IReadOnlyList<SO_HeroCharacter> characters, HeroStats stats, MetaProfile meta,
         SO_CharacterSelectConfig config, SO_MetaDiceConfig diceConfig)
     {
         _diceConfig = diceConfig;
@@ -26,7 +25,6 @@ public sealed class CharacterSelectScreen : IDisposable
         _characters = characters;
         _stats = stats;
         _meta = meta;
-        _portraits = portraits;
     }
 
     public void Show()
@@ -48,7 +46,6 @@ public sealed class CharacterSelectScreen : IDisposable
     public void Dispose()
     {
         Close();
-        _portraits.Dispose();
     }
 
     private async UniTaskVoid ShowAsync()
@@ -74,6 +71,6 @@ public sealed class CharacterSelectScreen : IDisposable
         {
             if (_popup == popup) _popup = null;
         });
-        popup.Show(_characters, _stats, _meta, _portraits, _diceConfig);
+        popup.Show(_characters, _stats, _meta, _diceConfig);
     }
 }

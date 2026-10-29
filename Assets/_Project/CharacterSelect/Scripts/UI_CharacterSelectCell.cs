@@ -44,6 +44,8 @@ public sealed class UI_CharacterSelectCell : MonoBehaviour
     public TMP_Text BandText => _bandText;
 
     private float _focusY = 0.5f;
+    private float _focusX = 0.5f;
+    private float _zoom = 1f;
     // 실루엣 걷기(Reveal). 시작 < 0 = 쉬는 중.
     private float _revealStart = -1f;
     private SO_MetaDiceConfig _revealConfig;
@@ -84,8 +86,8 @@ public sealed class UI_CharacterSelectCell : MonoBehaviour
     // 칸 크기가 바뀌면(화면 회전·열 수 변경) 자르는 범위도 다시 맞춘다.
     private void OnRectTransformDimensionsChange() => FitPortrait();
 
-    // 그림을 늘리지 않고 칸 사진 자리를 꽉 채우게 자른다(cover). 남는 쪽만 잘리고, 세로로 남으면 focusY 자리를 남긴다.
-    // 사진(3D)은 사진 자리와 같은 비율로 찍으므로 잘리지 않는다.
+    // 그림을 늘리지 않고 칸 사진 자리를 꽉 채우게 자른 뒤(cover) zoom만큼 확대·축소한다. 남기는 자리는 focusX·focusY.
+    // 그림은 컷인까지 쓰려고 세로로 길게(2:3) 그려서, 칸에서는 얼굴·손 둘레만 남긴다.
     private void FitPortrait()
     {
         if (_portrait == null || _portrait.texture == null) return;
@@ -93,23 +95,23 @@ public sealed class UI_CharacterSelectCell : MonoBehaviour
         if (rect.width <= 0f || rect.height <= 0f) return;
         float rectAspect = rect.width / rect.height;
         float textureAspect = _portrait.texture.width / (float)_portrait.texture.height;
-        if (textureAspect > rectAspect)
-        {
-            float w = rectAspect / textureAspect;
-            _portrait.uvRect = new Rect((1f - w) * 0.5f, 0f, w, 1f);
-        }
-        else
-        {
-            float h = textureAspect / rectAspect;
-            float y = Mathf.Clamp(_focusY - h * 0.5f, 0f, 1f - h);
-            _portrait.uvRect = new Rect(0f, y, 1f, h);
-        }
+        float w = textureAspect > rectAspect ? rectAspect / textureAspect : 1f;
+        float h = textureAspect > rectAspect ? 1f : textureAspect / rectAspect;
+        w /= _zoom;
+        h /= _zoom;
+        // 확대(범위가 그림 안)면 그림 밖으로 나가지 않게 막고, 축소(범위가 그림보다 큼)면 기준점이 칸의 같은 자리에 오게 둔다.
+        float x = w <= 1f ? Mathf.Clamp(_focusX - w * 0.5f, 0f, 1f - w) : (1f - w) * _focusX;
+        float y = h <= 1f ? Mathf.Clamp(_focusY - h * 0.5f, 0f, 1f - h) : (1f - h) * _focusY;
+        _portrait.uvRect = new Rect(x, y, w, h);
     }
 
     /// <param name="unlockable">잠겼지만 조건을 채워 누르면 열린다.</param>
     /// <param name="bandText">열린 캐릭터는 특성 이름, 잠긴 캐릭터는 해금 조건 글(진행도 포함), 열 수 있는 캐릭터는 "눌러서 열기".</param>
+    /// <param name="focusX">그림을 자를 때 남길 가로 자리(0 = 왼쪽 · 1 = 오른쪽).</param>
     /// <param name="focusY">그림을 칸 비율로 자를 때 남길 세로 자리(0 = 아래 · 1 = 위).</param>
-    public void Show(string displayName, Texture portrait, float focusY, bool unlocked, bool unlockable, bool selected, string bandText)
+    /// <param name="zoom">칸을 꽉 채운 크기에 곱하는 배율(1 = 꽉 채움, 1보다 작으면 축소).</param>
+    public void Show(string displayName, Texture portrait, float focusX, float focusY, float zoom, bool unlocked, bool unlockable, bool selected,
+        string bandText)
     {
         _nameText.text = displayName;
         _nameText.color = selected ? _selectedColor : _nameColor;
@@ -117,7 +119,9 @@ public sealed class UI_CharacterSelectCell : MonoBehaviour
         _portrait.enabled = portrait != null;
         // 걷히는 중이면 색은 Update가 정한다(언어가 바뀌어 다시 그려도 끊기지 않게).
         if (_revealStart < 0f) _portrait.color = unlocked ? Color.white : _silhouetteColor;
+        _focusX = focusX;
         _focusY = focusY;
+        _zoom = Mathf.Max(zoom, 0.1f);
         FitPortrait();
 
         _frame.color = selected ? _selectedColor : _frameColor;

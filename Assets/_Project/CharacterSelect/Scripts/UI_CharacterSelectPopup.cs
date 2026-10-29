@@ -31,20 +31,17 @@ public sealed class UI_CharacterSelectPopup : UI_Popup
     private IReadOnlyList<SO_HeroCharacter> _characters;
     private HeroStats _stats;
     private MetaProfile _meta;
-    private HeroPortraits _portraits;
     private SO_MetaDiceConfig _diceConfig;
     private bool _revealing;
     private int _columns;
     private bool _textDirty;
 
-    public void Show(IReadOnlyList<SO_HeroCharacter> characters, HeroStats stats, MetaProfile meta, HeroPortraits portraits,
-        SO_MetaDiceConfig diceConfig)
+    public void Show(IReadOnlyList<SO_HeroCharacter> characters, HeroStats stats, MetaProfile meta, SO_MetaDiceConfig diceConfig)
     {
         Unsubscribe();
         _characters = characters;
         _stats = stats;
         _meta = meta;
-        _portraits = portraits;
         _diceConfig = diceConfig;
         _revealing = false;
         _stats.CharacterChanged += Refresh;
@@ -119,8 +116,8 @@ public sealed class UI_CharacterSelectPopup : UI_Popup
             if (character == null) continue;
             bool unlocked = _meta.IsUnlocked(character);
             bool unlockable = _meta.CanUnlock(character);
-            // 그림이 없어 3D 사진을 쓰면 사진 자리 비율로 찍으므로 자를 것이 없다(focusY는 그림에만 쓰인다).
-            _cells[i].Show(App.Localize(character.DisplayName), _portraits.Get(character), character.PortraitFocusY, unlocked, unlockable,
+            _cells[i].Show(App.Localize(character.DisplayName), character.Portrait, character.PortraitFocusX, character.PortraitFocusY,
+                character.PortraitZoom, unlocked, unlockable,
                 character == _stats.Character,
                 BandText(character, unlocked, unlockable));
         }
@@ -223,7 +220,6 @@ public sealed class UI_CharacterSelectPopup : UI_Popup
         _characters = null;
         _stats = null;
         _meta = null;
-        _portraits = null;
         _diceConfig = null;
     }
 }

@@ -40,11 +40,17 @@ public sealed class SO_HeroCharacter : SO_Config
     [Tooltip("공격선 색.")]
     public Color Color = new Color(0.95f, 0.85f, 0.3f);
 
-    [Header("초상화 (캐릭터 선택 창)")]
-    [Tooltip("배경이 투명한 그림. 비우면 3D 모델을 찍은 사진을 쓴다(HeroPortraits). 잠긴 캐릭터는 이 그림을 검게 칠해 실루엣으로 쓴다.")]
+    [Header("초상화 (캐릭터 선택 창·스킬 컷인)")]
+    [Tooltip("배경이 투명한 세로 그림(2:3, 머리~허벅지). 선택 창은 얼굴·손 둘레를 잘라 쓰고(아래 자르기 값), 컷인은 거의 다 쓴다. " +
+             "잠긴 캐릭터는 이 그림을 검게 칠해 실루엣으로 쓴다. 비우면 얼굴 칸이 빈다.")]
     public Texture2D Portrait;
     [Tooltip("칸에 맞춰 자를 때 남길 세로 자리(그림 높이 비율, 0 = 아래 · 1 = 위). 칸 아래쪽은 이름 판에 가려지므로 얼굴이 그 위에 오게 맞춘다.")]
     [Range(0f, 1f)] public float PortraitFocusY = 0.5f;
+    [Tooltip("자를 때 남길 가로 자리(그림 너비 비율, 0 = 왼쪽 · 1 = 오른쪽). 확대(PortraitZoom)할 때 얼굴이 가운데가 아니면 맞춘다.")]
+    [Range(0f, 1f)] public float PortraitFocusX = 0.5f;
+    [Tooltip("칸을 꽉 채운 크기에 곱하는 배율(1 = 꽉 채움). 크면 확대, 1보다 작으면 축소(그림 밖은 투명 — 그림 가장자리가 투명해야 한다). " +
+             "그림은 컷인까지 쓰려고 세로로 길게(머리~허벅지) 그려서, 선택 칸에서는 얼굴·손이 칸을 채우게 확대한다.")]
+    [Min(0.1f)] public float PortraitZoom = 1f;
 
     [Header("한계 능력치 (6단계 값)")]
     [Tooltip("한 번 맞힐 때의 피해. 스킬 위력의 기준이기도 하다(10.2).")]

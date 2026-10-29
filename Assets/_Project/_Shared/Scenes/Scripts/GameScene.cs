@@ -211,12 +211,9 @@ public sealed partial class GameScene : SceneBase
         };
         _lobbyDecor = new LobbyDecor(_mapRoot, lobbyConfig, _viewConfig, diceConfig, levelUpConfig, _lighting.OutlineMaterial);
         // 게임 시작: 영웅이 뛰어들고 테이블 장식은 사라진다(뒤이어 판 주사위 연출이 판을 채운다).
-        // 얼굴 사진은 캐릭터 SO(모델·색)를 고치면 다시 찍는다.
-        HeroPortraits portraits = new HeroPortraits(characterSelectConfig, heroConfig, _lighting.CharacterOutlineMaterial);
-        heroConfig.Changed += portraits.Clear;
         // 판 중에 열면 판을 멈춘다(같은 속도 요청 묶음을 쓴다).
         _settings = new SettingsScreen(_speed);
-        _characterSelect = new CharacterSelectScreen(heroConfig.Characters, _heroStats, _meta, portraits, characterSelectConfig,
+        _characterSelect = new CharacterSelectScreen(heroConfig.Characters, _heroStats, _meta, characterSelectConfig,
             _metaDiceConfig);
         _lobbyScreen = new LobbyScreen(_heroStats, _meta, _metaDiceConfig, () =>
         {
