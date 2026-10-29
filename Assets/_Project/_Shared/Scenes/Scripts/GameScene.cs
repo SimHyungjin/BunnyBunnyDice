@@ -699,7 +699,12 @@ public sealed partial class GameScene : SceneBase
         if (_hand == null) return;
         _drag?.Cancel();
         _hand.Clear();
-        for (int i = 0; i < _handConfig.StartHand.Count; i++) _hand.Add(HandCard.Of(_handConfig.StartHand[i]));
+        IStartHandCard hook = _traits?.Find<IStartHandCard>();
+        for (int i = 0; i < _handConfig.StartHand.Count; i++)
+        {
+            DiceCard card = _handConfig.StartHand[i];
+            _hand.Add(HandCard.Of(hook != null ? hook.StartCard(card) : card));
+        }
     }
 
     private void RefreshHud()

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_HeroTrait_777
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_DoubleExp
   DisplayName: 777
-  Description: "\uD6C4\uBCF4\uC5D0 \uC721\uBA74\uCCB4\uAC00 \uB098\uC624\uC9C0 \uC54A\uACE0,
-    \uC8FC\uC0AC\uC704\uB97C \uB193\uC73C\uBA74 \uD56D\uC0C1 {PlacePips}\uC774 \uB098\uC628\uB2E4."
+  Description: "\uC721\uBA74\uCCB4\uAC00 \uB098\uC624\uC9C0 \uC54A\uACE0, \uC8FC\uC0AC\uC704\uB97C \uB193\uC73C\uBA74 \uD56D\uC0C1 {PlacePips}\uC774 \uB098\uC628\uB2E4."
   PlacePips: 7
   ExcludeFaces: 6
+  StartFaces: 12

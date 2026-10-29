@@ -77,7 +77,7 @@
 럭키보이,Lucky Boy,SO_HeroCharacter_LuckyBoy.DisplayName
 토끼공듀,Bunny Princess,SO_HeroCharacter_Princess.DisplayName
 777,777,SO_HeroTrait_777.DisplayName
-"후보에 육면체가 나오지 않고, 주사위를 놓으면 항상 {PlacePips}이 나온다.","No D6 in level-up choices, and dice always land on {PlacePips} when placed.",SO_HeroTrait_777.Description
+"육면체가 나오지 않고, 주사위를 놓으면 항상 {PlacePips}이 나온다.","No D6 ever, and dice always land on {PlacePips} when placed.",SO_HeroTrait_777.Description
 브레이크,Break,SO_HeroTrait_Break.DisplayName
 기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
 빌더,Builder,SO_HeroTrait_Builder.DisplayName
