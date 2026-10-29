@@ -38,7 +38,7 @@ public sealed class SO_LevelUpConfig : SO_Config
     [Range(0.05f, 1f)] public float ChoiceTimeScale = 0.5f;
     [Tooltip("레벨업마다 캐릭터 전용 카드(SO_HeroCharacter.ExclusiveCard)가 후보 한 자리에 나올 확률. 나오면 나머지 자리만 공용 카드로 뽑는다 " +
              "— 다 뽑은 뒤 덮어쓰면 레인보우의 '종류가 모두 다름'이 깨지고 고르려던 카드가 사라졌다(2026-10-29 사용자).")]
-    [Range(0f, 1f)] public float ExclusiveChance = 0.15f;
+    [Range(0f, 1f)] public float ExclusiveChance = 0.2f;
     [Tooltip("x2 후보 카드(특성 — 더블)가 팝업이 열릴 때 이 배율에서 원래 크기로 톡 줄어든다 — 붙은 것이 눈에 띄게.")]
     [Min(1f)] public float CopyPopScale = 1.15f;
     [Tooltip("팝업이 뜬 뒤 이 시간(초, 실제 시간) 동안은 카드를 눌러도 고르지 않는다 — 맵·손패를 누르던 손가락이 갑자기 뜬 카드를 잘못 고르지 않게.")]
