@@ -48,8 +48,8 @@ public sealed partial class GameScene : SceneBase
     private TraitHooks _traits;
     private Hero _hero;
     private CardPlacement _placement;
-    // 맵 생성 검사(기획서 3.3)의 설정 — 미로를 지은 뒤 한 구멍만 아주 짧아지는 맵을 다시 굴리고 보스 구멍을 정한다.
-    private SO_PlacementPreviewConfig _probeConfig;
+    // 미로 계획 설정 — 맵 생성 검사(기획서 3.3: 미로를 지은 뒤 한 구멍만 아주 짧아지는 맵이면 칩을 다시 놓는다)와 봇이 같이 쓴다.
+    private SO_MazePlanConfig _mazeConfig;
     // 워커 스레드에서 도는 맵 생성의 차례 번호. 더 새 요청이 오거나 씬을 나가면 늘려, 늦게 끝난 옛 결과를 버린다.
     private int _mapJob;
     // 미로 검사가 도는 중 — 시작 칩 자리가 아직 바뀔 수 있다(굴림은 확정).
@@ -121,13 +121,14 @@ public sealed partial class GameScene : SceneBase
             Core.Resource.LoadAsync<SO_LightingConfig>(ct: token),
             Core.Resource.LoadAsync<SO_HeroConfig>(ct: token),
             Core.Resource.LoadAsync<SO_BoardRollConfig>(ct: token));
-        var (metaAsset, characterSelectAsset, metaDiceAsset, speedAsset, botAsset, colorTestAsset) = await UniTask.WhenAll(
+        var (metaAsset, characterSelectAsset, metaDiceAsset, speedAsset, botAsset, colorTestAsset, mazeAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MetaConfig>(ct: token),
             Core.Resource.LoadAsync<SO_CharacterSelectConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MetaDiceConfig>(ct: token),
             Core.Resource.LoadAsync<SO_GameSpeedConfig>(ct: token),
             Core.Resource.LoadAsync<SO_BotConfig>(ct: token),
-            Core.Resource.LoadAsync<SO_ColorTestConfig>(ct: token));
+            Core.Resource.LoadAsync<SO_ColorTestConfig>(ct: token),
+            Core.Resource.LoadAsync<SO_MazePlanConfig>(ct: token));
         var (monsterAsset, waveAsset, goalAsset, attackEffectAsset, levelUpAsset, diceAsset, diceStatsAsset, damageNumberAsset, lobbyAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MonsterConfig>(ct: token),
             Core.Resource.LoadAsync<SO_WaveConfig>(ct: token),
@@ -145,7 +146,6 @@ public sealed partial class GameScene : SceneBase
         SO_CardHandConfig handConfig = _tuning.Copy(handAsset);
         SO_MapPathViewConfig pathConfig = _tuning.Copy(pathAsset);
         SO_PlacementPreviewConfig previewConfig = _tuning.Copy(previewAsset);
-        _probeConfig = previewConfig;
         SO_CardDragConfig dragConfig = _tuning.Copy(dragAsset);
         SO_EnvironmentConfig environmentConfig = _tuning.Copy(environmentAsset);
         SO_LightingConfig lightingConfig = _tuning.Copy(lightingAsset);
@@ -166,6 +166,7 @@ public sealed partial class GameScene : SceneBase
         SO_GameSpeedConfig speedConfig = _tuning.Copy(speedAsset);
         SO_BotConfig botConfig = _tuning.Copy(botAsset);
         _colorTestConfig = _tuning.Copy(colorTestAsset);
+        _mazeConfig = _tuning.Copy(mazeAsset);
 
         _lighting = new SceneLighting(lightingConfig);
         _lighting.Apply(Core.Camera.MainCamera);
@@ -335,7 +336,7 @@ public sealed partial class GameScene : SceneBase
         _levelUp.CardChosen += _waveLog.CountCard;
         _levelUp.Offered += _waveLog.CountOffers;
         _levelUp.Opened += _drag.Cancel;
-        CreateBot(botConfig, previewConfig, heroConfig, diceConfig, diceStatsConfig);
+        CreateBot(botConfig, heroConfig, diceConfig, diceStatsConfig);
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
         DealStartHand();
         // 손패를 다 쓰면 판을 아래로 넓히고, 카드가 들어오면 되돌린다(아래 여백만 섞는다).
@@ -475,7 +476,7 @@ public sealed partial class GameScene : SceneBase
         _expBoost.Clear();
 
         // 검사는 판마다 새로 만든다 — 요청이 겹치면(R 키 연타·설정 변경) 두 생성이 버퍼를 함께 쓰지 않게.
-        MazeRouteProbe probe = new MazeRouteProbe(_probeConfig);
+        MazeRouteProbe probe = new MazeRouteProbe(_mazeConfig);
         if (wait)
         {
             _mapPending = false;

@@ -79,7 +79,13 @@ public sealed class SkillCaster
             _effects.ShowRing(Ground(cell), overdrive.RingRadius, card.IconColor, overdrive.Duration);
             return;
         }
-        _diceField.ApplySkill(cell, card);
+        // 상태를 바꾸는 스킬(페인트·리롤·잭팟). 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 온다.
+        // 리롤은 면체부터 다시 뽑는다. 눈은 늘 한 번 굴린다 — 눈을 쓰지 않는 스킬(페인트·잭팟)도 굴려 판 난수의 차례가 스킬 종류에 따라 갈리지 않게.
+        _diceField.Change(cell, (ref DiceState dice) =>
+        {
+            if (card is SO_SkillCard_Reroll) dice.Faces = _diceField.RollFaces(dice.Faces);
+            SkillRules.ApplyDice(ref dice, card, _diceField.RollPips(dice.Faces));
+        }, SkillRules.Rolls(card));
     }
 
     /// <summary>쓰면 영향을 받을 몬스터 슬롯을 result에 채운다(판 위의 산 적 모두). 미리보기와 실제 사용이 같은 함수를 지난다.</summary>

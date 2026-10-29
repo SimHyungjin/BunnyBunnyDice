@@ -21,10 +21,10 @@ public sealed partial class GameScene
     private int _simSavedCulling;
 
     // 봇은 사람과 같은 길(손패·배치·스킬·레벨업 고르기)만 부른다 — 그래서 판 시스템을 다 만든 뒤에 만든다.
-    private void CreateBot(SO_BotConfig botConfig, SO_PlacementPreviewConfig previewConfig, SO_HeroConfig heroConfig, SO_DiceConfig diceConfig,
+    private void CreateBot(SO_BotConfig botConfig, SO_HeroConfig heroConfig, SO_DiceConfig diceConfig,
         SO_DiceStatsConfig diceStatsConfig)
     {
-        _mazePlanner = new MazePlanner(previewConfig, () => _map, _diceField);
+        _mazePlanner = new MazePlanner(_mazeConfig, () => _map, _diceField);
         _bot = new GameBot(botConfig, () => _map, () => _waves.Wave, _heroStats, heroConfig.Characters, _diceField, _chips, _hand, _placement, _skills, _monsters, _hero, diceConfig,
             diceStatsConfig, () => heroConfig.Overdrive, _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
         _botConfig = botConfig;

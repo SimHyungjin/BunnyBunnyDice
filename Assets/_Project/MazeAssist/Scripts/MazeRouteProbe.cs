@@ -10,13 +10,13 @@ using UnityEngine;
 /// </summary>
 public sealed class MazeRouteProbe : IMapRouteProbe
 {
-    private readonly SO_PlacementPreviewConfig _config;
+    private readonly SO_MazePlanConfig _config;
     private readonly MazeEvaluator _evaluator = new MazeEvaluator();
     private readonly List<Vector2Int> _plan = new List<Vector2Int>();
     private readonly List<Vector2Int> _best = new List<Vector2Int>();
     private readonly List<Vector2Int> _free = new List<Vector2Int>();
 
-    public MazeRouteProbe(SO_PlacementPreviewConfig config) => _config = config;
+    public MazeRouteProbe(SO_MazePlanConfig config) => _config = config;
 
     public void Measure(MapData map, int seed, List<float> lengths, List<Vector2Int> plan)
     {
@@ -36,7 +36,7 @@ public sealed class MazeRouteProbe : IMapRouteProbe
         // 길을 막지 않는 칸으로만 하나씩 채운다(MazePlanner.Refresh와 같다).
         float score = Score(map, _plan);
         int guard = _free.Count * 2;
-        while (_plan.Count < _config.MazeTargetDice && _free.Count > 0 && guard-- > 0)
+        while (_plan.Count < _config.TargetDice && _free.Count > 0 && guard-- > 0)
         {
             int index = random.Next(_free.Count);
             _plan.Add(_free[index]);
@@ -53,7 +53,7 @@ public sealed class MazeRouteProbe : IMapRouteProbe
         _best.AddRange(_plan);
         float bestScore = score;
 
-        int iterations = _config.MazeProbeIterations;
+        int iterations = _config.ProbeIterations;
         for (int i = 1; i <= iterations && _plan.Count > 0 && _free.Count > 0; i++)
         {
             int planIndex = random.Next(_plan.Count);
@@ -61,7 +61,7 @@ public sealed class MazeRouteProbe : IMapRouteProbe
             Vector2Int from = _plan[planIndex];
             _plan[planIndex] = _free[freeIndex];
             float next = Score(map, _plan);
-            float temperature = Mathf.Lerp(_config.MazeStartTemperature, _config.MazeEndTemperature, i / (float)iterations);
+            float temperature = Mathf.Lerp(_config.StartTemperature, _config.EndTemperature, i / (float)iterations);
             bool accept = next > float.MinValue
                 && (next >= score || random.NextDouble() < System.Math.Exp((next - score) / temperature));
             if (!accept)
@@ -84,6 +84,6 @@ public sealed class MazeRouteProbe : IMapRouteProbe
 
     // 빈 맵이라 사거리로 덮는 칸 = 계획한 칸뿐이다.
     private float Score(MapData map, List<Vector2Int> plan) =>
-        _evaluator.Evaluate(map, plan, plan, _config.MazeAssumedRange, _config.MazeCoverageWeight,
-            _config.MazeBossWeight);
+        _evaluator.Evaluate(map, plan, plan, _config.AssumedRange, _config.CoverageWeight,
+            _config.BossWeight);
 }

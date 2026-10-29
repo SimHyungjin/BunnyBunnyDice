@@ -21,7 +21,7 @@ using UnityEngine;
 /// </summary>
 public sealed class MazePlanner : IDisposable
 {
-    private readonly SO_PlacementPreviewConfig _config;
+    private readonly SO_MazePlanConfig _config;
     private readonly Func<MapData> _getMap;
     private readonly DiceField _diceField;
     private readonly MazeEvaluator _evaluator = new MazeEvaluator();
@@ -42,7 +42,7 @@ public sealed class MazePlanner : IDisposable
     public int AdoptCount { get; private set; }
     public double WaitSeconds { get; private set; }
 
-    public MazePlanner(SO_PlacementPreviewConfig config, Func<MapData> getMap, DiceField diceField)
+    public MazePlanner(SO_MazePlanConfig config, Func<MapData> getMap, DiceField diceField)
     {
         _config = config;
         _getMap = getMap;
@@ -142,8 +142,8 @@ public sealed class MazePlanner : IDisposable
         Cancel();
         CollectTowers();
         Search search = new Search(map.Clone(), new List<Vector2Int>(_towers), new List<Vector2Int>(_best), Signature(map),
-            Mathf.Max(_config.MazeTargetDice - _towers.Count, 0), _config.MazeIterations, _config.MazeAssumedRange,
-            _config.MazeCoverageWeight, _config.MazeBossWeight, _config.MazeStartTemperature, _config.MazeEndTemperature);
+            Mathf.Max(_config.TargetDice - _towers.Count, 0), _config.Iterations, _config.AssumedRange,
+            _config.CoverageWeight, _config.BossWeight, _config.StartTemperature, _config.EndTemperature);
         search.Task = Task.Run(search.Run);
         _search = search;
         _searchAge = 0f;
@@ -178,8 +178,8 @@ public sealed class MazePlanner : IDisposable
         _single.Clear();
         _single.Add(candidate);
         _towers.Add(candidate);
-        float score = _evaluator.Evaluate(map, _single, _towers, _config.MazeAssumedRange, _config.MazeCoverageWeight,
-            _config.MazeBossWeight);
+        float score = _evaluator.Evaluate(map, _single, _towers, _config.AssumedRange, _config.CoverageWeight,
+            _config.BossWeight);
         _towers.RemoveAt(_towers.Count - 1);
         if (score <= best) return;
         best = score;

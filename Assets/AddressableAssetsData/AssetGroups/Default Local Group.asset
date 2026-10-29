@@ -185,6 +185,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ffe5e7734d6a47f4ca6760fb5c6f87cc
+    m_Address: SO_MazePlanConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 36fc74af7d57aec4881b551ffce077f3, type: 2}
   m_SchemaSet:

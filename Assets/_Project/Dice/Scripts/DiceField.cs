@@ -122,24 +122,25 @@ public sealed class DiceField : IDisposable
         NotifyAwakened(wasAwakened, placed.Dice, cell);
     }
 
+    /// <summary>주사위 하나의 상태를 바꾸는 일(주사위 대상 스킬). DiceField.Change에 넘긴다.</summary>
+    public delegate void DiceChange(ref DiceState dice);
+
     /// <summary>
-    /// 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 부른다(주사위 대상 스킬 — 칩 카드는 ChipField). 주사위 상태를 바꾼다.
-    /// 눈이 바뀌는 스킬(리롤·잭팟)은 굴리는 연출을 보여 준다 — 바뀐 눈이 굴려서 나온 수로 보이게. 리롤은 면체부터 다시 뽑는다.
-    /// 상태를 바꾸지 않는 스킬(오버드라이브)은 DiceCombat이 받는다(SkillCaster).
+    /// cell의 주사위 상태를 change로 바꾸고, 검정 각성·표시·각성 알림을 맞춘다. 주사위 대상 스킬(SkillCaster)이 부른다 —
+    /// 주사위가 스킬 종류를 모르게, 무엇을 바꿀지는 부르는 쪽이 정한다. rolled면 굴리는 연출을 보여 준다(바뀐 눈이 굴려서 나온 수로 보이게).
     /// </summary>
-    public void ApplySkill(Vector2Int cell, SO_SkillCard card)
+    public void Change(Vector2Int cell, DiceChange change, bool rolled)
     {
         int index = IndexOf(cell);
-        if (index < 0 || card == null) return;
+        if (index < 0 || change == null) return;
         PlacedDice placed = _placed[index];
         bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
-        if (card is SO_SkillCard_Reroll) placed.Dice.Faces = RollFaces(placed.Dice.Faces);
-        SkillRules.ApplyDice(ref placed.Dice, card, Roll(placed.Dice.Faces, false));
+        change(ref placed.Dice);
         // 리롤·잭팟으로 검정이 눈 20에 닿으면 무작위 색으로 바뀐다(6.5).
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
         Refresh(index);
-        if (SkillRules.Rolls(card)) _views[index].Roll(_config.StackDropHeight);
+        if (rolled) _views[index].Roll(_config.StackDropHeight);
         NotifyAwakened(wasAwakened, placed.Dice, cell);
     }
 
@@ -221,7 +222,8 @@ public sealed class DiceField : IDisposable
     }
 
     // 리롤의 새 면체: 모델이 있는 면체(SO_DiceConfig.Models) 중 같은 확률로. 목록이 비면 그대로.
-    private int RollFaces(int current)
+    /// <summary>모델이 있는 면체 중 하나를 같은 확률로 뽑는다(리롤). 판 난수(GameRandom.Dice)를 쓴다.</summary>
+    public int RollFaces(int current)
     {
         List<SO_DiceConfig.FaceModel> models = _config.Models;
         return models.Count > 0 ? models[GameRandom.Dice.Next(models.Count)].Faces : current;
@@ -233,6 +235,9 @@ public sealed class DiceField : IDisposable
         IDicePipRoller roller = _traits?.Find<IDicePipRoller>();
         return roller != null ? Mathf.Clamp(roller.RollPips(faces, placing), 1, faces) : DiceRules.Roll(faces);
     }
+
+    /// <summary>놓인 주사위를 다시 굴리는 눈(스킬). 특성의 굴림이 있으면 그것을 쓴다.</summary>
+    public int RollPips(int faces) => Roll(faces, false);
 
     /// <summary>cell의 주사위 표시를 다시 맞춘다(밑에 칩이 들어와 올라앉을 때). 주사위가 없으면 아무 일도 없다.</summary>
     public void RefreshAt(Vector2Int cell)

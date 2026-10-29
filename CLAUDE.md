@@ -53,6 +53,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 게임 코드(`_Project`) 설계 규칙
 
 - **기능은 잘게 나눈다.** 나눌 수 있으면 나눈다(데이터 / 규칙·판정 / 표시 / 입력을 한 클래스에 섞지 않는다). 폴더도 기능 단위다(위 폴더 구조 규칙).
+- **테스트·자동 플레이 코드는 판 흐름에 섞지 않는다.** 테스트 도구(테스트 키·F1 창·색 시험)는 `DevTools/`, `GameScene`의 연결은 partial로 나눈다 — 본체(진입·판 흐름) / `GameScene.AutoPlay`(봇·색 시험·빠른 시뮬) / `GameScene.Debug`(테스트 키·창, `#if UNITY_EDITOR || DEVELOPMENT_BUILD`). 판 흐름이 읽는 테스트 상태는 `GameDebugFlags`에 둔다. 게임 시스템 안의 테스트용 손잡이(`HeroAttack.Enabled`, `MonsterField.SpeedScale`, `WaveSpawner.SkipWaves` 등)는 봇·시뮬도 쓰는 조작 API라 그대로 둔다.
 - **오브젝트는 모두 동적 생성한다.** 씬에 오브젝트를 미리 배치하지 않고, 코드가 SO·프리팹을 받아 만든다. 예외는 테스트용(검증 씬·미리보기 컴포넌트)뿐이다.
 - **설정은 SO로 받는다.** 컴포넌트마다 인스펙터 필드를 늘어놓지 않고, 설정을 담은 `SO_*`를 만들고 코드는 그 SO를 받아 동작한다.
   - **SO = 영구 기본값, GameTuning = 이번 플레이만.** (틀은 `_Utility/Tuning` — `_Utility/_Docs` 참고) 설정 SO는 `SO_Config`를 상속하고, 씬 진입 시 `ConfigTuning.Copy`로 만든 **실행 중 복사본**을 코드에 넘긴다(원본 에셋을 직접 넘기지 않는다).

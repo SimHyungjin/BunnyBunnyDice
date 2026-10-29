@@ -25,11 +25,3 @@ MonoBehaviour:
   SkillGatherMarkRadius: 0.7
   SkillMarkWidth: 0.06
   SkillKingMarkRadius: 0.5
-  MazeTargetDice: 20
-  MazeIterations: 20000
-  MazeAssumedRange: 2.8
-  MazeCoverageWeight: 0.3
-  MazeBossWeight: 1
-  MazeStartTemperature: 3
-  MazeEndTemperature: 0.05
-  MazeProbeIterations: 3000
