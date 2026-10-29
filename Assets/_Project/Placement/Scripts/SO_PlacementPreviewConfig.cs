@@ -30,7 +30,9 @@ public sealed class SO_PlacementPreviewConfig : SO_Config
     [Min(0.05f)] public float SkillGatherMarkRadius = 0.7f;
     [Tooltip("체크메이트의 왕(큰 피해를 받는 적) 밑 고리 반경(칸). 색은 카드 색(IconColor).")]
     [Min(0.05f)] public float SkillKingMarkRadius = 0.5f;
-    [Tooltip("모음점·왕 고리의 선 굵기(칸).")]
+    [Tooltip("따로 골라지는 대상(포켓에 들어갈 적·브레이크 샷의 영웅) 밑 고리 반지름(칸). 모든 적·모든 주사위가 대상이면 고리 없이 판 색만 깐다.")]
+    [Min(0.05f)] public float SkillTargetMarkRadius = 0.4f;
+    [Tooltip("대상 고리(모음점·왕·포켓 대상·영웅)의 선 굵기(칸).")]
     [Min(0.005f)] public float SkillMarkWidth = 0.06f;
 
 }

@@ -269,17 +269,30 @@ public sealed class MonsterField : IDisposable
 
     // 피해 종류는 숫자 색에 쓴다. 치명타·화상은 그대로 두고, 일반 피해만 방어력에 깎였으면 깎임으로 바꾼다.
     // 화상은 최대 체력 비율이라 방어력을 받지 않는다(기획서 7). 방어력은 취약으로 깎인 만큼 빼고 본다.
-    private void ApplyDamage(int slot, float damage, float penetration, DamageKind kind, DamageSource source)
+    /// <summary>
+    /// slot에 damage를 맞히면 깎일 체력(Hit과 같은 공식, 상태는 바꾸지 않는다). 스킬 미리보기가 놓기 전에 결과를 보여 줄 때 쓴다(포켓 처치 예상).
+    /// </summary>
+    public int EstimateHit(int slot, float damage, float penetration = 0f) =>
+        Mathf.Max(1, Mathf.RoundToInt(RawDamage(slot, damage, penetration, DamageKind.Normal, out _)));
+
+    // 방어력·취약·피해 저항을 지난 피해(반올림 전). damage는 취약을 곱한 값으로 돌려준다(작아진 피해 표시 판단용).
+    private float RawDamage(int slot, float damage, float penetration, DamageKind kind, out float boosted)
     {
         ref MonsterState state = ref _states[slot];
         // 방깍(취약)은 받는 피해 배율이라 치명타처럼 방어력보다 먼저 곱한다(MonsterDamage). 화상에도 붙는다 — "모든 공격".
         if (state.IsVulnerable) damage *= 1f + state.VulnerableRatio;
+        boosted = damage;
         MonsterKind target = _kinds[state.TypeIndex];
-        float armor = target.Armor;
-        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, armor, penetration, _config.MinDamageRatio);
+        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, target.Armor, penetration, _config.MinDamageRatio);
         // 피해 저항(거대)은 출처를 가리지 않는다 — 주사위·영웅·스킬·화상이 몬스터 특성을 몰라도 되게 받는 쪽에서 줄인다.
         // 방어력을 뺀 뒤에 줄인다: 먼저 줄이면 작아진 피해에서 방어력을 빼 단단한 보스(5웨이브 거대+단단함)가 의도(체력 1/10과 맞바꿈)보다 몇 배 단단해졌다.
-        raw *= target.DamageScale;
+        return raw * target.DamageScale;
+    }
+
+    private void ApplyDamage(int slot, float damage, float penetration, DamageKind kind, DamageSource source)
+    {
+        ref MonsterState state = ref _states[slot];
+        float raw = RawDamage(slot, damage, penetration, kind, out damage);
 
         // 피해는 정수로 들어간다 — 화면 숫자와 실제로 깎인 체력이 같게. 맞힌 피해는 반올림하고 최소 1(맞혔는데 0이면 안 맞은 것처럼 보인다).
         // 화상은 한 번에 1이 안 될 만큼 작게 자주 들어오므로 나머지를 모아 1이 넘을 때 준다.

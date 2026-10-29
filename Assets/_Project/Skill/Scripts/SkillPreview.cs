@@ -4,11 +4,13 @@ using UnityEngine;
 
 /// <summary>
 /// 적 대상·판 전체 스킬 카드를 끄는 동안의 표시(기획서 8). 주사위 대상 스킬은 주사위 고스트(PlacementPreview)를 쓴다.
-/// 적 대상: 판 전체를 연한 초록으로 깐다(모든 적이 대상 — 손가락이 판 밖이면 깔지 않는다) + 레이크 모음점·체크메이트 왕 밑 고리(카드 색).
-/// 적마다 고리를 그리지 않는다 — 판 위 모든 적이 대상이라(2026-10-29) 판 색이 그 뜻을 대신하고, 수백 개를 매 프레임 다시 그리게 된다.
+/// 규칙 하나로 맞춘다(2026-10-29 사용자 — 카드마다 표시가 제각각이었다):
+/// - 어디에 놓나: 적 대상·판 전체는 판 전체를 연한 초록으로 깐다(판 위 아무 곳 — 손가락이 판 밖이면 깔지 않는다).
+/// - 누가 따로 골라지나: 전부가 받으면(모든 적·모든 주사위) 판 색만. 일부·한 점이면 그 대상에 표시 —
+///   적·영웅은 밑에 카드 색 고리(레이크 모음점·체크메이트 왕·포켓에 들어갈 적·브레이크 샷의 영웅),
+///   주사위는 칸 하이라이트(리스핀의 눈 1) — 주사위 밑 고리는 몸체에 가려 안 보인다.
 /// 처음엔 손가락 밑 고리였는데 "그 자리에 쓰는" 범위 스킬처럼 보였다(2026-10-29 사용자).
-/// 판 전체: 영향을 받을 주사위 칸마다 칸 하이라이트(주사위가 없으면 하이라이트 없이 버려진다).
-/// 왕은 체력이 바뀌며 달라지므로 손가락이 멈춰 있어도 매 프레임 다시 고른다 — 놓는 순간의 판정(SkillCaster)과 같은 함수를 지난다.
+/// 대상은 체력·위치가 바뀌며 달라지므로 손가락이 멈춰 있어도 매 프레임 다시 고른다 — 놓는 순간의 판정(SkillCaster)과 같은 함수를 지난다.
 /// </summary>
 public sealed class SkillPreview : IDisposable
 {
@@ -18,6 +20,11 @@ public sealed class SkillPreview : IDisposable
         public GameObject Object;
         public MeshRenderer Renderer;
         public Mesh Mesh;
+        // 마지막으로 채운 모양 — 같으면 메시를 다시 채우지 않고 옮기기만 한다(포켓 대상은 매 프레임 여럿이다).
+        public float Radius;
+        public float Width;
+        public int Segments;
+        public Color Color;
     }
 
     private readonly Transform _root;
@@ -27,6 +34,7 @@ public sealed class SkillPreview : IDisposable
     private readonly MonsterField _monsters;
     private readonly DiceField _diceField;
     private readonly Func<MapData> _getMap;
+    private readonly Hero _hero;
     private readonly List<int> _targets = new List<int>();
     private readonly List<Ring> _marks = new List<Ring>();
     private readonly List<GameObject> _highlights = new List<GameObject>();
@@ -36,11 +44,13 @@ public sealed class SkillPreview : IDisposable
     private readonly Color[] _boardColors = new Color[4];
     private static readonly int[] BoardTriangles = { 0, 2, 1, 1, 2, 3 };
     private SO_EnemySkillCard _enemyCard;
+    private SO_SkillCard _boardCard;
     private Vector2 _center;
 
     public SkillPreview(Transform parent, SO_PlacementPreviewConfig config, SO_MapViewConfig viewConfig, SkillCaster caster,
-        MonsterField monsters, DiceField diceField, Func<MapData> getMap)
+        MonsterField monsters, DiceField diceField, Func<MapData> getMap, Hero hero)
     {
+        _hero = hero;
         _config = config;
         _viewConfig = viewConfig;
         _caster = caster;
@@ -61,37 +71,25 @@ public sealed class SkillPreview : IDisposable
     /// <summary>적 대상 스킬 표시를 띄운다. center(맵 로컬 x, z)는 손가락 자리 — 판 위인지와 레이크 모음점을 정한다. 숨길 때까지 매 프레임 다시 그린다.</summary>
     public void ShowEnemies(SO_EnemySkillCard card, Vector2 center)
     {
-        HideHighlights();
+        _boardCard = null;
         _enemyCard = card;
         _center = center;
         DrawEnemies();
     }
 
-    /// <summary>판 전체 스킬: 영향을 받을 주사위 칸을 모두 밝힌다.</summary>
+    /// <summary>판 전체 스킬 표시를 띄운다(판 위에 손가락이 있을 때만 부른다). 숨길 때까지 매 프레임 다시 그린다.</summary>
     public void ShowBoard(SO_SkillCard card)
     {
-        HideEnemies();
-        HideHighlights();
-        // 주사위를 바꾸는 카드만 칸을 밝힌다(올인·세븐스 헤븐 = 모든 주사위, 리스핀 = 눈이 1인 주사위). 영웅·경험치에 거는 카드는 밝힐 칸이 없다.
-        bool all = card is SO_SkillCard_AllIn || card is SO_SkillCard_SevensHeaven;
-        bool lowest = card is SO_SkillCard_Respin;
-        if (!all && !lowest) return;
-        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
-        float ground = _viewConfig.GetTileTop(TileType.Ground);
-        int used = 0;
-        for (int i = 0; i < placed.Count; i++)
-        {
-            if (lowest && placed[i].Dice.Pips != 1) continue;
-            GameObject highlight = GetHighlight(used++);
-            highlight.transform.localPosition = new Vector3(placed[i].Cell.x, ground, placed[i].Cell.y);
-            RendererTint.Apply(highlight, _config.ValidColor);
-            highlight.SetActive(true);
-        }
+        _enemyCard = null;
+        _boardCard = card;
+        DrawBoard();
     }
 
     public void Hide()
     {
-        HideEnemies();
+        _enemyCard = null;
+        _boardCard = null;
+        HideMarks();
         HideHighlights();
     }
 
@@ -99,6 +97,7 @@ public sealed class SkillPreview : IDisposable
     public void Reset()
     {
         _enemyCard = null;
+        _boardCard = null;
         if (_board != null) DestroyRing(_board);
         _board = null;
         for (int i = 0; i < _marks.Count; i++) DestroyRing(_marks[i]);
@@ -107,26 +106,23 @@ public sealed class SkillPreview : IDisposable
         _highlights.Clear();
     }
 
-    // 끄는 동안 적이 움직이므로 왕을 매 프레임 다시 고른다.
+    // 끄는 동안 적·영웅이 움직이고 체력이 바뀌므로 매 프레임 다시 고른다.
     private void LateTick(float _)
     {
         if (_enemyCard != null) DrawEnemies();
+        else if (_boardCard != null) DrawBoard();
     }
 
     private void DrawEnemies()
     {
-        if (_config.RangeMaterial == null) return;
-        float y = _viewConfig.GetTileTop(TileType.Ground) + _config.RangeLift;
+        HideHighlights();
         MapData map = _getMap();
-        bool valid = map != null && _caster.CanCast(_enemyCard, _center);
-        if (!valid)
+        if (_config.RangeMaterial == null || map == null || !_caster.CanCast(_enemyCard, _center))
         {
             HideMarks();
             return;
         }
-
-        if (_board == null) _board = CreateRing("SkillBoard");
-        FillBoard(_board, map, y, _config.SkillBoardColor);
+        float y = FillBoardTint(map);
 
         int used = 0;
         Color mark = _enemyCard.IconColor;
@@ -138,13 +134,62 @@ public sealed class SkillPreview : IDisposable
             int king = _caster.FindKing(_enemyCard, _targets);
             if (king >= 0) FillRing(GetMark(used++), _monsters.States[king].Position, y, _config.SkillKingMarkRadius, _config.SkillMarkWidth, mark);
         }
-        for (int i = used; i < _marks.Count; i++) _marks[i].Object.SetActive(false);
+        if (_enemyCard is SO_SkillCard_Pocket pocket)
+        {
+            _caster.CollectTargets(_enemyCard, _targets);
+            for (int i = 0; i < _targets.Count; i++)
+            {
+                if (!_caster.WillPocket(pocket, _targets[i])) continue;
+                FillRing(GetMark(used++), _monsters.States[_targets[i]].Position, y, _config.SkillTargetMarkRadius, _config.SkillMarkWidth, mark);
+            }
+        }
+        HideMarksFrom(used);
     }
 
-    private void HideEnemies()
+    private void DrawBoard()
     {
-        _enemyCard = null;
-        HideMarks();
+        HideHighlights();
+        MapData map = _getMap();
+        if (_config.RangeMaterial == null || map == null)
+        {
+            HideMarks();
+            return;
+        }
+        float y = FillBoardTint(map);
+
+        int used = 0;
+        // 영웅에 거는 카드는 영웅 밑에 고리.
+        if (_boardCard is SO_SkillCard_BreakShot && _hero != null)
+            FillRing(GetMark(used++), _hero.Position, y, _config.SkillTargetMarkRadius, _config.SkillMarkWidth, _boardCard.IconColor);
+        HideMarksFrom(used);
+
+        // 일부 주사위만 바뀌는 카드는 그 칸을 밝힌다(리스핀 = 눈이 1). 모든 주사위가 받는 카드(올인·세븐스 헤븐)는 판 색만.
+        if (!(_boardCard is SO_SkillCard_Respin)) return;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        float ground = _viewConfig.GetTileTop(TileType.Ground);
+        int lit = 0;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            if (placed[i].Dice.Pips != 1) continue;
+            GameObject highlight = GetHighlight(lit++);
+            highlight.transform.localPosition = new Vector3(placed[i].Cell.x, ground, placed[i].Cell.y);
+            RendererTint.Apply(highlight, _config.ValidColor);
+            highlight.SetActive(true);
+        }
+    }
+
+    // 판 전체를 연하게 깐다. 고리를 그릴 높이를 돌려준다.
+    private float FillBoardTint(MapData map)
+    {
+        float y = _viewConfig.GetTileTop(TileType.Ground) + _config.RangeLift;
+        if (_board == null) _board = CreateRing("SkillBoard");
+        FillBoard(_board, map, y, _config.SkillBoardColor);
+        return y;
+    }
+
+    private void HideMarksFrom(int used)
+    {
+        for (int i = used; i < _marks.Count; i++) _marks[i].Object.SetActive(false);
     }
 
     private void HideMarks()
@@ -182,7 +227,15 @@ public sealed class SkillPreview : IDisposable
     {
         // 재질·굵기는 그릴 때마다 넣는다 — 실행 중 설정을 고치면 바로 반영되게.
         ring.Renderer.sharedMaterial = _config.RangeMaterial;
-        RingMesh.Fill(ring.Mesh, radius, width, Mathf.Max(_config.RangeSegments, 8), color);
+        int segments = Mathf.Max(_config.RangeSegments, 8);
+        if (ring.Radius != radius || ring.Width != width || ring.Segments != segments || ring.Color != color)
+        {
+            RingMesh.Fill(ring.Mesh, radius, width, segments, color);
+            ring.Radius = radius;
+            ring.Width = width;
+            ring.Segments = segments;
+            ring.Color = color;
+        }
         ring.Object.transform.localPosition = new Vector3(center.x, y, center.y);
         ring.Object.SetActive(true);
     }

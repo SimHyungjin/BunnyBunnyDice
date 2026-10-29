@@ -183,6 +183,17 @@ public sealed class SkillCaster
         }
     }
 
+    /// <summary>
+    /// 포켓을 지금 쓰면 slot이 처치되는지(피해 뒤 처치선 아래). 치명타는 터지지 않는다고 본다 — 미리보기는 확실히 들어가는 적만 보인다.
+    /// </summary>
+    public bool WillPocket(SO_SkillCard_Pocket card, int slot)
+    {
+        ref MonsterState state = ref _monsters.States[slot];
+        if (!state.IsAlive) return false;
+        float after = state.Health - _monsters.EstimateHit(slot, _heroStats.Attack * card.DamageMultiplier);
+        return after <= state.MaxHealth * card.HealthThreshold;
+    }
+
     // 피해(DamageTargets) 뒤 처치선 아래로 내려간 적을 가장 가까운 포켓으로 굴려 넣는다(보스 포함).
     private void CastPocket(SO_SkillCard_Pocket card)
     {
