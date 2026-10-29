@@ -124,7 +124,7 @@ public sealed class DiceField : IDisposable
 
     /// <summary>
     /// 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 부른다(주사위 대상 스킬 — 칩 카드는 ChipField). 주사위 상태를 바꾼다.
-    /// 눈이 바뀌는 스킬(다시 굴리기·잭팟)은 굴리는 연출을 보여 준다 — 바뀐 눈이 굴려서 나온 수로 보이게.
+    /// 눈이 바뀌는 스킬(리롤·잭팟)은 굴리는 연출을 보여 준다 — 바뀐 눈이 굴려서 나온 수로 보이게. 리롤은 면체부터 다시 뽑는다.
     /// 상태를 바꾸지 않는 스킬(오버드라이브)은 DiceCombat이 받는다(SkillCaster).
     /// </summary>
     public void ApplySkill(Vector2Int cell, SO_SkillCard card)
@@ -133,8 +133,9 @@ public sealed class DiceField : IDisposable
         if (index < 0 || card == null) return;
         PlacedDice placed = _placed[index];
         bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
+        if (card is SO_SkillCard_Reroll) placed.Dice.Faces = RollFaces(placed.Dice.Faces);
         SkillRules.ApplyDice(ref placed.Dice, card, Roll(placed.Dice.Faces));
-        // 다시 굴리기·잭팟으로 검정이 눈 20에 닿으면 무작위 색으로 바뀐다(9.4).
+        // 리롤·잭팟으로 검정이 눈 20에 닿으면 무작위 색으로 바뀐다(9.4).
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
         Refresh(index);
@@ -197,6 +198,13 @@ public sealed class DiceField : IDisposable
     private void NotifyAwakened(bool wasAwakened, in DiceState dice, Vector2Int cell)
     {
         if (!wasAwakened && _statsConfig.IsAwakened(dice)) DiceAwakened?.Invoke(cell);
+    }
+
+    // 리롤의 새 면체: 모델이 있는 면체(SO_DiceConfig.Models) 중 같은 확률로. 목록이 비면 그대로.
+    private int RollFaces(int current)
+    {
+        List<SO_DiceConfig.FaceModel> models = _config.Models;
+        return models.Count > 0 ? models[GameRandom.Dice.Next(models.Count)].Faces : current;
     }
 
     // 타워 주사위 굴림. 특성이 굴림을 바꾸면(쾌락주의자 등) 그것을 쓴다.

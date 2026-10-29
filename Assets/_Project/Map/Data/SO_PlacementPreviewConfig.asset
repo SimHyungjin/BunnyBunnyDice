@@ -21,6 +21,7 @@ MonoBehaviour:
   RangeWidth: 0.05
   RangeSegments: 64
   RangeLift: 0.03
+  SkillCursorRadius: 0.6
   SkillAreaWidth: 0.08
   SkillMarkRadius: 0.3
   SkillMarkWidth: 0.06

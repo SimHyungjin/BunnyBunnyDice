@@ -79,7 +79,7 @@ public sealed class SO_BotConfig : SO_Config
         [Tooltip("그 밖의 스킬(잭팟·다시 굴리기·페인트·오버드라이브·체크·올인·폴드).")]
         [Min(0f)] public float OtherSkillScale = 1f;
         [Min(0f)] public float HeroScale = 1f;
-        [Tooltip("켜면 데미지형 스킬을 뚫릴 때까지 아끼지 않고 적이 AnytimeAreaMinTargets 이상 모이면 바로 쓴다(체크메이트는 보스가 보이면) " +
+        [Tooltip("켜면 데미지형 스킬을 뚫릴 때까지 아끼지 않고 판 위 적이 AnytimeAreaMinTargets 이상이면 바로 쓴다(체크메이트는 보스가 보이면) " +
                  "— 데미지형 위주로 고르면서 아껴 두기만 하면 그 전략을 잴 수 없다.")]
         public bool DamageSkillAnytime;
     }
@@ -136,12 +136,12 @@ public sealed class SO_BotConfig : SO_Config
     [Min(0)] public int KillZoneMargin = 2;
     [Tooltip("목표물 중심에서 이 거리(칸) 안에 적이 오면 무조건 뚫린 것.")]
     [Min(0f)] public float DangerRadius = 2f;
-    [Tooltip("뚫릴 때 범위 스킬: 구간을 넘어온 적이 원 안에 이만큼이면 쓴다.")]
+    [Tooltip("뚫릴 때 적 대상 스킬(판 전체): 구간을 넘어온 적이 이만큼이면 쓴다.")]
     [Min(1)] public int BreachAreaMinTargets = 2;
     [Tooltip("뚫릴 때 체크: 구간을 넘어온 적이 이만큼이면 쓴다.")]
     [Min(1)] public int CheckBreachCount = 5;
 
-    [Tooltip("데미지형 스킬을 바로 쓰는 묶음(RunSet.DamageSkillAnytime): 원 안 적이 이만큼이면 쓴다.")]
+    [Tooltip("데미지형 스킬을 바로 쓰는 묶음(RunSet.DamageSkillAnytime): 판 위 적이 이만큼이면 쓴다.")]
     [Min(1)] public int AnytimeAreaMinTargets = 8;
 
     [Header("그 밖의 스킬")]

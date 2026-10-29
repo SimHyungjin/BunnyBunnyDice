@@ -5,9 +5,9 @@ public enum SkillTarget
 {
     /// <summary>놓인 주사위 하나(페인트·다시 굴리기·잭팟·오버드라이브).</summary>
     Dice,
-    /// <summary>판 위 한 점을 중심으로 한 원(포켓·레이크·백스핀). SO_AreaSkillCard.</summary>
+    /// <summary>판 위의 모든 적(포켓·레이크·백스핀·체크메이트·체크). 판 위 아무 곳에나 놓는다 — 놓은 자리는 레이크만 쓴다. SO_AreaSkillCard.</summary>
     Area,
-    /// <summary>판 위 아무 곳에나 놓으면 판 전체(올인).</summary>
+    /// <summary>판 위 아무 곳에나 놓으면 판 전체(올인 — 적이 아니라 주사위·목표물에).</summary>
     Board,
     /// <summary>주사위나 칩이 있는 칸 하나(폴드). 주사위 대상과 같이 칸을 겨눈다.</summary>
     Cell,

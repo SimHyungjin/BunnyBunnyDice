@@ -23,9 +23,11 @@ public sealed class SO_PlacementPreviewConfig : SO_Config
     [Min(0f)] public float RangeLift = 0.03f;
 
     [Header("스킬 (기획서 5.3)")]
-    [Tooltip("범위 스킬 원의 선 굵기(칸). 색은 쓸 수 있으면 ValidColor, 아니면 InvalidColor. 재질·점 수·띄우는 높이는 사거리와 같다.")]
+    [Tooltip("적 대상 스킬을 끄는 손가락 밑 고리 반경(칸) — 판 위인지(쓸 수 있는지) 보이게. 스킬은 판 전체라 범위가 아니다.")]
+    [Min(0.05f)] public float SkillCursorRadius = 0.6f;
+    [Tooltip("손가락 밑 고리의 선 굵기(칸). 색은 쓸 수 있으면 ValidColor, 아니면 InvalidColor. 재질·점 수·띄우는 높이는 사거리와 같다.")]
     [Min(0.005f)] public float SkillAreaWidth = 0.08f;
-    [Tooltip("범위 스킬이 닿을 적·모음점 밑에 그리는 작은 고리 반경(칸). 색은 카드 색(IconColor).")]
+    [Tooltip("레이크 모음점 밑에 그리는 작은 고리 반경(칸). 색은 카드 색(IconColor).")]
     [Min(0.05f)] public float SkillMarkRadius = 0.3f;
     [Tooltip("작은 고리의 선 굵기(칸).")]
     [Min(0.005f)] public float SkillMarkWidth = 0.06f;

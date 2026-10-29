@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SO_SkillCard_Pocket
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Pocket
   DisplayName: "\uD3EC\uCF13"
-  Description: "원 안의 적에게 {HeroDamage} 피해를 주고, 체력이 {HealthThreshold%} 이하인 적은 포켓에 넣어 처치한다. 보스는 피해만 입는다."
+  Description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C {HeroDamage} \uD53C\uD574\uB97C \uC785\uD788\uACE0,
+    \uCCB4\uB825\uC774 {HealthThreshold%} \uC774\uD558\uC778 \uC801\uC740 \uCC98\uD615\uD55C\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 0.25, g: 0.8, b: 0.4, a: 1}
   Weight: 1
-  Radius: 3.5
-  HealthThreshold: 0.3
-  DamageMultiplier: 6
+  DamageMultiplier: 3
+  HealthThreshold: 0.2

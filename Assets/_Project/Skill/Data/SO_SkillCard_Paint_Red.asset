@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b72023ce8eb81749b1093429c939b78, type: 3}
   m_Name: SO_SkillCard_Paint_Red
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Paint
-  DisplayName: "빨강 페인트"
-  Description: "주사위를 빨강으로 칠한다. 공격 방식이 강타로 바뀌고 눈은 그대로다."
-  StrongAgainst: ""
+  DisplayName: "\uBE68\uAC15 \uD398\uC778\uD2B8"
+  Description: "\uD574\uB2F9 \uC8FC\uC0AC\uC704\uB97C \uBE68\uAC15\uC73C\uB85C \uCE60\uD55C\uB2E4."
+  StrongAgainst: 
   Icon: {fileID: 21300000, guid: 081e12cd102dcd7469a5e6a0fc796012, type: 3}
   IconColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   Weight: 1

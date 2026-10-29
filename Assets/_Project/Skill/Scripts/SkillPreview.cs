@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 범위·판 전체 스킬 카드를 끄는 동안의 표시(기획서 5.3). 주사위 대상 스킬은 주사위 고스트(PlacementPreview)를 쓴다.
-/// 범위: 손가락 아래 원(맵 위면 초록 — 대상이 없어도 쓸 수 있다) + 지금 닿을 적과 모음점 밑의 작은 고리(카드 색).
+/// 적 대상·판 전체 스킬 카드를 끄는 동안의 표시(기획서 5.3). 주사위 대상 스킬은 주사위 고스트(PlacementPreview)를 쓴다.
+/// 적 대상: 손가락 아래 고리(맵 위면 초록 — 대상이 없어도 쓸 수 있다) + 레이크 모음점·체크메이트 왕 밑 고리(카드 색).
+/// 적마다 고리를 그리지 않는다 — 판 위 모든 적이 대상이라(2026-10-29) 알려 줄 것이 없고 수백 개를 매 프레임 다시 그리게 된다.
 /// 판 전체: 영향을 받을 주사위 칸마다 칸 하이라이트(주사위가 없으면 하이라이트 없이 버려진다).
-/// 적은 끄는 동안에도 걸어 다니므로 손가락이 멈춰 있어도 매 프레임 다시 모은다 — 놓는 순간의 판정(SkillCaster.CanCast)과 같은 함수를 지난다.
+/// 왕은 체력이 바뀌며 달라지므로 손가락이 멈춰 있어도 매 프레임 다시 고른다 — 놓는 순간의 판정(SkillCaster)과 같은 함수를 지난다.
 /// </summary>
 public sealed class SkillPreview : IDisposable
 {
@@ -50,7 +51,7 @@ public sealed class SkillPreview : IDisposable
         Reset();
     }
 
-    /// <summary>범위 스킬 원을 center(맵 로컬 x, z)에 띄운다. 숨길 때까지 매 프레임 다시 그린다.</summary>
+    /// <summary>적 대상 스킬 고리를 center(맵 로컬 x, z)에 띄운다. 숨길 때까지 매 프레임 다시 그린다.</summary>
     public void ShowArea(SO_AreaSkillCard card, Vector2 center)
     {
         HideHighlights();
@@ -95,7 +96,7 @@ public sealed class SkillPreview : IDisposable
         _highlights.Clear();
     }
 
-    // 끄는 동안 적이 움직이므로 원 안의 대상을 매 프레임 다시 모은다.
+    // 끄는 동안 적이 움직이므로 왕을 매 프레임 다시 고른다.
     private void LateTick(float _)
     {
         if (_areaCard != null) DrawArea();
@@ -108,18 +109,18 @@ public sealed class SkillPreview : IDisposable
         bool valid = _caster.CanCast(_areaCard, _center);
 
         if (_area == null) _area = CreateRing("SkillArea");
-        FillRing(_area, _center, y, _areaCard.Radius, _config.SkillAreaWidth, valid ? _config.ValidColor : _config.InvalidColor);
+        FillRing(_area, _center, y, _config.SkillCursorRadius, _config.SkillAreaWidth, valid ? _config.ValidColor : _config.InvalidColor);
 
-        _caster.CollectTargets(_areaCard, _center, _targets);
         int used = 0;
         Color mark = _areaCard.IconColor;
-        if (valid && _caster.TryGetGatherPoint(_areaCard, _center, _targets, out Vector2 gather))
+        if (valid && _caster.TryGetGatherPoint(_areaCard, _center, out Vector2 gather))
             FillRing(GetMark(used++), gather, y, _config.SkillMarkRadius, _config.SkillMarkWidth, mark);
-        MonsterState[] states = _monsters.States;
-        for (int i = 0; i < _targets.Count; i++)
-            FillRing(GetMark(used++), states[_targets[i]].Position, y, _config.SkillMarkRadius, _config.SkillMarkWidth, mark);
-        int king = _caster.FindKing(_areaCard, _targets);
-        if (king >= 0) FillRing(GetMark(used++), states[king].Position, y, _config.SkillKingMarkRadius, _config.SkillMarkWidth, mark);
+        if (_areaCard is SO_SkillCard_Checkmate)
+        {
+            _caster.CollectTargets(_areaCard, _targets);
+            int king = _caster.FindKing(_areaCard, _targets);
+            if (king >= 0) FillRing(GetMark(used++), _monsters.States[king].Position, y, _config.SkillKingMarkRadius, _config.SkillMarkWidth, mark);
+        }
         for (int i = used; i < _marks.Count; i++) _marks[i].Object.SetActive(false);
     }
 

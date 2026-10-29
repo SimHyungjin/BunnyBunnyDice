@@ -27,6 +27,14 @@ public sealed class GoalHealth
         Changed?.Invoke();
     }
 
+    /// <summary>최대 체력으로 채운다(올인). 이미 무너졌으면 되살리지 않는다.</summary>
+    public void HealFull()
+    {
+        if (IsDead || Current == _config.MaxHealth) return;
+        Current = _config.MaxHealth;
+        Changed?.Invoke();
+    }
+
     public void Damage(int amount)
     {
         if (IsDead || amount <= 0) return;

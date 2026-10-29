@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: SO_SkillCard_Backspin
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Backspin
   DisplayName: "\uBC31\uC2A4\uD540"
-  Description: "원 안의 적에게 {HeroDamage} 피해를 주고 오던 길로 {Distance}칸 밀어낸다. 벽이나 주사위에 막히면 멈추고, 보스는 덜 밀려난다."
+  Description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C {HeroDamage} \uD53C\uD574\uB97C \uC785\uD788\uACE0,
+    \uC624\uB358 \uAE38\uB85C {Distance}\uCE78 \uBC00\uC5B4\uB0B8\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 0.4, g: 0.75, b: 1, a: 1}
   Weight: 1
-  Radius: 4
+  DamageMultiplier: 5
   Distance: 4
   SlideDuration: 0.35
-  DamageMultiplier: 4

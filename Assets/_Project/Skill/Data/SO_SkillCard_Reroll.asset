@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38c4d9b8939144b4ebdf049ae9824054, type: 3}
   m_Name: SO_SkillCard_Reroll
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Reroll
-  DisplayName: "다시 굴리기"
-  Description: "주사위 하나를 다시 굴린다. 면체는 그대로다."
-  StrongAgainst: ""
+  DisplayName: "\uB9AC\uB864"
+  Description: "\uD574\uB2F9 \uC8FC\uC0AC\uC704\uC758 \uBA74\uCCB4\uC640 \uB208\uC744
+    \uB2E4\uC2DC \uAD74\uB9B0\uB2E4."
+  StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 0.85, g: 0.85, b: 0.92, a: 1}
   Weight: 1

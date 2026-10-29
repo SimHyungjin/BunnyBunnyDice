@@ -23,7 +23,7 @@ public static class SkillRules
                 return colors == DiceColor.Clear || colors == dice.Colors ? PlacementResult.NoEffect : PlacementResult.Upgrade;
             case SO_SkillCard_Jackpot _:
                 return dice.IsMaxed ? PlacementResult.NoEffect : PlacementResult.Upgrade;
-            // 다시 굴리기는 상한에 닿은 주사위에도 막지 않는다(판단에 맡긴다). 오버드라이브는 늘 된다.
+            // 리롤은 상한에 닿은 주사위에도 막지 않는다(판단에 맡긴다). 오버드라이브는 늘 된다.
             default:
                 return PlacementResult.Upgrade;
         }
@@ -34,8 +34,8 @@ public static class SkillRules
         hasDice || hasChip ? PlacementResult.Upgrade : PlacementResult.NoEffect;
 
     /// <summary>
-    /// 주사위 상태를 바꾸는 스킬을 적용한다(페인트·다시 굴리기·잭팟). 상태를 바꾸지 않는 스킬(오버드라이브)은 아무 일도 없다.
-    /// roll은 다시 굴리기의 새 눈 — 미리보기에서는 지금 눈을 넘겨 그대로 둔다.
+    /// 주사위 상태를 바꾸는 스킬을 적용한다(페인트·리롤·잭팟). 상태를 바꾸지 않는 스킬(오버드라이브)은 아무 일도 없다.
+    /// roll은 리롤의 새 눈 — 미리보기에서는 지금 눈을 넘겨 그대로 둔다. 리롤의 새 면체는 부르는 쪽(DiceField)이 먼저 넣는다.
     /// </summary>
     public static void ApplyDice(ref DiceState dice, SO_SkillCard card, int roll)
     {

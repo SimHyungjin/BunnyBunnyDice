@@ -667,10 +667,10 @@ public sealed class GameBot : IDisposable
         SO_BotConfig.RunSet set = CurrentSet(_report.Count);
         if (set != null && set.DamageSkillAnytime && skill is SO_AreaSkillCard anytime) return TryCastAnytime(anytime);
         if (!Breached(out bool bossBreaching)) return false;
-        // 체크메이트: 보스가 뚫으려 하면 보스에게, 아니면 다른 범위 스킬처럼 떼에.
-        if (skill is SO_SkillCard_Checkmate checkmate && bossBreaching && TryCastCheckmate(checkmate)) return true;
+        // 체크메이트: 보스가 뚫으려 하면 바로, 아니면 다른 적 대상 스킬처럼 떼가 넘어올 때.
+        if (skill is SO_SkillCard_Checkmate && bossBreaching) return TryCastAt((SO_AreaSkillCard)skill);
+        if (skill is SO_SkillCard_Check check) return TryCastCheck(check);
         if (skill is SO_AreaSkillCard area) return TryCastArea(area);
-        if (skill is SO_SkillCard_Check) return TryCastCheck(skill);
         return false;
     }
 
@@ -755,75 +755,42 @@ public sealed class GameBot : IDisposable
         return false;
     }
 
-    // 메인 딜 구간을 넘어왔거나 넘어오려는 적 중 가장 많이 모인 곳에 쓴다.
-    private bool TryCastArea(SO_AreaSkillCard card)
+    // 적 대상 스킬은 판 전체라 놓는 자리는 레이크의 모음점만 정한다 — 메인 딜 구간 한가운데로 모은다(넘어온 적을 구간으로 되돌린다).
+    // 구간이 없으면 판 한가운데.
+    private bool TryCastAt(SO_AreaSkillCard card)
     {
-        MonsterState[] states = _monsters.States;
-        int bestCount = 0;
-        Vector2 bestCenter = default;
-        for (int i = 0; i < _monsters.Count; i++)
-        {
-            if (!states[i].IsAlive || !IsPastKillZone(states[i].Position, 0)) continue;
-            Vector2 center = states[i].Position;
-            int count = _skills.CollectTargets(card, center, _targets);
-            if (count <= bestCount) continue;
-            bestCount = count;
-            bestCenter = center;
-        }
-        if (bestCount < _config.BreachAreaMinTargets || !_skills.CanCast(card, bestCenter)) return false;
-        _skills.Cast(card, bestCenter);
+        MapData map = _getMap();
+        if (map == null) return false;
+        Vector2 point = _board.HasKillZone ? (Vector2)_board.KillZone : new Vector2(map.Width / 2, map.Height / 2);
+        if (!_skills.CanCast(card, point)) return false;
+        _skills.Cast(card, point);
         return true;
     }
 
-    // 데미지형 위주 묶음: 뚫릴 때를 기다리지 않는다. 체크메이트는 보스가 있으면 보스에게, 없으면(나머지도) 판 어디든 가장 많이 모인 곳에.
+    // 메인 딜 구간을 넘어온 적이 몇 마리 이상일 때.
+    private bool TryCastArea(SO_AreaSkillCard card) =>
+        CountPastKillZone() >= _config.BreachAreaMinTargets && TryCastAt(card);
+
+    // 데미지형 위주 묶음: 뚫릴 때를 기다리지 않는다. 체크메이트는 보스가 있으면, 나머지는 판 위 적이 몇 마리 이상이면.
     private bool TryCastAnytime(SO_AreaSkillCard card)
     {
-        MonsterState[] states = _monsters.States;
-        if (card is SO_SkillCard_Checkmate)
-        {
-            for (int i = 0; i < _monsters.Count; i++)
-            {
-                if (!states[i].IsAlive || !_monsters.KindOf(i).IsBoss || !_skills.CanCast(card, states[i].Position)) continue;
-                _skills.Cast(card, states[i].Position);
-                return true;
-            }
-        }
-        int bestCount = 0;
-        Vector2 bestCenter = default;
-        for (int i = 0; i < _monsters.Count; i++)
-        {
-            if (!states[i].IsAlive) continue;
-            int count = _skills.CollectTargets(card, states[i].Position, _targets);
-            if (count <= bestCount) continue;
-            bestCount = count;
-            bestCenter = states[i].Position;
-        }
-        if (bestCount < _config.AnytimeAreaMinTargets || !_skills.CanCast(card, bestCenter)) return false;
-        _skills.Cast(card, bestCenter);
-        return true;
+        if (card is SO_SkillCard_Checkmate) return HasBoss() && TryCastAt(card);
+        return _skills.CollectTargets(card, _targets) >= _config.AnytimeAreaMinTargets && TryCastAt(card);
     }
 
-    // 체크메이트는 구간을 뚫으려는 보스에게.
-    private bool TryCastCheckmate(SO_SkillCard_Checkmate card)
+    private bool HasBoss()
     {
         MonsterState[] states = _monsters.States;
         for (int i = 0; i < _monsters.Count; i++)
         {
-            if (!states[i].IsAlive || !_monsters.KindOf(i).IsBoss || !IsPastKillZone(states[i].Position, _config.KillZoneMargin)) continue;
-            if (!_skills.CanCast(card, states[i].Position)) continue;
-            _skills.Cast(card, states[i].Position);
-            return true;
+            if (states[i].IsAlive && _monsters.KindOf(i).IsBoss) return true;
         }
         return false;
     }
 
     // 체크는 구간을 넘어온 적이 많을 때 — 멈춘 사이 구간 주사위가 마저 깎는다.
-    private bool TryCastCheck(SO_SkillCard card)
-    {
-        if (CountPastKillZone() < _config.CheckBreachCount || !_skills.CanCastBoard(card)) return false;
-        _skills.CastBoard(card);
-        return true;
-    }
+    private bool TryCastCheck(SO_SkillCard_Check card) =>
+        CountPastKillZone() >= _config.CheckBreachCount && TryCastAt(card);
 
     private bool TryCastAllIn(SO_SkillCard card)
     {

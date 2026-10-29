@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7d4d6a2929645f8b8f2b765893654f3, type: 3}
   m_Name: SO_SkillCard_Check
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Check
-  DisplayName: "체크"
-  Description: "판 위의 모든 적이 {Duration}초 동안 멈춘다. 얼림 면역을 무시하고, 보스는 짧게 멈춘다."
-  StrongAgainst:
+  DisplayName: "\uCCB4\uD06C"
+  Description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C {HeroDamage} \uD53C\uD574\uB97C \uC785\uD788\uACE0,
+    {Duration}\uCD08\uAC04 \uBA48\uCD98\uB2E4."
+  StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 0.75, g: 0.92, b: 1, a: 1}
   Weight: 1
-  Duration: 3
+  DamageMultiplier: 3
+  Duration: 5

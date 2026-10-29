@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8450fe4a694a4b7ea1c0fe3b5d3b2e0f, type: 3}
   m_Name: SO_SkillCard_Rake
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Rake
-  DisplayName: "레이크"
-  Description: "원 안의 적에게 {HeroDamage} 피해를 주고 한가운데로 끌어모은다. 원 안에 보스가 있으면 보스 쪽으로 모인다(보스는 끌려오지 않는다)."
+  DisplayName: "\uB808\uC774\uD06C"
+  Description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C {HeroDamage} \uD53C\uD574\uB97C \uC785\uD788\uACE0,
+    \uD574\uB2F9 \uC9C0\uC810\uC73C\uB85C \uBAA8\uC740\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 1, g: 0.35, b: 0.4, a: 1}
   Weight: 1
-  Radius: 5
+  DamageMultiplier: 1
   Scatter: 0.15
   SlideDuration: 0.25
-  DamageMultiplier: 3
+  BurstRadius: 1.2
