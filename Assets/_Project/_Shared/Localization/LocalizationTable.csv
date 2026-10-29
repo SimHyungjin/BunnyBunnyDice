@@ -86,7 +86,7 @@
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
 주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
-레벨업 주사위 카드에 높은 면체가 더 자주 나온다.,Level-up dice cards are more often high-sided.,SO_HeroTrait_HighRoller.Description
+주사위에서 높은 눈이 더 자주 나온다.,Dice roll high pips more often.,SO_HeroTrait_HighRoller.Description
 레인보우,Rainbow,SO_HeroTrait_Rainbow.DisplayName
 레벨업 후보 카드가 항상 다른 종류로 나온다.,Level-up choices are always different types.,SO_HeroTrait_Rainbow.Description
 영웅의 공격력이 오른다.,Raises the hero's attack.,SO_HeroCard_Attack.Description

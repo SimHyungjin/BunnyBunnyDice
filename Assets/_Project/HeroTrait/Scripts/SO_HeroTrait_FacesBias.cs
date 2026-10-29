@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>하이 롤러: 레벨업 주사위 카드에 높은 면체가 더 자주 나온다(2026-10-29 사용자). 면체마다 가중치에 곱할 값을 둔다.</summary>
+/// <summary>레벨업 주사위 카드의 면체를 기울인다. 면체마다 가중치에 곱할 값을 둔다(하이 롤러가 2026-10-29~30에 쓰다가 눈 가중치로 바꿨다 — 지금은 쓰는 특성이 없다).</summary>
 [CreateAssetMenu(menuName = "Def/HeroTrait/Faces Bias", fileName = "SO_HeroTrait_FacesBias")]
 public sealed class SO_HeroTrait_FacesBias : SO_HeroTrait, ILevelUpFaces
 {
