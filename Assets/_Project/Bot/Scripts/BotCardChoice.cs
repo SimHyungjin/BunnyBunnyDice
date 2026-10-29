@@ -49,11 +49,11 @@ public static class BotCardChoice
 
         SO_SkillCard skill = card.Skill;
         if (skill is SO_SkillCard_CashOut) return context.HasCashOutTarget ? scores.CashOut : 0f;
-        if (skill is SO_SkillCard_FullHouse || skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_Respin
-            || skill is SO_SkillCard_HouseEdge || skill is SO_SkillCard_SevensHeaven) return scores.Exclusive;
+        if (skill is SO_SkillCard_FullHouse || skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_SnakeEyes
+            || skill is SO_SkillCard_DoubleUp || skill is SO_SkillCard_LuckySeven) return scores.Exclusive;
         if (skill is SO_EnemySkillCard) return scores.EnemySkill;
         if (skill is SO_SkillCard_Check) return scores.Check;
-        if (skill is SO_SkillCard_Overdrive) return scores.Overdrive;
+        if (skill is SO_SkillCard_Raise) return scores.Raise;
         if (skill is SO_SkillCard_Jackpot) return scores.Jackpot;
         if (skill is SO_SkillCard_Reroll) return scores.Reroll;
         if (skill is SO_SkillCard_Paint) return scores.Paint;

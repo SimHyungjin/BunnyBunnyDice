@@ -31,7 +31,7 @@ public sealed class WaveLog : IDisposable
     /// <summary>이번 판의 CSV 경로. 아직 쓰지 않았으면 null.</summary>
     public string FilePath => _path;
 
-    /// <param name="isRiding">영웅이 주사위에 올라타 있는지(HeroOverdrive.Active).</param>
+    /// <param name="isRiding">영웅이 주사위에 올라타 있는지(HeroRaise.Active).</param>
     /// <param name="getDice">판 위 주사위(DiceField.Placed) — 웨이브가 끝날 때 색별 수·눈을 센다.</param>
     public WaveLog(Func<int> getGoalHealth, Func<int> getLevel, Func<bool> isRiding, Func<IReadOnlyList<PlacedDice>> getDice)
     {
@@ -195,7 +195,7 @@ public sealed class WaveLog : IDisposable
         _builder.Clear();
         _builder.Append("wave,seconds,cleared,kills,leaked,goal_damage,goal_health,level,total_damage");
         for (int i = 0; i < DamageSource.Count; i++) _builder.Append(',').Append(DamageSource.NameOf(i));
-        _builder.Append(",od_hero,od_card,ride_seconds,pips_drained,skill_uses");
+        _builder.Append(",raise_hero,raise_card,ride_seconds,pips_drained,skill_uses");
         for (int i = 0; i < WaveRecord.OfferKinds; i++) _builder.Append(",offer_").Append(((CardKind)i).ToString().ToLowerInvariant());
         for (int i = 0; i < EnemySkillStats.Count; i++)
         {

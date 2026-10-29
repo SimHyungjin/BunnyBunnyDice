@@ -1,8 +1,8 @@
 /// <summary>
 /// 피해를 누가 냈는지(기획서 11.2의 4번 — 측정). 주사위는 색(8가지)까지 나눠, 어느 색이 판을 끌고 가는지 보이게 한다.
 /// 번호(Index)로 고정 길이 배열에 모을 수 있게 둔다 — 피해는 매 프레임 많이 들어오므로 사전·문자열 없이 센다.
-/// 오버드라이브(Boost)는 색과 겹쳐 따로 센다 — 색 몫은 그대로 두고, 그중 오버드라이브 상태에서 낸 몫이 얼마인지 보려고
-/// (오버드라이브로 늘어난 피해가 주사위 몫에 묻혀 영웅의 실제 몫이 안 보였다).
+/// 레이즈(Boost)는 색과 겹쳐 따로 센다 — 색 몫은 그대로 두고, 그중 레이즈 상태에서 낸 몫이 얼마인지 보려고
+/// (레이즈로 늘어난 피해가 주사위 몫에 묻혀 영웅의 실제 몫이 안 보였다).
 /// </summary>
 public readonly struct DamageSource
 {
@@ -21,7 +21,7 @@ public readonly struct DamageSource
     };
 
     public readonly int Index;
-    /// <summary>오버드라이브 상태의 주사위가 낸 피해인지(주사위만). 측정 기록이 색과 따로 한 번 더 센다.</summary>
+    /// <summary>레이즈 상태의 주사위가 낸 피해인지(주사위만). 측정 기록이 색과 따로 한 번 더 센다.</summary>
     public readonly DamageBoost Boost;
 
     private DamageSource(int index, DamageBoost boost = DamageBoost.None)
@@ -34,18 +34,18 @@ public readonly struct DamageSource
         new DamageSource((int)DiceColors.Normalize(colors), boost);
     public static readonly DamageSource Hero = new DamageSource(HeroIndex);
     public static readonly DamageSource Skill = new DamageSource(SkillIndex);
-    /// <summary>화상(지속 피해 — 화상 칩·틸트 카드). 주사위 색과 따로 센다 — 화상이 얼마나 일하는지 보려고.</summary>
+    /// <summary>화상(지속 피해 — 화상 칩·핫 핸드 카드). 주사위 색과 따로 센다 — 화상이 얼마나 일하는지 보려고.</summary>
     public static readonly DamageSource Burn = new DamageSource(BurnIndex);
 
     public static string NameOf(int index) => Names[index];
 }
 
-/// <summary>주사위가 어떤 오버드라이브로 쐈는지. 카드 시간이 남아 있으면 영웅이 올라타 있어도 카드 몫이다(카드 시간을 먼저 쓴다).</summary>
+/// <summary>주사위가 어떤 레이즈로 쐈는지. 카드 시간이 남아 있으면 영웅이 올라타 있어도 카드 몫이다(카드 시간을 먼저 쓴다).</summary>
 public enum DamageBoost
 {
     None,
-    /// <summary>영웅이 올라탄 주사위(영웅 오버드라이브, 기획서 10.5).</summary>
+    /// <summary>영웅이 올라탄 주사위(영웅 레이즈, 기획서 10.5).</summary>
     Hero,
-    /// <summary>오버드라이브 스킬 카드.</summary>
+    /// <summary>레이즈 카드.</summary>
     Card,
 }

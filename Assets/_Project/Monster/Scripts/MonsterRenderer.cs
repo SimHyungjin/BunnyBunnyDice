@@ -22,7 +22,7 @@ public sealed class MonsterRenderer
     private Vector3[] _origin;
     private bool[] _emerging;
     private float[] _scale;
-    // 스킬로 옮겨진 몬스터의 미끄러짐(레이크·백스핀, 표시만): 판정은 새 자리에서 바로 하고 몸체만 옛 자리에서 따라온다
+    // 스킬로 옮겨진 몬스터의 미끄러짐(랙·백스핀, 표시만): 판정은 새 자리에서 바로 하고 몸체만 옛 자리에서 따라온다
     // — 순간이동하면 무슨 일이 일어났는지 보이지 않는다. 남은 거리(옛 자리 − 새 자리)·지난 시간·걸리는 시간(0이면 없음)·가속 여부.
     private Vector3[] _slideOffset;
     private float[] _slideAge;

@@ -10,7 +10,7 @@ using UnityEngine;
 /// 판단은 사용자 판 교본 2차(2026-10-28, 기획서 11.4)를 옮겼다 — 판을 미로와 메인 딜 구간(BotBoard.KillZone)으로 나눈다:
 /// 미로는 d6·d12와 화상 칩(체력 비례 피해라 싼 주사위로도 후반까지 들어간다), 메인 딜 구간은 d20·범위 주사위와 디버프(종류마다 하나)·빨강·초록 칩.
 /// 영웅은 미로를 짓는 동안 남은 적을 쫓아 정리하고, 지은 뒤엔 메인 딜 구간에서 오가며 싸운다.
-/// 오버드라이브는 빠져나갈 적을 걸면 잡을 수 있을 때만(BotEscape). 적 대상 스킬·체크는 구간이 뚫릴 때만(Breached).
+/// 레이즈는 빠져나갈 적을 걸면 잡을 수 있을 때만(BotEscape). 적 대상 스킬·체크는 구간이 뚫릴 때만(Breached).
 /// 판단 값은 SO_BotConfig. 정한 판 수를 돌면 요약(BotBatchReport)을 남기고 멈춘다. 캐릭터를 돌아가며 돌릴 수도 있다(RotateCharacters).
 /// 비교 묶음(RunSets — 능력치 단계·카드 성향)마다 같은 맵(Seeds)으로 돌릴 수도 있다. 단계는 세이브와 이어져 있어(MetaProfile) 도는 동안은 세이브에도 그 단계가 남으므로,
 /// 끝나거나 끌 때 켤 때의 단계로 되돌린다.
@@ -35,8 +35,8 @@ public sealed partial class GameBot : IDisposable
     private readonly Hero _hero;
     private readonly SO_DiceConfig _diceConfig;
     private readonly SO_DiceStatsConfig _statsConfig;
-    // 영웅이 올라탄 주사위의 오버드라이브 배율(SO_HeroConfig.Overdrive — 스킬 카드와 같은 값).
-    private readonly Func<SO_SkillCard_Overdrive> _heroOverdrive;
+    // 영웅이 올라탄 주사위의 레이즈 배율(SO_HeroConfig.Raise — 스킬 카드와 같은 값).
+    private readonly Func<SO_SkillCard_Raise> _heroRaise;
     private readonly LevelUpChoice _levelUp;
     private readonly GameSpeed _speed;
     private readonly Func<bool> _canAct;
@@ -78,7 +78,7 @@ public sealed partial class GameBot : IDisposable
     /// <param name="characters">캐릭터를 돌아가며 돌릴 때의 순서.</param>
     public GameBot(SO_BotConfig config, Func<MapData> getMap, Func<int> getWave, HeroStats heroStats, IReadOnlyList<SO_HeroCharacter> characters,
         DiceField diceField, ChipField chips, CardHand hand, CardPlacement placement, SkillCaster skills, MonsterField monsters, Hero hero,
-        SO_DiceConfig diceConfig, SO_DiceStatsConfig statsConfig, Func<SO_SkillCard_Overdrive> heroOverdrive, LevelUpChoice levelUp,
+        SO_DiceConfig diceConfig, SO_DiceStatsConfig statsConfig, Func<SO_SkillCard_Raise> heroRaise, LevelUpChoice levelUp,
         GameSpeed speed, MazePlanner planner, Func<bool> canAct, Action retry)
     {
         _config = config;
@@ -96,7 +96,7 @@ public sealed partial class GameBot : IDisposable
         _hero = hero;
         _diceConfig = diceConfig;
         _statsConfig = statsConfig;
-        _heroOverdrive = heroOverdrive;
+        _heroRaise = heroRaise;
         _levelUp = levelUp;
         _speed = speed;
         _canAct = canAct;
@@ -305,7 +305,7 @@ public sealed partial class GameBot : IDisposable
             context.HasFreeze = HasZoneChip<SO_ChipCard_Freeze>();
             context.HasVulnerable = HasZoneChip<SO_ChipCard_Vulnerable>();
             // 캐시 아웃는 미로를 어느 정도 지은 뒤(d20이 들어오기 시작할 때)에만, 한 장씩만 — 그 전에 고르면 채울 주사위가 오지 않아
-            // 손에서 썩고 주사위 자리만 뺏었다(빌더: 스킬 6.0장 골라 2.5장만 씀, 주사위 22장 대 다른 캐릭터 30장+, 2026-10-29).
+            // 손에서 썩고 주사위 자리만 뺏었다(하이 롤러: 스킬 6.0장 골라 2.5장만 씀, 주사위 22장 대 다른 캐릭터 30장+, 2026-10-29).
             context.HasCashOutTarget = context.MazeEnough && !HoldsCashOut() && TryFindCashOutTarget(map, false, out _);
             context.HasBurnSpot = HasBurnSpot();
         }

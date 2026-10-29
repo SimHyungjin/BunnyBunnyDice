@@ -116,7 +116,7 @@ public sealed class Hero : IDisposable
         return true;
     }
 
-    /// <summary>깡총 뛰는 중인지(주사위에 오르내리는 중). 영웅 오버드라이브는 내려앉은 뒤부터 센다.</summary>
+    /// <summary>깡총 뛰는 중인지(주사위에 오르내리는 중). 영웅 레이즈는 내려앉은 뒤부터 센다.</summary>
     public bool IsHopping => _view.IsHopping;
 
     private void ClearDestination() => _hasDestination = false;

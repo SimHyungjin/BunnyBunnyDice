@@ -56,9 +56,9 @@ public sealed partial class GameScene : SceneBase
     private bool _mapPending;
     private SO_GameSpeedConfig _speedConfig;
     private HeroTapInput _tapInput;
-    // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.5)와 그 표시.
-    private HeroOverdrive _heroOverdrive;
-    private HeroOverdriveView _heroOverdriveView;
+    // 영웅 레이즈(영웅이 올라탄 주사위, 기획서 10.5)와 그 표시.
+    private HeroRaise _heroRaise;
+    private HeroRaiseView _heroRaiseView;
     private DiceAwakenEffect _diceAwakenEffect;
     private HeroBreakShotView _breakShotView;
     private MonsterField _monsters;
@@ -236,8 +236,8 @@ public sealed partial class GameScene : SceneBase
         _diceAttack = new DiceAttack(diceStatsConfig, _monsterConfig, _viewConfig, _monsters, _attackEffects);
         _diceCombat = new DiceCombat(_viewConfig, diceStatsConfig, diceConfig, _diceField, _chips, _monsters, _diceAttack);
         _diceAwakenEffect = new DiceAwakenEffect(diceConfig, _diceField, _attackEffects);
-        _heroOverdrive = new HeroOverdrive(heroConfig, _hero, _diceField, _diceCombat, _monsters);
-        _heroOverdriveView = new HeroOverdriveView(heroConfig, _viewConfig, _heroOverdrive, _attackEffects);
+        _heroRaise = new HeroRaise(heroConfig, _hero, _diceField, _diceCombat, _monsters);
+        _heroRaiseView = new HeroRaiseView(heroConfig, _viewConfig, _heroRaise, _attackEffects);
         _expBoost = new ExpBoost();
         _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal,
             () => _heroAttack, _expBoost, () => _hand);
@@ -254,11 +254,11 @@ public sealed partial class GameScene : SceneBase
         _goalHit = new GoalHitReaction(goalConfig, _mapView, _attackEffects);
         _level = new PlayerLevel(levelUpConfig);
         // 측정 기록(기획서 11.2): 웨이브마다 정리 시간·새어 나간 적·피해 출처·고른 카드를 모아 CSV로 남긴다.
-        _waveLog = new WaveLog(() => _goal.Current, () => _level.Level, () => _heroOverdrive.Active, () => _diceField.Placed);
+        _waveLog = new WaveLog(() => _goal.Current, () => _level.Level, () => _heroRaise.Active, () => _diceField.Placed);
         _waves.WaveStarted += wave => _waveLog.OnWaveStarted(wave, _waves.WaveKinds, _waves.WaveBoss);
         _waves.WaveCleared += _waveLog.OnWaveCleared;
         _monsters.DamageDealt += _waveLog.CountDamage;
-        _heroOverdrive.PipDrained += _waveLog.CountPipDrained;
+        _heroRaise.PipDrained += _waveLog.CountPipDrained;
         _skills.Used += _waveLog.CountSkillUse;
         _skills.EnemyCast += _waveLog.CountEnemyCast;
         // 영웅은 주사위·칩을 밟고 넘어가므로(기획서 4) 길이 바뀌어도 몬스터 길만 다시 계산한다.
@@ -297,7 +297,7 @@ public sealed partial class GameScene : SceneBase
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();
             }
-            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로. 하우스 엣지(ExpBoost)가 걸려 있으면 그 위에 곱하고,
+            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로. 더블 업(ExpBoost)이 걸려 있으면 그 위에 곱하고,
             // 더 들어간 만큼 금색 "+N"을 띄운다.
             int baseExp = type.Exp * waveConfig.GetExpScale(_waves.Wave);
             int exp = Mathf.RoundToInt(baseExp * _expBoost.Scale);
@@ -435,9 +435,9 @@ public sealed partial class GameScene : SceneBase
         _heroAttack?.Dispose();
         _expBoost?.Dispose();
         _skillPreview?.Dispose();
-        _heroOverdriveView?.Dispose();
+        _heroRaiseView?.Dispose();
         _diceAwakenEffect?.Dispose();
-        _heroOverdrive?.Dispose();
+        _heroRaise?.Dispose();
         _diceCombat?.Dispose();
         _diceAttack?.Dispose();
         _diceField?.Dispose();
@@ -471,7 +471,7 @@ public sealed partial class GameScene : SceneBase
         // 옛 판을 먼저 멈추고 비운다.
         _waves.Stop();
         _diceField.Clear();
-        _heroOverdrive?.Clear();
+        _heroRaise?.Clear();
         _monsters.Clear();
         _attackEffects.Clear();
         _heroCards.Clear();

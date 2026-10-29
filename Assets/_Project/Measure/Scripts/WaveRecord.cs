@@ -24,11 +24,11 @@ public sealed class WaveRecord
     /// 11웨이브부터 특성이 무작위라, 특성별 정리 시간·피해를 비교하려면 웨이브마다 남겨야 한다(2026-10-28 — 빠름이 보너스처럼 느껴진다는 사용자 체감 확인용).
     /// </summary>
     public string Monsters = string.Empty;
-    /// <summary>오버드라이브 상태의 주사위가 낸 피해(DamageBoost 순서, None 칸은 비워 둔다). Damage의 색 몫과 겹친다 — 그중 얼마가 오버드라이브였는지.</summary>
+    /// <summary>레이즈 상태의 주사위가 낸 피해(DamageBoost 순서, None 칸은 비워 둔다). Damage의 색 몫과 겹친다 — 그중 얼마가 레이즈였는지.</summary>
     public readonly float[] BoostDamage = new float[BoostCount];
     /// <summary>영웅이 주사위에 올라타 있던 시간(Seconds와 같은 동안만 잰다).</summary>
     public float RideSeconds;
-    /// <summary>영웅 오버드라이브로 깎인 눈 수.</summary>
+    /// <summary>영웅 레이즈로 깎인 눈 수.</summary>
     public int PipsDrained;
     /// <summary>쓴 스킬 카드 수(모든 대상).</summary>
     public int SkillUses;

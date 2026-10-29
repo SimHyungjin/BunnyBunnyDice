@@ -30,4 +30,4 @@ MonoBehaviour:
   AttackHeight: 0.6
   AttackKeepRangeScale: 1.2
   CardShot: {fileID: 11400000, guid: 8599a13fa8f3484c850de98e1477b95e, type: 2}
-  Overdrive: {fileID: 11400000, guid: c610641857af491c8d59e004743e120e, type: 2}
+  Raise: {fileID: 11400000, guid: c610641857af491c8d59e004743e120e, type: 2}

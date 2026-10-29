@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6f62f9acd5a48bd9a38bdb51cd3f469, type: 3}
-  m_Name: SO_SkillCard_Overdrive
-  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Overdrive
-  DisplayName: "\uC624\uBC84\uB4DC\uB77C\uC774\uBE0C"
+  m_Name: SO_SkillCard_Raise
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Raise
+  DisplayName: "\uB808\uC774\uC988"
   Description: "{Duration}\uCD08\uAC04 \uD574\uB2F9 \uC8FC\uC0AC\uC704\uC758 \uACF5\uACA9\uB825\uC774
     {DamageScale}\uBC30, \uACF5\uACA9 \uC18D\uB3C4\uAC00 {SpeedScale}\uBC30\uAC00
     \uB41C\uB2E4."

@@ -45,7 +45,7 @@ public sealed class HeroBreakShotView : IDisposable
 
     private void LateTick(float _)
     {
-        bool active = _attack.IsOverdriven;
+        bool active = _attack.IsBoosted;
         if (active == _wasActive) return;
         _wasActive = active;
         _hero.SetOutlineTint(active ? _color : (Color?)null);

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8450fe4a694a4b7ea1c0fe3b5d3b2e0f, type: 3}
-  m_Name: SO_SkillCard_Rake
-  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Rake
-  DisplayName: "\uB808\uC774\uD06C"
+  m_Name: SO_SkillCard_Rack
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Rack
+  DisplayName: "\uB799"
   Description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C {HeroDamage} \uD53C\uD574\uB97C \uC785\uD788\uACE0,
     \uD574\uB2F9 \uC9C0\uC810\uC73C\uB85C \uBAA8\uC740\uB2E4."
   StrongAgainst: 

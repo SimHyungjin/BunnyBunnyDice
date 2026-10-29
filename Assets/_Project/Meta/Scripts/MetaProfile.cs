@@ -51,8 +51,8 @@ public sealed class MetaProfile : IDisposable
         _stats = null;
     }
 
-    /// <summary>세이브 키. 에셋 이름이라 실행 중 복사본(ConfigTuning — 이름을 그대로 둔다)도 같은 키다.</summary>
-    public static string IdOf(SO_HeroCharacter character) => character.name;
+    /// <summary>세이브 키(SO_HeroCharacter.Id — 비면 에셋 이름). 에셋 이름을 바꿔도 기록이 끊기지 않게 따로 둔다. 실행 중 복사본(ConfigTuning)도 값을 그대로 가져 같은 키다.</summary>
+    public static string IdOf(SO_HeroCharacter character) => string.IsNullOrEmpty(character.Id) ? character.name : character.Id;
 
     public int Currency => _save.Currency;
 

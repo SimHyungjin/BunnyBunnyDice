@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// 한동안 처치 경험치에 곱하는 배율(더블 전용 카드 — 하우스 엣지). 게임 시간으로 센다(멈춤·배속을 따른다).
+/// 한동안 처치 경험치에 곱하는 배율(더블 전용 카드 — 더블 업). 게임 시간으로 센다(멈춤·배속을 따른다).
 /// 다시 걸면 시간이 새로 시작하고 배율은 큰 쪽을 남긴다.
 /// </summary>
 public sealed class ExpBoost : IDisposable

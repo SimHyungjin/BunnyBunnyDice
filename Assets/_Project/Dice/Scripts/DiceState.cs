@@ -8,7 +8,7 @@ public struct DiceState
     public int Faces;
     /// <summary>지금까지 얹은 색의 합집합.</summary>
     public DiceColor Colors;
-    /// <summary>눈. 0 ~ Faces — 굴리면 1 이상이고, 영웅 오버드라이브(HeroOverdrive)로 깎이면 0까지 내려간다.</summary>
+    /// <summary>눈. 0 ~ Faces — 굴리면 1 이상이고, 영웅 레이즈(HeroRaise)로 깎이면 0까지 내려간다.</summary>
     public int Pips;
 
     public bool IsMaxed => Pips >= Faces;

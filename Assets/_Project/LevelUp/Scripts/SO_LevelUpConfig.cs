@@ -49,7 +49,7 @@ public sealed class SO_LevelUpConfig : SO_Config
     public List<ColorWeight> ColorWeights = new List<ColorWeight>();
     [Tooltip("면체별 출현 가중치(잠정). 테스트 동안은 모두 1 — d20 희귀도는 최종 조정 때 정한다(13).")]
     public List<FacesWeight> FacesWeights = new List<FacesWeight>();
-    [Tooltip("나오는 스킬 카드(주사위 대상 — 페인트·다시 굴리기·잭팟·오버드라이브, 범위·판 전체 — 기획서 8). 가중치는 카드마다(Weight). 빠진 카드는 나오지 않는다. "
+    [Tooltip("나오는 스킬 카드(주사위 대상 — 페인트·다시 굴리기·잭팟·레이즈, 범위·판 전체 — 기획서 8). 가중치는 카드마다(Weight). 빠진 카드는 나오지 않는다. "
         + "캐릭터 전용 카드는 여기 넣지 않는다 — 넣으면 모두에게 나온다(SO_HeroCharacter.ExclusiveCard).")]
     [UnityEngine.Serialization.FormerlySerializedAs("UpgradeCards")]
     public List<SO_SkillCard> SkillCards = new List<SO_SkillCard>();

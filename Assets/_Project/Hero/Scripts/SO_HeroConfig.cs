@@ -45,13 +45,13 @@ public sealed class SO_HeroConfig : SO_Config
     [Tooltip("깡총 뛸 때 높은 쪽 발 높이보다 더 솟는 높이(칸).")]
     [Min(0f)] public float HopHeight = 0.3f;
 
-    [Header("영웅 오버드라이브 (기획서 10.5)")]
-    [Tooltip("영웅이 올라탄 주사위는 이 카드의 오버드라이브 상태가 된다(배율·고리 크기·색을 이 카드에서 읽는다 — 값을 한 곳에만 둔다). 지속 시간은 쓰지 않는다.")]
-    public SO_SkillCard_Overdrive Overdrive;
+    [Header("영웅 레이즈 (기획서 10.5)")]
+    [Tooltip("영웅이 올라탄 주사위는 이 카드의 레이즈 상태가 된다(배율·고리 크기·색을 이 카드에서 읽는다 — 값을 한 곳에만 둔다). 지속 시간은 쓰지 않는다.")]
+    public SO_SkillCard_Raise Raise;
     [Tooltip("올라탄 시간이 이만큼(초) 쌓일 때마다 그 주사위 눈이 1 영구로 깎인다. 시간은 주사위마다 쌓이고 적이 판에 있을 때만 흐른다.")]
-    [Min(0.1f)] public float OverdrivePipInterval = 3f;
-    [Tooltip("각성 주사위(눈 20)의 첫 눈은 이만큼(초) 쌓여야 깎인다 — 깎이면(20 → 19) 각성이 꺼지므로 더 오래 버티게 한다. 그 뒤로는 OverdrivePipInterval마다.")]
-    [Min(0.1f)] public float OverdriveAwakenPipInterval = 10f;
+    [Min(0.1f)] public float RaisePipInterval = 3f;
+    [Tooltip("각성 주사위(눈 20)의 첫 눈은 이만큼(초) 쌓여야 깎인다 — 깎이면(20 → 19) 각성이 꺼지므로 더 오래 버티게 한다. 그 뒤로는 RaisePipInterval마다.")]
+    [Min(0.1f)] public float RaiseAwakenPipInterval = 10f;
 
     [Header("공격")]
     [Tooltip("공격선이 나가는 높이(바닥 윗면에서).")]
@@ -64,7 +64,7 @@ public sealed class SO_HeroConfig : SO_Config
     public override void SwapNested(Func<SO_Config, SO_Config> swap)
     {
         for (int i = 0; i < Characters.Count; i++) Characters[i] = (SO_HeroCharacter)swap(Characters[i]);
-        if (Overdrive != null) Overdrive = (SO_SkillCard_Overdrive)swap(Overdrive);
+        if (Raise != null) Raise = (SO_SkillCard_Raise)swap(Raise);
         if (Spotlight != null) Spotlight = (SO_HeroSpotlightConfig)swap(Spotlight);
         if (CardShot != null) CardShot = (SO_HeroCardShotConfig)swap(CardShot);
         if (Animations != null) Animations = (SO_HeroAnimationSet)swap(Animations);

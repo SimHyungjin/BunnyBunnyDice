@@ -29,9 +29,9 @@ public sealed class DiceAttack : IDisposable
         public int ShotNumber;
         /// <summary>주사위가 올라앉은 칩. 없으면 null.</summary>
         public SO_ChipCard Attachment;
-        /// <summary>오버드라이브 상태로 쏘는지(측정용 — 배율은 Stats에 이미 들어 있다).</summary>
+        /// <summary>레이즈 상태로 쏘는지(측정용 — 배율은 Stats에 이미 들어 있다).</summary>
         public DamageBoost Boost;
-        /// <summary>각성으로 쏘는지. 눈(20)으로 각성했거나 스킬(세븐스 헤븐)이 잠깐 각성시켰다.</summary>
+        /// <summary>각성으로 쏘는지. 눈(20)으로 각성했거나 스킬(럭키 세븐)이 잠깐 각성시켰다.</summary>
         public bool Awakened;
     }
 

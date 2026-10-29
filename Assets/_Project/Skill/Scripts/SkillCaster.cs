@@ -8,7 +8,7 @@ using UnityEngine;
 /// 적 대상·판 전체 스킬은 대상이 없어도 맵 위면 쓸 수 있다 — 필요 없는 카드를 버리는 방법이기도 하다.
 /// 계산은 SkillRules, 끄는 동안의 표시는 SkillPreview — 미리보기도 같은 대상 모으기(CollectTargets)를 지나 실제와 어긋나지 않는다.
 /// 적 대상 스킬은 모두 영웅 공격력 비례 피해를 먼저 주고(기획서 10.1) 특징을 더한다. 스킬로 죽은 적은 판 주사위처럼 포켓으로 슝 날아간다(MonsterField.SinkBySkill).
-/// 연출: 판정은 즉발이고 몸체만 따라 움직인다 — 레이크는 빨려 들어가고, 백스핀은 튕겨 미끄러진다(MonsterRenderer).
+/// 연출: 판정은 즉발이고 몸체만 따라 움직인다 — 랙은 빨려 들어가고, 백스핀은 튕겨 미끄러진다(MonsterRenderer).
 /// 발동 컷인은 캐릭터 작업과 함께 넣는다.
 /// </summary>
 public sealed class SkillCaster
@@ -71,12 +71,12 @@ public sealed class SkillCaster
             _effects.ShowRing(Ground(cell), fullHouse.BurstRadius * 0.5f, card.IconColor, fullHouse.Duration);
             return;
         }
-        if (card is SO_SkillCard_Overdrive overdrive)
+        if (card is SO_SkillCard_Raise raise)
         {
-            _diceCombat.Overdrive(_diceField.IndexOf(cell), overdrive.DamageScale, overdrive.SpeedScale, overdrive.Duration);
+            _diceCombat.Raise(_diceField.IndexOf(cell), raise.DamageScale, raise.SpeedScale, raise.Duration);
             // 쓰는 순간 퍼지는 고리 + 지속되는 동안 주사위 밑에 머무는 고리 — 어느 주사위가 빨라졌는지 보이게.
-            _effects.ShowBurst(Ground(cell), overdrive.BurstRadius, card.IconColor);
-            _effects.ShowRing(Ground(cell), overdrive.RingRadius, card.IconColor, overdrive.Duration);
+            _effects.ShowBurst(Ground(cell), raise.BurstRadius, card.IconColor);
+            _effects.ShowRing(Ground(cell), raise.RingRadius, card.IconColor, raise.Duration);
             return;
         }
         // 상태를 바꾸는 스킬(페인트·리롤·잭팟). 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 온다.
@@ -113,12 +113,12 @@ public sealed class SkillCaster
         return best;
     }
 
-    /// <summary>레이크의 모음점: 놓은 칸(설 수 없으면 가장 가까운 설 수 있는 칸)의 중심. 레이크가 아니거나 판에 설 칸이 없으면 false.</summary>
+    /// <summary>랙의 모음점: 놓은 칸(설 수 없으면 가장 가까운 설 수 있는 칸)의 중심. 랙이 아니거나 판에 설 칸이 없으면 false.</summary>
     public bool TryGetGatherPoint(SO_EnemySkillCard card, Vector2 center, out Vector2 gather)
     {
         gather = center;
         MapData map = _getMap();
-        if (!(card is SO_SkillCard_Rake) || _monsters.Route == null || map == null) return false;
+        if (!(card is SO_SkillCard_Rack) || _monsters.Route == null || map == null) return false;
         // 판 어디를 짚어도 설 칸을 찾게 판 전체를 덮는 거리로 찾는다.
         return SkillRules.TryGetGatherPoint(_monsters.Route, center, map.Width + map.Height, out gather);
     }
@@ -144,8 +144,8 @@ public sealed class SkillCaster
             case SO_SkillCard_Pocket pocket:
                 CastPocket(pocket);
                 break;
-            case SO_SkillCard_Rake rake:
-                CastRake(rake, center);
+            case SO_SkillCard_Rack rack:
+                CastRack(rack, center);
                 break;
             case SO_SkillCard_Backspin backspin:
                 CastBackspin(backspin);
@@ -209,7 +209,7 @@ public sealed class SkillCaster
     }
 
     // 모든 적을 모음점 둘레로 끌어온다(보스 포함). 모음점에 고리를 퍼뜨려 어디로 모였는지 보이게.
-    private void CastRake(SO_SkillCard_Rake card, Vector2 center)
+    private void CastRack(SO_SkillCard_Rack card, Vector2 center)
     {
         if (!TryGetGatherPoint(card, center, out Vector2 gather)) return;
         GridRouteField route = _monsters.Route;
@@ -257,16 +257,16 @@ public sealed class SkillCaster
                 _diceField.RerollAll();
                 break;
             case SO_SkillCard_BreakShot breakShot:
-                _getHeroAttack()?.Overdrive(breakShot.DamageScale, breakShot.SpeedScale, breakShot.Duration);
+                _getHeroAttack()?.Boost(breakShot.DamageScale, breakShot.SpeedScale, breakShot.Duration);
                 break;
-            case SO_SkillCard_Respin _:
+            case SO_SkillCard_SnakeEyes _:
                 _diceField.RerollLowest();
                 break;
-            case SO_SkillCard_HouseEdge houseEdge:
-                _expBoost.Activate(houseEdge.ExpScale, houseEdge.Duration);
+            case SO_SkillCard_DoubleUp doubleUp:
+                _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);
                 break;
-            case SO_SkillCard_SevensHeaven sevens:
-                _diceCombat.AwakenAll(sevens.Duration);
+            case SO_SkillCard_LuckySeven luckySeven:
+                _diceCombat.AwakenAll(luckySeven.Duration);
                 break;
         }
     }

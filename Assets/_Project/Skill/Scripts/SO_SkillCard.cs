@@ -3,9 +3,9 @@ using UnityEngine;
 /// <summary>스킬을 어디에 쓰는가. 카드를 끌어 놓을 곳이 이것으로 정해진다 — 한 번의 드래그로 발동하므로 대상은 늘 하나다(기획서 8).</summary>
 public enum SkillTarget
 {
-    /// <summary>놓인 주사위 하나(페인트·다시 굴리기·잭팟·오버드라이브).</summary>
+    /// <summary>놓인 주사위 하나(페인트·다시 굴리기·잭팟·레이즈).</summary>
     Dice,
-    /// <summary>판 위의 모든 적(포켓·레이크·백스핀·체크메이트·체크). 판 위 아무 곳에나 놓는다 — 놓은 자리는 레이크만 쓴다. SO_EnemySkillCard.</summary>
+    /// <summary>판 위의 모든 적(포켓·랙·백스핀·체크메이트·체크). 판 위 아무 곳에나 놓는다 — 놓은 자리는 랙만 쓴다. SO_EnemySkillCard.</summary>
     Enemies,
     /// <summary>판 위 아무 곳에나 놓으면 판 전체(올인 — 적이 아니라 주사위·목표물에).</summary>
     Board,

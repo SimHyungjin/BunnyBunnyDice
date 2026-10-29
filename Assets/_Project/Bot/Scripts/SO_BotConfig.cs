@@ -53,14 +53,14 @@ public sealed class SO_BotConfig : SO_Config
         public float Jackpot = 200f;
         public float EnemySkill = 120f;
         public float Check = 100f;
-        public float Overdrive = 150f;
+        public float Raise = 150f;
         public float Reroll = 80f;
         public float Paint = 100f;
         public float AllIn = 50f;
-        [Tooltip("캐시 아웃(빌더) — 미로를 어느 정도 지은 뒤, 메인 딜 구간을 막는 칸이 있고 손에 캐시 아웃이 없을 때만. 아니면 0.")]
+        [Tooltip("캐시 아웃(하이 롤러) — 미로를 어느 정도 지은 뒤, 메인 딜 구간을 막는 칸이 있고 손에 캐시 아웃이 없을 때만. 아니면 0.")]
         [UnityEngine.Serialization.FormerlySerializedAs("Fold")]
         public float CashOut = 250f;
-        [Tooltip("그 밖의 캐릭터 전용 카드(풀 하우스·브레이크 샷·리스핀·하우스 엣지·세븐스 헤븐) — 판을 뒤집는 카드라 높게.")]
+        [Tooltip("그 밖의 캐릭터 전용 카드(풀 하우스·브레이크 샷·스네이크 아이즈·더블 업·럭키 세븐) — 판을 뒤집는 카드라 높게.")]
         public float Exclusive = 300f;
     }
 
@@ -77,9 +77,9 @@ public sealed class SO_BotConfig : SO_Config
         public int[] Stages = new int[0];
         [Min(0f)] public float DiceScale = 1f;
         [Min(0f)] public float ChipScale = 1f;
-        [Tooltip("데미지형 스킬 = 영웅 공격력 비례 적 대상 스킬(포켓·레이크·백스핀·체크메이트, SO_EnemySkillCard).")]
+        [Tooltip("데미지형 스킬 = 영웅 공격력 비례 적 대상 스킬(포켓·랙·백스핀·체크메이트, SO_EnemySkillCard).")]
         [Min(0f)] public float DamageSkillScale = 1f;
-        [Tooltip("그 밖의 스킬(잭팟·리롤·페인트·오버드라이브·체크·올인·전용 카드).")]
+        [Tooltip("그 밖의 스킬(잭팟·리롤·페인트·레이즈·체크·올인·전용 카드).")]
         [Min(0f)] public float OtherSkillScale = 1f;
         [Min(0f)] public float HeroScale = 1f;
         [Tooltip("켜면 데미지형 스킬을 뚫릴 때까지 아끼지 않고 판 위 적이 AnytimeEnemyMinTargets 이상이면 바로 쓴다(체크메이트는 보스가 보이면) " +
@@ -99,7 +99,7 @@ public sealed class SO_BotConfig : SO_Config
     [Header("메인 딜 구간 (사용자 플레이 — 범위 주사위·칩·사거리를 한 구간에 모은다)")]
     [Tooltip("메인 딜 구간 반경(칸). 길 위에서 이 반경 안 몰림 합이 가장 큰 칸이 구간 중심이다.")]
     [Min(0.5f)] public float KillZoneRadius = 2.5f;
-    [Tooltip("얹기·영웅·오버드라이브: 메인 딜 구간에 닿는 주사위면 점수에 곱한다.")]
+    [Tooltip("얹기·영웅·레이즈: 메인 딜 구간에 닿는 주사위면 점수에 곱한다.")]
     [Min(1f)] public float KillZoneStackWeight = 2f;
     [Tooltip("칩: 메인 딜 구간에 닿는 주사위 밑이면 점수에 곱한다(사거리 칩으로 새로 닿게 되면 그 두 배).")]
     [Min(1f)] public float KillZoneChipWeight = 3f;
@@ -125,9 +125,9 @@ public sealed class SO_BotConfig : SO_Config
         + "디버프 카드의 값어치는 여러 적에게 묻히는 데서 나온다(사용자). 대상 고르기(가장 가까운 적)는 그대로라 선두를 막는 역할은 남는다.")]
     [Min(1)] public int PaintMinTargets = 3;
 
-    [Header("오버드라이브 (영웅 올라타기·스킬 카드 — BotEscape)")]
+    [Header("레이즈 (영웅 올라타기·스킬 카드 — BotEscape)")]
     [Tooltip("남은 길에서 받을 피해 어림에 곱한다. 1이면 어림 그대로, 낮을수록 \"못 잡을 것\"으로 봐 일찍·자주 쓴다.")]
-    [Min(0.1f)] public float OverdriveMargin = 1f;
+    [Min(0.1f)] public float RaiseMargin = 1f;
     [Tooltip("메인 딜 구간 중심 + 이 칸 수 안에 들어온 적부터 빠져나갈지 본다.")]
     [Min(0)] public int EscapeLookAhead = 2;
 
@@ -143,8 +143,8 @@ public sealed class SO_BotConfig : SO_Config
     [Min(1)] public int BreachEnemyMinTargets = 2;
     [Tooltip("뚫릴 때 체크: 구간을 넘어온 적이 이만큼이면 쓴다.")]
     [Min(1)] public int CheckBreachCount = 5;
-    [Tooltip("리스핀(더블 오어 낫싱 전용): 눈이 1인 주사위가 이만큼이면 쓴다.")]
-    [Min(1)] public int RespinMinDice = 2;
+    [Tooltip("스네이크 아이즈(더블 오어 낫싱 전용): 눈이 1인 주사위가 이만큼이면 쓴다.")]
+    [Min(1)] public int SnakeEyesMinDice = 2;
 
     [Tooltip("데미지형 스킬을 바로 쓰는 묶음(RunSet.DamageSkillAnytime): 판 위 적이 이만큼이면 쓴다.")]
     [Min(1)] public int AnytimeEnemyMinTargets = 8;

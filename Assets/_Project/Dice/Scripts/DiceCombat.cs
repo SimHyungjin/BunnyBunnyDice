@@ -20,13 +20,13 @@ public sealed class DiceCombat : IDisposable
     private readonly List<float> _cooldowns = new List<float>();
     // 지금까지 쏜 횟수(저격 각성의 "N번째마다").
     private readonly List<int> _shotCounts = new List<int>();
-    // 오버드라이브 스킬: 남은 시간과 공격력·공격 속도 배율(기획서 8).
-    private readonly List<float> _overdriveTimes = new List<float>();
-    private readonly List<float> _overdriveDamage = new List<float>();
-    private readonly List<float> _overdriveSpeed = new List<float>();
+    // 레이즈 카드: 남은 시간과 공격력·공격 속도 배율(기획서 8).
+    private readonly List<float> _raiseTimes = new List<float>();
+    private readonly List<float> _raiseDamage = new List<float>();
+    private readonly List<float> _raiseSpeed = new List<float>();
     // 풀 하우스(레인보우 전용 카드): 남은 시간 동안 7색 공격 방식을 한 번에 모두 쏜다.
     private readonly List<float> _fullHouseTimes = new List<float>();
-    // 세븐스 헤븐(777 전용 카드): 남은 시간 동안 판 위 모든 주사위가 각성으로 쏜다(그사이 놓은 주사위 포함).
+    // 럭키 세븐(777 전용 카드): 남은 시간 동안 판 위 모든 주사위가 각성으로 쏜다(그사이 놓은 주사위 포함).
     private float _awakenAllTime;
     // 풀 하우스가 쏘는 7색(검정 빼고). 순서는 DiceColor 값 — 연출이 매번 같은 순서로 나간다.
     private static readonly DiceColor[] AllColors =
@@ -34,7 +34,7 @@ public sealed class DiceCombat : IDisposable
         DiceColor.Red, DiceColor.Green, DiceColor.Red | DiceColor.Green, DiceColor.Blue,
         DiceColor.Red | DiceColor.Blue, DiceColor.Green | DiceColor.Blue, DiceColors.All,
     };
-    // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.5) — 카드와 같은 상태다. 한 번에 하나뿐이라 칸으로 들고 있는다.
+    // 영웅 레이즈(영웅이 올라탄 주사위, 기획서 10.5) — 카드와 같은 상태다. 한 번에 하나뿐이라 칸으로 들고 있는다.
     private bool _hasBoost;
     private Vector2Int _boostCell;
     private float _boostDamage = 1f;
@@ -66,9 +66,9 @@ public sealed class DiceCombat : IDisposable
         if (index < 0 || index >= _cooldowns.Count) return;
         _cooldowns.RemoveAt(index);
         _shotCounts.RemoveAt(index);
-        _overdriveTimes.RemoveAt(index);
-        _overdriveDamage.RemoveAt(index);
-        _overdriveSpeed.RemoveAt(index);
+        _raiseTimes.RemoveAt(index);
+        _raiseDamage.RemoveAt(index);
+        _raiseSpeed.RemoveAt(index);
         _fullHouseTimes.RemoveAt(index);
     }
 
@@ -80,14 +80,14 @@ public sealed class DiceCombat : IDisposable
         _fullHouseTimes[index] = duration;
     }
 
-    /// <summary>세븐스 헤븐: duration초 동안 판 위 모든 주사위가 각성으로 쏜다. 다시 걸면 긴 쪽을 남긴다.</summary>
+    /// <summary>럭키 세븐: duration초 동안 판 위 모든 주사위가 각성으로 쏜다. 다시 걸면 긴 쪽을 남긴다.</summary>
     public void AwakenAll(float duration)
     {
         _awakenAllTime = Mathf.Max(_awakenAllTime, duration);
         _diceField.SetBoardAwakened(_awakenAllTime > 0f);
     }
 
-    /// <summary>판이 바뀌면 판 전체에 걸린 상태(세븐스 헤븐)를 지운다. 주사위마다 붙은 상태는 주사위가 비면 같이 비워진다.</summary>
+    /// <summary>판이 바뀌면 판 전체에 걸린 상태(럭키 세븐)를 지운다. 주사위마다 붙은 상태는 주사위가 비면 같이 비워진다.</summary>
     public void Clear()
     {
         _awakenAllTime = 0f;
@@ -95,16 +95,16 @@ public sealed class DiceCombat : IDisposable
     }
 
     /// <summary>
-    /// 오버드라이브: index번째 주사위가 duration초 동안 공격력 damageScale배·공속 speedScale배로 쏜다. 다시 걸면 시간이 새로 시작한다(겹쳐 세지 않음).
+    /// 레이즈: index번째 주사위가 duration초 동안 공격력 damageScale배·공속 speedScale배로 쏜다. 다시 걸면 시간이 새로 시작한다(겹쳐 세지 않음).
     /// 지금 기다리던 대기 시간도 빨라진 간격까지 줄인다 — 쓰자마자 빨라진 것이 보이게.
     /// </summary>
-    public void Overdrive(int index, float damageScale, float speedScale, float duration)
+    public void Raise(int index, float damageScale, float speedScale, float duration)
     {
         SyncSlots(_diceField.Placed.Count);
-        if (index < 0 || index >= _overdriveTimes.Count || speedScale <= 0f) return;
-        _overdriveTimes[index] = duration;
-        _overdriveDamage[index] = damageScale;
-        _overdriveSpeed[index] = speedScale;
+        if (index < 0 || index >= _raiseTimes.Count || speedScale <= 0f) return;
+        _raiseTimes[index] = duration;
+        _raiseDamage[index] = damageScale;
+        _raiseSpeed[index] = speedScale;
         PlacedDice dice = _diceField.Placed[index];
         DiceStats stats = DiceStats.Compute(dice.Dice, _diceConfig.GetDiceType(dice.Dice.Colors), _statsConfig);
         _cooldowns[index] = Mathf.Min(_cooldowns[index], stats.AttackInterval / speedScale);
@@ -118,14 +118,14 @@ public sealed class DiceCombat : IDisposable
         return stats.GetRange(ChipEffects.RangeBonus(_chips.Get(cell)));
     }
 
-    /// <summary>cell의 주사위에 오버드라이브 카드 시간이 남아 있는지. 영웅 오버드라이브는 이 시간을 먼저 쓴다(그동안 눈이 깎이지 않는다).</summary>
-    public bool IsOverdriven(Vector2Int cell)
+    /// <summary>cell의 주사위에 레이즈 카드 시간이 남아 있는지. 영웅 레이즈는 이 시간을 먼저 쓴다(그동안 눈이 깎이지 않는다).</summary>
+    public bool IsRaised(Vector2Int cell)
     {
         int index = _diceField.IndexOf(cell);
-        return index >= 0 && index < _overdriveTimes.Count && _overdriveTimes[index] > 0f;
+        return index >= 0 && index < _raiseTimes.Count && _raiseTimes[index] > 0f;
     }
 
-    /// <summary>cell의 주사위가 오버드라이브 상태로 쏜다(영웅 오버드라이브 — 영웅이 올라탄 동안). 다른 칸을 부르면 그쪽으로 옮겨 간다.</summary>
+    /// <summary>cell의 주사위가 레이즈 상태로 쏜다(영웅 레이즈 — 영웅이 올라탄 동안). 다른 칸을 부르면 그쪽으로 옮겨 간다.</summary>
     public void SetBoost(Vector2Int cell, float damageScale, float speedScale)
     {
         _hasBoost = true;
@@ -144,18 +144,18 @@ public sealed class DiceCombat : IDisposable
         {
             _cooldowns.Clear();
             _shotCounts.Clear();
-            _overdriveTimes.Clear();
-            _overdriveDamage.Clear();
-            _overdriveSpeed.Clear();
+            _raiseTimes.Clear();
+            _raiseDamage.Clear();
+            _raiseSpeed.Clear();
             _fullHouseTimes.Clear();
         }
         while (_cooldowns.Count < count)
         {
             _cooldowns.Add(0f);
             _shotCounts.Add(0);
-            _overdriveTimes.Add(0f);
-            _overdriveDamage.Add(1f);
-            _overdriveSpeed.Add(1f);
+            _raiseTimes.Add(0f);
+            _raiseDamage.Add(1f);
+            _raiseSpeed.Add(1f);
             _fullHouseTimes.Add(0f);
         }
     }
@@ -173,7 +173,7 @@ public sealed class DiceCombat : IDisposable
         if (_awakenAllTime <= 0f) _diceField.SetBoardAwakened(false);
         for (int i = 0; i < placed.Count; i++)
         {
-            _overdriveTimes[i] = Mathf.Max(_overdriveTimes[i] - deltaTime, 0f);
+            _raiseTimes[i] = Mathf.Max(_raiseTimes[i] - deltaTime, 0f);
             _fullHouseTimes[i] = Mathf.Max(_fullHouseTimes[i] - deltaTime, 0f);
             // 적이 없으면 준비된 채로 기다릴 뿐 쌓아 두지 않는다 — 적이 들어오자마자 몰아 쏘지 않게.
             _cooldowns[i] = Mathf.Max(_cooldowns[i] - deltaTime, 0f);
@@ -197,7 +197,7 @@ public sealed class DiceCombat : IDisposable
         }
     }
 
-    // dice를 colors의 공격 방식으로 한 번 쏜다(오버드라이브·칩 배율 포함). 맞힐 적이 없거나 쏠 수 없는 주사위면 false.
+    // dice를 colors의 공격 방식으로 한 번 쏜다(레이즈·칩 배율 포함). 맞힐 적이 없거나 쏠 수 없는 주사위면 false.
     private bool TryFire(int i, in PlacedDice dice, DiceColor colors, bool awakened, out float interval)
     {
         interval = 0f;
@@ -209,21 +209,21 @@ public sealed class DiceCombat : IDisposable
         float damageScale = 1f;
         float speedScale = 1f;
         DamageBoost boost = DamageBoost.None;
-        if (_overdriveTimes[i] > 0f)
+        if (_raiseTimes[i] > 0f)
         {
-            damageScale = _overdriveDamage[i];
-            speedScale = _overdriveSpeed[i];
+            damageScale = _raiseDamage[i];
+            speedScale = _raiseSpeed[i];
             boost = DamageBoost.Card;
         }
-        // 영웅이 올라탄 주사위도 같은 오버드라이브 상태라 겹치지 않는다 — 곱하지 않고 큰 쪽을 쓴다.
-        // 카드 시간이 남았으면 카드 몫으로 센다(영웅 오버드라이브가 카드 시간을 먼저 쓴다).
+        // 영웅이 올라탄 주사위도 같은 레이즈 상태라 겹치지 않는다 — 곱하지 않고 큰 쪽을 쓴다.
+        // 카드 시간이 남았으면 카드 몫으로 센다(영웅 레이즈가 카드 시간을 먼저 쓴다).
         if (_hasBoost && dice.Cell == _boostCell)
         {
             damageScale = Mathf.Max(damageScale, _boostDamage);
             speedScale = Mathf.Max(speedScale, _boostSpeed);
             if (boost == DamageBoost.None) boost = DamageBoost.Hero;
         }
-        // 최대 체력 피해도 한 방 피해라 같은 배율을 받는다(오버드라이브·공격력 칩).
+        // 최대 체력 피해도 한 방 피해라 같은 배율을 받는다(레이즈·공격력 칩).
         stats.Damage *= damageScale;
         stats.MaxHealthRatio *= damageScale;
         if (speedScale > 0f) stats.AttackInterval /= speedScale;

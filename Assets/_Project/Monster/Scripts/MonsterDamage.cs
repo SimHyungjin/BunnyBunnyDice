@@ -7,7 +7,7 @@ public enum DamageKind
     Critical,
     Reduced, // 방어력에 깎였다
     Burn,  // 화상(지속 피해)
-    BonusExp, // 피해가 아니라 하우스 엣지(ExpBoost)로 더 받은 경험치 — 같은 튀는 숫자로 "+N"을 보인다
+    BonusExp, // 피해가 아니라 더블 업(ExpBoost)으로 더 받은 경험치 — 같은 튀는 숫자로 "+N"을 보인다
 }
 
 /// <summary>

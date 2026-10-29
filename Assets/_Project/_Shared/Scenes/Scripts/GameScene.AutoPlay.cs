@@ -26,7 +26,7 @@ public sealed partial class GameScene
     {
         _mazePlanner = new MazePlanner(_mazeConfig, () => _map, _diceField);
         _bot = new GameBot(botConfig, () => _map, () => _waves.Wave, _heroStats, heroConfig.Characters, _diceField, _chips, _hand, _placement, _skills, _monsters, _hero, diceConfig,
-            diceStatsConfig, () => heroConfig.Overdrive, _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
+            diceStatsConfig, () => heroConfig.Raise, _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
         _botConfig = botConfig;
         _bot.EnabledChanged += _ => ApplySimMode();
     }

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8c57d85bcf744c5924dfa7a3a303f12, type: 3}
-  m_Name: SO_SkillCard_Respin
-  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Respin
-  DisplayName: "\uB9AC\uC2A4\uD540"
+  m_Name: SO_SkillCard_SnakeEyes
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_SnakeEyes
+  DisplayName: "\uC2A4\uB124\uC774\uD06C \uC544\uC774\uC988"
   Description: "\uB208\uC774 1\uC778 \uC8FC\uC0AC\uC704\uB97C \uBAA8\uB450 \uB2E4\uC2DC
     \uAD74\uB9B0\uB2E4."
   StrongAgainst: 

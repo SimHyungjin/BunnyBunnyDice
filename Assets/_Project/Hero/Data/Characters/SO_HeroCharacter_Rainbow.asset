@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f015daa71e54458bd94b4d3d9ca8fe9, type: 3}
-  m_Name: SO_HeroCharacter_Gambler
+  m_Name: SO_HeroCharacter_Rainbow
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
-  DisplayName: "\uB3C4\uBC15\uC0AC"
-  Trait: {fileID: 11400000, guid: 68db41cd4afd4b4d83fa91b3ce29d23b, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: ee09e97ef03666f4ca50baf4677707bc, type: 2}
+  DisplayName: "\uBC14\uB2C8\uAC78"
+  Id: BunnyGirl
+  Trait: {fileID: 11400000, guid: 14ea47de257c42ceaf5d6e7d35f01a19, type: 2}
+  ExclusiveCard: {fileID: 11400000, guid: 57024678172fa4b429522bd985805dd9, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: fbb59e628b4e06848975ad12bcd0273c, type: 3}
   ModelHeight: 0.9
-  Color: {r: 0.3, g: 0.85, b: 0.85, a: 1}
+  Color: {r: 0.95, g: 0.85, b: 0.3, a: 1}
   Portrait: {fileID: 0}
-  PortraitFocusY: 0.5
+  PortraitFocusY: 0.45
   Attack: 60
   AttackSpeed: 2
   MoveSpeed: 3

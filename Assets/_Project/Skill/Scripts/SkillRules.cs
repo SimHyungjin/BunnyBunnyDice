@@ -23,7 +23,7 @@ public static class SkillRules
                 return colors == DiceColor.Clear || colors == dice.Colors ? PlacementResult.NoEffect : PlacementResult.Upgrade;
             case SO_SkillCard_Jackpot _:
                 return dice.IsMaxed ? PlacementResult.NoEffect : PlacementResult.Upgrade;
-            // 리롤은 상한에 닿은 주사위에도 막지 않는다(판단에 맡긴다). 오버드라이브는 늘 된다.
+            // 리롤은 상한에 닿은 주사위에도 막지 않는다(판단에 맡긴다). 레이즈는 늘 된다.
             default:
                 return PlacementResult.Upgrade;
         }
@@ -34,7 +34,7 @@ public static class SkillRules
         hasDice || hasChip ? PlacementResult.Upgrade : PlacementResult.NoEffect;
 
     /// <summary>
-    /// 주사위 상태를 바꾸는 스킬을 적용한다(페인트·리롤·잭팟). 상태를 바꾸지 않는 스킬(오버드라이브)은 아무 일도 없다.
+    /// 주사위 상태를 바꾸는 스킬을 적용한다(페인트·리롤·잭팟). 상태를 바꾸지 않는 스킬(레이즈)은 아무 일도 없다.
     /// roll은 리롤의 새 눈 — 미리보기에서는 지금 눈을 넘겨 그대로 둔다. 리롤의 새 면체는 부르는 쪽(DiceField)이 먼저 넣는다.
     /// </summary>
     public static void ApplyDice(ref DiceState dice, SO_SkillCard card, int roll)
@@ -61,7 +61,7 @@ public static class SkillRules
         route.GetDistance(GridCircle.CellOf(position)) != GridRouteField.Unreachable;
 
     /// <summary>
-    /// 원 안에서 적을 모을 자리(레이크). 원 중심 칸에 설 수 있으면 그 칸 중심, 아니면 원 안에서 중심에 가장 가까운 설 수 있는 칸의 중심.
+    /// 원 안에서 적을 모을 자리(랙). 원 중심 칸에 설 수 있으면 그 칸 중심, 아니면 원 안에서 중심에 가장 가까운 설 수 있는 칸의 중심.
     /// 칸 중심으로 맞추는 이유: 모인 적이 걷는 길에 바로 올라서게(칸 가장자리면 벽에 걸친 채 경유점을 찾는다). 원 안에 설 칸이 없으면 false.
     /// </summary>
     public static bool TryGetGatherPoint(GridRouteField route, Vector2 center, float radius, out Vector2 gather)

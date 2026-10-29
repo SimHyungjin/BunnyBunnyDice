@@ -84,12 +84,12 @@ public sealed class AttackEffects : IDisposable
     public void ShowBurst(Vector3 center, float radius, Color color) =>
         AddRing(center, radius, color, _config.BurstDuration, true);
 
-    /// <summary>duration 동안 제자리에 머물며 흐려지는 고리(오버드라이브·풀 하우스 지속 등).</summary>
+    /// <summary>duration 동안 제자리에 머물며 흐려지는 고리(레이즈·풀 하우스 지속 등).</summary>
     public void ShowRing(Vector3 center, float radius, Color color, float duration) =>
         AddRing(center, radius, color, duration, false);
 
     /// <summary>
-    /// 흐려지지 않고 숨길 때까지 머무는 고리 하나(영웅이 올라탄 주사위 — 오버드라이브 고리와 같은 모습). 매 프레임 불러도 된다.
+    /// 흐려지지 않고 숨길 때까지 머무는 고리 하나(영웅이 올라탄 주사위 — 레이즈 고리와 같은 모습). 매 프레임 불러도 된다.
     /// 영웅은 한 명이라 하나만 둔다.
     /// </summary>
     public void ShowHeldRing(Vector3 center, float radius, Color color)

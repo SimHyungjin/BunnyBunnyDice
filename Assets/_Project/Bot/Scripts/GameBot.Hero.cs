@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>GameBot의 영웅 이동 — 오버드라이브로 올라탈 주사위, 정리할 적, 디버프를 묻힐 자리.</summary>
+/// <summary>GameBot의 영웅 이동 — 레이즈로 올라탈 주사위, 정리할 적, 디버프를 묻힐 자리.</summary>
 public sealed partial class GameBot
 {
     // 영웅(사용자 판 교본 2차):
-    // 1) 빠져나갈 적을 오버드라이브로 잡을 수 있으면 그 주사위에 올라탄다(BotEscape) — 올라탄 동안 눈이 영구로 깎이니 그때만.
+    // 1) 빠져나갈 적을 레이즈로 잡을 수 있으면 그 주사위에 올라탄다(BotEscape) — 올라탄 동안 눈이 영구로 깎이니 그때만.
     // 2) 미로를 짓는 동안엔 주사위가 못 잡은 적을 쫓아 정리한다(영웅 디버프 카드가 있으면 안 묻은 적이 몰린 곳으로).
     // 3) 미로를 지은 뒤엔 메인 딜 구간 앞부터 디버프가 묻는 구역까지 오가며 싸운다 — 구역을 지난(뚫린) 적이 있으면 그쪽부터,
     //    없으면 구역 안에서 가장 앞선 적, 적이 없으면 구역 앞에서 기다린다. 영웅이 주 딜이라 취약(+30%)이 묻는 곳에서 때려야 한다.
     private void MoveHero(MapData map)
     {
         if (_hero.Held || !_board.Read(map, _config.KillZoneRadius)) return;
-        SO_SkillCard_Overdrive overdrive = _heroOverdrive();
-        if (overdrive != null && FindOverdriveTarget(overdrive.DamageScale, overdrive.SpeedScale, float.MaxValue, false, out Vector2Int ride))
+        SO_SkillCard_Raise raise = _heroRaise();
+        if (raise != null && FindRaiseTarget(raise.DamageScale, raise.SpeedScale, float.MaxValue, false, out Vector2Int ride))
         {
             if (_hasHeroCell && ride == _heroCell) return;
             if (_hero.MoveTo(ride))

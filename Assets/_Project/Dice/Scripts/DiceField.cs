@@ -27,7 +27,7 @@ public sealed class DiceField : IDisposable
     private readonly List<DiceView> _views = new List<DiceView>();
     private MapData _map;
     private float _lastYaw = float.NaN;
-    // 판 전체 일시 각성(세븐스 헤븐) 중인지 — 판정은 DiceCombat이 세고, 여기서는 표시만 맞춘다.
+    // 판 전체 일시 각성(럭키 세븐) 중인지 — 판정은 DiceCombat이 세고, 여기서는 표시만 맞춘다.
     private bool _boardAwakened;
 
     /// <summary>빈 칸에 새로 놓였다. 칸이 막혀 길이 바뀌었을 수 있으므로 경로 표시 등이 구독해 갱신한다.</summary>
@@ -168,7 +168,7 @@ public sealed class DiceField : IDisposable
         }
     }
 
-    /// <summary>판의 눈이 1인 주사위만 지금 면체로 다시 굴린다(리스핀 — 더블 오어 낫싱 전용 카드). 다시 굴린 수를 돌려준다.</summary>
+    /// <summary>판의 눈이 1인 주사위만 지금 면체로 다시 굴린다(스네이크 아이즈 — 더블 오어 낫싱 전용 카드). 다시 굴린 수를 돌려준다.</summary>
     public int RerollLowest()
     {
         int count = 0;
@@ -189,7 +189,7 @@ public sealed class DiceField : IDisposable
     }
 
     /// <summary>
-    /// cell의 주사위 눈을 1 깎는다(영웅 오버드라이브, 기획서 10.5). 0 아래로는 내려가지 않는다 — 0이면 공격을 멈추고 벽으로만 남는다.
+    /// cell의 주사위 눈을 1 깎는다(영웅 레이즈, 기획서 10.5). 0 아래로는 내려가지 않는다 — 0이면 공격을 멈추고 벽으로만 남는다.
     /// 깎였으면 true. 주사위가 없거나 이미 0이면 false.
     /// </summary>
     public bool DrainPip(Vector2Int cell)
@@ -318,7 +318,7 @@ public sealed class DiceField : IDisposable
     // 굴리는 연출을 진행하고, 카메라가 돌았을 때만(화면 회전) 눈 글자를 다시 돌린다.
     // 놓는 연출(솟아나기·굴러 떨어지기)은 실제 시간이다 — 멈춘 동안 놓아도 주사위가 나타나고 눈 숫자까지 보이게.
     // 판정은 연출을 기다리지 않으므로(DiceView) 게임 결과는 바뀌지 않는다. 카메라를 마주 보는 것은 카메라가 움직인 뒤(LateUpdate)에 한다.
-    /// <summary>판 전체 일시 각성(세븐스 헤븐)의 표시를 켜고 끈다. 판정은 DiceCombat이 따로 센다.</summary>
+    /// <summary>판 전체 일시 각성(럭키 세븐)의 표시를 켜고 끈다. 판정은 DiceCombat이 따로 센다.</summary>
     public void SetBoardAwakened(bool on)
     {
         if (_boardAwakened == on) return;

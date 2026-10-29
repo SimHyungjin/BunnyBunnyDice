@@ -11,13 +11,13 @@ public sealed partial class GameBot
     {
         if (skill is SO_SkillCard_AllIn) return TryCastAllIn(skill);
         if (skill is SO_SkillCard_CashOut) return TryCastCashOut(skill);
-        // 하우스 엣지는 일찍 쓸수록 이득이다 — 적이 있으면 바로. 리스핀은 1이 둘 이상일 때.
-        if (skill is SO_SkillCard_HouseEdge) return _monsters.Count > 0 && CastBoard(skill);
-        if (skill is SO_SkillCard_Respin) return CountLowest() >= _config.RespinMinDice && CastBoard(skill);
-        // 화력 카드(풀 하우스·브레이크 샷·세븐스 헤븐)는 다른 스킬처럼 뚫릴 때.
-        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_SevensHeaven) return Breached(out _) && CastBoard(skill);
+        // 더블 업은 일찍 쓸수록 이득이다 — 적이 있으면 바로. 스네이크 아이즈는 1이 둘 이상일 때.
+        if (skill is SO_SkillCard_DoubleUp) return _monsters.Count > 0 && CastBoard(skill);
+        if (skill is SO_SkillCard_SnakeEyes) return CountLowest() >= _config.SnakeEyesMinDice && CastBoard(skill);
+        // 화력 카드(풀 하우스·브레이크 샷·럭키 세븐)는 다른 스킬처럼 뚫릴 때.
+        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_LuckySeven) return Breached(out _) && CastBoard(skill);
         if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
-        if (skill is SO_SkillCard_Overdrive overdrive) return TryCastOverdrive(overdrive);
+        if (skill is SO_SkillCard_Raise raise) return TryCastRaise(raise);
         if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);
         SO_BotConfig.RunSet set = CurrentSet(_report.Count);
         if (set != null && set.DamageSkillAnytime && skill is SO_EnemySkillCard anytime) return TryCastAnytime(anytime);
@@ -29,25 +29,25 @@ public sealed partial class GameBot
         return false;
     }
 
-    // 오버드라이브 카드: 빠져나갈 적을 걸면 잡을 수 있는 주사위에만(BotEscape). 영웅이 올라탄 주사위는 이미 오버드라이브다.
-    private bool TryCastOverdrive(SO_SkillCard_Overdrive card)
+    // 레이즈 카드: 빠져나갈 적을 걸면 잡을 수 있는 주사위에만(BotEscape). 영웅이 올라탄 주사위는 이미 레이즈다.
+    private bool TryCastRaise(SO_SkillCard_Raise card)
     {
-        if (!FindOverdriveTarget(card.DamageScale, card.SpeedScale, card.Duration, true, out Vector2Int cell)) return false;
+        if (!FindRaiseTarget(card.DamageScale, card.SpeedScale, card.Duration, true, out Vector2Int cell)) return false;
         _skills.CastOnCell(cell, card);
         return true;
     }
 
-    // 빠져나갈 적을 잡을 오버드라이브 자리. excludeHero면 영웅이 올라탄 주사위는 뺀다(카드는 겹쳐 세지지 않는다).
-    private bool FindOverdriveTarget(float damageScale, float speedScale, float duration, bool excludeHero, out Vector2Int cell)
+    // 빠져나갈 적을 잡을 레이즈 자리. excludeHero면 영웅이 올라탄 주사위는 뺀다(카드는 겹쳐 세지지 않는다).
+    private bool FindRaiseTarget(float damageScale, float speedScale, float duration, bool excludeHero, out Vector2Int cell)
     {
         cell = default;
         if (!_board.HasKillZone) return false;
         Vector2Int? exclude = excludeHero && _hasHeroCell ? _heroCell : (Vector2Int?)null;
         return _escape.FindTarget(_board, _monsters, _diceField, _chips, _diceConfig, _statsConfig,
-            _board.KillZoneDistance + _config.EscapeLookAhead, damageScale, speedScale, duration, _config.OverdriveMargin, exclude, out cell);
+            _board.KillZoneDistance + _config.EscapeLookAhead, damageScale, speedScale, duration, _config.RaiseMargin, exclude, out cell);
     }
 
-    // 캐시 아웃(빌더): 메인 딜 구간을 막는 칸을 치워 딜링 주사위 자리를 넓힌다(사용자: 칩·실수로 못 쓰게 된 딜 구간을 넓힌다).
+    // 캐시 아웃(하이 롤러): 메인 딜 구간을 막는 칸을 치워 딜링 주사위 자리를 넓힌다(사용자: 칩·실수로 못 쓰게 된 딜 구간을 넓힌다).
     // 손에 그 자리를 채울 d20·범위 주사위가 있을 때만 — 치우기만 하고 못 채우면 미로만 허문다.
     private bool TryCastCashOut(SO_SkillCard card)
     {
@@ -148,7 +148,7 @@ public sealed partial class GameBot
         return false;
     }
 
-    // 적 대상 스킬은 판 전체라 놓는 자리는 레이크의 모음점만 정한다 — 메인 딜 구간 한가운데로 모은다(넘어온 적을 구간으로 되돌린다).
+    // 적 대상 스킬은 판 전체라 놓는 자리는 랙의 모음점만 정한다 — 메인 딜 구간 한가운데로 모은다(넘어온 적을 구간으로 되돌린다).
     // 구간이 없으면 판 한가운데.
     private bool TryCastAt(SO_EnemySkillCard card)
     {

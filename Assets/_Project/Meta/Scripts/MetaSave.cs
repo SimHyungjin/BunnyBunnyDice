@@ -13,7 +13,7 @@ public sealed class MetaSave : SaveSection
 
     public int Currency;
 
-    /// <summary>캐릭터별 기록. 키 = 캐릭터 SO 에셋 이름(MetaProfile.IdOf) — 에셋 이름을 바꾸면 그 캐릭터의 기록과 끊긴다.</summary>
+    /// <summary>캐릭터별 기록. 키 = 캐릭터 SO의 Id(MetaProfile.IdOf) — 에셋 이름은 바꿔도 되고, Id를 바꾸면 그 캐릭터의 기록과 끊긴다.</summary>
     public Dictionary<string, CharacterSave> Characters = new Dictionary<string, CharacterSave>();
 
     /// <summary>마지막에 고른 캐릭터(로비가 이 캐릭터로 열린다). 빈 값 = 고른 적 없음.</summary>

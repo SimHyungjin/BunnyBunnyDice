@@ -13,7 +13,7 @@ public static class EnemySkillStats
         switch (card)
         {
             case SO_SkillCard_Pocket _: return 0;
-            case SO_SkillCard_Rake _: return 1;
+            case SO_SkillCard_Rack _: return 1;
             case SO_SkillCard_Backspin _: return 2;
             case SO_SkillCard_Checkmate _: return 3;
             default: return -1;

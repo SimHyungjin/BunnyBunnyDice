@@ -7,8 +7,8 @@ using UnityEngine;
 /// 규칙 하나로 맞춘다(2026-10-29 사용자 — 카드마다 표시가 제각각이었다):
 /// - 어디에 놓나: 적 대상·판 전체는 판 전체를 연한 초록으로 깐다(판 위 아무 곳 — 손가락이 판 밖이면 깔지 않는다).
 /// - 누가 따로 골라지나: 전부가 받으면(모든 적·모든 주사위) 판 색만. 일부·한 점이면 그 대상에 표시 —
-///   적·영웅은 밑에 카드 색 고리(레이크 모음점·체크메이트 왕·포켓에 들어갈 적·브레이크 샷의 영웅),
-///   주사위는 칸 하이라이트(리스핀의 눈 1) — 주사위 밑 고리는 몸체에 가려 안 보인다.
+///   적·영웅은 밑에 카드 색 고리(랙 모음점·체크메이트 왕·포켓에 들어갈 적·브레이크 샷의 영웅),
+///   주사위는 칸 하이라이트(스네이크 아이즈의 눈 1) — 주사위 밑 고리는 몸체에 가려 안 보인다.
 /// 처음엔 손가락 밑 고리였는데 "그 자리에 쓰는" 범위 스킬처럼 보였다(2026-10-29 사용자).
 /// 대상은 체력·위치가 바뀌며 달라지므로 손가락이 멈춰 있어도 매 프레임 다시 고른다 — 놓는 순간의 판정(SkillCaster)과 같은 함수를 지난다.
 /// </summary>
@@ -68,7 +68,7 @@ public sealed class SkillPreview : IDisposable
         Reset();
     }
 
-    /// <summary>적 대상 스킬 표시를 띄운다. center(맵 로컬 x, z)는 손가락 자리 — 판 위인지와 레이크 모음점을 정한다. 숨길 때까지 매 프레임 다시 그린다.</summary>
+    /// <summary>적 대상 스킬 표시를 띄운다. center(맵 로컬 x, z)는 손가락 자리 — 판 위인지와 랙 모음점을 정한다. 숨길 때까지 매 프레임 다시 그린다.</summary>
     public void ShowEnemies(SO_EnemySkillCard card, Vector2 center)
     {
         _boardCard = null;
@@ -163,8 +163,8 @@ public sealed class SkillPreview : IDisposable
             FillRing(GetMark(used++), _hero.Position, y, _config.SkillTargetMarkRadius, _config.SkillMarkWidth, _boardCard.IconColor);
         HideMarksFrom(used);
 
-        // 일부 주사위만 바뀌는 카드는 그 칸을 밝힌다(리스핀 = 눈이 1). 모든 주사위가 받는 카드(올인·세븐스 헤븐)는 판 색만.
-        if (!(_boardCard is SO_SkillCard_Respin)) return;
+        // 일부 주사위만 바뀌는 카드는 그 칸을 밝힌다(스네이크 아이즈 = 눈이 1). 모든 주사위가 받는 카드(올인·럭키 세븐)는 판 색만.
+        if (!(_boardCard is SO_SkillCard_SnakeEyes)) return;
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         float ground = _viewConfig.GetTileTop(TileType.Ground);
         int lit = 0;

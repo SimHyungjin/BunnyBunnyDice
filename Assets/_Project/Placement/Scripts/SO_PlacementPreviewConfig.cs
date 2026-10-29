@@ -26,7 +26,7 @@ public sealed class SO_PlacementPreviewConfig : SO_Config
     [Tooltip("적 대상 스킬을 끄는 동안 판 전체에 까는 색 — 모든 적이 대상이라는 것이 보이게. 주사위·적을 가리지 않게 아주 연하게(알파). " +
              "손가락이 판 밖이면(쓸 수 없으면) 깔지 않는다. 재질·띄우는 높이는 사거리와 같다.")]
     public Color SkillBoardColor = new Color(0.3f, 0.95f, 0.4f, 0.12f);
-    [Tooltip("레이크 모음점 밑 고리 반경(칸) — 레이크는 어디로 모으는지가 가장 중요한 정보라 크게. 색은 카드 색(IconColor).")]
+    [Tooltip("랙 모음점 밑 고리 반경(칸) — 랙은 어디로 모으는지가 가장 중요한 정보라 크게. 색은 카드 색(IconColor).")]
     [Min(0.05f)] public float SkillGatherMarkRadius = 0.7f;
     [Tooltip("체크메이트의 왕(큰 피해를 받는 적) 밑 고리 반경(칸). 색은 카드 색(IconColor).")]
     [Min(0.05f)] public float SkillKingMarkRadius = 0.5f;

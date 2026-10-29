@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// 봇이 여러 판을 돈 뒤의 요약(기획서 11.4). 판마다 한 줄(깬 웨이브·처음 샌 웨이브·피해 비중·고른 카드 종류)과 맨 아래 평균을 CSV로 남긴다.
 /// 판마다의 자세한 기록은 WaveLog CSV가 따로 남으므로, 여기는 판끼리·설정끼리 비교할 숫자만 모은다 — 사람(또는 Claude)이 파일 하나만 읽으면 되게.
-/// od_* = 오버드라이브 상태의 주사위가 낸 피해 몫(single·area와 겹친다), ride = 웨이브 시간 중 영웅이 주사위에 올라탄 비율,
+/// raise_* = 레이즈 상태의 주사위가 낸 피해 몫(single·area와 겹친다), ride = 웨이브 시간 중 영웅이 주사위에 올라탄 비율,
 /// offer_* = 레벨업 후보로 나온 수(pick_*는 그중 고른 수).
 /// 주사위 색마다 <색>_pct(주사위 피해 중 몫), <색>_dice·<색>_pips(웨이브 끝 판 위 주사위 수·눈 합의 웨이브 평균) — 몫을 이것으로 나눠 색 세기를 본다.
 /// 적 대상 스킬 종류마다 <이름>_uses(쓴 수), _pct(판 전체 피해 중 몫), _over_pct(낸 피해 중 넘쳐 버려진 몫), _kills(처치 수).
@@ -16,7 +16,7 @@ using UnityEngine;
 public sealed class BotBatchReport
 {
     private const string Header =
-        "run,set,character,stages,seed,maze,wave_cleared,first_leak,minutes,hero_pct,skill_pct,single_pct,area_pct,basic_pct,od_hero_pct,od_card_pct,ride_pct," +
+        "run,set,character,stages,seed,maze,wave_cleared,first_leak,minutes,hero_pct,skill_pct,single_pct,area_pct,basic_pct,raise_hero_pct,raise_card_pct,ride_pct," +
         "pips_drained,skill_uses,pick_dice,pick_skill,pick_chip,pick_hero,offer_dice,offer_skill,offer_chip,offer_hero";
 
     // 피해 출처 번호(DamageSource.Index = 주사위 색 비트): 단일 = 빨강·초록·파랑, 범위 = 섞인 색·하양, 기본 = 검정.
@@ -33,7 +33,7 @@ public sealed class BotBatchReport
         public int FirstLeak;
         public float Minutes;
         public float Hero, Skill, Single, Area, Basic;
-        public float OverdriveHero, OverdriveCard, Ride;
+        public float RaiseHero, RaiseCard, Ride;
         public int PipsDrained, SkillUses;
         public int PickDice, PickSkill, PickChip, PickHero;
         public readonly int[] Offers = new int[WaveRecord.OfferKinds];
@@ -82,8 +82,8 @@ public sealed class BotBatchReport
             run.Minutes += record.Seconds / 60f;
             seconds += record.Seconds;
             run.Ride += record.RideSeconds;
-            run.OverdriveHero += record.BoostDamage[(int)DamageBoost.Hero];
-            run.OverdriveCard += record.BoostDamage[(int)DamageBoost.Card];
+            run.RaiseHero += record.BoostDamage[(int)DamageBoost.Hero];
+            run.RaiseCard += record.BoostDamage[(int)DamageBoost.Card];
             run.PipsDrained += record.PipsDrained;
             run.SkillUses += record.SkillUses;
             for (int k = 0; k < run.Offers.Length; k++) run.Offers[k] += record.Offers[k];
@@ -119,8 +119,8 @@ public sealed class BotBatchReport
             run.Single /= total;
             run.Area /= total;
             run.Basic /= total;
-            run.OverdriveHero /= total;
-            run.OverdriveCard /= total;
+            run.RaiseHero /= total;
+            run.RaiseCard /= total;
             // 넘친 몫은 낸 피해(깎은 + 넘친) 대비로 바꾸기 전에 깎은 체력으로 계산한다.
             for (int k = 0; k < EnemySkillStats.Count; k++)
             {
@@ -163,8 +163,8 @@ public sealed class BotBatchReport
             sum.Single += run.Single;
             sum.Area += run.Area;
             sum.Basic += run.Basic;
-            sum.OverdriveHero += run.OverdriveHero;
-            sum.OverdriveCard += run.OverdriveCard;
+            sum.RaiseHero += run.RaiseHero;
+            sum.RaiseCard += run.RaiseCard;
             sum.Ride += run.Ride;
             sum.PipsDrained += run.PipsDrained;
             sum.SkillUses += run.SkillUses;
@@ -200,8 +200,8 @@ public sealed class BotBatchReport
             .Append(Percent(sum.Single / n)).Append(',')
             .Append(Percent(sum.Area / n)).Append(',')
             .Append(Percent(sum.Basic / n)).Append(',')
-            .Append(Percent(sum.OverdriveHero / n)).Append(',')
-            .Append(Percent(sum.OverdriveCard / n)).Append(',')
+            .Append(Percent(sum.RaiseHero / n)).Append(',')
+            .Append(Percent(sum.RaiseCard / n)).Append(',')
             .Append(Percent(sum.Ride / n)).Append(',')
             .Append((sum.PipsDrained / n).ToString("0.0", invariant)).Append(',')
             .Append((sum.SkillUses / n).ToString("0.0", invariant)).Append(',')
@@ -244,8 +244,8 @@ public sealed class BotBatchReport
             .Append(Percent(run.Single)).Append(',')
             .Append(Percent(run.Area)).Append(',')
             .Append(Percent(run.Basic)).Append(',')
-            .Append(Percent(run.OverdriveHero)).Append(',')
-            .Append(Percent(run.OverdriveCard)).Append(',')
+            .Append(Percent(run.RaiseHero)).Append(',')
+            .Append(Percent(run.RaiseCard)).Append(',')
             .Append(Percent(run.Ride)).Append(',')
             .Append(run.PipsDrained).Append(',')
             .Append(run.SkillUses).Append(',')

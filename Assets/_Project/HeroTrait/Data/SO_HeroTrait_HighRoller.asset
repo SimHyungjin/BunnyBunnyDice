@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 982b33d3de1940f2b66c98bedf405164, type: 3}
-  m_Name: SO_HeroTrait_Builder
+  m_Name: SO_HeroTrait_HighRoller
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_ExtraCards
-  DisplayName: "\uBE4C\uB354"
+  DisplayName: "\uD558\uC774 \uB864\uB7EC"
   Description: "\uB808\uBCA8\uC5C5 \uC8FC\uC0AC\uC704 \uCE74\uB4DC\uC5D0 \uB192\uC740
     \uBA74\uCCB4\uAC00 \uB354 \uC790\uC8FC \uB098\uC628\uB2E4."
   Scales:

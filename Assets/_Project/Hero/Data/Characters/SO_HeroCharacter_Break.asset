@@ -10,19 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f015daa71e54458bd94b4d3d9ca8fe9, type: 3}
-  m_Name: SO_HeroCharacter_Builder
+  m_Name: SO_HeroCharacter_Break
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
-  DisplayName: "\uAC74\uC124\uAC00"
-  Trait: {fileID: 11400000, guid: f1b2da36c3904bb885bad8be1fe423c0, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: f961daf562e14c5fbec3cf3f318815f6, type: 2}
+  DisplayName: "\uD1A0\uB07C\uACF5\uB4C0"
+  Id: Princess
+  Trait: {fileID: 11400000, guid: b02e383336a439e4180ca6d3991f342c, type: 2}
+  ExclusiveCard: {fileID: 11400000, guid: 9d3076cf13af18447bccdd85953ff9c9, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
-  Color: {r: 1, g: 1, b: 1, a: 1}
+  Color: {r: 1, g: 0.6, b: 0.8, a: 1}
   Portrait: {fileID: 0}
   PortraitFocusY: 0.5
-  Attack: 60
-  AttackSpeed: 2
-  MoveSpeed: 3
-  Range: 1.6
-  CritChance: 0.1
-  CritDamage: 2.5
+  Attack: 80
+  AttackSpeed: 2.6
+  MoveSpeed: 3.6
+  Range: 2.5
+  CritChance: 0.2
+  CritDamage: 3.5

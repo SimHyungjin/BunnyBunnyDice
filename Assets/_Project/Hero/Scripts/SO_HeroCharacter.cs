@@ -25,6 +25,8 @@ public enum HeroStat
 public sealed class SO_HeroCharacter : SO_Config
 {
     [Localized] public string DisplayName = "";
+    [Tooltip("세이브 키 — 한 번 정하면 바꾸지 않는다. 에셋 이름·표시 이름이 바뀌어도(지금은 특성 이름, 나중에 사람 이름) 해금·단계 기록이 이어지게. 비우면 에셋 이름.")]
+    public string Id = "";
     [Tooltip("특성 하나(기획서 10.3). 비우면 특성 없음 — 능력치로 승부하는 캐릭터.")]
     public SO_HeroTrait Trait;
     [Tooltip("전용 카드(기획서 10.1). 레벨업마다 SO_LevelUpConfig.ExclusiveChance로 후보 한 자리에 나온다. 공용 목록에는 넣지 않는다.")]

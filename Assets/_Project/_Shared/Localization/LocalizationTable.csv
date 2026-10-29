@@ -70,22 +70,22 @@
 범위 폭발,Explosion,SO_Dice_Yellow.AttackName
 맞은 자리에서 폭발해 주변 적에게도 피해를 준다.,"Explodes on hit, damaging nearby enemies too.",SO_Dice_Yellow.Description
 폭발 반경 {1+AwakenExplosionRadiusBonus}배,Explosion radius x{1+AwakenExplosionRadiusBonus},SO_Dice_Yellow.AwakenDescription
-건설가,Builder,SO_HeroCharacter_Builder.DisplayName
-바니걸,Bunny Girl,SO_HeroCharacter_BunnyGirl.DisplayName
-도박사,Gambler,SO_HeroCharacter_Gambler.DisplayName
-쾌락주의자,Hedonist,SO_HeroCharacter_Hedonist.DisplayName
-럭키보이,Lucky Boy,SO_HeroCharacter_LuckyBoy.DisplayName
-토끼공듀,Bunny Princess,SO_HeroCharacter_Princess.DisplayName
+럭키보이,Lucky Boy,SO_HeroCharacter_777.DisplayName
+토끼공듀,Bunny Princess,SO_HeroCharacter_Break.DisplayName
+도박사,Gambler,SO_HeroCharacter_Double.DisplayName
+쾌락주의자,Hedonist,SO_HeroCharacter_DoubleOrNothing.DisplayName
+건설가,Builder,SO_HeroCharacter_HighRoller.DisplayName
+바니걸,Bunny Girl,SO_HeroCharacter_Rainbow.DisplayName
 777,777,SO_HeroTrait_777.DisplayName
 "육면체가 나오지 않고, 주사위를 놓으면 항상 {PlacePips}이 나온다.","No D6 ever, and dice always land on {PlacePips} when placed.",SO_HeroTrait_777.Description
 브레이크,Break,SO_HeroTrait_Break.DisplayName
 기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
-빌더,Builder,SO_HeroTrait_Builder.DisplayName
-레벨업 주사위 카드에 높은 면체가 더 자주 나온다.,Level-up dice cards are more often high-sided.,SO_HeroTrait_Builder.Description
 더블,Double,SO_HeroTrait_Double.DisplayName
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
 주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
+하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
+레벨업 주사위 카드에 높은 면체가 더 자주 나온다.,Level-up dice cards are more often high-sided.,SO_HeroTrait_HighRoller.Description
 레인보우,Rainbow,SO_HeroTrait_Rainbow.DisplayName
 레벨업 후보 카드가 항상 다른 종류로 나온다.,Level-up choices are always different types.,SO_HeroTrait_Rainbow.Description
 영웅의 공격력이 오른다.,Raises the hero's attack.,SO_HeroCard_Attack.Description
@@ -94,12 +94,12 @@
 영웅의 치명타 확률이 오른다. 100%를 넘는 만큼은 치명타 피해가 된다.,Raises the hero's crit chance. Any amount over 100% becomes crit damage.,SO_HeroCard_CritChance.Description
 치명타 피해,Crit Damage,SO_HeroCard_CritDamage.DisplayName | HeroStatText.cs:18
 영웅의 치명타 피해가 오른다.,Raises the hero's crit damage.,SO_HeroCard_CritDamage.Description
+핫 핸드,Hot Hand,SO_HeroCard_HotHand.DisplayName
+맞은 적이 {Duration}초 동안 매초 최대 체력의 {Ratio%} 피해를 입는다. 방어력을 무시한다.,Hit enemies take {Ratio%} of their max HP as damage every second for {Duration}s. Ignores armor.,SO_HeroCard_HotHand.Description
 마킹,Marking,SO_HeroCard_Mark.DisplayName
 투사체,Projectile,SO_HeroCard_Projectile.DisplayName | HeroStatText.cs:19
 영웅이 한 번에 던지는 카드가 늘어난다.,The hero throws more cards at once.,SO_HeroCard_Projectile.Description
 슬로우롤,Slow Roll,SO_HeroCard_SlowRoll.DisplayName
-틸트,Tilt,SO_HeroCard_Tilt.DisplayName
-맞은 적이 {Duration}초 동안 매초 최대 체력의 {Ratio%} 피해를 입는다. 방어력을 무시한다.,Hit enemies take {Ratio%} of their max HP as damage every second for {Duration}s. Ignores armor.,SO_HeroCard_Tilt.Description
 올인,All In,SO_SkillCard_AllIn.DisplayName
 "목표물 체력을 최대치로 채우고, 모든 주사위의 눈을 다시 굴린다.",Fully restores the goal and rerolls the pips of every die.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
@@ -112,14 +112,14 @@
 "모든 적에게 {HeroDamage} 피해를 입히고, {Duration}초간 멈춘다.",Deals {HeroDamage} damage to all enemies and stops them for {Duration}s.,SO_SkillCard_Check.Description
 체크메이트,Checkmate,SO_SkillCard_Checkmate.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적에게는 {KingDamage} 피해를 입힌다.",Deals {HeroDamage} damage to all enemies and {KingDamage} to the one with the most HP.,SO_SkillCard_Checkmate.Description
+더블 업,Double Up,SO_SkillCard_DoubleUp.DisplayName
+{Duration}초간 처치 경험치가 {ExpScale}배가 된다.,"For {Duration}s, kill EXP is x{ExpScale}.",SO_SkillCard_DoubleUp.Description
 풀 하우스,Full House,SO_SkillCard_FullHouse.DisplayName
 {Duration}초간 해당 주사위가 7가지 공격 방식을 모두 동시에 쓴다.,"For {Duration}s, the die uses all 7 attack types at once.",SO_SkillCard_FullHouse.Description
-하우스 엣지,House Edge,SO_SkillCard_HouseEdge.DisplayName
-{Duration}초간 처치 경험치가 {ExpScale}배가 된다.,"For {Duration}s, kill EXP is x{ExpScale}.",SO_SkillCard_HouseEdge.Description
 잭팟,Jackpot,SO_SkillCard_Jackpot.DisplayName
 해당 주사위의 눈을 최대치로 올린다.,Raises the die's pips to max.,SO_SkillCard_Jackpot.Description
-오버드라이브,Overdrive,SO_SkillCard_Overdrive.DisplayName
-"{Duration}초간 해당 주사위의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the die's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_Overdrive.Description
+럭키 세븐,Lucky Seven,SO_SkillCard_LuckySeven.DisplayName
+{Duration}초간 모든 주사위가 각성한다.,"For {Duration}s, every die is awakened.",SO_SkillCard_LuckySeven.Description
 파랑 페인트,Blue Paint,SO_SkillCard_Paint_Blue.DisplayName
 해당 주사위를 파랑으로 칠한다.,Paints the die blue.,SO_SkillCard_Paint_Blue.Description
 하늘 페인트,Cyan Paint,SO_SkillCard_Paint_Cyan.DisplayName
@@ -136,14 +136,14 @@
 해당 주사위를 노랑으로 칠한다.,Paints the die yellow.,SO_SkillCard_Paint_Yellow.Description
 포켓,Pocket,SO_SkillCard_Pocket.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 체력이 {HealthThreshold%} 이하인 적은 처형한다.",Deals {HeroDamage} damage to all enemies and executes those at or below {HealthThreshold%} HP.,SO_SkillCard_Pocket.Description
-레이크,Rake,SO_SkillCard_Rake.DisplayName
-"모든 적에게 {HeroDamage} 피해를 입히고, 해당 지점으로 모은다.",Deals {HeroDamage} damage to all enemies and pulls them to the spot.,SO_SkillCard_Rake.Description
+랙,Rack,SO_SkillCard_Rack.DisplayName
+"모든 적에게 {HeroDamage} 피해를 입히고, 해당 지점으로 모은다.",Deals {HeroDamage} damage to all enemies and pulls them to the spot.,SO_SkillCard_Rack.Description
+레이즈,Raise,SO_SkillCard_Raise.DisplayName
+"{Duration}초간 해당 주사위의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the die's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_Raise.Description
 리롤,Reroll,SO_SkillCard_Reroll.DisplayName
 해당 주사위의 면체와 눈을 다시 굴린다.,Rerolls the die's type and pips.,SO_SkillCard_Reroll.Description
-리스핀,Respin,SO_SkillCard_Respin.DisplayName
-눈이 1인 주사위를 모두 다시 굴린다.,Rerolls every die showing 1.,SO_SkillCard_Respin.Description
-세븐스 헤븐,Seventh Heaven,SO_SkillCard_SevensHeaven.DisplayName
-{Duration}초간 모든 주사위가 각성한다.,"For {Duration}s, every die is awakened.",SO_SkillCard_SevensHeaven.Description
+스네이크 아이즈,Snake Eyes,SO_SkillCard_SnakeEyes.DisplayName
+눈이 1인 주사위를 모두 다시 굴린다.,Rerolls every die showing 1.,SO_SkillCard_SnakeEyes.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title
