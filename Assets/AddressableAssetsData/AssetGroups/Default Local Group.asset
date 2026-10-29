@@ -180,6 +180,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b6f786e7729405399dae6b8e4d587ea
+    m_Address: SO_SkillCutInConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f04ecb1676fe1f9e7773a35e611ce8d2
     m_Address: SO_MonsterConfig
     m_ReadOnly: 0

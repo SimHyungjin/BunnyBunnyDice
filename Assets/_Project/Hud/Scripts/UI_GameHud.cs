@@ -43,6 +43,10 @@ public sealed class UI_GameHud : UI_Hud
     [SerializeField] private RectTransform _bossFill;
     [SerializeField] private RectTransform _jackpotFill;
     [SerializeField] private TMP_Text _bossText;
+    // 스킬 발동 컷인(SkillCutIn이 띄운다). HUD 맨 위에 그려진다.
+    [SerializeField] private UI_SkillCutIn _cutIn;
+
+    public UI_SkillCutIn CutIn => _cutIn;
 
     // 언어가 바뀌면 웨이브·보스 글을 다시 쓴다(나머지는 숫자). 다음 갱신까지 기다리지 않게 마지막 값을 들고 있는다.
     private int _wave;

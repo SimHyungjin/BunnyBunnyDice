@@ -61,6 +61,7 @@ public sealed partial class GameScene : SceneBase
     private HeroRaiseView _heroRaiseView;
     private DiceAwakenEffect _diceAwakenEffect;
     private HeroBreakShotView _breakShotView;
+    private SkillCutIn _cutIn;
     private MonsterField _monsters;
     private AttackEffects _attackEffects;
     private HeroCardShots _heroCards;
@@ -110,11 +111,12 @@ public sealed partial class GameScene : SceneBase
     public override async UniTask EnterScene(CancellationToken token)
     {
         // 서로 의존이 없어 한꺼번에 불러온다.
-        var (genAsset, viewAsset, cameraAsset, handAsset) = await UniTask.WhenAll(
+        var (genAsset, viewAsset, cameraAsset, handAsset, cutInAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapGenConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MapViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MapCameraConfig>(ct: token),
-            Core.Resource.LoadAsync<SO_CardHandConfig>(ct: token));
+            Core.Resource.LoadAsync<SO_CardHandConfig>(ct: token),
+            Core.Resource.LoadAsync<SO_SkillCutInConfig>(ct: token));
         var (pathAsset, previewAsset, dragAsset, environmentAsset, lightingAsset, heroAsset, boardRollAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapPathViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_PlacementPreviewConfig>(ct: token),
@@ -148,6 +150,7 @@ public sealed partial class GameScene : SceneBase
         SO_CardHandConfig handConfig = _tuning.Copy(handAsset);
         SO_MapPathViewConfig pathConfig = _tuning.Copy(pathAsset);
         SO_PlacementPreviewConfig previewConfig = _tuning.Copy(previewAsset);
+        SO_SkillCutInConfig cutInConfig = _tuning.Copy(cutInAsset);
         SO_CardDragConfig dragConfig = _tuning.Copy(dragAsset);
         SO_EnvironmentConfig environmentConfig = _tuning.Copy(environmentAsset);
         SO_LightingConfig lightingConfig = _tuning.Copy(lightingAsset);
@@ -317,6 +320,7 @@ public sealed partial class GameScene : SceneBase
         GenerateMap(System.Environment.TickCount, true);
 
         _hud = await Core.UI.ShowHud<UI_GameHud>(ct: token);
+        _cutIn = new SkillCutIn(cutInConfig, handConfig, _skills, _heroStats, _hud.CutIn);
         // 첫 화면은 로비라 숨겨 둔다(뛰어들기가 끝나면 보인다).
         _hud.SetShown(!_lobbyStage.IsActive);
         RefreshHud();
@@ -429,6 +433,7 @@ public sealed partial class GameScene : SceneBase
         _waves?.Dispose();
         _waveLog?.Dispose();
         _breakShotView?.Dispose();
+        _cutIn?.Dispose();
         _heroAttack?.Dispose();
         _expBoost?.Dispose();
         _skillPreview?.Dispose();
