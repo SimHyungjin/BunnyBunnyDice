@@ -90,6 +90,7 @@ public sealed class MonsterKind
         }
     }
 
+    /// <summary>방어력의 고정 몫. 실제 방어력은 GetArmor(웨이브 기본 체력)로 읽는다.</summary>
     public float Armor
     {
         get
@@ -99,6 +100,20 @@ public sealed class MonsterKind
             return armor;
         }
     }
+
+    /// <summary>방어력의 체력 비례 몫(겹치면 더한다).</summary>
+    public float ArmorHealthRatio
+    {
+        get
+        {
+            float ratio = 0f;
+            for (int i = 0; i < _traits.Count; i++) ratio += _traits[i].ArmorHealthRatio;
+            return ratio;
+        }
+    }
+
+    /// <summary>방어력 = 고정 몫 + 체력 비례 몫 × waveHealth(나온 웨이브의 일반 몬스터 기본 체력, MonsterState.WaveHealth).</summary>
+    public float GetArmor(float waveHealth) => Armor + ArmorHealthRatio * waveHealth;
 
     public float RegenRatio
     {

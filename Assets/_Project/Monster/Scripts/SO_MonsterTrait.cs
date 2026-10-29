@@ -26,8 +26,12 @@ public sealed class SO_MonsterTrait : ScriptableObject
     [Range(0f, 0.99f)] public float DamageResist;
 
     [Header("고정값 (겹치면 더한다)")]
-    [Tooltip("받는 피해에서 빼는 값(단단함). 최소 피해 비율은 SO_MonsterConfig.MinDamageRatio.")]
+    [Tooltip("받는 피해에서 빼는 값의 고정 몫(단단함). 최소 피해 비율은 SO_MonsterConfig.MinDamageRatio.")]
     [Min(0f)] public float Armor;
+    [Tooltip("방어력의 체력 비례 몫 — 그 웨이브 일반 몬스터의 기본 체력 × 이 값을 Armor에 더한다(기획서 9.3). " +
+             "고정값만 두면 체력·피해가 웨이브마다 크는데 방어력만 멈춰 중반부터 아무것도 막지 못했다(2026-10-30). " +
+             "웨이브 체력 기준이라 보스·분열 조각도 같은 웨이브면 같은 방어력이다(보스 자기 체력에 비례하면 거대 저항과 겹쳐 연사형이 보스에 아무것도 못 넣는다).")]
+    [Min(0f)] public float ArmorHealthRatio;
     [Tooltip("초당 회복량(최대 체력에 대한 비율, 재생). 막는 상태는 없다 — 큰 한 방(빨강 강타)으로 회복 전에 끊는다.")]
     [Min(0f)] public float RegenRatio;
     [Tooltip("목표물 피해에 더하는 값(거대).")]

@@ -14,7 +14,7 @@ public sealed class WaveSpawner : IDisposable
 {
     private readonly SO_WaveConfig _config;
     private readonly Action<MonsterKind, int, float> _spawn;
-    private readonly Action<MonsterKind, float> _spawnBoss;
+    private readonly Action<MonsterKind, float, float> _spawnBoss;
     // 맵에 남은 몬스터 수. 0이 되어야 쉬는 시간을 센다(갇힌 몬스터는 MonsterField가 곧바로 죽여 기다리게 하지 않는다).
     private readonly Func<int> _getAliveCount;
     // 같은 조합은 같은 모양을 쓴다 — 표시가 모양별로 오브젝트를 재사용한다. 판 내내 가짓수가 수십을 넘지 않아 목록을 훑는다.
@@ -25,7 +25,8 @@ public sealed class WaveSpawner : IDisposable
     private readonly List<SO_MonsterTrait> _bossTraits = new List<SO_MonsterTrait>();
     // 앞 웨이브가 다 나오기 전에 다음 웨이브가 시작되면(테스트 키) 뒤에 이어 붙인다.
     // 체력은 나오는 시점이 아니라 속한 웨이브로 정하므로 줄 세울 때 체력 배율을 같이 든다.
-    private readonly Queue<(MonsterKind kind, float healthScale)> _pending = new Queue<(MonsterKind, float)>();
+    // waveScale = 그 웨이브 일반 몬스터의 체력 배율(보스 방어력용 — 보스의 healthScale은 웨이브 체력 합에서 나온 자기 몫이다).
+    private readonly Queue<(MonsterKind kind, float healthScale, float waveScale)> _pending = new Queue<(MonsterKind, float, float)>();
     private float _waveTimer;
     private float _spawnTimer;
     private int _spawnCount;
@@ -61,7 +62,7 @@ public sealed class WaveSpawner : IDisposable
     /// <param name="spawn">몬스터 모양, 이번 판에서 몇 번째로 나오는지(0부터), 체력 배율.</param>
     /// <param name="spawnBoss">보스 모양, 체력 배율 — 보스 포켓에서 나온다.</param>
     /// <param name="getAliveCount">맵에 남은 몬스터 수.</param>
-    public WaveSpawner(SO_WaveConfig config, Action<MonsterKind, int, float> spawn, Action<MonsterKind, float> spawnBoss, Func<int> getAliveCount)
+    public WaveSpawner(SO_WaveConfig config, Action<MonsterKind, int, float> spawn, Action<MonsterKind, float, float> spawnBoss, Func<int> getAliveCount)
     {
         _config = config;
         _spawn = spawn;
@@ -137,11 +138,11 @@ public sealed class WaveSpawner : IDisposable
         _spawnTimer -= deltaTime;
         while (_pending.Count > 0 && _spawnTimer <= 0f)
         {
-            var (kind, healthScale) = _pending.Dequeue();
+            var (kind, healthScale, waveScale) = _pending.Dequeue();
             if (kind.IsBoss)
             {
                 if (kind.IsJackpot) CancelJackpot();
-                _spawnBoss(kind, healthScale);
+                _spawnBoss(kind, healthScale, waveScale);
             }
             else _spawn(kind, _spawnCount++, healthScale);
             _spawnTimer += _config.SpawnInterval;
@@ -170,10 +171,10 @@ public sealed class WaveSpawner : IDisposable
             for (int i = 0; i < count; i++)
             {
                 MonsterKind kind = _waveKinds[i % _waveKinds.Count];
-                _pending.Enqueue((kind, healthScale));
+                _pending.Enqueue((kind, healthScale, healthScale));
                 total += type.Health * kind.HealthScale * healthScale;
             }
-            if (hasBoss) EnqueueBoss(type, total);
+            if (hasBoss) EnqueueBoss(type, total, healthScale);
         }
         WaveStarted?.Invoke(Wave);
     }
@@ -182,7 +183,7 @@ public sealed class WaveSpawner : IDisposable
     public void ForceJackpot() => _forceJackpot = true;
 
     // 보스를 일반 몬스터 뒤에 줄 세운다. 체력은 이번 웨이브 일반 몬스터 체력 합(total)의 몫 — 특성 체력 배율은 나눠 지운다.
-    private void EnqueueBoss(SO_MonsterType type, float total)
+    private void EnqueueBoss(SO_MonsterType type, float total, float waveScale)
     {
         bool jackpot = _forceJackpot || GameRandom.Wave.NextDouble() < _config.JackpotChance;
         _forceJackpot = false;
@@ -196,7 +197,7 @@ public sealed class WaveSpawner : IDisposable
         MonsterKind boss = GetKind(type, _bossTraits, true, jackpot);
         WaveBoss = boss;
         float healthScale = total * _config.BossHealthShare / Mathf.Max(type.Health * boss.HealthScale, 1f);
-        for (int i = 0; i < _config.BossCount; i++) _pending.Enqueue((boss, healthScale));
+        for (int i = 0; i < _config.BossCount; i++) _pending.Enqueue((boss, healthScale, waveScale));
         if (!jackpot) return;
         _jackpotWarned = true;
         JackpotWarned?.Invoke();

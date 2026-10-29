@@ -23,6 +23,8 @@ public struct MonsterState
     public float Health;
     /// <summary>나온 때의 체력(웨이브 배율 포함). 재생은 이 비율로 회복하고, 분열한 조각의 체력도 이것을 나눈다.</summary>
     public float MaxHealth;
+    /// <summary>나온 웨이브의 일반 몬스터 기본 체력(특성 체력 배율·보스 몫 없이). 방어력의 체력 비례 몫이 이것을 쓴다(MonsterKind.GetArmor).</summary>
+    public float WaveHealth;
 
     // 상태 이상(MonsterStatus). 남은 시간이 0이면 걸려 있지 않은 것이다.
     /// <summary>화상: 초당 최대 체력에 대한 피해 비율, 남은 시간, 다음 피해까지 쌓인 시간.</summary>

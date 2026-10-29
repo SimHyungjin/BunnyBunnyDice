@@ -84,16 +84,19 @@ public sealed class MonsterField : IDisposable
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.SpawnGates[gate % _map.SpawnGates.Count];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, Mathf.Max(1f, Mathf.Round(kind.Base.Health * kind.HealthScale * healthScale)), origin);
+        Add(kind, cell, Mathf.Max(1f, Mathf.Round(kind.Base.Health * kind.HealthScale * healthScale)), kind.Base.Health * healthScale, origin);
     }
 
-    /// <summary>보스를 보스 포켓(MapData.BossPocket)에 세운다. 보스 포켓이 없으면(옛 맵) 첫 출현 차례.</summary>
-    public void SpawnBoss(MonsterKind kind, float healthScale)
+    /// <summary>
+    /// 보스를 보스 포켓(MapData.BossPocket)에 세운다. 보스 포켓이 없으면(옛 맵) 첫 출현 차례.
+    /// waveHealthScale은 그 웨이브 일반 몬스터의 체력 배율 — 방어력은 보스 자기 체력이 아니라 이것을 따른다(MonsterState.WaveHealth).
+    /// </summary>
+    public void SpawnBoss(MonsterKind kind, float healthScale, float waveHealthScale)
     {
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.InBounds(_map.BossPocket.x, _map.BossPocket.y) ? _map.BossPocket : _map.SpawnGates[0];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, Mathf.Max(1f, Mathf.Round(kind.Base.Health * kind.HealthScale * healthScale)), origin);
+        Add(kind, cell, Mathf.Max(1f, Mathf.Round(kind.Base.Health * kind.HealthScale * healthScale)), kind.Base.Health * waveHealthScale, origin);
     }
 
     /// <summary>
@@ -102,7 +105,7 @@ public sealed class MonsterField : IDisposable
     /// </summary>
     public Func<Vector2Int, Vector3> SpawnOrigin { get; set; }
 
-    private void Add(MonsterKind kind, Vector2 position, float health, Vector3? origin = null)
+    private void Add(MonsterKind kind, Vector2 position, float health, float waveHealth, Vector3? origin = null)
     {
         int kindIndex = _kinds.IndexOf(kind);
         if (kindIndex < 0)
@@ -119,6 +122,7 @@ public sealed class MonsterField : IDisposable
             Position = position,
             Health = health,
             MaxHealth = health,
+            WaveHealth = waveHealth,
         };
         MonsterMovement.Retarget(ref state, _route);
         _states[_count] = state;
@@ -283,7 +287,7 @@ public sealed class MonsterField : IDisposable
         if (state.IsVulnerable) damage *= 1f + state.VulnerableRatio;
         boosted = damage;
         MonsterKind target = _kinds[state.TypeIndex];
-        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, target.Armor, penetration, _config.MinDamageRatio);
+        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, target.GetArmor(state.WaveHealth), penetration, _config.MinDamageRatio);
         // 피해 저항(거대)은 출처를 가리지 않는다 — 주사위·영웅·스킬·화상이 몬스터 특성을 몰라도 되게 받는 쪽에서 줄인다.
         // 방어력을 뺀 뒤에 줄인다: 먼저 줄이면 작아진 피해에서 방어력을 빼 단단한 보스(5웨이브 거대+단단함)가 의도(체력 1/10과 맞바꿈)보다 몇 배 단단해졌다.
         return raw * target.DamageScale;
@@ -349,7 +353,7 @@ public sealed class MonsterField : IDisposable
         {
             // 가운데를 0으로 두고 고르게 벌린다(2마리면 −0.5, +0.5).
             float offset = split.SplitCount > 1 ? i / (split.SplitCount - 1f) - 0.5f : 0f;
-            Add(piece, dead.Position + direction * (offset * 2f * _config.SplitOffset), health);
+            Add(piece, dead.Position + direction * (offset * 2f * _config.SplitOffset), health, dead.WaveHealth);
         }
     }
 
