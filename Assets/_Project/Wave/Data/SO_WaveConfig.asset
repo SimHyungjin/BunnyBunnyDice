@@ -16,9 +16,12 @@ MonoBehaviour:
   SpawnInterval: 0.2
   BaseCount: 6
   CountPerWave: 6
+  MaxCount: 300
   BossCount: 1
   HealthGrowth: 0
   HealthCompound: 0.1
+  ExpBoostAfterWave: 50
+  ExpBoostScale: 2
   Monster: {fileID: 11400000, guid: 5146a3e9cb23695a2f38411fc7059de9, type: 2}
   Waves:
   - Monsters: []
@@ -101,7 +104,7 @@ MonoBehaviour:
   BossTraits:
   - {fileID: 11400000, guid: a0d0a8141c3049f58b1bf780cf3c2b23, type: 2}
   BossRandomTraits: 1
-  BossHealthShare: 0.5
+  BossHealthShare: 0.2
   BossRewardChoices: 1
   JackpotChance: 0.25
   JackpotTraits:

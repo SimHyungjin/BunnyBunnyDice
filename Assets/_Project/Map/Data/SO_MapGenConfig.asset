@@ -15,7 +15,7 @@ MonoBehaviour:
   Width: 15
   Height: 8
   GoalSize: {x: 1, y: 2}
-  SpawnDiceCount: 4
+  SpawnDiceCount: 3
   MaxRerolls: 30
   MinShortestRoute: 16
   ProbeTries: 5
