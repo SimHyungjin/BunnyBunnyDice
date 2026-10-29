@@ -29,7 +29,7 @@ public struct MonsterState
     public float BurnRatio;
     public float BurnTime;
     public float BurnTick;
-    /// <summary>화상 피해의 1 미만 나머지. 피해는 정수로 들어가므로(기획서 6.1) 작은 화상 피해를 모았다가 1이 넘을 때 준다.</summary>
+    /// <summary>화상 피해의 1 미만 나머지. 피해는 정수로 들어가므로(기획서 9.1) 작은 화상 피해를 모았다가 1이 넘을 때 준다.</summary>
     public float BurnCarry;
     /// <summary>둔화: 이동 속도를 줄이는 비율(0~1)과 남은 시간.</summary>
     public float SlowRatio;

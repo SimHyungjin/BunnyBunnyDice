@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 웨이브 설정(잠정). 원본의 웨이브 공식(기획서 6.2)을 정하기 전까지 쓰는 단순한 형태다 — 수는 웨이브마다 일정하게 늘고,
-/// 몬스터는 기본 종류 하나에 특성(기획서 6.1)을 붙여 만든다. 앞쪽 웨이브는 목록대로(특성을 하나씩 소개),
+/// 몬스터는 기본 종류 하나에 특성(기획서 9.1)을 붙여 만든다. 앞쪽 웨이브는 목록대로(특성을 하나씩 소개),
 /// 목록이 끝나면 특성을 무작위로 조합한다(WaveComposition). 시간은 초다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Wave/Wave Config", fileName = nameof(SO_WaveConfig))]

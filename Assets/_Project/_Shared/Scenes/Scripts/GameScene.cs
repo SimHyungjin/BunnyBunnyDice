@@ -101,7 +101,7 @@ public sealed class GameScene : SceneBase
     private bool _paused;
     // 판 주사위 연출 중(첫 웨이브 시작 전) — 시작·일시정지 버튼은 ▶로 보이되 누름을 받지 않는다.
     private bool _rolling;
-    // HUD 보스 체력 바(기획서 6.5).
+    // HUD 보스 체력 바(기획서 9.4).
     private BossHealthBar _bossBar;
     // 이번 판의 측정값(결과 화면·메타 해금 진행도).
     private readonly RunStats _run = new RunStats();
@@ -297,7 +297,7 @@ public sealed class GameScene : SceneBase
         {
             _run.CountKill(type.IsJackpot);
             _waveLog.CountKill();
-            // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 6.5). 분열 조각은 보스가 아니다.
+            // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 9.4). 분열 조각은 보스가 아니다.
             // 경험치 막기는 보상 고르기도 막는다 — 고르기 창 없이 웨이브를 시험하려는 것이라.
             if (type.IsBoss && !type.IsPiece && !_expBlocked)
             {

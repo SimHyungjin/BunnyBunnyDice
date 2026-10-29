@@ -7,7 +7,7 @@ using UnityEngine;
 /// — 시간으로만 넘기면 못 잡은 몬스터 위에 다음 웨이브가 겹쳐 쌓인다. 몬스터는 하나씩 내보내 달라고 알린다.
 /// 어느 출현 구역에 어떻게 세울지는 받는 쪽(MonsterField)이 정한다 — 여기서는 몇 번째로 나오는지만 넘긴다.
 /// 어떤 특성 조합이 나올지는 WaveComposition이 정하고, 여기서는 조합을 몬스터 모양(MonsterKind)으로 바꿔 줄 세운다.
-/// 보스는 일반 몬스터 뒤에 보스 포켓(MapData.BossPocket)에서 나오고, 체력은 그 웨이브 일반 몬스터 체력 합의 몫이다(기획서 6.5).
+/// 보스는 일반 몬스터 뒤에 보스 포켓(MapData.BossPocket)에서 나오고, 체력은 그 웨이브 일반 몬스터 체력 합의 몫이다(기획서 9.4).
 /// 보스는 확률로 잭팟 보스가 된다 — 보스 웨이브가 시작될 때 정해 알리고(JackpotWarned), 보스가 나오면 끝을 알린다.
 /// </summary>
 public sealed class WaveSpawner : IDisposable

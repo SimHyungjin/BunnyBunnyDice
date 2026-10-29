@@ -27,7 +27,7 @@ public sealed class MapData
     /// <summary>적을 내보내는 차례. 주사위 하나당 한 칸이라 같은 눈이 겹친 포켓은 그만큼 자주 나온다(돌아가며 섞여 있다).</summary>
     public readonly List<Vector2Int> SpawnGates = new List<Vector2Int>();
     /// <summary>
-    /// 보스가 나오는 포켓(기획서 6.5). 판 주사위가 가장 많이 들어간 포켓이고, 같으면 그중 무작위다. 판 시작 때 정해 내내 같다
+    /// 보스가 나오는 포켓(기획서 9.4). 판 주사위가 가장 많이 들어간 포켓이고, 같으면 그중 무작위다. 판 시작 때 정해 내내 같다
     /// — 보스가 지날 길을 미리 알고 미로를 짤 수 있게.
     /// </summary>
     public Vector2Int BossPocket = new Vector2Int(-1, -1);
