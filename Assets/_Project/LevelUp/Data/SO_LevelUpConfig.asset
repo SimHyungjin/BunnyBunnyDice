@@ -16,6 +16,7 @@ MonoBehaviour:
   ExpPerLevel: 3
   ChoiceCount: 3
   ChoiceTimeScale: 0.05
+  ExclusiveChance: 0.15
   CopyPopScale: 1.15
   InputLockDuration: 0.3
   PeekFadeDuration: 0.15

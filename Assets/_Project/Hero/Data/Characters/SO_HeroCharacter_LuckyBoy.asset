@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f015daa71e54458bd94b4d3d9ca8fe9, type: 3}
   m_Name: SO_HeroCharacter_LuckyBoy
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
-  DisplayName: "럭키보이"
+  DisplayName: "\uB7ED\uD0A4\uBCF4\uC774"
   Trait: {fileID: 11400000, guid: 1dbff3a4f3f743a5809df26cc52be225, type: 2}
+  ExclusiveCard: {fileID: 11400000, guid: 2912a565409261747a07306790b1c73c, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 0.4, g: 0.9, b: 0.55, a: 1}
+  Portrait: {fileID: 0}
+  PortraitFocusY: 0.5
   Attack: 60
   AttackSpeed: 2
   MoveSpeed: 3

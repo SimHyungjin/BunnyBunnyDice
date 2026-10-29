@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81c1610fe1c5435982acdb9f85fe4eef, type: 3}
-  m_Name: SO_HeroTrait_DoubleCard
+  m_Name: SO_HeroTrait_Double
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_DoubleCard
   DisplayName: "\uB354\uBE14"
-  Description: "레벨업 후보마다 {Chance%} 확률로 x2가 붙는다."
-  Chance: 0.05
+  Description: "\uB808\uBCA8\uC5C5\uB9C8\uB2E4 {Chance%} \uD655\uB960\uB85C \uD6C4\uBCF4
+    \uD558\uB098\uAC00 2\uC7A5\uC774 \uB41C\uB2E4."
+  Chance: 0.1

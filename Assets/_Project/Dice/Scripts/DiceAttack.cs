@@ -31,6 +31,8 @@ public sealed class DiceAttack : IDisposable
         public SO_ChipCard Attachment;
         /// <summary>오버드라이브 상태로 쏘는지(측정용 — 배율은 Stats에 이미 들어 있다).</summary>
         public DamageBoost Boost;
+        /// <summary>각성으로 쏘는지. 눈(20)으로 각성했거나 스킬(세븐스 헤븐)이 잠깐 각성시켰다.</summary>
+        public bool Awakened;
     }
 
     // 각성한 하양의 두 번째 파동. 첫 파동 뒤 잠시 있다가 그때 범위 안에 있는 몬스터를 맞힌다.
@@ -83,7 +85,7 @@ public sealed class DiceAttack : IDisposable
         if (shot.Type == null) return false;
         _attachment = shot.Attachment;
         _source = DamageSource.Dice(shot.Dice.Colors, shot.Boost);
-        bool awaken = _statsConfig.IsAwakened(shot.Dice);
+        bool awaken = shot.Awakened;
         Color color = shot.Type.Color;
         switch (shot.Type)
         {

@@ -19,7 +19,7 @@ public enum HeroStat
 /// 영웅 캐릭터 하나(기획서 10.3). 캐릭터마다 다른 것 — 이름·겉모습·능력치 한계값 — 만 둔다.
 /// 조작·충돌처럼 모든 캐릭터가 같이 쓰는 값은 SO_HeroConfig에 둔다(캐릭터를 바꿔도 조작감이 달라지지 않게).
 /// 여기 적는 값은 6단계(한계값)이고, 실제 값은 얻을 때 굴린 단계에 따라 깎인다(HeroStats). 특성은 SO_HeroTrait 하나를 참조한다.
-/// 전용 카드는 특성이 레벨업 목록에 더한다(SO_HeroTrait_ExtraCards, 10.1).
+/// 전용 카드도 캐릭터가 하나 든다(ExclusiveCard) — 레벨업마다 확률로 후보 한 자리에 나온다(CardRoll, 10.3).
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Hero/Hero Character", fileName = "SO_HeroCharacter_")]
 public sealed class SO_HeroCharacter : SO_Config
@@ -27,6 +27,8 @@ public sealed class SO_HeroCharacter : SO_Config
     [Localized] public string DisplayName = "";
     [Tooltip("특성 하나(기획서 10.3). 비우면 특성 없음 — 능력치로 승부하는 캐릭터.")]
     public SO_HeroTrait Trait;
+    [Tooltip("전용 카드(기획서 10.1). 레벨업마다 SO_LevelUpConfig.ExclusiveChance로 후보 한 자리에 나온다. 공용 목록에는 넣지 않는다.")]
+    public SO_SkillCard ExclusiveCard;
 
     [Header("표시")]
     [Tooltip("VRoid 모델(VRM을 불러온 프리팹, 발밑이 피벗). 앞(+Z)이 이동 방향을 향하도록 돌린다. 모든 캐릭터가 VRoid 모델을 쓴다(2026-10-29).")]
@@ -59,6 +61,7 @@ public sealed class SO_HeroCharacter : SO_Config
     public override void SwapNested(Func<SO_Config, SO_Config> swap)
     {
         Trait = (SO_HeroTrait)swap(Trait);
+        ExclusiveCard = (SO_SkillCard)swap(ExclusiveCard);
     }
 
     public float GetMax(HeroStat stat)

@@ -28,6 +28,10 @@ public sealed class HeroAttack : IDisposable
     private readonly List<int> _targets = new List<int>();
     // _targets(고정 대상 다음부터)와 같은 순서의 거리 제곱 — 가까운 순으로 끼워 넣을 자리를 찾는다.
     private readonly List<float> _targetSqr = new List<float>();
+    // 오버드라이브(브레이크 전용 카드 — 브레이크 샷): 남은 시간과 공격력·공격 속도 배율.
+    private float _overdriveTime;
+    private float _overdriveDamage = 1f;
+    private float _overdriveSpeed = 1f;
 
     public HeroAttack(SO_HeroConfig config, HeroStats stats, Hero hero, MonsterField monsters, HeroCardShots cards, Func<Vector2Int, float> standingRange)
     {
@@ -45,11 +49,28 @@ public sealed class HeroAttack : IDisposable
     /// <summary>꺼 두면 공격하지 않는다(테스트 — 색 시험이 주사위 딜만 재려고 끈다, ColorPowerTest).</summary>
     public bool Enabled { get; set; } = true;
 
+    /// <summary>오버드라이브 중인지(남은 시간이 있는지).</summary>
+    public bool IsOverdriven => _overdriveTime > 0f;
+
+    /// <summary>영웅이 duration초 동안 공격력 damageScale배·공격 속도 speedScale배로 친다. 다시 걸면 시간이 새로 시작한다(겹쳐 세지 않음).</summary>
+    public void Overdrive(float damageScale, float speedScale, float duration)
+    {
+        _overdriveTime = duration;
+        _overdriveDamage = damageScale;
+        _overdriveSpeed = Mathf.Max(speedScale, 0.01f);
+        // 지금 기다리던 대기 시간도 빨라진 간격까지 줄인다 — 쓰자마자 빨라진 것이 보이게.
+        _cooldown = Mathf.Min(_cooldown, _stats.AttackInterval / _overdriveSpeed);
+    }
+
+    /// <summary>판이 바뀌면 오버드라이브를 끝낸다.</summary>
+    public void Clear() => _overdriveTime = 0f;
+
     // 게임 시간을 따른다 — 카드를 집는 동안의 감속(게임 속도 50%)을 공격도 똑같이 받는다.
     private void Tick(float deltaTime)
     {
         // 게임 오버로 몬스터가 멈추면 공격도 멈춘다(주사위와 같게).
         if (_monsters.Paused || !Enabled) return;
+        _overdriveTime = Mathf.Max(_overdriveTime - deltaTime, 0f);
 
         Vector2 position = _hero.Position;
         float range = Range(position);
@@ -68,7 +89,7 @@ public sealed class HeroAttack : IDisposable
         // 남은 시간은 이월해 한 프레임에 여러 번도 시작한다(간격이 프레임보다 짧아도 공속대로 친다).
         // 적이 없으면 준비된 채로 기다릴 뿐 쌓아 두지 않는다(DiceCombat과 같게).
         _cooldown -= deltaTime;
-        float interval = _stats.AttackInterval;
+        float interval = _stats.AttackInterval / (IsOverdriven ? _overdriveSpeed : 1f);
         SO_HeroAnimationSet animations = _hero.Animations;
         float windup = animations != null ? animations.AttackWindup(interval) : 0f;
         while (_cooldown <= 0f)
@@ -128,7 +149,8 @@ public sealed class HeroAttack : IDisposable
 
             // 치명타는 영웅 공격과 스킬에만 있는 영웅 능력치다(기획서 10.2) — 주사위 치명타(SO_DiceStatsConfig)와 따로 굴린다.
             bool critical = GameRandom.Crit.Value < _stats.CritChance;
-            _monsters.Hit(slot, _stats.Attack * (critical ? _stats.CritMultiplier : 1f), DamageSource.Hero, 0f, critical);
+            float damage = _stats.Attack * (IsOverdriven ? _overdriveDamage : 1f);
+            _monsters.Hit(slot, damage * (critical ? _stats.CritMultiplier : 1f), DamageSource.Hero, 0f, critical);
             // 디버프 카드(칩 디버프의 센 버전)는 카드마다 건다 — 투사체가 늘면 거는 적도 는다.
             for (int d = 0; d < _stats.DebuffCount; d++)
             {

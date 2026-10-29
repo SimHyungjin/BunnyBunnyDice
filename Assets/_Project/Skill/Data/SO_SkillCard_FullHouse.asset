@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4c0a2d27deb418395d29f1f16cfffd9, type: 3}
+  m_Name: SO_SkillCard_FullHouse
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_FullHouse
+  DisplayName: "\uD480 \uD558\uC6B0\uC2A4"
+  Description: "{Duration}\uCD08\uAC04 \uD574\uB2F9 \uC8FC\uC0AC\uC704\uAC00 7\uAC00\uC9C0
+    \uACF5\uACA9 \uBC29\uC2DD\uC744 \uBAA8\uB450 \uB3D9\uC2DC\uC5D0 \uC4F4\uB2E4."
+  StrongAgainst: 
+  Icon: {fileID: 0}
+  IconColor: {r: 0.961, g: 0.02, b: 0.424, a: 1}
+  Weight: 1
+  Duration: 10
+  BurstRadius: 1.2

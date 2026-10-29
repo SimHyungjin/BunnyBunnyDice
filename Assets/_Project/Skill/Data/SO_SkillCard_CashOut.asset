@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a190fcddf9f04e1f84dbae0c59d8f30c, type: 3}
-  m_Name: SO_SkillCard_Fold
+  m_Name: SO_SkillCard_CashOut
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_Fold
-  DisplayName: "\uD3F4\uB4DC"
-  Description: "\uD574\uB2F9 \uCE78\uC758 \uC8FC\uC0AC\uC704\uC640 \uCE69\uC744 \uC5C6\uC564\uB2E4."
+  DisplayName: "\uCE90\uC2DC \uC544\uC6C3"
+  Description: "\uD574\uB2F9 \uCE78\uC758 \uC8FC\uC0AC\uC704\uC640 \uCE69\uC744 \uAC70\uB46C
+    {Copies}\uC7A5\uC529 \uB3CC\uB824\uBC1B\uB294\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 0.75, g: 0.75, b: 0.8, a: 1}
   Weight: 1
+  Copies: 2

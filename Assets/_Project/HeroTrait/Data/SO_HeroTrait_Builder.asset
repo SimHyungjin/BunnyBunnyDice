@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 982b33d3de1940f2b66c98bedf405164, type: 3}
   m_Name: SO_HeroTrait_Builder
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_ExtraCards
-  DisplayName: "철거"
-  Description: "레벨업마다 {Chance%} 확률로 후보 하나가 전용 카드 \"폴드\"로 바뀐다."
-  Cards: 
-  - {fileID: 11400000, guid: f961daf562e14c5fbec3cf3f318815f6, type: 2}
-  Chance: 0.2
+  DisplayName: "\uBE4C\uB354"
+  Description: "\uB808\uBCA8\uC5C5 \uC8FC\uC0AC\uC704 \uCE74\uB4DC\uC5D0 \uB192\uC740
+    \uBA74\uCCB4\uAC00 \uB354 \uC790\uC8FC \uB098\uC628\uB2E4."
+  Scales:
+  - Faces: 6
+    Scale: 0.5
+  - Faces: 12
+    Scale: 1
+  - Faces: 20
+    Scale: 2

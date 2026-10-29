@@ -57,8 +57,11 @@ public sealed class SO_BotConfig : SO_Config
         public float Reroll = 80f;
         public float Paint = 100f;
         public float AllIn = 50f;
-        [Tooltip("폴드(건설가) — 미로를 어느 정도 지은 뒤, 메인 딜 구간을 막는 칸이 있고 손에 폴드가 없을 때만. 아니면 0.")]
-        public float Fold = 250f;
+        [Tooltip("캐시 아웃(빌더) — 미로를 어느 정도 지은 뒤, 메인 딜 구간을 막는 칸이 있고 손에 캐시 아웃이 없을 때만. 아니면 0.")]
+        [UnityEngine.Serialization.FormerlySerializedAs("Fold")]
+        public float CashOut = 250f;
+        [Tooltip("그 밖의 캐릭터 전용 카드(풀 하우스·브레이크 샷·리스핀·하우스 엣지·세븐스 헤븐) — 판을 뒤집는 카드라 높게.")]
+        public float Exclusive = 300f;
     }
 
     /// <summary>
@@ -76,7 +79,7 @@ public sealed class SO_BotConfig : SO_Config
         [Min(0f)] public float ChipScale = 1f;
         [Tooltip("데미지형 스킬 = 영웅 공격력 비례 범위 스킬(포켓·레이크·백스핀·체크메이트, SO_AreaSkillCard).")]
         [Min(0f)] public float DamageSkillScale = 1f;
-        [Tooltip("그 밖의 스킬(잭팟·다시 굴리기·페인트·오버드라이브·체크·올인·폴드).")]
+        [Tooltip("그 밖의 스킬(잭팟·리롤·페인트·오버드라이브·체크·올인·전용 카드).")]
         [Min(0f)] public float OtherSkillScale = 1f;
         [Min(0f)] public float HeroScale = 1f;
         [Tooltip("켜면 데미지형 스킬을 뚫릴 때까지 아끼지 않고 판 위 적이 AnytimeAreaMinTargets 이상이면 바로 쓴다(체크메이트는 보스가 보이면) " +
@@ -140,6 +143,8 @@ public sealed class SO_BotConfig : SO_Config
     [Min(1)] public int BreachAreaMinTargets = 2;
     [Tooltip("뚫릴 때 체크: 구간을 넘어온 적이 이만큼이면 쓴다.")]
     [Min(1)] public int CheckBreachCount = 5;
+    [Tooltip("리스핀(더블 오어 낫싱 전용): 눈이 1인 주사위가 이만큼이면 쓴다.")]
+    [Min(1)] public int RespinMinDice = 2;
 
     [Tooltip("데미지형 스킬을 바로 쓰는 묶음(RunSet.DamageSkillAnytime): 판 위 적이 이만큼이면 쓴다.")]
     [Min(1)] public int AnytimeAreaMinTargets = 8;

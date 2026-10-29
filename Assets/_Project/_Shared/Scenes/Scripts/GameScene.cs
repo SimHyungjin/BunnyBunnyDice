@@ -40,6 +40,7 @@ public sealed class GameScene : SceneBase
     private ChipField _chips;
     private SO_LevelUpConfig _levelUpConfig;
     private CardHand _hand;
+    private ExpBoost _expBoost;
     private HandFraming _handFraming;
     private CardDragController _drag;
     private HeroStats _heroStats;
@@ -245,7 +246,9 @@ public sealed class GameScene : SceneBase
         _diceCombat = new DiceCombat(_viewConfig, diceStatsConfig, diceConfig, _diceField, _chips, _monsters, _diceAttack);
         _heroOverdrive = new HeroOverdrive(heroConfig, _hero, _diceField, _diceCombat, _monsters);
         _heroOverdriveView = new HeroOverdriveView(heroConfig, _viewConfig, _heroOverdrive, _attackEffects);
-        _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal);
+        _expBoost = new ExpBoost();
+        _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal,
+            () => _heroAttack, _expBoost, () => _hand);
         _skillPreview = new SkillPreview(_mapRoot, previewConfig, _viewConfig, _skills, _monsters, _diceField, () => _map);
         _heroCards = new HeroCardShots(_mapRoot, heroConfig.CardShot, _monsters, _monsterConfig, _viewConfig);
         _heroAttack = new HeroAttack(heroConfig, _heroStats, _hero, _monsters, _heroCards,
@@ -301,11 +304,10 @@ public sealed class GameScene : SceneBase
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();
             }
-            // 특성이 처치 경험치를 바꾸면(럭키보이 — 확률로 2배) 더 들어간 만큼 금색 "+N"을 띄운다.
-            IKillExpModifier modifier = _traits.Find<IKillExpModifier>();
-            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로 — 특성은 그 값에 건다.
+            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로. 하우스 엣지(ExpBoost)가 걸려 있으면 그 위에 곱하고,
+            // 더 들어간 만큼 금색 "+N"을 띄운다.
             int baseExp = type.Exp * waveConfig.GetExpScale(_waves.Wave);
-            int exp = modifier != null ? modifier.ModifyExp(baseExp) : baseExp;
+            int exp = Mathf.RoundToInt(baseExp * _expBoost.Scale);
             GainExp(exp);
             if (exp > baseExp) _damageNumbers.Show(position, _viewConfig.GetTileTop(TileType.Ground), exp - baseExp, DamageKind.BonusExp);
         };
@@ -478,6 +480,7 @@ public sealed class GameScene : SceneBase
         _waves?.Dispose();
         _waveLog?.Dispose();
         _heroAttack?.Dispose();
+        _expBoost?.Dispose();
         _skillPreview?.Dispose();
         _heroOverdriveView?.Dispose();
         _heroOverdrive?.Dispose();
@@ -607,6 +610,9 @@ public sealed class GameScene : SceneBase
         _heroCards.Clear();
         _damageNumbers.Clear();
         _diceAttack.Clear();
+        _diceCombat.Clear();
+        _heroAttack.Clear();
+        _expBoost.Clear();
 
         // 검사는 판마다 새로 만든다 — 요청이 겹치면(R 키 연타·설정 변경) 두 생성이 버퍼를 함께 쓰지 않게.
         MazeRouteProbe probe = new MazeRouteProbe(_probeConfig);

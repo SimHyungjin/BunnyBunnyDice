@@ -91,7 +91,7 @@ public sealed class DiceField : IDisposable
     {
         _map = map;
         map.SetDice(cell.x, cell.y, true);
-        DiceState dice = DiceRules.Create(card, Roll(card.Faces));
+        DiceState dice = DiceRules.Create(card, Roll(card.Faces, true));
         DiceRules.ResolveBlack(ref dice, _statsConfig.AwakenPips);
         _placed.Add(new PlacedDice
         {
@@ -113,7 +113,7 @@ public sealed class DiceField : IDisposable
         if (index < 0) return;
         PlacedDice placed = _placed[index];
         bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
-        DiceRules.Stack(ref placed.Dice, card, Roll(card.Faces));
+        DiceRules.Stack(ref placed.Dice, card, Roll(card.Faces, true));
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
         Refresh(index);
@@ -134,7 +134,7 @@ public sealed class DiceField : IDisposable
         PlacedDice placed = _placed[index];
         bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
         if (card is SO_SkillCard_Reroll) placed.Dice.Faces = RollFaces(placed.Dice.Faces);
-        SkillRules.ApplyDice(ref placed.Dice, card, Roll(placed.Dice.Faces));
+        SkillRules.ApplyDice(ref placed.Dice, card, Roll(placed.Dice.Faces, false));
         // 리롤·잭팟으로 검정이 눈 20에 닿으면 무작위 색으로 바뀐다(9.4).
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
@@ -150,13 +150,33 @@ public sealed class DiceField : IDisposable
         {
             PlacedDice placed = _placed[i];
             bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
-            placed.Dice.Pips = Roll(placed.Dice.Faces);
+            placed.Dice.Pips = Roll(placed.Dice.Faces, false);
             DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
             _placed[i] = placed;
             Refresh(i);
             _views[i].Roll(_config.StackDropHeight);
             NotifyAwakened(wasAwakened, placed.Dice, placed.Cell);
         }
+    }
+
+    /// <summary>판의 눈이 1인 주사위만 지금 면체로 다시 굴린다(리스핀 — 더블 오어 낫싱 전용 카드). 다시 굴린 수를 돌려준다.</summary>
+    public int RerollLowest()
+    {
+        int count = 0;
+        for (int i = 0; i < _placed.Count; i++)
+        {
+            PlacedDice placed = _placed[i];
+            if (placed.Dice.Pips != 1) continue;
+            bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
+            placed.Dice.Pips = Roll(placed.Dice.Faces, false);
+            DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
+            _placed[i] = placed;
+            Refresh(i);
+            _views[i].Roll(_config.StackDropHeight);
+            NotifyAwakened(wasAwakened, placed.Dice, placed.Cell);
+            count++;
+        }
+        return count;
     }
 
     /// <summary>
@@ -207,11 +227,11 @@ public sealed class DiceField : IDisposable
         return models.Count > 0 ? models[GameRandom.Dice.Next(models.Count)].Faces : current;
     }
 
-    // 타워 주사위 굴림. 특성이 굴림을 바꾸면(쾌락주의자 등) 그것을 쓴다.
-    private int Roll(int faces)
+    // 타워 주사위 굴림. 특성이 굴림을 바꾸면(더블 오어 낫싱·777) 그것을 쓴다. placing = 손패에서 놓거나 얹는 굴림.
+    private int Roll(int faces, bool placing)
     {
         IDicePipRoller roller = _traits?.Find<IDicePipRoller>();
-        return roller != null ? Mathf.Clamp(roller.RollPips(faces), 1, faces) : DiceRules.Roll(faces);
+        return roller != null ? Mathf.Clamp(roller.RollPips(faces, placing), 1, faces) : DiceRules.Roll(faces);
     }
 
     /// <summary>cell의 주사위 표시를 다시 맞춘다(밑에 칩이 들어와 올라앉을 때). 주사위가 없으면 아무 일도 없다.</summary>

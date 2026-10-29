@@ -76,16 +76,18 @@
 쾌락주의자,Hedonist,SO_HeroCharacter_Hedonist.DisplayName
 럭키보이,Lucky Boy,SO_HeroCharacter_LuckyBoy.DisplayName
 토끼공듀,Bunny Princess,SO_HeroCharacter_Princess.DisplayName
-철거,Demolition,SO_HeroTrait_Builder.DisplayName
-"레벨업마다 {Chance%} 확률로 후보 하나가 전용 카드 ""폴드""로 바뀐다.","On each level up, there's a {Chance%} chance one choice becomes the exclusive card ""Fold"".",SO_HeroTrait_Builder.Description
-레인보우,Rainbow,SO_HeroTrait_DistinctKinds.DisplayName
-레벨업 후보가 모두 다른 종류로 나온다.,Level-up choices are always different types.,SO_HeroTrait_DistinctKinds.Description
-더블,Double,SO_HeroTrait_DoubleCard.DisplayName
-레벨업 후보마다 {Chance%} 확률로 x2가 붙는다.,Each level-up choice has a {Chance%} chance to be x2.,SO_HeroTrait_DoubleCard.Description
-럭키,Lucky,SO_HeroTrait_DoubleExp.DisplayName
-적을 처치하면 {Chance%} 확률로 경험치를 두 배로 얻는다.,Killing an enemy has a {Chance%} chance to give double EXP.,SO_HeroTrait_DoubleExp.Description
-극과 극,Extremes,SO_HeroTrait_NoMiddle.DisplayName
-주사위를 굴릴 때 가운데 {MiddleExcludeRatio%}의 눈은 나오지 않는다.,"When rolling dice, the middle {MiddleExcludeRatio%} of pips never comes up.",SO_HeroTrait_NoMiddle.Description
+777,777,SO_HeroTrait_777.DisplayName
+"후보에 육면체가 나오지 않고, 주사위를 놓으면 항상 {PlacePips}이 나온다.","No D6 in level-up choices, and dice always land on {PlacePips} when placed.",SO_HeroTrait_777.Description
+브레이크,Break,SO_HeroTrait_Break.DisplayName
+기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
+빌더,Builder,SO_HeroTrait_Builder.DisplayName
+레벨업 주사위 카드에 높은 면체가 더 자주 나온다.,Level-up dice cards are more often high-sided.,SO_HeroTrait_Builder.Description
+더블,Double,SO_HeroTrait_Double.DisplayName
+레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
+더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
+주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
+레인보우,Rainbow,SO_HeroTrait_Rainbow.DisplayName
+레벨업 후보 카드가 항상 다른 종류로 나온다.,Level-up choices are always different types.,SO_HeroTrait_Rainbow.Description
 영웅의 공격력이 오른다.,Raises the hero's attack.,SO_HeroCard_Attack.Description
 콜드 덱,Cold Deck,SO_HeroCard_ColdDeck.DisplayName
 치명타 확률,Crit Chance,SO_HeroCard_CritChance.DisplayName | HeroStatText.cs:17
@@ -102,12 +104,18 @@
 "목표물 체력을 최대치로 채우고, 모든 주사위의 눈을 다시 굴린다.",Fully restores the goal and rerolls the pips of every die.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 오던 길로 {Distance}칸 밀어낸다.",Deals {HeroDamage} damage to all enemies and knocks them back {Distance} tiles.,SO_SkillCard_Backspin.Description
+브레이크 샷,Break Shot,SO_SkillCard_BreakShot.DisplayName
+"{Duration}초간 영웅의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the hero's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_BreakShot.Description
+캐시 아웃,Cash Out,SO_SkillCard_CashOut.DisplayName
+해당 칸의 주사위와 칩을 거둬 {Copies}장씩 돌려받는다.,Collects the die and chip on the tile and returns x{Copies} of each to your hand.,SO_SkillCard_CashOut.Description
 체크,Check,SO_SkillCard_Check.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, {Duration}초간 멈춘다.",Deals {HeroDamage} damage to all enemies and stops them for {Duration}s.,SO_SkillCard_Check.Description
 체크메이트,Checkmate,SO_SkillCard_Checkmate.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적에게는 {KingDamage} 피해를 입힌다.",Deals {HeroDamage} damage to all enemies and {KingDamage} to the one with the most HP.,SO_SkillCard_Checkmate.Description
-폴드,Fold,SO_SkillCard_Fold.DisplayName
-해당 칸의 주사위와 칩을 없앤다.,Removes the die and chip on the tile.,SO_SkillCard_Fold.Description
+풀 하우스,Full House,SO_SkillCard_FullHouse.DisplayName
+{Duration}초간 해당 주사위가 7가지 공격 방식을 모두 동시에 쓴다.,"For {Duration}s, the die uses all 7 attack types at once.",SO_SkillCard_FullHouse.Description
+하우스 엣지,House Edge,SO_SkillCard_HouseEdge.DisplayName
+{Duration}초간 처치 경험치가 {ExpScale}배가 된다.,"For {Duration}s, kill EXP is x{ExpScale}.",SO_SkillCard_HouseEdge.Description
 잭팟,Jackpot,SO_SkillCard_Jackpot.DisplayName
 해당 주사위의 눈을 최대치로 올린다.,Raises the die's pips to max.,SO_SkillCard_Jackpot.Description
 오버드라이브,Overdrive,SO_SkillCard_Overdrive.DisplayName
@@ -132,6 +140,10 @@
 "모든 적에게 {HeroDamage} 피해를 입히고, 해당 지점으로 모은다.",Deals {HeroDamage} damage to all enemies and pulls them to the spot.,SO_SkillCard_Rake.Description
 리롤,Reroll,SO_SkillCard_Reroll.DisplayName
 해당 주사위의 면체와 눈을 다시 굴린다.,Rerolls the die's type and pips.,SO_SkillCard_Reroll.Description
+리스핀,Respin,SO_SkillCard_Respin.DisplayName
+눈이 1인 주사위를 모두 다시 굴린다.,Rerolls every die showing 1.,SO_SkillCard_Respin.Description
+세븐스 헤븐,Seventh Heaven,SO_SkillCard_SevensHeaven.DisplayName
+{Duration}초간 모든 주사위가 각성한다.,"For {Duration}s, every die is awakened.",SO_SkillCard_SevensHeaven.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title

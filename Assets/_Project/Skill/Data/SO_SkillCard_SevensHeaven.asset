@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 254ca8bf28c14c7398fb52a7c615d8a4, type: 3}
+  m_Name: SO_SkillCard_SevensHeaven
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_SevensHeaven
+  DisplayName: "\uC138\uBE10\uC2A4 \uD5E4\uBE10"
+  Description: "{Duration}\uCD08\uAC04 \uBAA8\uB4E0 \uC8FC\uC0AC\uC704\uAC00 \uAC01\uC131\uD55C\uB2E4."
+  StrongAgainst: 
+  Icon: {fileID: 0}
+  IconColor: {r: 1, g: 0.88, b: 0.29, a: 1}
+  Weight: 1
+  Duration: 7

@@ -87,7 +87,7 @@ public sealed class LevelUpChoice
     private async UniTaskVoid ShowNextAsync()
     {
         _pending--;
-        CardRoll.Pick(_config, _traits, _config.ChoiceCount, _picked, IsUseful);
+        CardRoll.Pick(_config, _traits, _config.ChoiceCount, _picked, IsUseful, _heroStats?.Character?.ExclusiveCard);
         RollCopies();
         // 후보가 없으면(설정 비어 있음) 고를 것이 없으니 넘어간다 — 빈 팝업에 갇히지 않게.
         if (_picked.Count == 0)
@@ -127,12 +127,15 @@ public sealed class LevelUpChoice
         popup.Show(_picked, _copies, _config.CopyPopScale, _config.InputLockDuration, _config.PeekFadeDuration, _handConfig, _diceConfig, _statsConfig, _heroStats, OnChosen);
     }
 
-    // 특성이 후보마다 장수를 정한다(도박사 — 카드마다 확률로 x2). 띄울 때 굴려 두어야 처음부터 보이고 고르는 기준이 된다.
+    // 특성이 후보마다 장수를 정한다(더블 — 레벨업마다 확률로 후보 하나가 x2). 띄울 때 굴려 두어야 처음부터 보이고 고르는 기준이 된다.
     private void RollCopies()
     {
         _copies.Clear();
         ILevelUpCopies copies = _traits?.Find<ILevelUpCopies>();
-        for (int i = 0; i < _picked.Count; i++) _copies.Add(copies != null ? Mathf.Max(copies.RollCopies(_picked[i]), 1) : 1);
+        if (copies != null) copies.RollCopies(_picked, _copies);
+        // 갈고리가 덜 채웠거나 1 아래를 넣었으면 그대로(1장)로 맞춘다.
+        while (_copies.Count < _picked.Count) _copies.Add(1);
+        for (int i = 0; i < _copies.Count; i++) _copies[i] = Mathf.Max(_copies[i], 1);
     }
 
     // 고른 카드를 띄울 때 정한 장수만큼 받고 팝업을 닫는다. 손패 카드는 같은 카드라 한 장으로 겹쳐(x2) 날아간다.

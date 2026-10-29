@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b773da6c5a445b8b0ae6724a3920dde, type: 3}
-  m_Name: SO_HeroTrait_NoMiddle
+  m_Name: SO_HeroTrait_DoubleOrNothing
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_NoMiddle
-  DisplayName: "극과 극"
-  Description: "주사위를 굴릴 때 가운데 {MiddleExcludeRatio%}의 눈은 나오지 않는다."
-  MiddleExcludeRatio: 0.333
+  DisplayName: "\uB354\uBE14 \uC624\uC5B4 \uB0AB\uC2F1"
+  Description: "\uC8FC\uC0AC\uC704\uB97C \uAD74\uB9AC\uBA74 \uAC00\uC7A5 \uB0AE\uC740
+    \uB208 \uC544\uB2C8\uBA74 \uAC00\uC7A5 \uB192\uC740 \uB208\uB9CC \uB098\uC628\uB2E4."
+  HighChance: 0.5

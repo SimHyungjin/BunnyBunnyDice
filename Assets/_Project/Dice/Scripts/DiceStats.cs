@@ -18,20 +18,24 @@ public struct DiceStats
     public float CritChance;
 
     /// <summary>종류의 기본값을 눈으로 키운다(기획서 9.4). 속사(초록) 각성의 공격 속도, 저격(파랑) 각성의 사거리도 여기서 더한다.</summary>
-    public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config)
+    public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config) =>
+        Compute(dice, type, config, config.IsAwakened(dice));
+
+    /// <param name="awakened">각성으로 칠지 — 눈이 모자라도 스킬(세븐스 헤븐)이 잠깐 각성시킬 수 있다.</param>
+    public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config, bool awakened)
     {
         if (type == null) return default;
         float growth = config.GetGrowth(dice.Pips);
         float speed = type.AttackSpeed * (1f + type.AttackSpeedGrowth * growth);
-        if (type is SO_DiceType_Rapid rapid && config.IsAwakened(dice))
+        if (type is SO_DiceType_Rapid rapid && awakened)
             speed *= 1f + rapid.AwakenAttackSpeedBonus;
         if (speed <= 0f) return default;
         float range = type.Range;
-        if (type is SO_DiceType_LongRange longRange && config.IsAwakened(dice))
+        if (type is SO_DiceType_LongRange longRange && awakened)
             range *= 1f + longRange.AwakenRangeBonus;
 
         // 각성은 한 방 피해 전체(고정 + 최대 체력 피해)를 키운다. 최대 체력 피해는 눈으로 자라지 않는다(보수적으로 — 각성 때만 커진다).
-        float awaken = config.IsAwakened(dice) ? config.AwakenDamageScale : 1f;
+        float awaken = awakened ? config.AwakenDamageScale : 1f;
         return new DiceStats
         {
             Damage = type.Damage * (1f + type.DamageGrowth * growth) * awaken,

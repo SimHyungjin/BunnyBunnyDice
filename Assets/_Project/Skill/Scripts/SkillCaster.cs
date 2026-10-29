@@ -22,6 +22,9 @@ public sealed class SkillCaster
     private readonly SO_MapViewConfig _viewConfig;
     private readonly Func<MapData> _getMap;
     private readonly Func<GoalHealth> _getGoal;
+    private readonly Func<HeroAttack> _getHeroAttack;
+    private readonly ExpBoost _expBoost;
+    private readonly Func<CardHand> _getHand;
     // 쓸 때 대상을 모아 두는 작업 공간(할당 없이).
     private readonly List<int> _targets = new List<int>();
 
@@ -35,7 +38,8 @@ public sealed class SkillCaster
     private AreaCastResult _result;
 
     public SkillCaster(MonsterField monsters, DiceField diceField, ChipField chips, DiceCombat diceCombat, AttackEffects effects, HeroStats heroStats,
-        SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal)
+        SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack, ExpBoost expBoost,
+        Func<CardHand> getHand)
     {
         _monsters = monsters;
         _diceField = diceField;
@@ -46,18 +50,25 @@ public sealed class SkillCaster
         _viewConfig = viewConfig;
         _getMap = getMap;
         _getGoal = getGoal;
+        _getHeroAttack = getHeroAttack;
+        _expBoost = expBoost;
+        _getHand = getHand;
     }
 
     /// <summary>판정(SkillRules.CheckDice·CheckCell)을 통과한 칸에만 부른다 — 주사위 대상·칸 대상 스킬.</summary>
     public void CastOnCell(Vector2Int cell, SO_SkillCard card)
     {
         Used?.Invoke(card);
-        if (card is SO_SkillCard_Fold)
+        if (card is SO_SkillCard_CashOut cashOut)
         {
-            // 주사위·칩이 없어지면 각자 이벤트로 길을 다시 계산한다(GameScene). 사라진 자리에 고리를 퍼뜨려 무엇이 없어졌는지 보이게.
-            _diceField.Remove(cell);
-            _chips.Remove(cell);
-            _effects.ShowBurst(Ground(cell), FoldBurstRadius, card.IconColor);
+            CashOut(cell, cashOut);
+            return;
+        }
+        if (card is SO_SkillCard_FullHouse fullHouse)
+        {
+            _diceCombat.FullHouse(_diceField.IndexOf(cell), fullHouse.Duration);
+            _effects.ShowBurst(Ground(cell), fullHouse.BurstRadius, card.IconColor);
+            _effects.ShowRing(Ground(cell), fullHouse.BurstRadius * 0.5f, card.IconColor, fullHouse.Duration);
             return;
         }
         if (card is SO_SkillCard_Overdrive overdrive)
@@ -216,19 +227,53 @@ public sealed class SkillCaster
         }
     }
 
-    /// <summary>판 전체 스킬은 언제든 쓸 수 있다 — 주사위가 없고 체력이 가득이면 아무 일도 없이 버려진다(카드를 버리는 방법).</summary>
-    public bool CanCastBoard(SO_SkillCard card) => card is SO_SkillCard_AllIn;
+    /// <summary>판 전체 스킬은 언제든 쓸 수 있다 — 바꿀 것이 없으면 아무 일도 없이 버려진다(카드를 버리는 방법).</summary>
+    public bool CanCastBoard(SO_SkillCard card) => card != null && card.Target == SkillTarget.Board;
 
     public void CastBoard(SO_SkillCard card)
     {
         Used?.Invoke(card);
-        if (!(card is SO_SkillCard_AllIn)) return;
-        _getGoal()?.HealFull();
-        _diceField.RerollAll();
+        switch (card)
+        {
+            case SO_SkillCard_AllIn _:
+                _getGoal()?.HealFull();
+                _diceField.RerollAll();
+                break;
+            case SO_SkillCard_BreakShot breakShot:
+                _getHeroAttack()?.Overdrive(breakShot.DamageScale, breakShot.SpeedScale, breakShot.Duration);
+                break;
+            case SO_SkillCard_Respin _:
+                _diceField.RerollLowest();
+                break;
+            case SO_SkillCard_HouseEdge houseEdge:
+                _expBoost.Activate(houseEdge.ExpScale, houseEdge.Duration);
+                break;
+            case SO_SkillCard_SevensHeaven sevens:
+                _diceCombat.AwakenAll(sevens.Duration);
+                break;
+        }
     }
 
-    // 폴드 고리는 칸 하나를 덮는 크기(칸 = 1) — 조정 값이 아니라 대상 칸의 크기다.
-    private const float FoldBurstRadius = 0.5f;
+    // 칸의 주사위·칩을 거둬 장마다 Copies장씩 손패로 돌려준다. 주사위는 면체·색만 돌려준다(눈은 놓을 때 다시 굴린다).
+    // 주사위·칩이 없어지면 각자 이벤트로 길을 다시 계산한다(GameScene). 사라진 자리에 고리를 퍼뜨려 무엇이 없어졌는지 보이게.
+    private void CashOut(Vector2Int cell, SO_SkillCard_CashOut card)
+    {
+        CardHand hand = _getHand();
+        if (_diceField.TryGetPlaced(cell, out PlacedDice placed) && _diceField.Remove(cell))
+        {
+            HandCard dice = HandCard.Of(new DiceCard(placed.Dice.Faces, placed.Dice.Colors));
+            for (int i = 0; i < card.Copies; i++) hand?.Add(dice);
+        }
+        SO_ChipCard chip = _chips.Get(cell);
+        if (chip != null && _chips.Remove(cell))
+        {
+            for (int i = 0; i < card.Copies; i++) hand?.Add(HandCard.Of(chip));
+        }
+        _effects.ShowBurst(Ground(cell), CashOutBurstRadius, card.IconColor);
+    }
+
+    // 캐시 아웃 고리는 칸 하나를 덮는 크기(칸 = 1) — 조정 값이 아니라 대상 칸의 크기다.
+    private const float CashOutBurstRadius = 0.5f;
 
     private Vector3 Ground(Vector2 position) => new Vector3(position.x, _viewConfig.GetTileTop(TileType.Ground), position.y);
 

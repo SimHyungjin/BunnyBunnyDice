@@ -12,31 +12,17 @@ public interface ICardKindShare
 }
 
 /// <summary>
-/// 갈고리: 레벨업 후보 하나를 확률로 다른 카드로 덮어쓴다(전용 카드, 기획서 10.1).
-/// 카드 풀에 더하지 않고 덮어쓰는 이유: 풀에 더하면 공용 카드가 늘어날수록 묻히지만, 덮어쓰기는 풀 크기와 상관없이 빈도가 고정된다.
-/// </summary>
-public interface ICandidateOverwrite
-{
-    /// <returns>이번 레벨업에 덮어쓸 카드. 덮어쓰지 않으면 null.</returns>
-    SO_Card RollOverwrite();
-
-    /// <summary>덮어쓸 수 있는 카드 전부(테스트 창이 보인다).</summary>
-    IReadOnlyList<SO_Card> OverwriteCards { get; }
-}
-
-/// <summary>
-/// 갈고리: 레벨업 후보 카드마다 고르면 몇 장 받을지. 후보를 띄울 때 카드마다 굴려 처음부터 보인다(x2)
+/// 갈고리: 레벨업 후보마다 고르면 몇 장 받을지. 후보를 띄울 때 굴려 처음부터 보인다(x2)
 /// — 고른 뒤에 굴리면 선택에 아무 영향이 없지만, 보이면 "x2 붙은 카드냐 더 좋은 카드냐"를 저울질하게 된다.
 /// </summary>
 public interface ILevelUpCopies
 {
-    /// <returns>받을 장수(1 = 그대로).</returns>
-    int RollCopies(HandCard candidate);
+    /// <summary>copies에 candidates와 같은 순서로 받을 장수(1 = 그대로)를 채운다. copies는 비어서 온다.</summary>
+    void RollCopies(IReadOnlyList<HandCard> candidates, List<int> copies);
 }
 
-/// <summary>갈고리: 몬스터를 처치해 얻는 경험치를 바꾼다.</summary>
-public interface IKillExpModifier
+/// <summary>갈고리: 레벨업 주사위 카드의 면체 가중치에 곱한다(SO_LevelUpConfig.FacesWeights — 0이면 그 면체가 나오지 않는다).</summary>
+public interface ILevelUpFaces
 {
-    /// <returns>바뀐 경험치(그대로면 exp).</returns>
-    int ModifyExp(int exp);
+    float ScaleFaces(int faces);
 }

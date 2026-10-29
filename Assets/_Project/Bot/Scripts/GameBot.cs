@@ -305,9 +305,9 @@ public sealed class GameBot : IDisposable
             context.HasSlow = HasZoneChip<SO_ChipCard_Slow>();
             context.HasFreeze = HasZoneChip<SO_ChipCard_Freeze>();
             context.HasVulnerable = HasZoneChip<SO_ChipCard_Vulnerable>();
-            // 폴드는 미로를 어느 정도 지은 뒤(d20이 들어오기 시작할 때)에만, 한 장씩만 — 그 전에 고르면 채울 주사위가 오지 않아
+            // 캐시 아웃는 미로를 어느 정도 지은 뒤(d20이 들어오기 시작할 때)에만, 한 장씩만 — 그 전에 고르면 채울 주사위가 오지 않아
             // 손에서 썩고 주사위 자리만 뺏었다(건설가: 스킬 6.0장 골라 2.5장만 씀, 주사위 22장 대 다른 캐릭터 30장+, 2026-10-29).
-            context.HasFoldTarget = context.MazeEnough && !HoldsFold() && TryFindFoldTarget(map, false, out _);
+            context.HasCashOutTarget = context.MazeEnough && !HoldsCashOut() && TryFindCashOutTarget(map, false, out _);
             context.HasBurnSpot = HasBurnSpot();
         }
         return BotCardChoice.Choose(_config, candidates, copies, context, CurrentSet(_report.Count));
@@ -371,11 +371,11 @@ public sealed class GameBot : IDisposable
     private void PlayOneCard(MapData map)
     {
         if (!_board.Read(map, _config.KillZoneRadius)) return;
-        // 폴드는 채울 주사위보다 먼저 쓴다 — 주사위를 먼저 놓으면 손에 채울 것이 남지 않아 폴드를 쓸 때가 오지 않았다.
+        // 캐시 아웃는 채울 주사위보다 먼저 쓴다 — 주사위를 먼저 놓으면 손에 채울 것이 남지 않아 캐시 아웃를 쓸 때가 오지 않았다.
         for (int i = 0; i < _hand.Count; i++)
         {
             HandCard card = _hand.GetCard(i);
-            if (!card.IsSkill || !(card.Skill is SO_SkillCard_Fold) || !TryCastFold(card.Skill)) continue;
+            if (!card.IsSkill || !(card.Skill is SO_SkillCard_CashOut) || !TryCastCashOut(card.Skill)) continue;
             _hand.TryRemove(card);
             return;
         }
@@ -661,7 +661,13 @@ public sealed class GameBot : IDisposable
     private bool TryCast(SO_SkillCard skill)
     {
         if (skill is SO_SkillCard_AllIn) return TryCastAllIn(skill);
-        if (skill is SO_SkillCard_Fold) return TryCastFold(skill);
+        if (skill is SO_SkillCard_CashOut) return TryCastCashOut(skill);
+        // 하우스 엣지는 일찍 쓸수록 이득이다 — 적이 있으면 바로. 리스핀은 1이 둘 이상일 때.
+        if (skill is SO_SkillCard_HouseEdge) return _monsters.Count > 0 && CastBoard(skill);
+        if (skill is SO_SkillCard_Respin) return CountLowest() >= _config.RespinMinDice && CastBoard(skill);
+        // 화력 카드(풀 하우스·브레이크 샷·세븐스 헤븐)는 다른 스킬처럼 뚫릴 때.
+        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_SevensHeaven) return Breached(out _) && CastBoard(skill);
+        if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
         if (skill is SO_SkillCard_Overdrive overdrive) return TryCastOverdrive(overdrive);
         if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);
         SO_BotConfig.RunSet set = CurrentSet(_report.Count);
@@ -692,21 +698,21 @@ public sealed class GameBot : IDisposable
             _board.KillZoneDistance + _config.EscapeLookAhead, damageScale, speedScale, duration, _config.OverdriveMargin, exclude, out cell);
     }
 
-    // 폴드(건설가): 메인 딜 구간을 막는 칸을 치워 딜링 주사위 자리를 넓힌다(사용자: 칩·실수로 못 쓰게 된 딜 구간을 넓힌다).
+    // 캐시 아웃(빌더): 메인 딜 구간을 막는 칸을 치워 딜링 주사위 자리를 넓힌다(사용자: 칩·실수로 못 쓰게 된 딜 구간을 넓힌다).
     // 손에 그 자리를 채울 d20·범위 주사위가 있을 때만 — 치우기만 하고 못 채우면 미로만 허문다.
-    private bool TryCastFold(SO_SkillCard card)
+    private bool TryCastCashOut(SO_SkillCard card)
     {
         MapData map = _getMap();
-        if (map == null || !TryFindFoldTarget(map, true, out Vector2Int cell)) return false;
+        if (map == null || !TryFindCashOutTarget(map, true, out Vector2Int cell)) return false;
         _skills.CastOnCell(cell, card);
         return true;
     }
 
     /// <summary>
-    /// 폴드로 치울 칸: 메인 딜 구간 안의 칩만 있는 칸(시작 칩 등), 그다음 미로용 단일 주사위(d6·d12 단색·검정). 덮는 몰림이 큰 곳부터.
+    /// 캐시 아웃로 치울 칸: 메인 딜 구간 안의 칩만 있는 칸(시작 칩 등), 그다음 미로용 단일 주사위(d6·d12 단색·검정). 덮는 몰림이 큰 곳부터.
     /// needFiller면 손에 그 자리를 채울 d20·범위 주사위가 있어야 한다.
     /// </summary>
-    private bool TryFindFoldTarget(MapData map, bool needFiller, out Vector2Int cell)
+    private bool TryFindCashOutTarget(MapData map, bool needFiller, out Vector2Int cell)
     {
         cell = default;
         if (!_board.HasKillZone || (needFiller && !HasZoneFiller(map))) return false;
@@ -745,12 +751,50 @@ public sealed class GameBot : IDisposable
         return false;
     }
 
-    private bool HoldsFold()
+    private bool CastBoard(SO_SkillCard card)
+    {
+        if (!_skills.CanCastBoard(card)) return false;
+        _skills.CastBoard(card);
+        return true;
+    }
+
+    private int CountLowest()
+    {
+        int count = 0;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            if (placed[i].Dice.Pips == 1) count++;
+        }
+        return count;
+    }
+
+    // 풀 하우스: 메인 딜 구간에 닿는 주사위 중 그 사거리로 덮는 몰림이 가장 큰 주사위.
+    private bool TryCastFullHouse(SO_SkillCard card)
+    {
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        float best = 0f;
+        Vector2Int target = default;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            if (placed[i].Dice.IsSpent || !IsInZone(placed[i].Cell)) continue;
+            SO_DiceType type = _diceConfig.GetDiceType(placed[i].Dice.Colors);
+            float score = _board.Traffic(placed[i].Cell, type != null ? type.Range : 0f);
+            if (score <= best) continue;
+            best = score;
+            target = placed[i].Cell;
+        }
+        if (best <= 0f) return false;
+        _skills.CastOnCell(target, card);
+        return true;
+    }
+
+    private bool HoldsCashOut()
     {
         for (int i = 0; i < _hand.Count; i++)
         {
             HandCard card = _hand.GetCard(i);
-            if (card.IsSkill && card.Skill is SO_SkillCard_Fold) return true;
+            if (card.IsSkill && card.Skill is SO_SkillCard_CashOut) return true;
         }
         return false;
     }

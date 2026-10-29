@@ -199,7 +199,7 @@ public sealed class GameDebugPanel : MonoBehaviour
         GUILayout.EndHorizontal();
         GUI.backgroundColor = Color.white;
         DrawMeta();
-        DrawTrait(_heroStats.Character.Trait);
+        DrawTrait(_heroStats.Character);
 
         for (int s = 0; s < HeroStats.StatCount; s++)
         {
@@ -254,24 +254,15 @@ public sealed class GameDebugPanel : MonoBehaviour
     }
 
     // 지금 캐릭터의 특성 이름·설명. 전용 카드가 있으면 손패에 넣는 버튼도 둔다(스킬 탭은 공용 목록만 보인다).
-    private void DrawTrait(SO_HeroTrait trait)
+    private void DrawTrait(SO_HeroCharacter character)
     {
-        if (trait == null)
-        {
-            GUILayout.Label("특성 없음", _label);
-            return;
-        }
-        GUILayout.Label($"특성: {trait.DisplayName} — {CardText.Fill(trait.Description, trait)}", _wrapLabel);
-        if (!(trait is ICandidateOverwrite overwrite) || overwrite.OverwriteCards == null) return;
-        GUILayout.BeginHorizontal();
-        for (int i = 0; i < overwrite.OverwriteCards.Count; i++)
-        {
-            SO_Card card = overwrite.OverwriteCards[i];
-            if (card == null) continue;
-            GUI.backgroundColor = card.IconColor;
-            if (GUILayout.Button($"전용: {card.DisplayName}", _button, GUILayout.Height(ButtonHeight))) _addCard?.Invoke(HandCard.Of(card));
-        }
-        GUILayout.EndHorizontal();
+        SO_HeroTrait trait = character != null ? character.Trait : null;
+        if (trait == null) GUILayout.Label("특성 없음", _label);
+        else GUILayout.Label($"특성: {trait.DisplayName} — {CardText.Fill(trait.Description, trait)}", _wrapLabel);
+        SO_SkillCard card = character != null ? character.ExclusiveCard : null;
+        if (card == null) return;
+        GUI.backgroundColor = card.IconColor;
+        if (GUILayout.Button($"전용: {card.DisplayName}", _button, GUILayout.Height(ButtonHeight))) _addCard?.Invoke(HandCard.Of(card));
         GUI.backgroundColor = Color.white;
     }
 

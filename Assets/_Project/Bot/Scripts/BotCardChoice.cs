@@ -9,8 +9,8 @@ public struct BotChoiceContext
     public bool HasSlow;
     public bool HasFreeze;
     public bool HasVulnerable;
-    /// <summary>폴드로 치울 칸(메인 딜 구간을 막는 칸)이 있다.</summary>
-    public bool HasFoldTarget;
+    /// <summary>캐시 아웃로 치울 칸(메인 딜 구간을 막는 칸)이 있다.</summary>
+    public bool HasCashOutTarget;
     /// <summary>화상 칩을 깔 자리가 있다 — 칩 없는 범위 주사위 중 아직 화상이 안 닿는 길을 새로 덮는 것.</summary>
     public bool HasBurnSpot;
 }
@@ -48,7 +48,9 @@ public static class BotCardChoice
         if (card.IsChip) return ChipScore(scores, card.Chip, context);
 
         SO_SkillCard skill = card.Skill;
-        if (skill is SO_SkillCard_Fold) return context.HasFoldTarget ? scores.Fold : 0f;
+        if (skill is SO_SkillCard_CashOut) return context.HasCashOutTarget ? scores.CashOut : 0f;
+        if (skill is SO_SkillCard_FullHouse || skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_Respin
+            || skill is SO_SkillCard_HouseEdge || skill is SO_SkillCard_SevensHeaven) return scores.Exclusive;
         if (skill is SO_AreaSkillCard) return scores.AreaSkill;
         if (skill is SO_SkillCard_Check) return scores.Check;
         if (skill is SO_SkillCard_Overdrive) return scores.Overdrive;

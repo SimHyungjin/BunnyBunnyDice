@@ -6,7 +6,8 @@ using UnityEngine;
 /// 레벨업 후보 카드 뽑기. 먼저 카드 종류(주사위·스킬·칩·영웅 강화)를 고르고, 그 종류 안에서 한 장을 고른다.
 /// 종류의 몫은 기본이 그 종류 카드 가중치의 합(카드 한 장 한 장이 같은 확률)이고, 갈고리(ICardKindShare)가 바꿀 수 있다.
 /// 주사위 카드 몫은 색 가중치 합 × 면체 가중치 합이고, 뽑히면 색과 면체를 가중치로 따로 뽑아 한 장을 만든다(기획서 9.10).
-/// 다 뽑은 뒤 갈고리(ICandidateOverwrite)가 후보 하나를 전용 카드로 덮어쓸 수 있다. 주사위 카드 보장은 두지 않는다(5.2, 잠정).
+/// 전용 카드는 먼저 확률(SO_LevelUpConfig.ExclusiveChance)로 한 자리를 차지하고, 나머지 자리만 공용 카드로 뽑는다(2026-10-29 사용자 —
+/// 다 뽑은 뒤 덮어쓰던 방식은 레인보우의 "종류가 모두 다름"을 깨고 고르려던 카드를 지웠다). 주사위 카드 보장은 두지 않는다(5.2, 잠정).
 /// </summary>
 public static class CardRoll
 {
@@ -23,10 +24,14 @@ public static class CardRoll
     /// <summary>겹치지 않는 카드를 count장까지 result에 채운다. 뽑을 수 있는 카드가 없으면 비어 있다.</summary>
     /// <param name="traits">특성 갈고리. 없으면 null.</param>
     /// <param name="useful">false면 그 카드를 후보에서 뺀다(골라도 바뀌는 것이 없는 카드 — 치명타 100%의 확률 카드). 없으면 null.</param>
-    public static void Pick(SO_LevelUpConfig config, TraitHooks traits, int count, List<HandCard> result, Func<SO_Card, bool> useful = null)
+    /// <param name="exclusive">캐릭터 전용 카드. 없으면 null.</param>
+    public static void Pick(SO_LevelUpConfig config, TraitHooks traits, int count, List<HandCard> result, Func<SO_Card, bool> useful = null,
+        SO_SkillCard exclusive = null)
     {
         _useful = useful;
         result.Clear();
+        bool hasExclusive = exclusive != null && count > 0 && GameRandom.Cards.Value < config.ExclusiveChance;
+        if (hasExclusive) count--;
         for (int i = 0; i < count; i++)
         {
             for (int attempt = 0; attempt < MaxAttemptsPerCard; attempt++)
@@ -38,19 +43,8 @@ public static class CardRoll
                 break;
             }
         }
-        Overwrite(traits, result);
-    }
-
-    // 확률로 후보 하나(무작위 자리)를 전용 카드로 바꾼다. 이미 후보에 있으면 그대로 둔다(같은 카드 두 장이 되지 않게).
-    private static void Overwrite(TraitHooks traits, List<HandCard> result)
-    {
-        ICandidateOverwrite overwrite = traits?.Find<ICandidateOverwrite>();
-        if (overwrite == null || result.Count == 0) return;
-        SO_Card replacement = overwrite.RollOverwrite();
-        if (replacement == null) return;
-        HandCard card = HandCard.Of(replacement);
-        if (result.Contains(card)) return;
-        result[GameRandom.Cards.Next(result.Count)] = card;
+        // 전용 카드는 무작위 자리에 끼운다 — 늘 같은 자리면 보지도 않고 알게 된다. 공용 카드끼리의 종류 몫(레인보우)은 전용 카드를 세지 않는다.
+        if (hasExclusive) result.Insert(GameRandom.Cards.Next(result.Count + 1), HandCard.Of(exclusive));
     }
 
     /// <param name="picked">이번 선택에서 이미 뽑힌 후보(종류 몫 갈고리가 본다).</param>
@@ -61,8 +55,9 @@ public static class CardRoll
 
         float colorTotal = 0f;
         for (int i = 0; i < config.ColorWeights.Count; i++) colorTotal += config.ColorWeights[i].Weight;
+        ILevelUpFaces faces = traits?.Find<ILevelUpFaces>();
         float facesTotal = 0f;
-        for (int i = 0; i < config.FacesWeights.Count; i++) facesTotal += config.FacesWeights[i].Weight;
+        for (int i = 0; i < config.FacesWeights.Count; i++) facesTotal += FacesWeight(config.FacesWeights[i], faces);
 
         ICardKindShare share = traits?.Find<ICardKindShare>();
         float dice = Share(share, CardKind.Dice, colorTotal * facesTotal, picked);
@@ -76,7 +71,7 @@ public static class CardRoll
         float roll = GameRandom.Cards.Value * total;
         if (roll < dice || skill + chip + hero <= 0f)
         {
-            card = HandCard.Of(RollDice(config, colorTotal, facesTotal));
+            card = HandCard.Of(RollDice(config, colorTotal, facesTotal, faces));
             return true;
         }
         roll -= dice;
@@ -131,7 +126,11 @@ public static class CardRoll
         return picked;
     }
 
-    private static DiceCard RollDice(SO_LevelUpConfig config, float colorTotal, float facesTotal)
+    // 면체 가중치(특성이 바꾸면 곱한다 — 777은 육면체를 빼고, 빌더는 높은 면체를 키운다).
+    private static float FacesWeight(SO_LevelUpConfig.FacesWeight entry, ILevelUpFaces faces) =>
+        entry.Weight * (faces != null ? Mathf.Max(faces.ScaleFaces(entry.Faces), 0f) : 1f);
+
+    private static DiceCard RollDice(SO_LevelUpConfig config, float colorTotal, float facesTotal, ILevelUpFaces facesHook)
     {
         float colorRoll = GameRandom.Cards.Value * colorTotal;
         DiceColor colors = DiceColor.Clear;
@@ -148,7 +147,7 @@ public static class CardRoll
         int faces = 0;
         for (int i = 0; i < config.FacesWeights.Count; i++)
         {
-            float weight = config.FacesWeights[i].Weight;
+            float weight = FacesWeight(config.FacesWeights[i], facesHook);
             if (weight <= 0f) continue;
             faces = config.FacesWeights[i].Faces;
             if (facesRoll < weight) break;

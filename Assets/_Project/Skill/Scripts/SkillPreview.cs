@@ -72,13 +72,17 @@ public sealed class SkillPreview : IDisposable
     {
         HideArea();
         HideHighlights();
-        // 주사위 칸을 밝히는 것은 주사위를 바꾸는 올인만 — 체크는 적에게 거는 것이라 밝힐 칸이 없다.
-        if (!(card is SO_SkillCard_AllIn)) return;
+        // 주사위를 바꾸는 카드만 칸을 밝힌다(올인·세븐스 헤븐 = 모든 주사위, 리스핀 = 눈이 1인 주사위). 영웅·경험치에 거는 카드는 밝힐 칸이 없다.
+        bool all = card is SO_SkillCard_AllIn || card is SO_SkillCard_SevensHeaven;
+        bool lowest = card is SO_SkillCard_Respin;
+        if (!all && !lowest) return;
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         float ground = _viewConfig.GetTileTop(TileType.Ground);
+        int used = 0;
         for (int i = 0; i < placed.Count; i++)
         {
-            GameObject highlight = GetHighlight(i);
+            if (lowest && placed[i].Dice.Pips != 1) continue;
+            GameObject highlight = GetHighlight(used++);
             highlight.transform.localPosition = new Vector3(placed[i].Cell.x, ground, placed[i].Cell.y);
             RendererTint.Apply(highlight, _config.ValidColor);
             highlight.SetActive(true);
