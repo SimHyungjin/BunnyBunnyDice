@@ -89,6 +89,9 @@ public sealed class SO_BotConfig : SO_Config
     [Tooltip("놓인 주사위가 이만큼이면 미로를 \"어느 정도\" 지은 것으로 본다 — 그때부터 d20을 메인 딜 구간에 모은다. "
         + "낮을수록 일찍 모아 고점이 오르지만 초반에 죽기 쉽다(사용자). 미로 계획은 20개(SO_PlacementPreviewConfig.MazeTargetDice).")]
     [Min(0)] public int MazeEnoughDice = 14;
+    [Tooltip("미로 칸을 메인 딜 구간 밖부터 놓는다(구간 칸은 d20 자리로 남긴다). 가운데 포켓(목표물까지 3칸)이 열린 맵에서는 길을 늘릴 칸이 " +
+             "목표물 앞, 곧 구간 안이라 가장 급한 칸을 미루는지 시험한다(2026-10-29 — 보스가 가운데 포켓인 맵 평균 21웨이브, 안 열린 맵 38).")]
+    public bool MazeOutsideZoneFirst = true;
 
     [Header("메인 딜 구간 (사용자 플레이 — 범위 주사위·칩·사거리를 한 구간에 모은다)")]
     [Tooltip("메인 딜 구간 반경(칸). 길 위에서 이 반경 안 몰림 합이 가장 큰 칸이 구간 중심이다.")]

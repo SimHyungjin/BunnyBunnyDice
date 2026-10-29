@@ -422,7 +422,8 @@ public sealed class GameBot : IDisposable
             return TryFindOpenCell(map, dice, out Vector2Int openBuilt) && _placement.TryPlace(map, openBuilt, card);
         }
         // 미로 칸은 메인 딜 구간 밖부터 — 구간 칸은 d20 자리로 남긴다. 밖에 남은 계획 칸이 없으면 아무 계획 칸.
-        if (_planner.TryGetNext(IsOutsideZone, out Vector2Int cell) || _planner.TryGetNext(null, out cell))
+        Func<Vector2Int, bool> allow = _config.MazeOutsideZoneFirst ? IsOutsideZone : null;
+        if (_planner.TryGetNext(allow, out Vector2Int cell) || _planner.TryGetNext(null, out cell))
             return _placement.TryPlace(map, cell, card);
         return TryFindOpenCell(map, dice, out Vector2Int open) && _placement.TryPlace(map, open, card);
     }
