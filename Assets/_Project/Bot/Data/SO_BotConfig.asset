@@ -12,54 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 327b825697354a49ab406563a7a676fd, type: 3}
   m_Name: SO_BotConfig
   m_EditorClassIdentifier: Assembly-CSharp::SO_BotConfig
-  Phases:
-  - UntilWave: 10
-    Dice: 100
-    FacesWeight: 1
-    HeroDamage: 30
-    HeroCrit: 25
-    Chip: 40
-    AreaSkill: 30
-    Checkmate: 25
-    Check: 25
-    Overdrive: 30
-    Jackpot: 45
-    Reroll: 15
-    Paint: 35
-    AllIn: 10
-    Other: 0
-  - UntilWave: 20
-    Dice: 60
-    FacesWeight: 1.5
-    HeroDamage: 65
-    HeroCrit: 50
-    Chip: 70
-    AreaSkill: 75
-    Checkmate: 70
-    Check: 60
-    Overdrive: 75
-    Jackpot: 95
-    Reroll: 30
-    Paint: 55
-    AllIn: 20
-    Other: 0
-  - UntilWave: 999
-    Dice: 45
-    FacesWeight: 1.5
-    HeroDamage: 78
-    HeroCrit: 76
-    Chip: 72
-    AreaSkill: 74
-    Checkmate: 72
-    Check: 65
-    Overdrive: 70
-    Jackpot: 85
-    Reroll: 35
-    Paint: 60
-    AllIn: 25
-    Other: 0
-  MazeDiceBonus: 40
-  ExtraCopy: 0.3
   KillZoneRadius: 2.5
   KillZoneStackWeight: 2
   KillZoneChipWeight: 3
@@ -67,7 +19,6 @@ MonoBehaviour:
   ActInterval: 0.4
   MazeThinkTime: 0.5
   HeroInterval: 1
-  HeroSwitchGain: 1.3
   PaintMinTargets: 3
   BreachHealthRatio: 0.4
   BreachCount: 3

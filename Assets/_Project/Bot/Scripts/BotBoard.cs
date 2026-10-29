@@ -117,6 +117,29 @@ public sealed class BotBoard
         return count;
     }
 
+    /// <summary>cell에서 목표물까지 가장 짧게 걷는 칸들(cell 포함, 목표물 칸 앞까지)을 path에 채운다. 못 가는 칸이면 비운다.</summary>
+    public void PathFrom(Vector2Int cell, List<Vector2Int> path)
+    {
+        path.Clear();
+        int distance = DistanceAt(cell);
+        if (distance < 0) return;
+        while (distance > 0)
+        {
+            path.Add(cell);
+            Vector2Int next = cell;
+            for (int d = 0; d < Directions.Length; d++)
+            {
+                Vector2Int candidate = cell + Directions[d];
+                if (DistanceAt(candidate) != distance - 1) continue;
+                next = candidate;
+                break;
+            }
+            if (next == cell) break;
+            cell = next;
+            distance--;
+        }
+    }
+
     /// <summary>cell에서 range(칸) 안에 들어오는 길 칸 수.</summary>
     public int Coverage(Vector2Int cell, float range)
     {

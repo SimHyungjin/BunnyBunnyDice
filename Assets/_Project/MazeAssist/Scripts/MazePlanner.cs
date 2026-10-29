@@ -108,17 +108,21 @@ public sealed class MazePlanner : IDisposable
     }
 
     /// <summary>
-    /// 다음에 놓을 새 칸: 받은 목표 배치 중 지금 놓았을 때 점수가 가장 높은 칸.
-    /// 놓을 칸이 없으면(목표 배치를 다 지었거나 길을 막는 칸뿐) false.
+    /// 다음에 놓을 새 칸: 받은 목표 배치 중 지금 놓았을 때 점수가 가장 높은 칸. allow가 있으면 그것이 허락하는 칸만 본다
+    /// (봇이 메인 딜 구간 칸을 d20 자리로 남길 때). 놓을 칸이 없으면(목표 배치를 다 지었거나 길을 막는 칸뿐) false.
     /// </summary>
-    public bool TryGetNext(out Vector2Int cell)
+    public bool TryGetNext(Func<Vector2Int, bool> allow, out Vector2Int cell)
     {
         cell = default;
         MapData map = _getMap();
         if (map == null) return false;
         CollectTowers();
         float best = float.MinValue;
-        for (int i = 0; i < _best.Count; i++) Consider(map, _best[i], ref best, ref cell);
+        for (int i = 0; i < _best.Count; i++)
+        {
+            if (allow != null && !allow(_best[i])) continue;
+            Consider(map, _best[i], ref best, ref cell);
+        }
         return best > float.MinValue;
     }
 

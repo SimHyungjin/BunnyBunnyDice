@@ -42,11 +42,14 @@ public sealed class HeroAttack : IDisposable
 
     public void Dispose() => Core.Loop.OnGameUpdate -= Tick;
 
+    /// <summary>꺼 두면 공격하지 않는다(테스트 — 색 시험이 주사위 딜만 재려고 끈다, ColorPowerTest).</summary>
+    public bool Enabled { get; set; } = true;
+
     // 게임 시간을 따른다 — 카드를 집는 동안의 감속(게임 속도 50%)을 공격도 똑같이 받는다.
     private void Tick(float deltaTime)
     {
         // 게임 오버로 몬스터가 멈추면 공격도 멈춘다(주사위와 같게).
-        if (_monsters.Paused) return;
+        if (_monsters.Paused || !Enabled) return;
 
         Vector2 position = _hero.Position;
         float range = Range(position);

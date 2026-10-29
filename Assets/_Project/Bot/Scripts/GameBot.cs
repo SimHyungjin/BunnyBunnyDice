@@ -7,9 +7,10 @@ using UnityEngine;
 /// 손패 카드 놓기(CardPlacement)·스킬 쓰기(SkillCaster), 영웅 이동(Hero.MoveTo). 판이 끝나면 다시 하기를 누르고 측정 기록(WaveLog CSV)이 남는다.
 /// 규칙형이라 사람보다 서툴다 — "봇이 몇 웨이브까지 가는지"를 기준선으로 보고, 카드·캐릭터에 따른 차이를 비교하는 데 쓴다.
 /// 미로는 판 전체를 탐색한 목표 배치(MazePlanner)대로 짓는다.
-/// 미로 다음 판단은 사용자 플레이를 옮겼다(2026-10-27) — 모든 판단이 메인 딜 구간(BotBoard.KillZone)을 중심으로 돈다:
-/// 범위 주사위·칩·사거리를 그 구간으로 모으고, 적이 그 구간을 뚫을 것 같을 때(Breached)만 영웅이 그 구간 주사위에 올라타고 스킬을 쓴다.
-/// 평소 영웅은 주사위에서 내려 가장 앞선 적을 쫓아가 직접 때린다(올라탄 동안 눈이 영구로 깎인다).
+/// 판단은 사용자 판 교본 2차(2026-10-28, 기획서 11.5)를 옮겼다 — 판을 미로와 메인 딜 구간(BotBoard.KillZone)으로 나눈다:
+/// 미로는 d6·d12와 화상 칩(체력 비례 피해라 싼 주사위로도 후반까지 들어간다), 메인 딜 구간은 d20·범위 주사위와 디버프(종류마다 하나)·빨강·초록 칩.
+/// 영웅은 미로를 짓는 동안 남은 적을 쫓아 정리하고, 지은 뒤엔 메인 딜 구간에서 오가며 싸운다.
+/// 오버드라이브는 빠져나갈 적을 걸면 잡을 수 있을 때만(BotEscape). 범위 스킬·체크는 구간이 뚫릴 때만(Breached).
 /// 판단 값은 SO_BotConfig. 정한 판 수를 돌면 요약(BotBatchReport)을 남기고 멈춘다. 캐릭터를 돌아가며 돌릴 수도 있다(RotateCharacters).
 /// 비교 묶음(RunSets — 능력치 단계·카드 성향)마다 같은 맵(Seeds)으로 돌릴 수도 있다. 단계는 세이브와 이어져 있어(MetaProfile) 도는 동안은 세이브에도 그 단계가 남으므로,
 /// 끝나거나 끌 때 켤 때의 단계로 되돌린다.
@@ -31,17 +32,24 @@ public sealed class GameBot : IDisposable
     private readonly MonsterField _monsters;
     private readonly Hero _hero;
     private readonly SO_DiceConfig _diceConfig;
+    private readonly SO_DiceStatsConfig _statsConfig;
+    // 영웅이 올라탄 주사위의 오버드라이브 배율(SO_HeroConfig.Overdrive — 스킬 카드와 같은 값).
+    private readonly Func<SO_SkillCard_Overdrive> _heroOverdrive;
     private readonly LevelUpChoice _levelUp;
     private readonly GameSpeed _speed;
     private readonly Func<bool> _canAct;
     private readonly Action _retry;
     private readonly MazePlanner _planner;
     private readonly BotBoard _board = new BotBoard();
+    private readonly BotEscape _escape = new BotEscape();
     private readonly BotBatchReport _report = new BotBatchReport();
     private readonly List<int> _targets = new List<int>();
 
     // 비교 묶음으로 도는 동안 켤 때의 단계(되돌릴 값). 묶음으로 돌지 않으면 null.
     private int[] _savedStages;
+    // 캐릭터를 돌아가며 돌 때 켤 때의 캐릭터와, 단계를 덮어쓴 캐릭터마다 원래 단계(세이브에 남으므로 끝나면 되돌린다).
+    private SO_HeroCharacter _rotationOrigin;
+    private readonly Dictionary<SO_HeroCharacter, int[]> _rotationSavedStages = new Dictionary<SO_HeroCharacter, int[]>();
 
     private float _actTimer;
     private float _heroTimer;
@@ -71,7 +79,8 @@ public sealed class GameBot : IDisposable
     /// <param name="characters">캐릭터를 돌아가며 돌릴 때의 순서.</param>
     public GameBot(SO_BotConfig config, Func<MapData> getMap, Func<int> getWave, HeroStats heroStats, IReadOnlyList<SO_HeroCharacter> characters,
         DiceField diceField, ChipField chips, CardHand hand, CardPlacement placement, SkillCaster skills, MonsterField monsters, Hero hero,
-        SO_DiceConfig diceConfig, LevelUpChoice levelUp, GameSpeed speed, MazePlanner planner, Func<bool> canAct, Action retry)
+        SO_DiceConfig diceConfig, SO_DiceStatsConfig statsConfig, Func<SO_SkillCard_Overdrive> heroOverdrive, LevelUpChoice levelUp,
+        GameSpeed speed, MazePlanner planner, Func<bool> canAct, Action retry)
     {
         _config = config;
         _heroStats = heroStats;
@@ -87,6 +96,8 @@ public sealed class GameBot : IDisposable
         _monsters = monsters;
         _hero = hero;
         _diceConfig = diceConfig;
+        _statsConfig = statsConfig;
+        _heroOverdrive = heroOverdrive;
         _levelUp = levelUp;
         _speed = speed;
         _canAct = canAct;
@@ -121,6 +132,7 @@ public sealed class GameBot : IDisposable
         if (!enabled)
         {
             RestoreStages();
+            RestoreRotation();
             return;
         }
         if (_config.RunSets.Count > 0)
@@ -138,12 +150,49 @@ public sealed class GameBot : IDisposable
         }
         if (!_config.RotateCharacters) return;
         _rotation.Clear();
+        // 맵(Seeds)이나 단계(RotationStages)를 맞춰 짝지어 비교할 때는 켤 때의 캐릭터도 같은 조건으로 다시 돈다 — 켤 때의 판은 조건이 다르다.
+        bool paired = _config.Seeds.Count > 0 || _config.RotationStages.Length > 0;
         for (int i = 0; i < _characters.Count; i++)
-            if (_characters[i] != null && _characters[i] != _heroStats.Character) _rotation.Add(_characters[i]);
+            if (_characters[i] != null && (paired || _characters[i] != _heroStats.Character)) _rotation.Add(_characters[i]);
         // 켜는 판은 지금 캐릭터라, 첫 캐릭터로 바꾸고 바로 새 판을 시작한다.
         if (_rotation.Count == 0) return;
-        _heroStats.SetCharacter(_rotation[0]);
+        _rotationOrigin = _heroStats.Character;
+        ApplyRotation(0);
         _retry();
+    }
+
+    // runs번째 판의 캐릭터·단계·맵을 건다(캐릭터를 돌아가며 돌 때).
+    private void ApplyRotation(int runs)
+    {
+        SO_HeroCharacter character = RotationCharacter(runs);
+        if (character == null) return;
+        _heroStats.SetCharacter(character);
+        if (_config.RotationStages.Length > 0)
+        {
+            if (!_rotationSavedStages.ContainsKey(character))
+            {
+                int[] saved = new int[HeroStats.StatCount];
+                for (int i = 0; i < saved.Length; i++) saved[i] = _heroStats.GetStage((HeroStat)i);
+                _rotationSavedStages[character] = saved;
+            }
+            _heroStats.LoadStages(_config.RotationStages);
+        }
+        int k = runs % Mathf.Max(_config.RunsPerCharacter, 1);
+        _hasNextSeed = _config.Seeds.Count > 0;
+        if (_hasNextSeed) _nextSeed = _config.Seeds[k % _config.Seeds.Count];
+    }
+
+    // 돌아가며 덮어쓴 단계를 캐릭터마다 되돌리고 켤 때의 캐릭터로 돌아간다.
+    private void RestoreRotation()
+    {
+        foreach (KeyValuePair<SO_HeroCharacter, int[]> pair in _rotationSavedStages)
+        {
+            _heroStats.SetCharacter(pair.Key);
+            _heroStats.LoadStages(pair.Value);
+        }
+        _rotationSavedStages.Clear();
+        if (_rotationOrigin != null) _heroStats.SetCharacter(_rotationOrigin);
+        _rotationOrigin = null;
     }
 
     private void RestoreStages()
@@ -219,7 +268,7 @@ public sealed class GameBot : IDisposable
             : _config.BatchRuns > 0 && _report.Count >= _config.BatchRuns;
         // 다음 판의 캐릭터·단계는 다시 하기 전에 바꾼다 — 새 판이 시작될 때 기록 파일 이름·영웅 모습이 새 캐릭터로 잡히게.
         if (!done && runSets) ApplySet(_report.Count);
-        else if (!done && _config.RotateCharacters) _heroStats.SetCharacter(RotationCharacter(_report.Count));
+        else if (!done && _config.RotateCharacters) ApplyRotation(_report.Count);
         if (done)
         {
             LastReportPath = _report.Write();
@@ -242,8 +291,35 @@ public sealed class GameBot : IDisposable
         return builder.ToString();
     }
 
-    private int ChooseLevelUp(IReadOnlyList<HandCard> candidates, IReadOnlyList<int> copies) =>
-        BotCardChoice.Choose(_config, Mathf.Max(_getWave(), 1), candidates, copies, MazeBuilt(), CurrentSet(_report.Count));
+    private int ChooseLevelUp(IReadOnlyList<HandCard> candidates, IReadOnlyList<int> copies)
+    {
+        BotChoiceContext context = new BotChoiceContext { MazeEnough = MazeEnough() };
+        MapData map = _getMap();
+        if (map != null && _board.Read(map, _config.KillZoneRadius))
+        {
+            context.HasSlow = HasZoneChip<SO_ChipCard_Slow>();
+            context.HasFreeze = HasZoneChip<SO_ChipCard_Freeze>();
+            context.HasVulnerable = HasZoneChip<SO_ChipCard_Vulnerable>();
+            context.HasFoldTarget = TryFindFoldTarget(map, false, out _);
+            context.HasBurnSpot = HasBurnSpot();
+        }
+        return BotCardChoice.Choose(_config, candidates, copies, context, CurrentSet(_report.Count));
+    }
+
+    // 미로를 "어느 정도" 지었는지 — 사용자: 그 뒤로 d20을 메인 딜 구간에 모은다.
+    private bool MazeEnough() => _diceField.Placed.Count >= _config.MazeEnoughDice;
+
+    // 메인 딜 구간에 닿는 주사위 밑에 T 칩이 있는지(디버프는 종류마다 하나면 된다 — 사용자).
+    private bool HasZoneChip<T>() where T : SO_ChipCard
+    {
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            if (!(_chips.Get(placed[i].Cell) is T)) continue;
+            if (CoversKillZone(placed[i].Cell, RangeAt(placed[i].Cell, placed[i].Dice.Colors, _chips.Get(placed[i].Cell)))) return true;
+        }
+        return false;
+    }
 
     // 미로를 다 지었는지 — 목표 배치에 놓을 칸이 남지 않았으면 다 지은 것이다.
     private bool MazeBuilt() => !_planner.HasPlannedCell();
@@ -311,18 +387,88 @@ public sealed class GameBot : IDisposable
         return false;
     }
 
+    // d20은 메인 딜 구간 쪽, d6·d12는 미로(사용자). 생각 중(판이 바뀐 뒤 새 계획을 아직 받지 않음)이면 주사위는 쥐고 있는다 — 칩·스킬은 그대로 쓴다.
     private bool TryPlaceDice(MapData map, HandCard card)
     {
-        // 생각 중(판이 바뀐 뒤 새 계획을 아직 받지 않음)이면 주사위는 쥐고 있는다 — 칩·스킬은 그대로 쓴다.
         if (_planner.Busy) return false;
-        if (MazeBuilt() && TryFindStack(card.Dice, out Vector2Int stack))
-            return _placement.TryPlace(map, stack, card);
-        return _planner.TryGetNext(out Vector2Int cell) && _placement.TryPlace(map, cell, card);
+        DiceCard dice = card.Dice;
+        if (dice.Faces >= 20)
+        {
+            // 메인 딜 구간의 빈 칸 → 구간 딜링 주사위에 얹기 → 그것도 없으면 미로 계획 칸.
+            if (TryFindZoneCell(map, dice, out Vector2Int zone)) return _placement.TryPlace(map, zone, card);
+            if (TryFindStack(dice, true, out Vector2Int zoneStack)) return _placement.TryPlace(map, zoneStack, card);
+            if (_planner.TryGetNext(null, out Vector2Int any)) return _placement.TryPlace(map, any, card);
+            return TryFindOpenCell(map, dice, out Vector2Int open20) && _placement.TryPlace(map, open20, card);
+        }
+        // 미로를 다 지은 뒤엔 메인 딜 구간 딜링 주사위를 키운다(사용자). 구간에 얹을 곳이 없으면 어디든 가장 이득인 곳.
+        if (MazeBuilt())
+        {
+            if (TryFindStack(dice, true, out Vector2Int stack) || TryFindStack(dice, false, out stack)) return _placement.TryPlace(map, stack, card);
+            return TryFindOpenCell(map, dice, out Vector2Int openBuilt) && _placement.TryPlace(map, openBuilt, card);
+        }
+        // 미로 칸은 메인 딜 구간 밖부터 — 구간 칸은 d20 자리로 남긴다. 밖에 남은 계획 칸이 없으면 아무 계획 칸.
+        if (_planner.TryGetNext(IsOutsideZone, out Vector2Int cell) || _planner.TryGetNext(null, out cell))
+            return _placement.TryPlace(map, cell, card);
+        return TryFindOpenCell(map, dice, out Vector2Int open) && _placement.TryPlace(map, open, card);
+    }
+
+    // 계획 칸도 얹을 곳도 없을 때: 길을 막지 않는 빈 칸 중 그 색 사거리로 덮는 몰림이 가장 큰 칸.
+    // 계획이 비면(벽이 바뀐 뒤 다시 찾은 계획에 남은 칸이 없음) 주사위를 영영 쥐고만 있어 판이 무너졌다(2026-10-29, 시드 70030003 — 고른 주사위 11개 중 7개만 놓음).
+    private bool TryFindOpenCell(MapData map, DiceCard dice, out Vector2Int cell)
+    {
+        cell = default;
+        SO_DiceType type = _diceConfig.GetDiceType(dice.Colors);
+        float range = type != null ? type.Range : 0f;
+        int best = 0;
+        for (int y = 0; y < map.Height; y++)
+        {
+            for (int x = 0; x < map.Width; x++)
+            {
+                Vector2Int candidate = new Vector2Int(x, y);
+                if (map.HasChip(x, y) || DicePlacement.Check(map, candidate) != PlacementResult.Ok) continue;
+                int traffic = _board.Traffic(candidate, range);
+                if (traffic <= best) continue;
+                best = traffic;
+                cell = candidate;
+            }
+        }
+        return best > 0;
+    }
+
+    private bool IsInZone(Vector2Int cell) =>
+        _board.HasKillZone && ((Vector2)(cell - _board.KillZone)).sqrMagnitude <= _config.KillZoneRadius * _config.KillZoneRadius;
+
+    private bool IsOutsideZone(Vector2Int cell) => !IsInZone(cell);
+
+    // d20을 놓을 메인 딜 구간의 빈 칸: 그 색 사거리로 덮는 몰림이 가장 큰 칸. 미로 계획 밖이어도 놓는다
+    // (사용자는 d20을 구간에 최대한 모은다 — 길을 막지 않는지만 본다, 계획은 MazePlanner가 다시 찾는다).
+    private bool TryFindZoneCell(MapData map, DiceCard dice, out Vector2Int cell)
+    {
+        cell = default;
+        if (!_board.HasKillZone) return false;
+        SO_DiceType type = _diceConfig.GetDiceType(dice.Colors);
+        float range = type != null ? type.Range : 0f;
+        int radius = Mathf.CeilToInt(_config.KillZoneRadius);
+        float best = 0f;
+        for (int y = -radius; y <= radius; y++)
+        {
+            for (int x = -radius; x <= radius; x++)
+            {
+                Vector2Int candidate = _board.KillZone + new Vector2Int(x, y);
+                if (!IsInZone(candidate) || !map.InBounds(candidate.x, candidate.y)) continue;
+                if (DicePlacement.Check(map, candidate) != PlacementResult.Ok) continue;
+                float score = _board.Traffic(candidate, range);
+                if (score <= best) continue;
+                best = score;
+                cell = candidate;
+            }
+        }
+        return best > 0f;
     }
 
     // 얹을 주사위: 얹은 뒤의 모습으로 점수를 매긴다 — 몰림 × (1 + 기대 눈), 범위 주사위(섞인 색·하양)가 되면 더,
-    // 메인 딜 구간에 닿으면 더 쳐 준다. 사용자는 메인 딜 구간의 범위 주사위를 키웠다.
-    private bool TryFindStack(DiceCard card, out Vector2Int cell)
+    // 메인 딜 구간에 닿으면 더 쳐 준다. 사용자는 메인 딜 구간의 범위 주사위를 키웠다. zoneOnly면 구간에 닿는 주사위만.
+    private bool TryFindStack(DiceCard card, bool zoneOnly, out Vector2Int cell)
     {
         cell = default;
         float best = 0f;
@@ -336,8 +482,9 @@ public sealed class GameBot : IDisposable
             if (after.Pips <= dice.Pips) continue;
             Vector2Int at = placed[i].Cell;
             float range = RangeAt(at, after.Colors, _chips.Get(at));
+            if (zoneOnly && !CoversKillZone(at, range)) continue;
             float score = _board.Traffic(at, range) * (1f + after.Pips)
-                * (IsArea(after.Colors) ? _config.AreaStackWeight : 1f)
+                * (BotDice.IsArea(after.Colors) ? _config.AreaStackWeight : 1f)
                 * (CoversKillZone(at, range) ? _config.KillZoneStackWeight : 1f);
             if (score <= best) continue;
             best = score;
@@ -346,42 +493,161 @@ public sealed class GameBot : IDisposable
         return best > 0f;
     }
 
-    // 칩: 메인 딜 구간에 닿는 주사위 밑을 크게 쳐 준다. 디버프(취약·둔화·얼림·화상)는 몰림만, 강화(공격력·공속)는 몰림 × 눈.
-    // 사거리 칩은 칩을 받으면 메인 딜 구간에 새로 닿는 주사위를 가장 크게 쳐 준다 — 사거리로 구간을 때리게 유도한다.
+    // 칩은 종류마다 자리가 다르다(사용자 판 교본 2차). 모두 칩이 없는 주사위 밑에만 놓는다(빈 칸에는 놓지 않는다).
+    // - 디버프(둔화·얼림·취약): 메인 딜 구간을 가장 넓게 덮는 범위 주사위 밑 — 눈은 상관없고 맞히기만 하면 된다.
+    // - 빨강·초록: 메인 딜 구간 딜링 주사위 밑(몰림 × 눈). 빨강 단색 주사위엔 초록만(빨강 칩은 겹쳐 봐야 덜 는다).
+    // - 화상: 미로 쪽 범위 주사위 밑 — 아직 화상이 안 닿는 길을 가장 많이 새로 덮는 곳 × 공격 속도(4초 안에 다시 맞혀야 끊기지 않는다).
+    // - 사거리: 받으면 메인 딜 구간에 새로 닿는 주사위.
     private bool TryPlaceChip(MapData map, HandCard card)
     {
         SO_ChipCard chip = card.Chip;
-        bool debuff = IsDebuff(chip);
-        float bonus = ChipEffects.RangeBonus(chip);
+        Vector2Int target;
+        bool found;
+        if (chip is SO_ChipCard_Burn) found = TryFindBurnCell(out target);
+        else if (chip is SO_ChipCard_Slow || chip is SO_ChipCard_Freeze || chip is SO_ChipCard_Vulnerable) found = TryFindDebuffCell(out target);
+        else if (chip is SO_ChipCard_Damage || chip is SO_ChipCard_AttackSpeed) found = TryFindBoostCell(chip, out target);
+        else found = TryFindRangeCell(chip, out target);
+        return found && _placement.TryPlace(map, target, card);
+    }
+
+    // 디버프: 메인 딜 구간에 닿는 범위 주사위 > 구간에 닿는 주사위 > 그 밖. 같은 등급이면 덮는 몰림이 큰 곳.
+    private bool TryFindDebuffCell(out Vector2Int cell)
+    {
+        cell = default;
+        int bestTier = -1;
         float best = -1f;
-        Vector2Int target = default;
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         for (int i = 0; i < placed.Count; i++)
         {
-            Vector2Int cell = placed[i].Cell;
-            if (_chips.Get(cell) != null) continue;
-            float range = RangeAt(cell, placed[i].Dice.Colors, null);
-            float boosted = range * (1f + bonus);
-            float traffic = _board.Traffic(cell, boosted);
-            float score = debuff ? traffic : traffic * (1f + placed[i].Dice.Pips);
-            if (CoversKillZone(cell, boosted))
-                score *= bonus > 0f && !CoversKillZone(cell, range) ? _config.KillZoneChipWeight * 2f : _config.KillZoneChipWeight;
-            if (score <= best) continue;
+            Vector2Int at = placed[i].Cell;
+            if (_chips.Get(at) != null) continue;
+            float range = RangeAt(at, placed[i].Dice.Colors, null);
+            int tier = CoversKillZone(at, range) ? (BotDice.IsArea(placed[i].Dice.Colors) ? 2 : 1) : 0;
+            float score = _board.Traffic(at, range);
+            if (tier < bestTier || (tier == bestTier && score <= best)) continue;
+            bestTier = tier;
             best = score;
-            target = cell;
+            cell = at;
         }
-        return best >= 0f && _placement.TryPlace(map, target, card);
+        return bestTier >= 0;
     }
 
-    private static bool IsDebuff(SO_ChipCard chip) =>
-        chip is SO_ChipCard_Vulnerable || chip is SO_ChipCard_Slow || chip is SO_ChipCard_Freeze || chip is SO_ChipCard_Burn;
+    // 빨강·초록: 메인 딜 구간에 닿는 주사위 > 그 밖. 같은 등급이면 몰림 × (1 + 눈), 범위 주사위면 더.
+    private bool TryFindBoostCell(SO_ChipCard chip, out Vector2Int cell)
+    {
+        cell = default;
+        int bestTier = -1;
+        float best = -1f;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            Vector2Int at = placed[i].Cell;
+            DiceState dice = placed[i].Dice;
+            if (_chips.Get(at) != null) continue;
+            if (chip is SO_ChipCard_Damage && dice.Colors == DiceColor.Red) continue;
+            float range = RangeAt(at, dice.Colors, null);
+            int tier = CoversKillZone(at, range) ? 1 : 0;
+            float score = _board.Traffic(at, range) * (1f + dice.Pips) * (BotDice.IsArea(dice.Colors) ? _config.AreaStackWeight : 1f);
+            if (tier < bestTier || (tier == bestTier && score <= best)) continue;
+            bestTier = tier;
+            best = score;
+            cell = at;
+        }
+        return bestTier >= 0;
+    }
+
+    // 화상: 범위 주사위 > 단일, 메인 딜 구간 밖 > 안(사용자: 화상은 미로 쪽 — 구간에선 중요하지 않다).
+    // 같은 등급이면 아직 화상 주사위가 안 덮는 길 칸 수 × 공격 속도 — 화상 칩이 여럿이면 길 전체에 고르게 퍼진다.
+    private bool TryFindBurnCell(out Vector2Int cell)
+    {
+        cell = default;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        _burned.Clear();
+        for (int i = 0; i < placed.Count; i++)
+        {
+            if (!(_chips.Get(placed[i].Cell) is SO_ChipCard_Burn)) continue;
+            float range = RangeAt(placed[i].Cell, placed[i].Dice.Colors, _chips.Get(placed[i].Cell));
+            MarkRoute(placed[i].Cell, range, _burned);
+        }
+
+        int bestTier = -1;
+        float best = -1f;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            Vector2Int at = placed[i].Cell;
+            DiceState dice = placed[i].Dice;
+            if (_chips.Get(at) != null) continue;
+            float range = RangeAt(at, dice.Colors, null);
+            int tier = (BotDice.IsArea(dice.Colors) ? 2 : 0) + (CoversKillZone(at, range) ? 0 : 1);
+            DiceStats stats = DiceStats.Compute(dice, _diceConfig.GetDiceType(dice.Colors), _statsConfig);
+            float speed = stats.AttackInterval > 0f ? 1f / stats.AttackInterval : 0f;
+            float score = NewRouteCells(at, range, _burned) * speed;
+            if (tier < bestTier || (tier == bestTier && score <= best)) continue;
+            bestTier = tier;
+            best = score;
+            cell = at;
+        }
+        return bestTier >= 0;
+    }
+
+    private readonly HashSet<Vector2Int> _burned = new HashSet<Vector2Int>();
+
+    // 화상 칩을 깔 자리: 칩 없는 범위 주사위 중 아직 화상 주사위가 안 덮는 길을 새로 덮는 것이 있다.
+    private bool HasBurnSpot()
+    {
+        return TryFindBurnCell(out Vector2Int cell) && _diceField.TryGetPlaced(cell, out PlacedDice placed)
+            && BotDice.IsArea(placed.Dice.Colors) && NewRouteCells(cell, RangeAt(cell, placed.Dice.Colors, null), _burned) > 0;
+    }
+
+    private void MarkRoute(Vector2Int center, float range, HashSet<Vector2Int> marked)
+    {
+        float sqr = range * range;
+        IReadOnlyList<Vector2Int> route = _board.Route;
+        for (int i = 0; i < route.Count; i++)
+            if (((Vector2)(route[i] - center)).sqrMagnitude <= sqr) marked.Add(route[i]);
+    }
+
+    private int NewRouteCells(Vector2Int center, float range, HashSet<Vector2Int> marked)
+    {
+        float sqr = range * range;
+        int count = 0;
+        IReadOnlyList<Vector2Int> route = _board.Route;
+        for (int i = 0; i < route.Count; i++)
+            if (!marked.Contains(route[i]) && ((Vector2)(route[i] - center)).sqrMagnitude <= sqr) count++;
+        return count;
+    }
+
+    // 사거리: 칩을 받으면 메인 딜 구간에 새로 닿는 주사위를 가장 크게 쳐 준다 — 사거리로 구간을 때리게 유도한다.
+    private bool TryFindRangeCell(SO_ChipCard chip, out Vector2Int cell)
+    {
+        cell = default;
+        float bonus = ChipEffects.RangeBonus(chip);
+        float best = -1f;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            Vector2Int at = placed[i].Cell;
+            if (_chips.Get(at) != null) continue;
+            float range = RangeAt(at, placed[i].Dice.Colors, null);
+            float boosted = range * (1f + bonus);
+            float score = _board.Traffic(at, boosted) * (1f + placed[i].Dice.Pips);
+            if (CoversKillZone(at, boosted))
+                score *= !CoversKillZone(at, range) ? _config.KillZoneChipWeight * 2f : _config.KillZoneChipWeight;
+            if (score <= best) continue;
+            best = score;
+            cell = at;
+        }
+        return best >= 0f;
+    }
 
     // 스킬은 아껴 둔다 — 메인 딜 구간이 뚫릴 것 같을 때(또는 목표물 바로 앞까지 왔을 때)만 쓴다.
     // 막 쓰면 정작 뚫릴 때 손에 없다(사용자 지적: 미로에선 적이 늘 몰려 있어 "몰렸을 때"는 기준이 못 된다).
     private bool TryCast(SO_SkillCard skill)
     {
         if (skill is SO_SkillCard_AllIn) return TryCastAllIn(skill);
-        if (skill.Target == SkillTarget.Dice && !(skill is SO_SkillCard_Overdrive)) return TryCastOnDice(skill);
+        if (skill is SO_SkillCard_Fold) return TryCastFold(skill);
+        if (skill is SO_SkillCard_Overdrive overdrive) return TryCastOverdrive(overdrive);
+        if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);
         SO_BotConfig.RunSet set = CurrentSet(_report.Count);
         if (set != null && set.DamageSkillAnytime && skill is SO_AreaSkillCard anytime) return TryCastAnytime(anytime);
         if (!Breached(out bool bossBreaching)) return false;
@@ -389,8 +655,75 @@ public sealed class GameBot : IDisposable
         if (skill is SO_SkillCard_Checkmate checkmate && bossBreaching && TryCastCheckmate(checkmate)) return true;
         if (skill is SO_AreaSkillCard area) return TryCastArea(area);
         if (skill is SO_SkillCard_Check) return TryCastCheck(skill);
-        if (skill is SO_SkillCard_Overdrive) return TryCastOnDice(skill);
-        // 폴드는 쓰지 않는다(미로를 허문다).
+        return false;
+    }
+
+    // 오버드라이브 카드: 빠져나갈 적을 걸면 잡을 수 있는 주사위에만(BotEscape). 영웅이 올라탄 주사위는 이미 오버드라이브다.
+    private bool TryCastOverdrive(SO_SkillCard_Overdrive card)
+    {
+        if (!FindOverdriveTarget(card.DamageScale, card.SpeedScale, card.Duration, true, out Vector2Int cell)) return false;
+        _skills.CastOnCell(cell, card);
+        return true;
+    }
+
+    // 빠져나갈 적을 잡을 오버드라이브 자리. excludeHero면 영웅이 올라탄 주사위는 뺀다(카드는 겹쳐 세지지 않는다).
+    private bool FindOverdriveTarget(float damageScale, float speedScale, float duration, bool excludeHero, out Vector2Int cell)
+    {
+        cell = default;
+        if (!_board.HasKillZone) return false;
+        Vector2Int? exclude = excludeHero && _hasHeroCell ? _heroCell : (Vector2Int?)null;
+        return _escape.FindTarget(_board, _monsters, _diceField, _chips, _diceConfig, _statsConfig,
+            _board.KillZoneDistance + _config.EscapeLookAhead, damageScale, speedScale, duration, _config.OverdriveMargin, exclude, out cell);
+    }
+
+    // 폴드(건설가): 메인 딜 구간을 막는 칸을 치워 딜링 주사위 자리를 넓힌다(사용자: 칩·실수로 못 쓰게 된 딜 구간을 넓힌다).
+    // 손에 그 자리를 채울 d20·범위 주사위가 있을 때만 — 치우기만 하고 못 채우면 미로만 허문다.
+    private bool TryCastFold(SO_SkillCard card)
+    {
+        MapData map = _getMap();
+        if (map == null || !TryFindFoldTarget(map, true, out Vector2Int cell)) return false;
+        _skills.CastOnCell(cell, card);
+        return true;
+    }
+
+    /// <summary>
+    /// 폴드로 치울 칸: 메인 딜 구간 안의 칩만 있는 칸(시작 칩 등), 그다음 미로용 단일 주사위(d6·d12 단색·검정). 덮는 몰림이 큰 곳부터.
+    /// needFiller면 손에 그 자리를 채울 d20·범위 주사위가 있어야 한다.
+    /// </summary>
+    private bool TryFindFoldTarget(MapData map, bool needFiller, out Vector2Int cell)
+    {
+        cell = default;
+        if (!_board.HasKillZone || (needFiller && !HasZoneFiller())) return false;
+        int radius = Mathf.CeilToInt(_config.KillZoneRadius);
+        int bestTier = -1;
+        float best = -1f;
+        for (int y = -radius; y <= radius; y++)
+        {
+            for (int x = -radius; x <= radius; x++)
+            {
+                Vector2Int at = _board.KillZone + new Vector2Int(x, y);
+                if (!IsInZone(at) || !map.InBounds(at.x, at.y)) continue;
+                int tier;
+                if (map.HasChip(at.x, at.y) && !map.HasDice(at.x, at.y)) tier = 1;
+                else if (_diceField.TryGetPlaced(at, out PlacedDice placed) && placed.Dice.Faces < 20 && !BotDice.IsArea(placed.Dice.Colors)) tier = 0;
+                else continue;
+                float score = _board.Traffic(at, _config.KillZoneRadius);
+                if (tier < bestTier || (tier == bestTier && score <= best)) continue;
+                bestTier = tier;
+                best = score;
+                cell = at;
+            }
+        }
+        return bestTier >= 0;
+    }
+
+    private bool HasZoneFiller()
+    {
+        for (int i = 0; i < _hand.Count; i++)
+        {
+            HandCard card = _hand.GetCard(i);
+            if (card.IsDice && (card.Dice.Faces >= 20 || BotDice.IsArea(card.Dice.Colors))) return true;
+        }
         return false;
     }
 
@@ -500,68 +833,88 @@ public sealed class GameBot : IDisposable
         float range = RangeAt(cell, dice.Colors, _chips.Get(cell));
         float traffic = _board.Traffic(cell, range) * (CoversKillZone(cell, range) ? _config.KillZoneStackWeight : 1f);
         int missing = dice.Faces - dice.Pips;
-        // 오버드라이브(뚫릴 때만 부른다): 메인 딜 구간 주사위 중 지금 사거리 안 적이 많은 곳. 영웅이 올라탄 주사위는 이미 오버드라이브다.
-        if (card is SO_SkillCard_Overdrive)
-        {
-            if (_hasHeroCell && cell == _heroCell) return 0f;
-            return HeroScore(cell);
-        }
         if (card is SO_SkillCard_Jackpot) return traffic * missing;
         // 다시 굴리기는 눈이 절반 밑일 때만 — 기대값이 지금보다 높다.
         if (card is SO_SkillCard_Reroll) return dice.Pips * 2 < dice.Faces ? traffic * missing : 0f;
         // 페인트는 섞인 색(등급이 낮은) 주사위를 단색으로 되돌릴 때만.
-        if (card is SO_SkillCard_Paint) return ColorCount(dice.Colors) >= 2 ? traffic : 0f;
+        if (card is SO_SkillCard_Paint) return BotDice.ColorCount(dice.Colors) >= 2 ? traffic : 0f;
         return 0f;
     }
 
-    // 영웅: 메인 딜 구간이 뚫릴 것 같을 때만 그 구간의 주사위에 올라탄다(공격·디버프 칩이 모인 곳이라 뒤쪽 주사위보다 세다).
-    // 아니면 주사위에서 내려 가장 앞선 적을 쫓아가 직접 때린다. 적이 없으면 메인 딜 구간에서 기다린다.
+    // 영웅(사용자 판 교본 2차):
+    // 1) 빠져나갈 적을 오버드라이브로 잡을 수 있으면 그 주사위에 올라탄다(BotEscape) — 올라탄 동안 눈이 영구로 깎이니 그때만.
+    // 2) 미로를 짓는 동안엔 주사위가 못 잡은 적을 쫓아 정리한다(영웅 디버프 카드가 있으면 안 묻은 적이 몰린 곳으로).
+    // 3) 미로를 지은 뒤엔 메인 딜 구간 앞부터 디버프가 묻는 구역까지 오가며 싸운다 — 구역을 지난(뚫린) 적이 있으면 그쪽부터,
+    //    없으면 구역 안에서 가장 앞선 적, 적이 없으면 구역 앞에서 기다린다. 영웅이 주 딜이라 취약(+30%)이 묻는 곳에서 때려야 한다.
     private void MoveHero(MapData map)
     {
         if (_hero.Held || !_board.Read(map, _config.KillZoneRadius)) return;
-        if (Breached(out _))
+        SO_SkillCard_Overdrive overdrive = _heroOverdrive();
+        if (overdrive != null && FindOverdriveTarget(overdrive.DamageScale, overdrive.SpeedScale, float.MaxValue, false, out Vector2Int ride))
         {
-            float current = _hasHeroCell ? HeroScore(_heroCell) : 0f;
-            float best = 0f;
-            Vector2Int target = default;
-            IReadOnlyList<PlacedDice> placed = _diceField.Placed;
-            for (int i = 0; i < placed.Count; i++)
-            {
-                float score = HeroScore(placed[i].Cell);
-                if (score <= best) continue;
-                best = score;
-                target = placed[i].Cell;
-            }
-            if (best <= 0f || (_hasHeroCell && (target == _heroCell || best <= current * _config.HeroSwitchGain))) return;
-            if (_hero.MoveTo(target))
+            if (_hasHeroCell && ride == _heroCell) return;
+            if (_hero.MoveTo(ride))
             {
                 _hasHeroCell = true;
-                _heroCell = target;
+                _heroCell = ride;
             }
             return;
         }
 
-        // 디버프 카드가 있으면 디버프가 안 묻은 적이 몰린 곳으로 다니며 묻힌다. 그런 곳이 없으면 아래(선두 쫓기)로.
-        if (_heroStats.DebuffCount > 0 && TryFindPaintCell(out Vector2Int paint))
+        if (!MazeBuilt())
         {
-            if (_hero.MoveTo(paint)) _hasHeroCell = false;
+            if (_heroStats.DebuffCount > 0 && TryFindPaintCell(out Vector2Int paint)) MoveHeroTo(paint);
+            else MoveHeroTo(TryFindLead(0, int.MaxValue, out Vector2Int lead) ? lead : ZoneFrontCell(map));
             return;
         }
 
-        // 쫓을 곳: 목표물에 가장 가까운(길 거리) 적이 선 칸 — 길 칸이라 주사위가 없어 올라타지 않는다.
-        Vector2Int chase = _board.HasKillZone ? _board.KillZone : new Vector2Int(map.GoalRect.xMin, map.GoalRect.yMin);
+        int back = _board.KillZoneDistance - _config.KiteBack;
+        int front = _board.KillZoneDistance + _config.KiteFront;
+        if (TryFindLead(0, back - 1, out Vector2Int breach)) MoveHeroTo(breach);
+        else if (TryFindLead(back, front, out Vector2Int kite)) MoveHeroTo(kite);
+        else MoveHeroTo(ZoneFrontCell(map));
+    }
+
+    // 주사위에서 내려 cell로 간다(길 칸이라 주사위가 없다).
+    private void MoveHeroTo(Vector2Int cell)
+    {
+        if (_hero.MoveTo(cell)) _hasHeroCell = false;
+    }
+
+    // 목표물까지 길 거리가 [min, max]인 산 적 중 가장 앞선(목표물에 가까운) 적이 선 칸. 주사위 칸에 선 적은 뺀다(올라타지 않게).
+    private bool TryFindLead(int min, int max, out Vector2Int cell)
+    {
+        cell = default;
         int lead = int.MaxValue;
         MonsterState[] states = _monsters.States;
         for (int i = 0; i < _monsters.Count; i++)
         {
             if (!states[i].IsAlive) continue;
-            Vector2Int cell = Vector2Int.RoundToInt(states[i].Position);
-            int distance = _board.DistanceAt(cell);
-            if (distance < 0 || distance >= lead || _diceField.TryGetPlaced(cell, out _)) continue;
+            Vector2Int at = Vector2Int.RoundToInt(states[i].Position);
+            int distance = _board.DistanceAt(at);
+            if (distance < min || distance > max || distance >= lead || _diceField.TryGetPlaced(at, out _)) continue;
             lead = distance;
-            chase = cell;
+            cell = at;
         }
-        if (_hero.MoveTo(chase)) _hasHeroCell = false;
+        return lead != int.MaxValue;
+    }
+
+    // 메인 딜 구간 앞(출현 쪽으로 KiteFront칸)의 길 칸 — 적이 없을 때 기다리는 곳. 구간이 없으면 목표물 앞.
+    private Vector2Int ZoneFrontCell(MapData map)
+    {
+        if (!_board.HasKillZone) return new Vector2Int(map.GoalRect.xMin, map.GoalRect.yMin);
+        int target = _board.KillZoneDistance + _config.KiteFront;
+        Vector2Int best = _board.KillZone;
+        int bestGap = int.MaxValue;
+        IReadOnlyList<Vector2Int> route = _board.Route;
+        for (int i = 0; i < route.Count; i++)
+        {
+            int gap = Mathf.Abs(_board.DistanceAt(route[i]) - target);
+            if (gap >= bestGap) continue;
+            bestGap = gap;
+            best = route[i];
+        }
+        return best;
     }
 
     // 영웅이 서면 사거리 안에 디버프가 안 묻은 적이 가장 많이 드는 적의 칸(주사위 없는 칸). PaintMinTargets보다 적으면 false.
@@ -606,15 +959,6 @@ public sealed class GameBot : IDisposable
         return false;
     }
 
-    // 메인 딜 구간 주사위일수록, 지금 사거리 안 적이 많을수록, 눈이 높을수록.
-    private float HeroScore(Vector2Int cell)
-    {
-        if (!_diceField.TryGetPlaced(cell, out PlacedDice placed) || placed.Dice.IsSpent) return 0f;
-        float range = RangeAt(cell, placed.Dice.Colors, _chips.Get(cell));
-        float score = CountInRange(cell, range) * placed.Dice.Pips;
-        return CoversKillZone(cell, range) ? score * _config.KillZoneStackWeight : score;
-    }
-
     /// <summary>
     /// 메인 딜 구간이 뚫릴 것 같은지: 구간을 넘어온 적 중 체력이 넉넉히 남은 적이 BreachCount 이상이거나, 보스가 구간에 들어왔거나,
     /// 목표물 바로 앞(DangerRadius)까지 적이 왔다.
@@ -654,17 +998,6 @@ public sealed class GameBot : IDisposable
     private bool CoversKillZone(Vector2Int cell, float range) =>
         _board.HasKillZone && ((Vector2)(_board.KillZone - cell)).sqrMagnitude <= range * range;
 
-    // cell 주사위 사거리 안의 산 적 수.
-    private int CountInRange(Vector2Int cell, float range)
-    {
-        float sqr = range * range;
-        int count = 0;
-        MonsterState[] states = _monsters.States;
-        for (int i = 0; i < _monsters.Count; i++)
-            if (states[i].IsAlive && (states[i].Position - (Vector2)cell).sqrMagnitude <= sqr) count++;
-        return count;
-    }
-
     // 목표물 중심에서 radius 안의 산 적 수.
     private int CountNearGoal(float radius)
     {
@@ -684,17 +1017,5 @@ public sealed class GameBot : IDisposable
     {
         SO_DiceType type = _diceConfig.GetDiceType(colors);
         return type != null ? type.Range * (1f + ChipEffects.RangeBonus(chip)) : 0f;
-    }
-
-    // 범위 주사위 = 색이 둘 이상(노랑·자홍·하늘·하양).
-    private static bool IsArea(DiceColor colors) => ColorCount(colors) >= 2;
-
-    private static int ColorCount(DiceColor colors)
-    {
-        int count = 0;
-        if ((colors & DiceColor.Red) != 0) count++;
-        if ((colors & DiceColor.Green) != 0) count++;
-        if ((colors & DiceColor.Blue) != 0) count++;
-        return count;
     }
 }

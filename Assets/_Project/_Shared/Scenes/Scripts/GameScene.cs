@@ -110,6 +110,10 @@ public sealed class GameScene : SceneBase
     // 테스트용 무적(목표물이 피해를 받지 않는다). 경험치 막기와 같은 이유로 여기 둔다 — 목표물 규칙(GoalHealth)에 테스트 상태를 섞지 않게.
     // 이전에는 목표물 체력을 아주 크게 두어 대신했지만, 그러면 사람 테스트에서 질 수가 없었다.
     private bool _goalInvincible = false;
+    // 색 시험(테스트 — 미로 전부를 한 색 d20 눈 20으로). 켜는 동안 무적·경험치 막기·영웅 공격 끔·적 이속 배율을 걸고, 끄면 켤 때 값으로 되돌린다.
+    private ColorPowerTest _colorTest;
+    private bool _savedInvincible;
+    private bool _savedExpBlocked;
     private MapData _map;
     private GridRouteField _route;
     private int _seed;
@@ -277,7 +281,7 @@ public sealed class GameScene : SceneBase
             _diceField.RefreshAt(cell);
             RebuildRoute();
         };
-        _monsters.ReachedGoal += type =>
+        _monsters.ReachedGoal += (type, _) =>
         {
             // 무적이어도 받았을 피해를 센다 — 무적으로 버티며 높은 웨이브를 잴 때도 얼마나 뚫렸는지 보이게.
             _waveLog.CountLeak(type.GoalDamage);
@@ -291,16 +295,19 @@ public sealed class GameScene : SceneBase
             _run.CountKill(type.IsJackpot);
             _waveLog.CountKill();
             // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 11.3). 분열 조각은 보스가 아니다.
-            if (type.IsBoss && !type.IsPiece)
+            // 경험치 막기는 보상 고르기도 막는다 — 고르기 창 없이 웨이브를 시험하려는 것이라.
+            if (type.IsBoss && !type.IsPiece && !_expBlocked)
             {
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();
             }
             // 특성이 처치 경험치를 바꾸면(럭키보이 — 확률로 2배) 더 들어간 만큼 금색 "+N"을 띄운다.
             IKillExpModifier modifier = _traits.Find<IKillExpModifier>();
-            int exp = modifier != null ? modifier.ModifyExp(type.Exp) : type.Exp;
+            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로 — 특성은 그 값에 건다.
+            int baseExp = type.Exp * waveConfig.GetExpScale(_waves.Wave);
+            int exp = modifier != null ? modifier.ModifyExp(baseExp) : baseExp;
             GainExp(exp);
-            if (exp > type.Exp) _damageNumbers.Show(position, _viewConfig.GetTileTop(TileType.Ground), exp - type.Exp, DamageKind.BonusExp);
+            if (exp > baseExp) _damageNumbers.Show(position, _viewConfig.GetTileTop(TileType.Ground), exp - baseExp, DamageKind.BonusExp);
         };
         _result = new GameResult(Retry, EnterLobby, _metaDiceConfig);
         _handConfig = handConfig;
@@ -340,7 +347,7 @@ public sealed class GameScene : SceneBase
         _levelUp.Opened += _drag.Cancel;
         _mazePlanner = new MazePlanner(previewConfig, () => _map, _diceField);
         _bot = new GameBot(botConfig, () => _map, () => _waves.Wave, _heroStats, heroConfig.Characters, _diceField, _chips, _hand, _placement, _skills, _monsters, _hero, diceConfig,
-            _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
+            diceStatsConfig, () => heroConfig.Overdrive, _levelUp, _speed, _mazePlanner, () => !_drag.Locked && !_lobbyStage.IsActive && !_monsters.Paused, BotRetry);
         _botConfig = botConfig;
         _bot.EnabledChanged += _ => ApplySimMode();
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
@@ -370,7 +377,7 @@ public sealed class GameScene : SceneBase
         _speedToggle.Changed += _hud.ShowSpeed;
         _hud.SpeedClicked += _speedToggle.Next;
         // 배속 버튼 왼쪽의 시작·일시정지 버튼: 첫 웨이브 전엔 시작, 그 뒤로는 일시정지·재개.
-        _waveStart = new WaveStartGate(() => _waves.Begin(), () => _bot != null && _bot.Enabled);
+        _waveStart = new WaveStartGate(() => _waves.Begin(), () => (_bot != null && _bot.Enabled) || (_colorTest != null && _colorTest.Running));
         _waveStart.WaitingChanged += _ =>
         {
             RefreshPlayPause();
@@ -427,6 +434,10 @@ public sealed class GameScene : SceneBase
         // 보면서 돌리기는 봇 행동을 눈으로 확인하려고(행동 원칙을 고칠 때), 빠른 시뮬은 판 수를 많이 돌리려고 나눴다 — 결과는 같다.
         keys.Add(Key.A, false, "자동 플레이(봇, 보면서 — SO_BotConfig.BatchRuns판 뒤 요약을 남기고 멈춘다)", () => ToggleBot(false), () => _bot.Enabled && !_bot.Fast);
         keys.Add(Key.A, true, "빠른 시뮬(봇, 화면을 그리지 않는다 — 결과는 A와 같다)", () => ToggleBot(true), () => _bot.Enabled && _bot.Fast);
+        // 색마다 순수 딜을 재는 시험(기획서 9.4 개편 준비). 빠른 시뮬로 SO_BotConfig.TestSeeds × TestColors판을 돌고 RunLogs/color_test_*.csv를 남긴다.
+        _colorTest = new ColorPowerTest(_botConfig, () => _map, _diceField, _monsters, _waves, TestRetry);
+        _colorTest.RunningChanged += SetColorTestMode;
+        keys.Add(Key.T, false, "색 시험(미로 전부를 한 색 d20 눈 20으로 — 영웅·칩 없이, 적은 늘 디버프)", ToggleColorTest, () => _colorTest.Running);
         // 원하는 카드를 골라 넣는 테스트 창(F1).
         GameDebugPanel panel = _mapRoot.gameObject.AddComponent<GameDebugPanel>();
         panel.Init(levelUpConfig, diceConfig, keys.Bindings, _hand.Add, () =>
@@ -456,6 +467,7 @@ public sealed class GameScene : SceneBase
         _screen?.Dispose();
         _handFraming?.Dispose();
         _bot?.Dispose();
+        _colorTest?.Dispose();
         _bossBar?.Dispose();
         _mazePlanner?.Dispose();
         _drag?.Dispose();
@@ -494,10 +506,11 @@ public sealed class GameScene : SceneBase
     // 빠른 시뮬 중이면 걸음 크기는 그대로(결과가 같게) 한 프레임 걸음 수만 시뮬 값으로.
     private void ApplyFixedStep()
     {
-        bool sim = _bot != null && _bot.Enabled && _bot.Fast;
         Core.Loop.SetGameFixedStep(_speedConfig.FixedStep > 0f ? _speedConfig.FixedStep : 0f,
-            sim ? _botConfig.SimStepsPerFrame : _speedConfig.MaxStepsPerFrame);
+            IsSim ? _botConfig.SimStepsPerFrame : _speedConfig.MaxStepsPerFrame);
     }
+
+    private bool IsSim => (_bot != null && _bot.Enabled && _bot.Fast) || (_colorTest != null && _colorTest.Running);
 
     // 빠른 시뮬: 판 카메라가 아무 층도 그리지 않게 하고(그리기 비용이 걸음 계산을 잡아먹지 않게) 한 프레임에 걸음을 많이 돈다.
     // 봇이 꺼지면(정한 판 수를 채워도) 되돌린다. UI(HUD 웨이브 수·결과 화면)는 그대로 그려져 진행은 보인다.
@@ -507,7 +520,7 @@ public sealed class GameScene : SceneBase
         ApplyFixedStep();
         Camera camera = Core.Camera != null ? Core.Camera.MainCamera : null;
         if (camera == null) return;
-        bool sim = _bot.Enabled && _bot.Fast;
+        bool sim = IsSim;
         if (sim == _simCulling) return;
         _simCulling = sim;
         if (sim) _simSavedCulling = camera.cullingMask;
@@ -535,7 +548,46 @@ public sealed class GameScene : SceneBase
             Retry();
             return;
         }
-        GenerateMap(_bot.TryTakeSeed(out int seed) ? seed : System.Environment.TickCount);
+        GenerateMap(TakeSeed(out int seed) ? seed : System.Environment.TickCount);
+    }
+
+    // 정해 둔 다음 맵(색 시험·봇 비교 묶음). 없으면 false(무작위 맵).
+    private bool TakeSeed(out int seed)
+    {
+        if (_colorTest != null && _colorTest.TryTakeSeed(out seed)) return true;
+        if (_bot != null && _bot.TryTakeSeed(out seed)) return true;
+        seed = 0;
+        return false;
+    }
+
+    // 색 시험 켜기·끄기. 봇과 함께 돌지 않는다(둘 다 판을 다시 시작한다).
+    private void ToggleColorTest()
+    {
+        if (!_colorTest.Running && _bot.Enabled) _bot.SetEnabled(false);
+        _colorTest.Toggle();
+    }
+
+    // 색 시험의 다음 판: 봇과 같은 길이고, 로비면 테이블을 그 맵으로 바꾼 뒤 뛰어든다.
+    private void TestRetry()
+    {
+        BotRetry();
+        if (_lobbyStage.IsActive && !_lobbyStage.IsEntering) _lobbyScreen.Start();
+    }
+
+    // 색 시험 동안의 테스트 상태 — 주사위 딜만 남긴다(ColorPowerTest). 끄면 켤 때 값으로 되돌린다.
+    private void SetColorTestMode(bool on)
+    {
+        if (on)
+        {
+            _savedInvincible = _goalInvincible;
+            _savedExpBlocked = _expBlocked;
+        }
+        _goalInvincible = on || _savedInvincible;
+        _expBlocked = on || _savedExpBlocked;
+        _heroAttack.Enabled = !on;
+        _monsters.SpeedScale = on ? _botConfig.TestSpeedScale : 1f;
+        _speed.FastForward = on ? _botConfig.SimSpeed : 1f;
+        ApplySimMode();
     }
 
     // 맵 생성은 두 단계다(MapGenerator): 굴림 + 첫 칩 배치(수 ms)는 그 자리에서 하고 판을 바로 세운다(판 주사위 연출도 바로 시작).
@@ -655,7 +707,7 @@ public sealed class GameScene : SceneBase
     {
         SweepBoard();
         // 봇이 비교 묶음으로 돌 때는 정해 둔 맵으로(같은 맵끼리 짝지어 비교한다).
-        GenerateMap(_bot != null && _bot.TryTakeSeed(out int seed) ? seed : System.Environment.TickCount);
+        GenerateMap(TakeSeed(out int seed) ? seed : System.Environment.TickCount);
     }
 
     // 로비로(결과 화면의 로비로): 판 위 물건이 날아가는 동안 영웅이 난간으로 뛰어오르고(뛰어들기를 거꾸로) 카메라가 로비 자리로 빠진다.
@@ -731,6 +783,7 @@ public sealed class GameScene : SceneBase
         {
             SetBoardRollLock(false);
             _rolling = false;
+            _colorTest?.OnBattleReady();
             _waveStart.Arm();
         }));
         DealStartHand();
