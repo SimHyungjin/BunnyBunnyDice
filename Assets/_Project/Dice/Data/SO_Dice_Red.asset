@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: "\uBE68\uAC15"
   Color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   AttackName: "강타"
-  Description: "느리지만 강한 한 방. 최대 체력이 가장 큰 적부터 노린다."
+  Description: "느리지만 강한 한 방."
   StrongAgainst: "단단함, 보스, 재생"
   WeakAgainst: "분열"
   AwakenDescription: "모든 공격이 치명타가 된다"
@@ -25,6 +25,6 @@ MonoBehaviour:
   AttackSpeed: 0.7
   AttackSpeedGrowth: 0
   Range: 2.8
-  PreferToughest: 1
+  PreferToughest: 0
   MaxHealthDamage: 0.04
   MaxHealthBossImmune: 0

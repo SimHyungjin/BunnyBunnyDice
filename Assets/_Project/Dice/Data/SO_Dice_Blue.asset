@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: "\uD30C\uB791"
   Color: {r: 0.2, g: 0.42, b: 0.95, a: 1}
   AttackName: "저격"
-  Description: "사거리가 아주 길다. 멀리 있는 적일수록 세게 맞힌다(사거리 끝에서 {1+FarDamageBonus}배). 최대 체력이 가장 큰 적부터 노린다."
+  Description: "사거리가 아주 길다. 멀리 있는 적일수록 세게 맞힌다(사거리 끝에서 {1+FarDamageBonus}배)."
   StrongAgainst: "빠름"
   WeakAgainst: ""
   AwakenDescription: "사거리 {1+AwakenRangeBonus}배"
@@ -25,7 +25,7 @@ MonoBehaviour:
   AttackSpeed: 1.2
   AttackSpeedGrowth: 0
   Range: 5.5
-  PreferToughest: 1
+  PreferToughest: 0
   MaxHealthDamage: 0.02
   MaxHealthBossImmune: 0
   AwakenRangeBonus: 0.5
