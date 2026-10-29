@@ -18,6 +18,7 @@ public static class OutlineMesh
     private static readonly int ClipMapId = Shader.PropertyToID("_ClipMap");
     private static readonly int ClipMapStId = Shader.PropertyToID("_ClipMap_ST");
     private static readonly int ClipCutoffId = Shader.PropertyToID("_ClipCutoff");
+    private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
     private static readonly MaterialPropertyBlock PropertyBlock = new MaterialPropertyBlock();
 
     private static readonly Dictionary<Mesh, Mesh> SmoothedCopies = new Dictionary<Mesh, Mesh>();
@@ -129,6 +130,40 @@ public static class OutlineMesh
         }
         FilteredCopies[(source, skipped)] = copy;
         return copy;
+    }
+
+    /// <summary>
+    /// root 아래 아웃라인 자리(outline 머티리얼 번호)에만 색을 덮어쓴다. null이면 공용 색으로 돌린다 — 공용 머티리얼은 그대로라
+    /// 조명 설정이 바꾸는 굵기·평소 색은 따라온다. 알파로 깎은 재질의 깎기 값(AttachToSkinned가 넣은 블록)은 지우지 않고 남긴다.
+    /// </summary>
+    public static void Tint(GameObject root, Material outline, Color? color)
+    {
+        if (root == null || outline == null) return;
+        Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Material[] materials = renderers[i].sharedMaterials;
+            for (int m = 0; m < materials.Length; m++)
+            {
+                // 머티리얼이 아니라 셰이더로 찾는다 — VRM 모델은 Vrm10 런타임이 처음 뜰 때 렌더러 머티리얼을 모두 복제해(표정의 머티리얼 값 바꾸기,
+                // MaterialValueBindingMerger) 영웅의 아웃라인은 공용 머티리얼이 아니라 이름만 같은 사본이다.
+                if (materials[m] == null || materials[m].shader != outline.shader) continue;
+                // 블록에서 속성 하나만 지우는 방법이 없어, 깎기 값을 꺼내 두고 비운 뒤 다시 넣는다.
+                renderers[i].GetPropertyBlock(PropertyBlock, m);
+                Texture clip = PropertyBlock.HasTexture(ClipMapId) ? PropertyBlock.GetTexture(ClipMapId) : null;
+                Vector4 clipSt = PropertyBlock.GetVector(ClipMapStId);
+                float clipCutoff = PropertyBlock.GetFloat(ClipCutoffId);
+                PropertyBlock.Clear();
+                if (clip != null)
+                {
+                    PropertyBlock.SetTexture(ClipMapId, clip);
+                    PropertyBlock.SetVector(ClipMapStId, clipSt);
+                    PropertyBlock.SetFloat(ClipCutoffId, clipCutoff);
+                }
+                if (color.HasValue) PropertyBlock.SetColor(OutlineColorId, color.Value);
+                renderers[i].SetPropertyBlock(PropertyBlock, m);
+            }
+        }
     }
 
     /// <summary>

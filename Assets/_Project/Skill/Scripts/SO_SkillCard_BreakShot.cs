@@ -13,6 +13,8 @@ public sealed class SO_SkillCard_BreakShot : SO_SkillCard
     [Min(1f)] public float SpeedScale = 3f;
     [Tooltip("지속 시간(초).")]
     [Min(0.1f)] public float Duration = 10f;
+    [Tooltip("쓰는 순간 영웅 발밑에서 퍼지는 고리의 반지름(칸 = 1). 강화 중에는 영웅 외곽선이 카드 색(IconColor)이 된다.")]
+    [Min(0f)] public float BurstRadius = 1.2f;
 
     public override SkillTarget Target => SkillTarget.Board;
 }

@@ -32,8 +32,6 @@ public sealed class DiceView
     private bool _awakened;
     // 새로 각성했는데 아직 보여 주지 않았다. 굴리는 중에 각성이 드러나면 눈보다 먼저 결과를 알려 주므로 멈춘 뒤에 켠다(SyncAwakened).
     private bool _revealPending;
-    private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
-    private static MaterialPropertyBlock _outlineBlock;
 
     public bool IsRolling => _rollTime >= 0f || _popTime >= 0f;
 
@@ -223,24 +221,8 @@ public sealed class DiceView
     /// <summary>각성 고리를 띄울 자리(칸 중심, 주사위가 선 바닥 높이 — 맵 로컬).</summary>
     public Vector3 BasePosition => new Vector3(_cell.x, _top, _cell.y);
 
-    // 외곽선은 공용 머티리얼(SceneLighting)이라 복제하지 않고 그 자리(머티리얼 번호)에만 블록으로 색을 넣는다
-    // — 조명 설정이 바꾸는 굵기는 그대로 따라온다. 끌 때는 빈 블록으로 공용 색으로 돌린다.
-    private void TintOutline(bool awakened, SO_DiceConfig config)
-    {
-        if (_body == null || _outline == null) return;
-        _outlineBlock ??= new MaterialPropertyBlock();
-        _outlineBlock.Clear();
-        if (awakened) _outlineBlock.SetColor(OutlineColorId, config.AwakenedOutlineColor);
-        Renderer[] renderers = _body.GetComponentsInChildren<Renderer>(true);
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Material[] materials = renderers[i].sharedMaterials;
-            for (int m = 0; m < materials.Length; m++)
-            {
-                if (materials[m] == _outline) renderers[i].SetPropertyBlock(_outlineBlock, m);
-            }
-        }
-    }
+    private void TintOutline(bool awakened, SO_DiceConfig config) =>
+        OutlineMesh.Tint(_body, _outline, awakened ? config.AwakenedOutlineColor : (Color?)null);
 
     /// <summary>
     /// 눈 글자를 윗면에 눕히고, 글자 위쪽이 화면 위를 향하게 카메라 쪽으로 돌린다

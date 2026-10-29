@@ -60,6 +60,7 @@ public sealed partial class GameScene : SceneBase
     private HeroOverdrive _heroOverdrive;
     private HeroOverdriveView _heroOverdriveView;
     private DiceAwakenEffect _diceAwakenEffect;
+    private HeroBreakShotView _breakShotView;
     private MonsterField _monsters;
     private AttackEffects _attackEffects;
     private HeroCardShots _heroCards;
@@ -244,6 +245,7 @@ public sealed partial class GameScene : SceneBase
         _heroCards = new HeroCardShots(_mapRoot, heroConfig.CardShot, _monsters, _monsterConfig, _viewConfig);
         _heroAttack = new HeroAttack(heroConfig, _heroStats, _hero, _monsters, _heroCards,
             _diceCombat.GetRange);
+        _breakShotView = new HeroBreakShotView(_hero, _heroAttack, _skills, _attackEffects);
         _waves = new WaveSpawner(waveConfig, _monsters.Spawn, _monsters.SpawnBoss, () => _monsters.Count);
         // 잭팟 보스 예고: 보스 웨이브 동안 보스 포켓의 빛이 보스 색에서 금색으로 바뀐다.
         _waves.JackpotWarned += () => _environment.SetPocketJackpot(true);
@@ -429,6 +431,7 @@ public sealed partial class GameScene : SceneBase
         _hero?.Dispose();
         _waves?.Dispose();
         _waveLog?.Dispose();
+        _breakShotView?.Dispose();
         _heroAttack?.Dispose();
         _expBoost?.Dispose();
         _skillPreview?.Dispose();

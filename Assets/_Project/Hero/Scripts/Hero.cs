@@ -91,6 +91,9 @@ public sealed class Hero : IDisposable
 
     public void RebuildView() => _view.Rebuild();
 
+    /// <summary>외곽선 색을 덮어쓴다(표시만 — 영웅 강화 중임을 보인다). null이면 원래 색.</summary>
+    public void SetOutlineTint(Color? color) => _view.SetOutlineTint(color);
+
     /// <summary>새 판: 목표물에서 가장 가까운 바닥에 세운다(목표물 위가 아니라). 로비의 뛰어들기도 이 자리로 내려앉는다.</summary>
     public void Respawn()
     {

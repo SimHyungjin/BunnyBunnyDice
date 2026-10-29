@@ -60,6 +60,7 @@ public sealed class HeroView
     private float _hopTime = -1f;
     // 놓을 칸으로 뛰어들 때는 내려앉을 높이를 처음부터 정해 둔다 — 발밑이 아직 앞 칸이라 따라가면 칸 경계에서 높이가 튄다.
     private bool _hopFixed;
+    private Color? _outlineTint;
 
     /// <param name="outline">툰 아웃라인 머티리얼(SceneLighting.CharacterOutlineMaterial). 없으면 null.</param>
     public HeroView(Transform parent, SO_HeroConfig config, HeroStats stats, Material outline)
@@ -95,6 +96,15 @@ public sealed class HeroView
         _animation = new HeroAnimation(_instance, _config.Animations);
         _springs = new HeroSprings(_instance);
         _animation.SetPose(_pose);
+        // 강화 중에 캐릭터를 바꿔 다시 만들어도 외곽선 색이 이어지게.
+        if (_outlineTint.HasValue) OutlineMesh.Tint(_instance, _outline, _outlineTint);
+    }
+
+    /// <summary>외곽선 색을 덮어쓴다(브레이크 샷 등 영웅 강화 중). null이면 공용 색으로 돌린다.</summary>
+    public void SetOutlineTint(Color? color)
+    {
+        _outlineTint = color;
+        OutlineMesh.Tint(_instance, _outline, color);
     }
 
     /// <summary>연출(로비·뛰어들기)이 몸을 직접 놓는다. scale은 판 위 크기의 배수(로비에서는 크게 앉아 있다가 뛰어들며 작아진다).</summary>
