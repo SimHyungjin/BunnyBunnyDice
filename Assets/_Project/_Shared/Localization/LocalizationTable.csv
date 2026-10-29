@@ -34,7 +34,7 @@
 이십면체,D20,SO_DiceConfig.Models[2].DisplayName
 파랑,Blue,SO_Dice_Blue.DisplayName
 저격,Snipe,SO_Dice_Blue.AttackName
-멀리 있는 적일수록 세게 맞힌다(사거리 끝에서 {1+FarDamageBonus}배).,Hits harder the farther the enemy is (x{1+FarDamageBonus} at max range).,SO_Dice_Blue.Description
+멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%}).,Hits harder the farther the enemy is (+{FarDamagePerCell%} per tile).,SO_Dice_Blue.Description
 사거리 {1+AwakenRangeBonus}배,Range x{1+AwakenRangeBonus},SO_Dice_Blue.AwakenDescription
 검정,Black,SO_Dice_Clear.DisplayName
 기본 공격,Basic Attack,SO_Dice_Clear.AttackName

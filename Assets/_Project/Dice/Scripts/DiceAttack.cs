@@ -145,14 +145,14 @@ public sealed class DiceAttack : IDisposable
         return true;
     }
 
-    // 저격(파랑): 멀리 있는 적일수록 세다 — 사거리 끝에서 (1 + FarDamageBonus)배.
+    // 저격(파랑): 멀리 있는 적일수록 세다 — 한 칸마다 FarDamagePerCell씩, 상한 없이(사거리가 늘면 끝의 피해도 는다).
     private bool FireLongRange(in Shot shot, SO_DiceType_LongRange type, Color color)
     {
         int target = FindFirst(shot);
         if (target < 0) return false;
         Vector2 position = _monsters.States[target].Position;
-        float distance = shot.Range > 0f ? Mathf.Clamp01((position - shot.Origin).magnitude / shot.Range) : 0f;
-        bool critical = HitDirect(target, DamageOn(shot, target, 1f + type.FarDamageBonus * distance), shot.Stats.CritChance);
+        float distance = (position - shot.Origin).magnitude;
+        bool critical = HitDirect(target, DamageOn(shot, target, 1f + type.FarDamagePerCell * distance), shot.Stats.CritChance);
         _effects.Show(shot.Muzzle, ToHitPoint(position), color, critical);
         return true;
     }
