@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d17acd3d50754a4c997ac27de0b70f6a, type: 3}
   m_Name: SO_HeroCard_Projectile
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCard
-  DisplayName: "투사체"
-  Description: "한 번에 던지는 카드가 늘어난다. 사거리 안 가까운 적부터 고르게 나눠 맞히고, 적이 모자라면 같은 적에게 몰린다. 치명타와 방어력은 카드마다 따로다. 여러 장은 합산된다."
+  DisplayName: "\uD22C\uC0AC\uCCB4"
+  Description: "\uC601\uC6C5\uC774 \uD55C \uBC88\uC5D0 \uB358\uC9C0\uB294 \uCE74\uB4DC\uAC00
+    \uB298\uC5B4\uB09C\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 1, g: 1, b: 1, a: 1}

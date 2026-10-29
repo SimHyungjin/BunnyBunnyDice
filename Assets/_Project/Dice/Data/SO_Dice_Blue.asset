@@ -15,11 +15,12 @@ MonoBehaviour:
   Colors: 4
   DisplayName: "\uD30C\uB791"
   Color: {r: 0.2, g: 0.42, b: 0.95, a: 1}
-  AttackName: "저격"
-  Description: "사거리가 아주 길다. 멀리 있는 적일수록 세게 맞힌다(사거리 끝에서 {1+FarDamageBonus}배)."
-  StrongAgainst: "빠름"
-  WeakAgainst: ""
-  AwakenDescription: "사거리 {1+AwakenRangeBonus}배"
+  AttackName: "\uC800\uACA9"
+  Description: "\uBA40\uB9AC \uC788\uB294 \uC801\uC77C\uC218\uB85D \uC138\uAC8C \uB9DE\uD78C\uB2E4(\uC0AC\uAC70\uB9AC
+    \uB05D\uC5D0\uC11C {1+FarDamageBonus}\uBC30)."
+  StrongAgainst: "\uBE60\uB984"
+  WeakAgainst: 
+  AwakenDescription: "\uC0AC\uAC70\uB9AC {1+AwakenRangeBonus}\uBC30"
   Damage: 32
   DamageGrowth: 0.5
   AttackSpeed: 1.2
@@ -28,5 +29,5 @@ MonoBehaviour:
   PreferToughest: 0
   MaxHealthDamage: 0.02
   MaxHealthBossImmune: 0
-  AwakenRangeBonus: 0.5
   FarDamageBonus: 2
+  AwakenRangeBonus: 0.5

@@ -15,16 +15,18 @@ MonoBehaviour:
   Colors: 6
   DisplayName: "\uD558\uB298"
   Color: {r: 0.4, g: 0.8, b: 0.96, a: 1}
-  AttackName: "체인"
-  Description: "맨 앞의 적을 맞힌 뒤 가까운 적에게 튕긴다. 튕길 때마다 피해가 {Falloff%}로 줄고, {MinJumpDamage}보다 작아지면 멈춘다."
-  StrongAgainst: ""
-  WeakAgainst: "단단함"
-  AwakenDescription: "튕길 때마다 {1-AwakenFalloff%}만 줄어든다"
+  AttackName: "\uCCB4\uC778"
+  Description: "\uAC00\uAE4C\uC6B4 \uC801\uC5D0\uAC8C \uD295\uAE34\uB2E4. \uD295\uAE38
+    \uB54C\uB9C8\uB2E4 \uD53C\uD574\uAC00 {Falloff%}\uB85C \uC904\uC5B4\uB4E0\uB2E4."
+  StrongAgainst: 
+  WeakAgainst: "\uB2E8\uB2E8\uD568"
+  AwakenDescription: "\uD295\uAE38 \uB54C\uB9C8\uB2E4 {1-AwakenFalloff%}\uB9CC \uC904\uC5B4\uB4E0\uB2E4"
   Damage: 12
   DamageGrowth: 0.5
   AttackSpeed: 2
   AttackSpeedGrowth: 0
   Range: 3.8
+  PreferToughest: 0
   MaxHealthDamage: 0.004
   MaxHealthBossImmune: 0
   JumpRange: 1.6

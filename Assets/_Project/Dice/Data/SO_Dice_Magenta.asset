@@ -15,16 +15,17 @@ MonoBehaviour:
   Colors: 5
   DisplayName: "\uC790\uD64D"
   Color: {r: 0.9, g: 0.25, b: 0.75, a: 1}
-  AttackName: "관통"
-  Description: "사거리 끝까지 일직선으로 꿰뚫는다. 가장 많은 적을 꿰뚫는 방향을 노린다."
-  StrongAgainst: "단단함, 보스"
-  WeakAgainst: ""
-  AwakenDescription: "관통선이 {AwakenWidthScale}배 굵어진다"
+  AttackName: "\uAD00\uD1B5"
+  Description: "\uC77C\uC9C1\uC120\uC73C\uB85C \uAFF0\uB6AB\uB294\uB2E4."
+  StrongAgainst: "\uB2E8\uB2E8\uD568, \uBCF4\uC2A4"
+  WeakAgainst: 
+  AwakenDescription: "\uAD00\uD1B5\uC120\uC774 {AwakenWidthScale}\uBC30 \uAD75\uC5B4\uC9C4\uB2E4"
   Damage: 27
   DamageGrowth: 0.5
   AttackSpeed: 0.4
   AttackSpeedGrowth: 0
   Range: 5.5
+  PreferToughest: 0
   MaxHealthDamage: 0.003
   MaxHealthBossImmune: 0
   HalfWidth: 0.15

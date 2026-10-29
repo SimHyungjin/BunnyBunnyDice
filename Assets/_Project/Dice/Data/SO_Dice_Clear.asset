@@ -13,17 +13,20 @@ MonoBehaviour:
   m_Name: SO_Dice_Clear
   m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Basic
   Colors: 0
-  DisplayName: 검정
+  DisplayName: "\uAC80\uC815"
   Color: {r: 0.2, g: 0.2, b: 0.23, a: 1}
-  AttackName: "기본 공격"
-  Description: "적 하나를 약하게 공격한다. 색 주사위를 얹으면 쌓인 눈 그대로 그 색이 된다."
-  StrongAgainst: ""
-  WeakAgainst: ""
-  AwakenDescription: "없음. 눈이 20이 되면 무작위 색으로 바뀌어 바로 각성한다."
+  AttackName: "\uAE30\uBCF8 \uACF5\uACA9"
+  Description: "\uC0C9 \uC8FC\uC0AC\uC704\uB97C \uC5B9\uC73C\uBA74 \uADF8 \uC0C9\uC774
+    \uB41C\uB2E4."
+  StrongAgainst: 
+  WeakAgainst: 
+  AwakenDescription: "\uB208\uC774 20\uC774 \uB418\uBA74 \uBB34\uC791\uC704 \uC0C9\uC774
+    \uB41C\uB2E4."
   Damage: 32
   DamageGrowth: 0.5
   AttackSpeed: 1.2
   AttackSpeedGrowth: 0
   Range: 2.8
+  PreferToughest: 0
   MaxHealthDamage: 0
   MaxHealthBossImmune: 0

@@ -27,10 +27,25 @@ MonoBehaviour:
   MaxStacks: 99
   CardHeightRatio: 0.222
   DiceCardColor: {r: 0.961, g: 0.02, b: 0.424, a: 1}
+  SkillCardColor: {r: 0.25, g: 0.9, b: 0.7, a: 1}
   ChipCardColor: {r: 1, g: 0.729, b: 0.2, a: 1}
+  HeroCardColor: {r: 0.35, g: 0.65, b: 1, a: 1}
+  SkillSubText: "\uC2A4\uD0AC \uCE74\uB4DC"
   ChipSubText: "\uCE69 \uCE74\uB4DC"
-  ChipKindLabel: "\uce69"
-  ChipKindText: "칸에 놓는다. 칩 위 주사위가 효과를 받는다. 빈 칸에 놓으면 길을 막는다. 칸마다 하나만 놓을 수 있다."
+  HeroSubText: "\uC601\uC6C5 \uAC15\uD654"
+  ChipKindLabel: "\uCE69"
+  ChipKindText: "\uBE48 \uCE78\uC774\uB098 \uC8FC\uC0AC\uC704 \uBC11\uC5D0 \uB193\uB294\uB2E4."
+  SkillDiceLabel: "\uC8FC\uC0AC\uC704"
+  SkillDiceText: "\uC8FC\uC0AC\uC704\uC5D0 \uB193\uB294\uB2E4."
+  SkillAreaLabel: "\uC801 \uC804\uCCB4"
+  SkillAreaText: "\uD310 \uC704 \uC544\uBB34 \uACF3\uC5D0\uB098 \uB193\uB294\uB2E4."
+  SkillBoardLabel: "\uD310 \uC804\uCCB4"
+  SkillBoardText: "\uD310 \uC704 \uC544\uBB34 \uACF3\uC5D0\uB098 \uB193\uB294\uB2E4."
+  SkillCellLabel: "\uCE78"
+  SkillCellText: "\uC8FC\uC0AC\uC704\uB098 \uCE69\uC774 \uC788\uB294 \uCE78\uC5D0
+    \uB193\uB294\uB2E4."
+  HeroKindLabel: "\uC601\uC6C5"
+  HeroKindText: "\uACE0\uB974\uBA74 \uBC14\uB85C \uC801\uC6A9\uB41C\uB2E4."
   TitleBackAlpha: 0.25
   StrongTagColor: {r: 0.247, g: 0.878, b: 1, a: 1}
   StrongTagTextColor: {r: 0, g: 0, b: 0, a: 1}

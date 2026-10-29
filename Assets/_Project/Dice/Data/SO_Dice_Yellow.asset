@@ -15,16 +15,18 @@ MonoBehaviour:
   Colors: 3
   DisplayName: "\uB178\uB791"
   Color: {r: 0.96, g: 0.85, b: 0.2, a: 1}
-  AttackName: "범위 폭발"
-  Description: "맞은 자리에서 폭발해 주변 적에게도 피해를 준다. 가장 많은 적이 휘말리는 곳을 노린다."
-  StrongAgainst: "분열"
-  WeakAgainst: "단단함"
-  AwakenDescription: "폭발 반경 {1+AwakenExplosionRadiusBonus}배"
+  AttackName: "\uBC94\uC704 \uD3ED\uBC1C"
+  Description: "\uB9DE\uC740 \uC790\uB9AC\uC5D0\uC11C \uD3ED\uBC1C\uD574 \uC8FC\uBCC0
+    \uC801\uC5D0\uAC8C\uB3C4 \uD53C\uD574\uB97C \uC900\uB2E4."
+  StrongAgainst: "\uBD84\uC5F4"
+  WeakAgainst: "\uB2E8\uB2E8\uD568"
+  AwakenDescription: "\uD3ED\uBC1C \uBC18\uACBD {1+AwakenExplosionRadiusBonus}\uBC30"
   Damage: 13
   DamageGrowth: 0.27
   AttackSpeed: 2
   AttackSpeedGrowth: 0
   Range: 2.3
+  PreferToughest: 0
   MaxHealthDamage: 0.001
   MaxHealthBossImmune: 0
   ExplosionRadius: 0.9

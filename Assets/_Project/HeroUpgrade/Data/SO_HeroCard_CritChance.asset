@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d17acd3d50754a4c997ac27de0b70f6a, type: 3}
   m_Name: SO_HeroCard_CritChance
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCard
-  DisplayName: "치명타 확률"
-  Description: "영웅 공격과 스킬의 치명타 확률이 오른다. 여러 장은 합산되고, 100%를 넘는 몫은 치명타 피해가 된다."
+  DisplayName: "\uCE58\uBA85\uD0C0 \uD655\uB960"
+  Description: "\uC601\uC6C5\uC758 \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC624\uB978\uB2E4.
+    100%\uB97C \uB118\uB294 \uB9CC\uD07C\uC740 \uCE58\uBA85\uD0C0 \uD53C\uD574\uAC00
+    \uB41C\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 1, g: 1, b: 1, a: 1}

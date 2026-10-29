@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -160,26 +159,19 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
         _descriptionText.text = type != null ? DiceDescription(type) : string.Empty;
         ShowTags(config, _strongTagBack, _strongTagText, type != null ? type.StrongAgainst : null,
             _weakTagBack, _weakTagText, type != null ? type.WeakAgainst : null);
-        _awakenText.text = type != null ? AwakenDescription(card, type, statsConfig) : string.Empty;
+        // 각성 공통 배율(SO_DiceStatsConfig.AwakenDamageScale)은 적지 않는다 — 모든 색에 걸리는 시스템 규칙이라 색의 개성이 아니다(2026-10-29 사용자).
+        _awakenText.text = type != null ? CardText.Fill(type.AwakenDescription, type) : string.Empty;
     }
 
-    // 최대 체력 피해는 모든 색의 공통 규칙이라 색 글마다 적지 않고 여기서 붙인다 — 색 글에 적으면 색을 더하거나 값을 0으로 둘 때 글을 따로 고쳐야 한다.
+    // 최대 체력 피해는 색마다 값이 달라(색의 개성) 적되, 문장은 여기서 붙인다 — 색 글에 적으면 색을 더하거나 값을 0으로 둘 때 글을 따로 고쳐야 한다.
     private static string DiceDescription(SO_DiceType type)
     {
         string text = CardText.Fill(type.Description, type);
         if (type.MaxHealthDamage <= 0f) return text;
-        return $"{text} {App.Localize("맞은 적 최대 체력의 {0}를 더 준다.", CardText.FormatPercent(type.MaxHealthDamage))}";
+        return $"{text} {App.Localize("최대 체력의 {0} 피해를 더 준다.", CardText.FormatPercent(type.MaxHealthDamage))}";
     }
 
-    // 각성 공통 배율(한 방 피해 전체)을 색마다의 각성 효과 앞에 붙인다. 검정은 각성이 없고 20이 되면 색으로 바뀌어 그 색의 각성을 받는다.
-    private static string AwakenDescription(DiceCard card, SO_DiceType type, SO_DiceStatsConfig statsConfig)
-    {
-        string text = CardText.Fill(type.AwakenDescription, type);
-        if (card.Colors == DiceColor.Clear || statsConfig.AwakenDamageScale <= 1f) return text;
-        return App.Localize("피해 {0}배 · {1}", statsConfig.AwakenDamageScale.ToString("0.##", CultureInfo.InvariantCulture), text);
-    }
-
-    // 스킬은 쓰는 곳(주사위·범위·판 전체)을 종류 칸에 적는다 — 놓을 곳이 카드마다 달라서.
+    // 스킬은 쓰는 곳(주사위·적 전체·판 전체·칸)을 종류 칸에 적는다 — 놓을 곳이 카드마다 달라서.
     private void ShowSkill(SO_SkillCard card, SO_CardHandConfig config)
     {
         switch (card.Target)

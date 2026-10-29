@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d17acd3d50754a4c997ac27de0b70f6a, type: 3}
   m_Name: SO_HeroCard_Attack
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCard
-  DisplayName: "공격력"
-  Description: "영웅의 공격력이 캐릭터 기본값 기준으로 오른다. 스킬 위력도 함께 오른다. 여러 장은 합산된다."
+  DisplayName: "\uACF5\uACA9\uB825"
+  Description: "\uC601\uC6C5\uC758 \uACF5\uACA9\uB825\uC774 \uC624\uB978\uB2E4."
   StrongAgainst: 
   Icon: {fileID: 0}
   IconColor: {r: 1, g: 1, b: 1, a: 1}
