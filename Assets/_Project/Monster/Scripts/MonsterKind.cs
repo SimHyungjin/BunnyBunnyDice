@@ -79,6 +79,17 @@ public sealed class MonsterKind
         }
     }
 
+    /// <summary>받는 피해에 곱하는 값(1 − 피해 저항의 곱).</summary>
+    public float DamageScale
+    {
+        get
+        {
+            float scale = 1f;
+            for (int i = 0; i < _traits.Count; i++) scale *= 1f - _traits[i].DamageResist;
+            return scale;
+        }
+    }
+
     public float Armor
     {
         get

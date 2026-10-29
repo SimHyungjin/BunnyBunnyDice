@@ -48,8 +48,6 @@ public sealed class SO_MonsterConfig : SO_Config
     [Header("상태 이상")]
     [Tooltip("독 피해를 주는 간격(초). 이 간격마다 한 번씩 방어력을 적용해 피해를 준다.")]
     [Min(0.05f)] public float PoisonTickInterval = 0.5f;
-    [Tooltip("보스가 독을 줄여 받는 비율. 독은 최대 체력 비율이라 체력이 큰 보스에게 지나치게 세다(기획서 9.7). 0.5면 절반만 받는다.")]
-    [Range(0f, 1f)] public float BossPoisonResist = 0.5f;
     // 상태는 체력바 아래 네모로 보인다(MonsterHealthBars) — 몸 색은 특성(SO_MonsterTrait.Tint)이 쓰고, 여러 상태가 겹쳐도 하나씩 보이게.
     // 색은 그 상태를 거는 칩 색과 같게 둔다 — 칩과 상태를 한 번만 외우게(칩 색 = 효과, 기획서 9.7).
     [Tooltip("취약(받는 피해 증가) 표시 색. 취약 칩 색(하양).")]

@@ -22,8 +22,8 @@ public sealed class MonsterField : IDisposable
     private MapData _map;
     private GridRouteField _route;
 
-    /// <summary>몬스터가 목표물에 닿았다(이미 치운 뒤). 피해는 받는 쪽이 모양(GoalDamage)을 보고 정한다.</summary>
-    public event Action<MonsterKind> ReachedGoal;
+    /// <summary>몬스터가 목표물에 닿았다(이미 치운 뒤): 모양과 남은 체력. 피해는 받는 쪽이 모양(GoalDamage)을 보고 정한다.</summary>
+    public event Action<MonsterKind, float> ReachedGoal;
 
     /// <summary>피해가 들어갔다: 맞은 자리(맵 로컬 x, z), 실제로 들어간 피해, 종류. 피해 숫자 표시가 구독한다.</summary>
     public event Action<Vector2, float, DamageKind> Damaged;
@@ -39,6 +39,9 @@ public sealed class MonsterField : IDisposable
 
     /// <summary>멈추면(게임 오버) 걷지 않고 그 자리에 남는다.</summary>
     public bool Paused { get; set; }
+
+    /// <summary>모든 몬스터의 이동 속도 배율(테스트 — 색 시험이 "모든 적에게 늘 디버프"를 이 값 하나로 건다, ColorPowerTest). 평소 1.</summary>
+    public float SpeedScale { get; set; } = 1f;
 
     public int Count => _count;
 
@@ -132,9 +135,9 @@ public sealed class MonsterField : IDisposable
         ApplyDamage(slot, damage, penetration, critical ? DamageKind.Critical : DamageKind.Normal, source);
     }
 
-    /// <summary>독을 건다(초당 최대 체력의 ratio). 체력이 큰 보스에게 지나치지 않게 보스는 저항만큼 줄여 받는다(기획서 9.7).</summary>
+    /// <summary>독을 건다(초당 최대 체력의 ratio). 보스(거대)는 독 피해도 다른 피해처럼 피해 저항(SO_MonsterTrait.DamageResist)으로 줄여 받는다.</summary>
     public void Poison(int slot, float ratio, float duration) =>
-        MonsterStatus.Poison(ref _states[slot], ratio * (KindOf(slot).IsBoss ? 1f - _config.BossPoisonResist : 1f), duration);
+        MonsterStatus.Poison(ref _states[slot], ratio, duration);
 
     public void Vulnerable(int slot, float ratio, float duration) =>
         MonsterStatus.Vulnerable(ref _states[slot], ratio, duration);
@@ -255,13 +258,14 @@ public sealed class MonsterField : IDisposable
             if (regen > 0f)
                 state.Health = Mathf.Min(state.Health + state.MaxHealth * regen * deltaTime, state.MaxHealth);
 
-            float speed = kind.MoveSpeed * MonsterStatus.GetSpeedScale(state);
+            float speed = kind.MoveSpeed * MonsterStatus.GetSpeedScale(state) * SpeedScale;
             MonsterMovement.Advance(ref state, speed * deltaTime, _route);
             // 목표물 영역에 발을 들이면 닿은 것으로 본다(길 끝인 목표물 칸 중심까지 걸어 들어가지 않는다).
             if (!goal.Contains(GridCircle.CellOf(state.Position))) continue;
 
+            float health = state.Health;
             RemoveAt(i);
-            ReachedGoal?.Invoke(kind);
+            ReachedGoal?.Invoke(kind, health);
             // 이번 피해로 게임 오버가 되면 남은 몬스터는 이번 프레임부터 멈춘다.
             if (Paused) return;
         }
@@ -274,8 +278,12 @@ public sealed class MonsterField : IDisposable
         ref MonsterState state = ref _states[slot];
         // 방깍(취약)은 받는 피해 배율이라 치명타처럼 방어력보다 먼저 곱한다(MonsterDamage). 화상(독)에도 붙는다 — "모든 공격".
         if (state.IsVulnerable) damage *= 1f + state.VulnerableRatio;
-        float armor = _kinds[state.TypeIndex].Armor;
+        MonsterKind target = _kinds[state.TypeIndex];
+        float armor = target.Armor;
         float raw = kind == DamageKind.Poison ? damage : MonsterDamage.Apply(damage, armor, penetration, _config.MinDamageRatio);
+        // 피해 저항(거대)은 출처를 가리지 않는다 — 주사위·영웅·스킬·화상이 몬스터 특성을 몰라도 되게 받는 쪽에서 줄인다.
+        // 방어력을 뺀 뒤에 줄인다: 먼저 줄이면 작아진 피해에서 방어력을 빼 단단한 보스(5웨이브 거대+단단함)가 의도(체력 1/10과 맞바꿈)보다 몇 배 단단해졌다.
+        raw *= target.DamageScale;
 
         // 피해는 정수로 들어간다 — 화면 숫자와 실제로 깎인 체력이 같게. 맞힌 피해는 반올림하고 최소 1(맞혔는데 0이면 안 맞은 것처럼 보인다).
         // 독은 한 번에 1이 안 될 만큼 작게 자주 들어오므로 나머지를 모아 1이 넘을 때 준다.

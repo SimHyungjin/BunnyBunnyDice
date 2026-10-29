@@ -21,6 +21,9 @@ public sealed class SO_MonsterTrait : ScriptableObject
     [Min(0.01f)] public float SpeedScale = 1f;
     [Tooltip("둔화 비율·얼림 시간을 줄이는 비율. 0.5면 절반만 받는다 — 면역이 아니라 저항(거대).")]
     [Range(0f, 1f)] public float ImpairResist;
+    [Tooltip("받는 모든 피해(주사위 고정·최대 체력 피해, 영웅, 스킬, 화상)를 줄이는 비율. 0.9면 10%만 받는다(거대 — 2026-10-29: 최대 체력 피해가 모든 색에 붙자 보스가 1초도 못 버텼다. " +
+             "체력을 올리면 최대 체력 피해는 그대로라 피해를 줄인다). 겹치면 곱으로 줄어든다.")]
+    [Range(0f, 0.99f)] public float DamageResist;
 
     [Header("고정값 (겹치면 더한다)")]
     [Tooltip("받는 피해에서 빼는 값(단단함). 최소 피해 비율은 SO_MonsterConfig.MinDamageRatio.")]

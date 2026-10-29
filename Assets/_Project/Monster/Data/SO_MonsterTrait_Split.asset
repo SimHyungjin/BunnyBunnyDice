@@ -18,11 +18,12 @@ MonoBehaviour:
   HealthScale: 0.6
   SpeedScale: 1
   ImpairResist: 0
+  DamageResist: 0
   Armor: 0
   RegenRatio: 0
   GoalDamageBonus: 0
   ExpBonus: 0
   SplitCount: 2
-  SplitHealthRatio: 0.5
+  SplitHealthRatio: 0.3
   PieceGoalDamage: 1
   PieceExp: 0
