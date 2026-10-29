@@ -29,18 +29,12 @@ public sealed class SO_HeroCharacter : SO_Config
     public SO_HeroTrait Trait;
 
     [Header("표시")]
-    [Tooltip("발밑이 피벗인 프리팹(모델 FBX를 바로 넣어도 된다). 앞(+Z)이 이동 방향을 향하도록 돌린다.")]
+    [Tooltip("VRoid 모델(VRM을 불러온 프리팹, 발밑이 피벗). 앞(+Z)이 이동 방향을 향하도록 돌린다. 모든 캐릭터가 VRoid 모델을 쓴다(2026-10-29).")]
     public GameObject Prefab;
-    [Tooltip("모델 키(칸). 모델마다 내보낸 단위가 달라 키를 재서 이 높이로 맞춘다. 0이면 프리팹 크기 그대로.")]
-    [Min(0f)] public float ModelHeight = 0f;
-    [Tooltip("공격선 색. 몸 색 입히기를 켜면 몸 색이기도 하다.")]
+    [Tooltip("모델 키(칸). 키를 재서 이 높이로 맞춘다. 0이면 프리팹 크기 그대로.")]
+    [Min(0f)] public float ModelHeight = 0.9f;
+    [Tooltip("공격선 색.")]
     public Color Color = new Color(0.95f, 0.85f, 0.3f);
-    [Tooltip("몸에 Color를 입힌다(임시 단색 모델용). 텍스처가 있는 모델은 끈다 — 색이 텍스처에 곱해져 칠이 탁해진다.")]
-    public bool TintModel = true;
-    [Tooltip("툰 아웃라인(다른 물체와 같은 화면 비율 굵기)을 붙인다. 모델이 자기 아웃라인 껍데기를 갖고 있으면 아래 ShellMaterial로 껍데기를 끄고 켠다 — 껍데기 위에 붙이면 뒷면만 그리는 아웃라인이 뒤집힌 껍데기에서는 앞면을 그려 몸을 통째로 덮는다.")]
-    public bool AddOutline = true;
-    [Tooltip("모델 안에 든 아웃라인 껍데기의 재질(Blender 등에서 만든 뒤집힌 메시). 지정하면 그 부분을 그리지 않는다 — 굵기가 모델 크기를 따라가 다른 물체의 아웃라인과 맞지 않는다. 메시의 마지막 재질이어야 한다.")]
-    public Material ShellMaterial;
 
     [Header("초상화 (캐릭터 선택 창)")]
     [Tooltip("배경이 투명한 그림. 비우면 3D 모델을 찍은 사진을 쓴다(HeroPortraits). 잠긴 캐릭터는 이 그림을 검게 칠해 실루엣으로 쓴다.")]

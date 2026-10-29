@@ -17,14 +17,11 @@ MonoBehaviour:
   Prefab: {fileID: -1728013695380148634, guid: fbb59e628b4e06848975ad12bcd0273c, type: 3}
   ModelHeight: 0.9
   Color: {r: 0.3, g: 0.85, b: 0.85, a: 1}
-  TintModel: 0
-  AddOutline: 1
-  ShellMaterial: {fileID: 0}
   Portrait: {fileID: 0}
   PortraitFocusY: 0.5
   Attack: 60
   AttackSpeed: 2
   MoveSpeed: 3
-  Range: 4
+  Range: 1.6
   CritChance: 0.1
   CritDamage: 2.5

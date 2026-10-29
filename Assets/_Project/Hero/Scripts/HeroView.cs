@@ -12,6 +12,7 @@ public sealed class HeroView
     private readonly Material _outline;
     private GameObject _instance;
     private HeroAnimation _animation;
+    private HeroSprings _springs;
     // 판 위 크기(ModelHeight로 맞춘 뒤). 연출이 배수를 곱한다.
     private Vector3 _baseScale = Vector3.one;
     // 다시 만들어도(캐릭터 변경·설정 수정) 연출이 시킨 동작을 이어 간다.
@@ -92,6 +93,7 @@ public sealed class HeroView
         _hips = animator != null && animator.isHuman ? animator.GetBoneTransform(HumanBodyBones.Hips) : null;
         _hand = animator != null && animator.isHuman && _config.Animations != null ? animator.GetBoneTransform(_config.Animations.AttackHand) : null;
         _animation = new HeroAnimation(_instance, _config.Animations);
+        _springs = new HeroSprings(_instance);
         _animation.SetPose(_pose);
     }
 
@@ -101,6 +103,7 @@ public sealed class HeroView
         Transform t = _instance.transform;
         t.SetLocalPositionAndRotation(localPosition, localRotation);
         t.localScale = _baseScale * scale;
+        _springs.Fit(_config.SpringRebuildScaleStep);
     }
 
     public void SetPose(HeroPose pose)

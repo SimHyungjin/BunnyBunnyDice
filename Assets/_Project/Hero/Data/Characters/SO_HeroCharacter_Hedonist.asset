@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroCharacter
   DisplayName: "쾌락주의자"
   Trait: {fileID: 11400000, guid: ecfd58e5b29a4dc59a3d011237c38442, type: 2}
-  Prefab: {fileID: 4410266125371801001, guid: 6fa39e4f77ad426da0394d707210a162, type: 3}
+  Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
+  ModelHeight: 0.9
   Color: {r: 0.75, g: 0.4, b: 1, a: 1}
   Attack: 60
   AttackSpeed: 2

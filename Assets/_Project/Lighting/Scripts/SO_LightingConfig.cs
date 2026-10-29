@@ -61,6 +61,7 @@ public sealed class SO_LightingConfig : SO_Config
     [Range(0f, 0.02f)] public float OutlineWidth = 0.0025f;
     [Tooltip("선의 깊이만 카메라 쪽으로 당기는 거리(월드). 바닥에 닿는 테두리가 펠트에 가려지지 않게. 칩 두께(0.12)보다 작게 — 크면 물체 앞면을 뚫고 선이 보인다.")]
     [Range(0f, 0.2f)] public float OutlineDepthBias = 0.04f;
-    [Tooltip("캐릭터(영웅) 아웃라인의 깊이 당김(월드). 캐릭터는 귀·팔다리가 OutlineDepthBias보다 얇아, 같은 값이면 선이 몸 앞으로 나와 가는 부분을 통째로 검게 덮는다. 색·굵기는 위와 같다.")]
-    [Range(0f, 0.2f)] public float CharacterOutlineDepthBias = 0.005f;
+    [Tooltip("캐릭터(영웅) 아웃라인의 깊이 당김(월드). 캐릭터는 귀·팔다리가 OutlineDepthBias보다 얇아, 같은 값이면 선이 몸 앞으로 나와 가는 부분을 통째로 검게 덮는다. 색·굵기는 위와 같다. " +
+             "음수면 선을 몸 뒤로 민다 — 코·턱·머리카락 겹침 같은 안쪽 선이 몸에 가려지고 바깥 윤곽만 남는다(2026-10-29, 사용자: 안쪽 선은 필요 없다). 너무 크면 몸 뒤 가까운 물체에 윤곽도 묻힌다.")]
+    [Range(-0.2f, 0.2f)] public float CharacterOutlineDepthBias = -0.05f;
 }

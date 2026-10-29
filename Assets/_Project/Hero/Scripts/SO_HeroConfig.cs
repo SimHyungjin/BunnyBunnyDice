@@ -22,6 +22,9 @@ public sealed class SO_HeroConfig : SO_Config
     [Header("표시")]
     [Tooltip("이동 방향으로 도는 빠르기(도/초).")]
     public float TurnSpeed = 720f;
+    [Tooltip("모델 크기가 마지막으로 흔들림 뼈(VRM 스프링 본)를 만든 크기에서 이 비율 넘게 바뀌면 다시 만든다(HeroSprings). " +
+             "스프링 본은 뼈 길이를 만들 때 크기로 고정해, 로비에서 4배로 키우면 머리·옷이 쉬지 않고 휘날렸다(2026-10-29). 작을수록 자주 다시 만든다.")]
+    [Range(0.01f, 1f)] public float SpringRebuildScaleStep = 0.1f;
     [Tooltip("영웅을 따라다니는 스포트라이트(로비·게임). 비우면 없다.")]
     public SO_HeroSpotlightConfig Spotlight;
     [Tooltip("동작 묶음(Humanoid). 모든 캐릭터가 같이 쓴다 — 공격 준비 시간(AttackWindup)이 판정 시각을 정하므로, 캐릭터마다 다르면 겉모습이 판 결과를 바꾼다. "
