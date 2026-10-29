@@ -145,8 +145,8 @@ public static class OutlineMesh
             Material[] materials = renderers[i].sharedMaterials;
             for (int m = 0; m < materials.Length; m++)
             {
-                // 머티리얼이 아니라 셰이더로 찾는다 — VRM 모델은 Vrm10 런타임이 처음 뜰 때 렌더러 머티리얼을 모두 복제해(표정의 머티리얼 값 바꾸기,
-                // MaterialValueBindingMerger) 영웅의 아웃라인은 공용 머티리얼이 아니라 이름만 같은 사본이다.
+                // 머티리얼이 아니라 셰이더로 찾는다 — 누가 렌더러 머티리얼을 복제해도(VRM 런타임은 처음 뜰 때 모두 복제한다,
+                // HeroModel 참고) 아웃라인 자리를 놓치지 않게.
                 if (materials[m] == null || materials[m].shader != outline.shader) continue;
                 // 블록에서 속성 하나만 지우는 방법이 없어, 깎기 값을 꺼내 두고 비운 뒤 다시 넣는다.
                 renderers[i].GetPropertyBlock(PropertyBlock, m);

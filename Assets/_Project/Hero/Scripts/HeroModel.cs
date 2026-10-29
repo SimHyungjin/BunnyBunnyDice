@@ -1,4 +1,5 @@
 using UnityEngine;
+using UniVRM10;
 
 /// <summary>
 /// 캐릭터 모델 하나를 만든다(크기 맞추기·아웃라인). 판 위 영웅(HeroView)과 선택 창 얼굴 사진(HeroPortraits)이 같이 써서
@@ -16,6 +17,12 @@ public static class HeroModel
         float measured = MeasureHeight(instance);
         if (character.ModelHeight > 0f) instance.transform.localScale *= character.ModelHeight / measured;
         height = character.ModelHeight > 0f ? character.ModelHeight : measured;
+
+        // VRM 런타임을 아웃라인보다 먼저 만든다. 런타임은 처음 만들 때(원래는 첫 Start) 렌더러 머티리얼을 모두 복제하는데
+        // (표정이 머티리얼 값을 바꾸려고 — MaterialValueBindingMerger), 아웃라인이 먼저 붙어 있으면 공용 아웃라인도 사본이 되어
+        // 조명 설정(SceneLighting)이 바꾸는 색·굵기가 영웅에게만 닿지 않았다.
+        Vrm10Instance vrm = instance.GetComponentInChildren<Vrm10Instance>();
+        if (vrm != null) _ = vrm.Runtime;
 
         // 툰 아웃라인을 다른 물체와 같은 화면 비율 굵기로 붙인다.
         OutlineMesh.AttachToModel(instance, outline);
