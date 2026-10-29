@@ -6,9 +6,9 @@ using UnityEngine.EventSystems;
 /// 카드 드래그 → 주사위 배치. (이전 프로젝트 DeckHandler의 흐름)
 /// 카드를 눌러 끌어 올리면 데드존부터 카드가 사라지고 맵 위에 고스트가 따라오며,
 /// 놓을 수 있는 칸에서 떼면 바로 놓이고(CardPlacement), 아니면 카드가 손패로 돌아간다.
-/// 주사위는 빈 칸이면 새로 놓이고 주사위가 있는 칸이면 얹힌다(기획서 9.3).
+/// 주사위는 빈 칸이면 새로 놓이고 주사위가 있는 칸이면 얹힌다(기획서 6.3).
 /// 칩 카드는 칸에 놓인다 — 빈 칸이면 새 벽, 칩 없는 주사위 칸이면 그 밑으로 들어간다(ChipField).
-/// 스킬 카드는 쓰는 곳에 따라 다르다(기획서 5.3): 주사위 대상은 주사위가 있는 칸에만 쓰고 고스트는 쓴 뒤의 주사위 모양(페인트면 바뀐 색),
+/// 스킬 카드는 쓰는 곳에 따라 다르다(기획서 8): 주사위 대상은 주사위가 있는 칸에만 쓰고 고스트는 쓴 뒤의 주사위 모양(페인트면 바뀐 색),
 /// 범위는 칸이 아니라 손가락 아래 점을 중심으로 한 원(SkillPreview), 판 전체는 판 위 아무 곳에나 놓으면 쓴다. 모두 한 번의 드래그로 발동한다.
 /// </summary>
 public sealed class CardDragController : IDisposable
@@ -175,15 +175,15 @@ public sealed class CardDragController : IDisposable
 
     // 범위·판 전체 스킬 — 칸이 아니라 바닥 점을 고른다.
     private static bool IsPointSkill(HandCard card) =>
-        card.IsSkill && (card.Skill.Target == SkillTarget.Area || card.Skill.Target == SkillTarget.Board);
+        card.IsSkill && (card.Skill.Target == SkillTarget.Enemies || card.Skill.Target == SkillTarget.Board);
 
     // 범위·판 전체는 맵 위면 쓴다(대상이 없어도 — 카드를 버리는 방법이기도 하다).
     private bool TryCastAtPoint(SO_SkillCard card)
     {
-        if (card is SO_AreaSkillCard area)
+        if (card is SO_EnemySkillCard enemies)
         {
-            if (!_skills.CanCast(area, _point)) return false;
-            _skills.Cast(area, _point);
+            if (!_skills.CanCast(enemies, _point)) return false;
+            _skills.Cast(enemies, _point);
             return true;
         }
         if (!_skills.CanCastBoard(card)) return false;
@@ -278,9 +278,9 @@ public sealed class CardDragController : IDisposable
             HidePreview();
             return;
         }
-        if (card is SO_AreaSkillCard area)
+        if (card is SO_EnemySkillCard enemies)
         {
-            _skillPreview.ShowArea(area, _point);
+            _skillPreview.ShowEnemies(enemies, _point);
             return;
         }
         _skillPreview.ShowBoard(card);

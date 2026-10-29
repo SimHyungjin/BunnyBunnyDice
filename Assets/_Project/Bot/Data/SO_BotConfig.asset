@@ -24,7 +24,7 @@ MonoBehaviour:
   BreachCount: 3
   KillZoneMargin: 2
   DangerRadius: 2
-  BreachAreaMinTargets: 2
+  BreachEnemyMinTargets: 2
   CheckBreachCount: 5
   AllInBelow: 0.35
   BatchRuns: 5

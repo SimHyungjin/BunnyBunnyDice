@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// 웨이브 하나의 몬스터 구성(어떤 특성 조합이 나오는지)을 정하는 규칙. 설정(SO_WaveConfig)과 내보내기(WaveSpawner)에서 떼어 둔다.
-/// 목록 안 웨이브는 목록대로, 목록 뒤는 무작위다 — 특성을 하나씩 익힌 뒤에는 조합이 섞여 나와 여러 공격 방식이 필요해지게(기획서 9.11).
+/// 목록 안 웨이브는 목록대로, 목록 뒤는 무작위다 — 특성을 하나씩 익힌 뒤에는 조합이 섞여 나와 여러 공격 방식이 필요해지게(기획서 6.1).
 /// </summary>
 public static class WaveComposition
 {

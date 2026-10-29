@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 /// 게임 씬 진입. 씬 파일에는 환경(카메라·조명·볼륨)만 두고, 게임 오브젝트는 전부 여기서 SO를 불러 만든다.
 /// 씬 이름 "GameScene"과 클래스 이름이 같아야 SceneFlowManager가 찾아 실행한다.
 ///
-/// 로비도 이 씬이다(기획서 12.6): 로비 뒤의 테이블이 곧 판이라 씬을 나누지 않는다. 흐름은 로비 → 게임 시작(영웅이 판으로 뛰어듦, LobbyStage)
+/// 로비도 이 씬이다(기획서 12.2): 로비 뒤의 테이블이 곧 판이라 씬을 나누지 않는다. 흐름은 로비 → 게임 시작(영웅이 판으로 뛰어듦, LobbyStage)
 /// → 판(판 주사위 연출 → 웨이브) → 결과 → 다시 하기(새 판) 또는 로비로. 판을 접을 때 씬을 다시 불러오지 않고 판 상태를 코드로 되돌린다
 /// (ResetRun — 나중에 봇이 판을 연달아 돌릴 때도 같은 길을 쓴다).
 ///
@@ -62,7 +62,7 @@ public sealed class GameScene : SceneBase
     private bool _simCulling;
     private int _simSavedCulling;
     private HeroTapInput _tapInput;
-    // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.9)와 그 표시.
+    // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.5)와 그 표시.
     private HeroOverdrive _heroOverdrive;
     private HeroOverdriveView _heroOverdriveView;
     private MonsterField _monsters;
@@ -101,7 +101,7 @@ public sealed class GameScene : SceneBase
     private bool _paused;
     // 판 주사위 연출 중(첫 웨이브 시작 전) — 시작·일시정지 버튼은 ▶로 보이되 누름을 받지 않는다.
     private bool _rolling;
-    // HUD 보스 체력 바(기획서 11.3).
+    // HUD 보스 체력 바(기획서 6.5).
     private BossHealthBar _bossBar;
     // 이번 판의 측정값(결과 화면·메타 해금 진행도).
     private readonly RunStats _run = new RunStats();
@@ -267,8 +267,8 @@ public sealed class GameScene : SceneBase
         _monsters.DamageDealt += _waveLog.CountDamage;
         _heroOverdrive.PipDrained += _waveLog.CountPipDrained;
         _skills.Used += _waveLog.CountSkillUse;
-        _skills.AreaCast += _waveLog.CountAreaCast;
-        // 영웅은 주사위·칩을 밟고 넘어가므로(기획서 10.8) 길이 바뀌어도 몬스터 길만 다시 계산한다.
+        _skills.EnemyCast += _waveLog.CountEnemyCast;
+        // 영웅은 주사위·칩을 밟고 넘어가므로(기획서 4) 길이 바뀌어도 몬스터 길만 다시 계산한다.
         _diceField.DicePlaced += _ =>
         {
             _run.CountDicePlaced();
@@ -297,7 +297,7 @@ public sealed class GameScene : SceneBase
         {
             _run.CountKill(type.IsJackpot);
             _waveLog.CountKill();
-            // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 11.3). 분열 조각은 보스가 아니다.
+            // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 6.5). 분열 조각은 보스가 아니다.
             // 경험치 막기는 보상 고르기도 막는다 — 고르기 창 없이 웨이브를 시험하려는 것이라.
             if (type.IsBoss && !type.IsPiece && !_expBlocked)
             {
@@ -436,7 +436,7 @@ public sealed class GameScene : SceneBase
         // 보면서 돌리기는 봇 행동을 눈으로 확인하려고(행동 원칙을 고칠 때), 빠른 시뮬은 판 수를 많이 돌리려고 나눴다 — 결과는 같다.
         keys.Add(Key.A, false, "자동 플레이(봇, 보면서 — SO_BotConfig.BatchRuns판 뒤 요약을 남기고 멈춘다)", () => ToggleBot(false), () => _bot.Enabled && !_bot.Fast);
         keys.Add(Key.A, true, "빠른 시뮬(봇, 화면을 그리지 않는다 — 결과는 A와 같다)", () => ToggleBot(true), () => _bot.Enabled && _bot.Fast);
-        // 색마다 순수 딜을 재는 시험(기획서 9.4 개편 준비). 빠른 시뮬로 SO_BotConfig.TestSeeds × TestColors판을 돌고 RunLogs/color_test_*.csv를 남긴다.
+        // 색마다 순수 딜을 재는 시험(기획서 6.5 개편 준비). 빠른 시뮬로 SO_BotConfig.TestSeeds × TestColors판을 돌고 RunLogs/color_test_*.csv를 남긴다.
         _colorTest = new ColorPowerTest(_botConfig, () => _map, _diceField, _monsters, _waves, TestRetry);
         _colorTest.RunningChanged += SetColorTestMode;
         keys.Add(Key.T, false, "색 시험(미로 전부를 한 색 d20 눈 20으로 — 영웅·칩 없이, 적은 늘 디버프)", ToggleColorTest, () => _colorTest.Running);

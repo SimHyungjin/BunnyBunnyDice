@@ -15,7 +15,7 @@ public struct DiceStats
     public float Range;
     public float CritChance;
 
-    /// <summary>종류의 기본값을 눈으로 키운다(기획서 9.4). 속사(초록) 각성의 공격 속도, 저격(파랑) 각성의 사거리도 여기서 더한다.</summary>
+    /// <summary>종류의 기본값을 눈으로 키운다(기획서 6.5). 속사(초록) 각성의 공격 속도, 저격(파랑) 각성의 사거리도 여기서 더한다.</summary>
     public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config) =>
         Compute(dice, type, config, config.IsAwakened(dice));
 

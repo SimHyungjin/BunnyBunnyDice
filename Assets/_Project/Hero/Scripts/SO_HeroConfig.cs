@@ -45,7 +45,7 @@ public sealed class SO_HeroConfig : SO_Config
     [Tooltip("깡총 뛸 때 높은 쪽 발 높이보다 더 솟는 높이(칸).")]
     [Min(0f)] public float HopHeight = 0.3f;
 
-    [Header("영웅 오버드라이브 (기획서 10.9)")]
+    [Header("영웅 오버드라이브 (기획서 10.5)")]
     [Tooltip("영웅이 올라탄 주사위는 이 카드의 오버드라이브 상태가 된다(배율·고리 크기·색을 이 카드에서 읽는다 — 값을 한 곳에만 둔다). 지속 시간은 쓰지 않는다.")]
     public SO_SkillCard_Overdrive Overdrive;
     [Tooltip("올라탄 시간이 이만큼(초) 쌓일 때마다 그 주사위 눈이 1 영구로 깎인다. 시간은 주사위마다 쌓이고 적이 판에 있을 때만 흐른다.")]

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// 판 밖 진행 세이브(기획서 12.5). 재화·캐릭터(열림·능력치 단계·최고 기록)·마지막 캐릭터·해금 진행도.
+/// 판 밖 진행 세이브(기획서 12.4). 재화·캐릭터(열림·능력치 단계·최고 기록)·마지막 캐릭터·해금 진행도.
 /// 값을 읽고 바꾸는 규칙은 MetaProfile이 갖는다 — 여기는 저장할 모양만 둔다.
 /// </summary>
 [Serializable]

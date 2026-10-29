@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 웨이브 설정(잠정). 원본의 웨이브 공식(기획서 6장)을 정하기 전까지 쓰는 단순한 형태다 — 수는 웨이브마다 일정하게 늘고,
-/// 몬스터는 기본 종류 하나에 특성(기획서 9.11)을 붙여 만든다. 앞쪽 웨이브는 목록대로(특성을 하나씩 소개),
+/// 웨이브 설정(잠정). 원본의 웨이브 공식(기획서 6.2)을 정하기 전까지 쓰는 단순한 형태다 — 수는 웨이브마다 일정하게 늘고,
+/// 몬스터는 기본 종류 하나에 특성(기획서 6.1)을 붙여 만든다. 앞쪽 웨이브는 목록대로(특성을 하나씩 소개),
 /// 목록이 끝나면 특성을 무작위로 조합한다(WaveComposition). 시간은 초다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Wave/Wave Config", fileName = nameof(SO_WaveConfig))]
@@ -77,14 +77,14 @@ public sealed class SO_WaveConfig : SO_Config
     public List<SO_MonsterTrait> BossTraits = new List<SO_MonsterTrait>();
     [Min(0)] public int BossRandomTraits = 1;
 
-    [Header("보스 (기획서 11.3)")]
+    [Header("보스 (기획서 9.4)")]
     [Tooltip("보스 체력 = 그 웨이브 일반 몬스터 체력 합 × 이 값. 특성의 체력 배율은 보스에 쓰지 않는다 — 몬스터 수가 늘어도 보스가 무리에 묻히지 않게. " +
              "보스(거대)는 받는 피해가 1/10(SO_MonsterTrait.DamageResist 0.9)이라 실제 버티는 양은 이 값의 10배다. 0.05면 고정 피해로는 예전(0.5)과 같고 최대 체력 피해만 1/10 — 그래도 영웅에게 녹아 0.2로 올렸다(2026-10-29).")]
     [Range(0f, 2f)] public float BossHealthShare = 0.2f;
     [Tooltip("보스를 잡으면 받는 카드 고르기 횟수(레벨은 오르지 않는다).")]
     [Min(0)] public int BossRewardChoices = 1;
 
-    [Header("잭팟 보스 (기획서 11.3)")]
+    [Header("잭팟 보스 (기획서 9.4)")]
     [Tooltip("보스가 잭팟 보스로 바뀔 확률. 잭팟 보스는 금색이고 잡으면 보상이 크다. 보스 웨이브가 시작될 때 보스 포켓이 금색으로 바뀐다.")]
     [Range(0f, 1f)] public float JackpotChance = 0.25f;
     [Tooltip("잭팟 보스에 더 붙는 특성(금색 겉모습).")]

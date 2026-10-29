@@ -127,14 +127,14 @@ public sealed class WaveLog : IDisposable
         if (_current != null) _current.SkillUses++;
     }
 
-    public void CountAreaCast(SO_AreaSkillCard card, AreaCastResult result)
+    public void CountEnemyCast(SO_EnemySkillCard card, EnemyCastResult result)
     {
-        int index = AreaSkillStats.IndexOf(card);
+        int index = EnemySkillStats.IndexOf(card);
         if (_current == null || index < 0) return;
-        _current.AreaUses[index]++;
-        _current.AreaDealt[index] += result.Dealt;
-        _current.AreaOverkill[index] += result.Overkill;
-        _current.AreaKills[index] += result.Kills;
+        _current.EnemySkillUses[index]++;
+        _current.EnemySkillDealt[index] += result.Dealt;
+        _current.EnemySkillOverkill[index] += result.Overkill;
+        _current.EnemySkillKills[index] += result.Kills;
     }
 
     /// <summary>레벨업 후보가 나왔다(고르기 전, 한 번 뜰 때마다).</summary>
@@ -197,9 +197,9 @@ public sealed class WaveLog : IDisposable
         for (int i = 0; i < DamageSource.Count; i++) _builder.Append(',').Append(DamageSource.NameOf(i));
         _builder.Append(",od_hero,od_card,ride_seconds,pips_drained,skill_uses");
         for (int i = 0; i < WaveRecord.OfferKinds; i++) _builder.Append(",offer_").Append(((CardKind)i).ToString().ToLowerInvariant());
-        for (int i = 0; i < AreaSkillStats.Count; i++)
+        for (int i = 0; i < EnemySkillStats.Count; i++)
         {
-            string name = AreaSkillStats.Names[i];
+            string name = EnemySkillStats.Names[i];
             _builder.Append(',').Append(name).Append("_uses,").Append(name).Append("_dealt,").Append(name).Append("_over,").Append(name).Append("_kills");
         }
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(",dice_").Append(DamageSource.NameOf(i));
@@ -238,12 +238,12 @@ public sealed class WaveLog : IDisposable
             .Append(',').Append(record.PipsDrained)
             .Append(',').Append(record.SkillUses);
         for (int i = 0; i < WaveRecord.OfferKinds; i++) _builder.Append(',').Append(record.Offers[i]);
-        for (int i = 0; i < AreaSkillStats.Count; i++)
+        for (int i = 0; i < EnemySkillStats.Count; i++)
         {
-            _builder.Append(',').Append(record.AreaUses[i])
-                .Append(',').Append(record.AreaDealt[i].ToString("0", invariant))
-                .Append(',').Append(record.AreaOverkill[i].ToString("0", invariant))
-                .Append(',').Append(record.AreaKills[i]);
+            _builder.Append(',').Append(record.EnemySkillUses[i])
+                .Append(',').Append(record.EnemySkillDealt[i].ToString("0", invariant))
+                .Append(',').Append(record.EnemySkillOverkill[i].ToString("0", invariant))
+                .Append(',').Append(record.EnemySkillKills[i]);
         }
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(',').Append(record.DiceCount[i]);
         for (int i = 0; i < WaveRecord.DiceColorCount; i++) _builder.Append(',').Append(record.PipSum[i]);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 적 대상·판 전체 스킬 카드를 끄는 동안의 표시(기획서 5.3). 주사위 대상 스킬은 주사위 고스트(PlacementPreview)를 쓴다.
+/// 적 대상·판 전체 스킬 카드를 끄는 동안의 표시(기획서 8). 주사위 대상 스킬은 주사위 고스트(PlacementPreview)를 쓴다.
 /// 적 대상: 판 전체를 연한 초록으로 깐다(모든 적이 대상 — 손가락이 판 밖이면 깔지 않는다) + 레이크 모음점·체크메이트 왕 밑 고리(카드 색).
 /// 적마다 고리를 그리지 않는다 — 판 위 모든 적이 대상이라(2026-10-29) 판 색이 그 뜻을 대신하고, 수백 개를 매 프레임 다시 그리게 된다.
 /// 처음엔 손가락 밑 고리였는데 "그 자리에 쓰는" 범위 스킬처럼 보였다(2026-10-29 사용자).
@@ -35,7 +35,7 @@ public sealed class SkillPreview : IDisposable
     private readonly Vector3[] _boardVertices = new Vector3[4];
     private readonly Color[] _boardColors = new Color[4];
     private static readonly int[] BoardTriangles = { 0, 2, 1, 1, 2, 3 };
-    private SO_AreaSkillCard _areaCard;
+    private SO_EnemySkillCard _enemyCard;
     private Vector2 _center;
 
     public SkillPreview(Transform parent, SO_PlacementPreviewConfig config, SO_MapViewConfig viewConfig, SkillCaster caster,
@@ -59,18 +59,18 @@ public sealed class SkillPreview : IDisposable
     }
 
     /// <summary>적 대상 스킬 표시를 띄운다. center(맵 로컬 x, z)는 손가락 자리 — 판 위인지와 레이크 모음점을 정한다. 숨길 때까지 매 프레임 다시 그린다.</summary>
-    public void ShowArea(SO_AreaSkillCard card, Vector2 center)
+    public void ShowEnemies(SO_EnemySkillCard card, Vector2 center)
     {
         HideHighlights();
-        _areaCard = card;
+        _enemyCard = card;
         _center = center;
-        DrawArea();
+        DrawEnemies();
     }
 
     /// <summary>판 전체 스킬: 영향을 받을 주사위 칸을 모두 밝힌다.</summary>
     public void ShowBoard(SO_SkillCard card)
     {
-        HideArea();
+        HideEnemies();
         HideHighlights();
         // 주사위를 바꾸는 카드만 칸을 밝힌다(올인·세븐스 헤븐 = 모든 주사위, 리스핀 = 눈이 1인 주사위). 영웅·경험치에 거는 카드는 밝힐 칸이 없다.
         bool all = card is SO_SkillCard_AllIn || card is SO_SkillCard_SevensHeaven;
@@ -91,14 +91,14 @@ public sealed class SkillPreview : IDisposable
 
     public void Hide()
     {
-        HideArea();
+        HideEnemies();
         HideHighlights();
     }
 
     /// <summary>만들어 둔 표시를 버린다. 설정(칸 하이라이트 프리팹 등)이 바뀌면 다음에 새로 만든다.</summary>
     public void Reset()
     {
-        _areaCard = null;
+        _enemyCard = null;
         if (_board != null) DestroyRing(_board);
         _board = null;
         for (int i = 0; i < _marks.Count; i++) DestroyRing(_marks[i]);
@@ -110,15 +110,15 @@ public sealed class SkillPreview : IDisposable
     // 끄는 동안 적이 움직이므로 왕을 매 프레임 다시 고른다.
     private void LateTick(float _)
     {
-        if (_areaCard != null) DrawArea();
+        if (_enemyCard != null) DrawEnemies();
     }
 
-    private void DrawArea()
+    private void DrawEnemies()
     {
         if (_config.RangeMaterial == null) return;
         float y = _viewConfig.GetTileTop(TileType.Ground) + _config.RangeLift;
         MapData map = _getMap();
-        bool valid = map != null && _caster.CanCast(_areaCard, _center);
+        bool valid = map != null && _caster.CanCast(_enemyCard, _center);
         if (!valid)
         {
             HideMarks();
@@ -129,21 +129,21 @@ public sealed class SkillPreview : IDisposable
         FillBoard(_board, map, y, _config.SkillBoardColor);
 
         int used = 0;
-        Color mark = _areaCard.IconColor;
-        if (_caster.TryGetGatherPoint(_areaCard, _center, out Vector2 gather))
+        Color mark = _enemyCard.IconColor;
+        if (_caster.TryGetGatherPoint(_enemyCard, _center, out Vector2 gather))
             FillRing(GetMark(used++), gather, y, _config.SkillGatherMarkRadius, _config.SkillMarkWidth, mark);
-        if (_areaCard is SO_SkillCard_Checkmate)
+        if (_enemyCard is SO_SkillCard_Checkmate)
         {
-            _caster.CollectTargets(_areaCard, _targets);
-            int king = _caster.FindKing(_areaCard, _targets);
+            _caster.CollectTargets(_enemyCard, _targets);
+            int king = _caster.FindKing(_enemyCard, _targets);
             if (king >= 0) FillRing(GetMark(used++), _monsters.States[king].Position, y, _config.SkillKingMarkRadius, _config.SkillMarkWidth, mark);
         }
         for (int i = used; i < _marks.Count; i++) _marks[i].Object.SetActive(false);
     }
 
-    private void HideArea()
+    private void HideEnemies()
     {
-        _areaCard = null;
+        _enemyCard = null;
         HideMarks();
     }
 

@@ -10,8 +10,8 @@ public struct PlacedDice
 }
 
 /// <summary>
-/// 맵 위에 놓인 주사위들. 빈 칸에 놓으면 맵의 점유 정보를 바꾸고, 놓인 주사위 위에 얹으면 합성한다(기획서 9.3).
-/// 굴리기는 여기서 한다 — 놓는 순간 굴려 눈이 정해진다(9.2).
+/// 맵 위에 놓인 주사위들. 빈 칸에 놓으면 맵의 점유 정보를 바꾸고, 놓인 주사위 위에 얹으면 합성한다(기획서 6.3).
+/// 굴리기는 여기서 한다 — 놓는 순간 굴려 눈이 정해진다(6.2).
 /// </summary>
 public sealed class DiceField : IDisposable
 {
@@ -135,7 +135,7 @@ public sealed class DiceField : IDisposable
         bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
         if (card is SO_SkillCard_Reroll) placed.Dice.Faces = RollFaces(placed.Dice.Faces);
         SkillRules.ApplyDice(ref placed.Dice, card, Roll(placed.Dice.Faces, false));
-        // 리롤·잭팟으로 검정이 눈 20에 닿으면 무작위 색으로 바뀐다(9.4).
+        // 리롤·잭팟으로 검정이 눈 20에 닿으면 무작위 색으로 바뀐다(6.5).
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
         Refresh(index);
@@ -143,7 +143,7 @@ public sealed class DiceField : IDisposable
         NotifyAwakened(wasAwakened, placed.Dice, cell);
     }
 
-    /// <summary>판의 모든 주사위를 지금 면체로 다시 굴린다(올인, 기획서 5.3). 다시 굴리기를 모두에게 한 번씩 쓰는 것과 같다.</summary>
+    /// <summary>판의 모든 주사위를 지금 면체로 다시 굴린다(올인, 기획서 8). 다시 굴리기를 모두에게 한 번씩 쓰는 것과 같다.</summary>
     public void RerollAll()
     {
         for (int i = 0; i < _placed.Count; i++)
@@ -180,7 +180,7 @@ public sealed class DiceField : IDisposable
     }
 
     /// <summary>
-    /// cell의 주사위 눈을 1 깎는다(영웅 오버드라이브, 기획서 10.9). 0 아래로는 내려가지 않는다 — 0이면 공격을 멈추고 벽으로만 남는다.
+    /// cell의 주사위 눈을 1 깎는다(영웅 오버드라이브, 기획서 10.5). 0 아래로는 내려가지 않는다 — 0이면 공격을 멈추고 벽으로만 남는다.
     /// 깎였으면 true. 주사위가 없거나 이미 0이면 false.
     /// </summary>
     public bool DrainPip(Vector2Int cell)

@@ -25,12 +25,12 @@ public struct MonsterState
     public float MaxHealth;
 
     // 상태 이상(MonsterStatus). 남은 시간이 0이면 걸려 있지 않은 것이다.
-    /// <summary>독: 초당 최대 체력에 대한 피해 비율, 남은 시간, 다음 피해까지 쌓인 시간.</summary>
-    public float PoisonRatio;
-    public float PoisonTime;
-    public float PoisonTick;
-    /// <summary>독 피해의 1 미만 나머지. 피해는 정수로 들어가므로(기획서 9.11) 작은 독 피해를 모았다가 1이 넘을 때 준다.</summary>
-    public float PoisonCarry;
+    /// <summary>화상: 초당 최대 체력에 대한 피해 비율, 남은 시간, 다음 피해까지 쌓인 시간.</summary>
+    public float BurnRatio;
+    public float BurnTime;
+    public float BurnTick;
+    /// <summary>화상 피해의 1 미만 나머지. 피해는 정수로 들어가므로(기획서 6.1) 작은 화상 피해를 모았다가 1이 넘을 때 준다.</summary>
+    public float BurnCarry;
     /// <summary>둔화: 이동 속도를 줄이는 비율(0~1)과 남은 시간.</summary>
     public float SlowRatio;
     public float SlowTime;
@@ -43,7 +43,7 @@ public struct MonsterState
     public float VulnerableTime;
 
     public bool IsAlive => Health > 0f;
-    public bool IsPoisoned => PoisonTime > 0f;
+    public bool IsBurning => BurnTime > 0f;
     public bool IsSlowed => SlowTime > 0f;
     public bool IsFrozen => FreezeTime > 0f;
     public bool IsVulnerable => VulnerableTime > 0f;

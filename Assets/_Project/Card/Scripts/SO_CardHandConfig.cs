@@ -11,7 +11,7 @@ public sealed class SO_CardHandConfig : SO_Config
     public CardView CardPrefab;
     [Tooltip("판 시작 시 손패. 같은 카드를 여러 번 넣으면 겹친다.")]
     public List<DiceCard> StartHand = new List<DiceCard>();
-    [Tooltip("손패 상한 — 장수가 아니라 뭉치(겹친 카드 한 묶음) 수. 새 종류가 들어와 넘치면 기존 뭉치 하나가 무작위로 통째로 사라진다(기획서 5.2). 테스트 동안은 크게 열어 둔다.")]
+    [Tooltip("손패 상한 — 장수가 아니라 뭉치(겹친 카드 한 묶음) 수. 새 종류가 들어와 넘치면 기존 뭉치 하나가 무작위로 통째로 사라진다(기획서 8). 테스트 동안은 크게 열어 둔다.")]
     [Min(1)] public int MaxStacks = 99;
 
     [Header("카드")]
@@ -39,8 +39,8 @@ public sealed class SO_CardHandConfig : SO_Config
     [Tooltip("스킬 카드의 종류 칸 — 쓰는 곳(SkillTarget)마다.")]
     [Localized] public string SkillDiceLabel = "주사위";
     [Localized, TextArea] public string SkillDiceText = "판 위 주사위 하나에 놓아 쓴다.";
-    [Localized] public string SkillAreaLabel = "범위";
-    [Localized, TextArea] public string SkillAreaText = "판 위에 놓으면 그 자리 원 안에 쓴다.";
+    [Localized] public string SkillEnemiesLabel = "범위";
+    [Localized, TextArea] public string SkillEnemiesText = "판 위에 놓으면 그 자리 원 안에 쓴다.";
     [Localized] public string SkillBoardLabel = "판 전체";
     [Localized, TextArea] public string SkillBoardText = "판 위 아무 곳에나 놓으면 판 전체에 쓴다.";
     [Localized] public string SkillCellLabel = "칸";

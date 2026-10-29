@@ -20,7 +20,7 @@ public sealed class DiceCombat : IDisposable
     private readonly List<float> _cooldowns = new List<float>();
     // 지금까지 쏜 횟수(저격 각성의 "N번째마다").
     private readonly List<int> _shotCounts = new List<int>();
-    // 오버드라이브 스킬: 남은 시간과 공격력·공격 속도 배율(기획서 5.3).
+    // 오버드라이브 스킬: 남은 시간과 공격력·공격 속도 배율(기획서 8).
     private readonly List<float> _overdriveTimes = new List<float>();
     private readonly List<float> _overdriveDamage = new List<float>();
     private readonly List<float> _overdriveSpeed = new List<float>();
@@ -34,7 +34,7 @@ public sealed class DiceCombat : IDisposable
         DiceColor.Red, DiceColor.Green, DiceColor.Red | DiceColor.Green, DiceColor.Blue,
         DiceColor.Red | DiceColor.Blue, DiceColor.Green | DiceColor.Blue, DiceColors.All,
     };
-    // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.9) — 카드와 같은 상태다. 한 번에 하나뿐이라 칸으로 들고 있는다.
+    // 영웅 오버드라이브(영웅이 올라탄 주사위, 기획서 10.5) — 카드와 같은 상태다. 한 번에 하나뿐이라 칸으로 들고 있는다.
     private bool _hasBoost;
     private Vector2Int _boostCell;
     private float _boostDamage = 1f;

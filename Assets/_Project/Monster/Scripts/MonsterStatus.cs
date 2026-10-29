@@ -1,21 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// 몬스터 상태 이상(독·둔화·얼림·취약) 규칙. MonsterState 값만 바꾸는 정적 함수로 둔다(MonsterMovement와 같은 이유 — ECS로 옮기기 쉽게).
-/// 같은 상태가 다시 걸리면 더 센 쪽 세기를 남기고 시간은 처음부터 다시 센다 — 약한 주사위가 센 독·둔화를 덮어 약하게 만들지 않게.
+/// 몬스터 상태 이상(화상·둔화·얼림·취약) 규칙. MonsterState 값만 바꾸는 정적 함수로 둔다(MonsterMovement와 같은 이유 — ECS로 옮기기 쉽게).
+/// 같은 상태가 다시 걸리면 더 센 쪽 세기를 남기고 시간은 처음부터 다시 센다 — 약한 주사위가 센 화상·둔화를 덮어 약하게 만들지 않게.
 /// </summary>
 public static class MonsterStatus
 {
-    /// <summary>독(기획서 9.7): 초당 최대 체력의 ratio만큼. 체력 비율이라 후반 체력에도 묻히지 않는다.</summary>
-    public static void Poison(ref MonsterState state, float ratio, float duration)
+    /// <summary>화상(기획서 7): 초당 최대 체력의 ratio만큼. 체력 비율이라 후반 체력에도 묻히지 않는다.</summary>
+    public static void Burn(ref MonsterState state, float ratio, float duration)
     {
         if (ratio <= 0f || duration <= 0f) return;
-        if (!state.IsPoisoned) state.PoisonTick = 0f;
-        if (ratio >= state.PoisonRatio || !state.IsPoisoned) state.PoisonRatio = ratio;
-        state.PoisonTime = Mathf.Max(state.PoisonTime, duration);
+        if (!state.IsBurning) state.BurnTick = 0f;
+        if (ratio >= state.BurnRatio || !state.IsBurning) state.BurnRatio = ratio;
+        state.BurnTime = Mathf.Max(state.BurnTime, duration);
     }
 
-    /// <summary>취약(방깍, 기획서 9.7): 받는 피해를 ratio만큼 늘린다. 몬스터에 거는 상태라 누가 때려도 적용된다. 겹치지 않고 센 쪽이 남는다.</summary>
+    /// <summary>취약(방깍, 기획서 7): 받는 피해를 ratio만큼 늘린다. 몬스터에 거는 상태라 누가 때려도 적용된다. 겹치지 않고 센 쪽이 남는다.</summary>
     public static void Vulnerable(ref MonsterState state, float ratio, float duration)
     {
         if (ratio <= 0f || duration <= 0f) return;
@@ -24,7 +24,7 @@ public static class MonsterStatus
     }
 
     /// <summary>
-    /// 얼린다(이전 파랑 각성 — 지금은 거는 곳이 없고 강화 카드에서 다시 쓴다, 기획서 9.7). 이미 얼었거나 풀린 직후 면역 중이면 무시한다 — 계속 다시 얼려 영원히 세워 두지 못하게(9.4).
+    /// 얼린다(이전 파랑 각성 — 지금은 거는 곳이 없고 강화 카드에서 다시 쓴다, 기획서 7). 이미 얼었거나 풀린 직후 면역 중이면 무시한다 — 계속 다시 얼려 영원히 세워 두지 못하게(6.5).
     /// immunity는 풀린 순간부터 센다.
     /// </summary>
     public static bool Freeze(ref MonsterState state, float duration, float immunity)
@@ -56,28 +56,28 @@ public static class MonsterStatus
     }
 
     /// <summary>
-    /// 시간을 흘린다. 독은 tickInterval마다 한 번씩 피해를 낸다(매 프레임 조금씩 주면 피해 숫자가 매 프레임 뜨고
-    /// 프레임 속도에 따라 숫자 수가 달라진다). 돌려준 값은 이번에 줄 독 피해다(방어력을 받지 않는다).
+    /// 시간을 흘린다. 화상은 tickInterval마다 한 번씩 피해를 낸다(매 프레임 조금씩 주면 피해 숫자가 매 프레임 뜨고
+    /// 프레임 속도에 따라 숫자 수가 달라진다). 돌려준 값은 이번에 줄 화상 피해다(방어력을 받지 않는다).
     /// </summary>
     public static float Tick(ref MonsterState state, float deltaTime, float tickInterval)
     {
         float poisonDamage = 0f;
-        if (state.IsPoisoned)
+        if (state.IsBurning)
         {
             // 남은 시간보다 길게 쌓이지 않게 해서, 끝나는 순간 남은 몫까지 정확히 준다.
-            float elapsed = Mathf.Min(deltaTime, state.PoisonTime);
-            state.PoisonTime -= deltaTime;
-            state.PoisonTick += elapsed;
-            while (state.PoisonTick >= tickInterval)
+            float elapsed = Mathf.Min(deltaTime, state.BurnTime);
+            state.BurnTime -= deltaTime;
+            state.BurnTick += elapsed;
+            while (state.BurnTick >= tickInterval)
             {
-                state.PoisonTick -= tickInterval;
-                poisonDamage += state.PoisonRatio * state.MaxHealth * tickInterval;
+                state.BurnTick -= tickInterval;
+                poisonDamage += state.BurnRatio * state.MaxHealth * tickInterval;
             }
-            if (!state.IsPoisoned)
+            if (!state.IsBurning)
             {
-                state.PoisonTime = 0f;
-                state.PoisonRatio = 0f;
-                state.PoisonTick = 0f;
+                state.BurnTime = 0f;
+                state.BurnRatio = 0f;
+                state.BurnTick = 0f;
             }
         }
 

@@ -111,7 +111,7 @@ public sealed class MonsterHealthBars : IDisposable
     // 테두리(바탕 색)를 둘러 밝은 바닥·몬스터 위에서도 하양(취약)이 보이게.
     private void AddStatuses(in MonsterState state, Vector3 center, Vector3 right, Vector3 up, float halfWidth, float halfThickness, float border)
     {
-        if (!state.IsVulnerable && !state.IsSlowed && !state.IsFrozen && !state.IsPoisoned) return;
+        if (!state.IsVulnerable && !state.IsSlowed && !state.IsFrozen && !state.IsBurning) return;
         float slot = halfWidth * 2f / StatusCount;
         float half = slot * _config.StatusSlotFill * 0.5f;
         Vector3 rowCenter = center - up * (halfThickness * (1f + 2f * _config.StatusRowGap) + half);
@@ -124,7 +124,7 @@ public sealed class MonsterHealthBars : IDisposable
                 case 0: if (!state.IsVulnerable) continue; color = _config.VulnerableColor; break;
                 case 1: if (!state.IsSlowed) continue; color = _config.SlowColor; break;
                 case 2: if (!state.IsFrozen) continue; color = _config.FreezeColor; break;
-                default: if (!state.IsPoisoned) continue; color = _config.PoisonColor; break;
+                default: if (!state.IsBurning) continue; color = _config.BurnColor; break;
             }
             Vector3 c = rowCenter + right * (-halfWidth + half * (1f + 2f * shown));
             shown++;

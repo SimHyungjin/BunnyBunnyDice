@@ -176,8 +176,8 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     {
         switch (card.Target)
         {
-            case SkillTarget.Area:
-                ShowCardAsset(card, config.SkillSubText, config.SkillAreaLabel, config.SkillAreaText, config);
+            case SkillTarget.Enemies:
+                ShowCardAsset(card, config.SkillSubText, config.SkillEnemiesLabel, config.SkillEnemiesText, config);
                 break;
             case SkillTarget.Board:
                 ShowCardAsset(card, config.SkillSubText, config.SkillBoardLabel, config.SkillBoardText, config);

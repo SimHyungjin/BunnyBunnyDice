@@ -76,7 +76,7 @@ public sealed class UI_LevelUpPopup : UI_Popup
         {
             CardView view = Instantiate(handConfig.CardPrefab, _slots[i], false);
             view.Init(cards[i], handConfig, diceConfig, statsConfig, heroStats);
-            // 고르는 순간이 곧 배우는 순간이라(기획서 9.6) 레벨업에서는 자세히 보인다.
+            // 고르는 순간이 곧 배우는 순간이라(기획서 6.1) 레벨업에서는 자세히 보인다.
             view.SetDetailed(true);
             view.SetBaseScale(_baseScale);
             view.SetTarget(Vector2.zero, 0f, CardScale);

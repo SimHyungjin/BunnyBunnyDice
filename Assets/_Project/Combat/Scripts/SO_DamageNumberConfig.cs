@@ -24,8 +24,8 @@ public sealed class SO_DamageNumberConfig : SO_Config
     public Color CriticalColor = new Color(1f, 0.6f, 0.15f);
     [Tooltip("방어력에 깎여 원래보다 적게 들어간 피해.")]
     public Color ReducedColor = new Color(0.6f, 0.6f, 0.65f);
-    [Tooltip("화상(독, 지속 피해). 화상 칩 색(자홍)과 같게 — 칩·상태 네모·숫자가 한 색이게(기획서 9.7).")]
-    public Color PoisonColor = new Color(0.9f, 0.25f, 0.75f);
+    [Tooltip("화상(지속 피해). 화상 칩 색(자홍)과 같게 — 칩·상태 네모·숫자가 한 색이게(기획서 7).")]
+    public Color BurnColor = new Color(0.9f, 0.25f, 0.75f);
     [Tooltip("하우스 엣지로 더 받은 경험치(\"+N\"). 금색 — 피해 숫자와 구분된다. 크기는 치명타 배율.")]
     public Color BonusExpColor = new Color(1f, 0.85f, 0.25f);
 

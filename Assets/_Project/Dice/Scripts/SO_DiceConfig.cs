@@ -20,11 +20,11 @@ public sealed class SO_DiceConfig : SO_Config
     {
         [Tooltip("면 수(6·12·20).")]
         public int Faces;
-        [Tooltip("카드에 쓰는 면체 이름(육면체 등, 기획서 9.1).")]
+        [Tooltip("카드에 쓰는 면체 이름(육면체 등, 기획서 6.1).")]
         [Localized] public string DisplayName;
         [Tooltip("모델(FBX 그대로 넣어도 된다). 피벗·크기는 상관없다 — 메시 경계를 재서 중심을 맞추고 Size로 키운다.")]
         public GameObject Model;
-        [Tooltip("가장 긴 변의 길이(칸). 면체가 클수록 크게(기획서 9.1 작은·중간·큰).")]
+        [Tooltip("가장 긴 변의 길이(칸). 면체가 클수록 크게(기획서 6.1 작은·중간·큰).")]
         [Min(0.05f)] public float Size;
         [Tooltip("모델을 돌려 놓는 각도. 한 면이 반듯하게 위를 보게(눈 글자가 그 면 위에 놓인다).")]
         public Vector3 Rotation;
@@ -55,7 +55,7 @@ public sealed class SO_DiceConfig : SO_Config
     [Tooltip("바닥에 닿은 뒤 한 번 튀는 높이.")]
     [Min(0f)] public float BounceHeight = 0.12f;
 
-    [Header("솟아나기 연출 (영웅이 놓을 때, 기획서 10.8)")]
+    [Header("솟아나기 연출 (영웅이 놓을 때, 기획서 4)")]
     [Tooltip("영웅이 발밑에 놓으면 위에서 떨어지지 않고 바닥에서 톡 솟아난다(뛰어오르는 영웅과 겹치지 않게). 솟아나 멈추기까지의 시간. 눈은 멈춘 뒤에 보인다.")]
     [Min(0.05f)] public float PopDuration = 0.3f;
     [Tooltip("솟아나며 제 크기를 넘었다 돌아오는 정도(ease-out-back 계수). 0이면 넘지 않는다, 1.7이면 약 10% 넘는다.")]

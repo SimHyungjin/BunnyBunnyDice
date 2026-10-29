@@ -22,7 +22,7 @@ public sealed class SO_PlacementPreviewConfig : SO_Config
     [Tooltip("놓일 칸 바닥 위로 띄우는 높이 — 바닥과 겹쳐 깜빡이지 않게.")]
     [Min(0f)] public float RangeLift = 0.03f;
 
-    [Header("스킬 (기획서 5.3)")]
+    [Header("스킬 (기획서 8)")]
     [Tooltip("적 대상 스킬을 끄는 동안 판 전체에 까는 색 — 모든 적이 대상이라는 것이 보이게. 주사위·적을 가리지 않게 아주 연하게(알파). " +
              "손가락이 판 밖이면(쓸 수 없으면) 깔지 않는다. 재질·띄우는 높이는 사거리와 같다.")]
     public Color SkillBoardColor = new Color(0.3f, 0.95f, 0.4f, 0.12f);

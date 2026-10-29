@@ -7,7 +7,7 @@ using UnityEngine;
 /// 왕 고르기는 SkillCaster.FindKing이 맡아 미리보기도 같은 왕 밑에 큰 고리를 띄운다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Skill/Checkmate", fileName = "SO_SkillCard_Checkmate")]
-public sealed class SO_SkillCard_Checkmate : SO_AreaSkillCard
+public sealed class SO_SkillCard_Checkmate : SO_EnemySkillCard
 {
     [Tooltip("왕(체력이 가장 많은 적)이 받는 피해 = 영웅 공격력 × 이 값. 왕은 DamageMultiplier 몫 대신 이것만 받는다.")]
     [Min(0f)] public float KingMultiplier = 500f;

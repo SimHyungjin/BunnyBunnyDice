@@ -6,8 +6,8 @@
 빈 칸이나 주사위 밑에 놓는다.,Place on an empty tile or under a die.,SO_CardHandConfig.ChipKindText
 주사위,Die,SO_CardHandConfig.SkillDiceLabel
 주사위에 놓는다.,Place on a die.,SO_CardHandConfig.SkillDiceText
-적 전체,All Enemies,SO_CardHandConfig.SkillAreaLabel
-판 위 아무 곳에나 놓는다.,Place anywhere on the board.,SO_CardHandConfig.SkillAreaText | SO_CardHandConfig.SkillBoardText
+적 전체,All Enemies,SO_CardHandConfig.SkillEnemiesLabel
+판 위 아무 곳에나 놓는다.,Place anywhere on the board.,SO_CardHandConfig.SkillEnemiesText | SO_CardHandConfig.SkillBoardText
 판 전체,Whole Board,SO_CardHandConfig.SkillBoardLabel
 칸,Tile,SO_CardHandConfig.SkillCellLabel
 주사위나 칩이 있는 칸에 놓는다.,Place on a tile with a die or chip.,SO_CardHandConfig.SkillCellText

@@ -13,6 +13,6 @@ public struct DiceState
 
     public bool IsMaxed => Pips >= Faces;
 
-    /// <summary>눈을 다 태웠다 — 공격하지 않고 벽으로만 남는다(기획서 10.9).</summary>
+    /// <summary>눈을 다 태웠다 — 공격하지 않고 벽으로만 남는다(기획서 10.5).</summary>
     public bool IsSpent => Pips <= 0;
 }

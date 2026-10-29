@@ -31,7 +31,7 @@ public sealed class MapPicker
     }
 
     /// <summary>
-    /// 화면 좌표 → 판 바닥 위 점(맵 로컬 x, z). 범위 스킬처럼 칸이 아니라 자리를 고를 때 쓴다(기획서 5.3).
+    /// 화면 좌표 → 판 바닥 위 점(맵 로컬 x, z). 적 대상 스킬처럼 칸이 아니라 자리를 고를 때 쓴다(기획서 8).
     /// 원은 적이 걷는 바닥에 그리므로 솟은 윗면을 보지 않고 바닥면으로만 본다. 맵 밖이면 false.
     /// </summary>
     public bool TryScreenToPoint(Camera camera, MapData map, Vector2 screenPosition, out Vector2 point)

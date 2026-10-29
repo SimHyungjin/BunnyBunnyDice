@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// 판 밖 진행(기획서 12.5)의 규칙. 세이브(MetaSave)를 읽고 고치며, 영웅 능력치(HeroStats)의 캐릭터·단계를 세이브와 잇는다.
+/// 판 밖 진행(기획서 12.4)의 규칙. 세이브(MetaSave)를 읽고 고치며, 영웅 능력치(HeroStats)의 캐릭터·단계를 세이브와 잇는다.
 /// 판 결과는 측정 요약(RunSummary)으로만 받는다 — 판 시스템을 모르게(12.4).
 ///
 /// 캐릭터를 처음 열 때 능력치마다 6면 주사위로 단계를 굴린다(10.3). 해금 조건(SO_MetaConfig)이 없는 캐릭터는 처음부터 열려 있고,
 /// 조건이 있는 캐릭터는 조건을 채워도 저절로 열리지 않는다 — 선택 창에서 눌러 연다(CanUnlock → Unlock). 여는 순간과 첫 능력치 굴림에
 /// 나중에 연출을 붙이려고, 판 결과 화면이 아니라 플레이어가 고르는 자리로 뺐다.
-/// 판 보상 = 클리어한 웨이브(RunSummary.Wave) × 주사위 눈(12.5). 리롤은 능력치 하나를 다시 굴리고 낮거나 같으면 그대로 둔다(10.3).
+/// 판 보상 = 클리어한 웨이브(RunSummary.Wave) × 주사위 눈(12.4). 리롤은 능력치 하나를 다시 굴리고 낮거나 같으면 그대로 둔다(10.3).
 /// 잠긴 캐릭터도 테스트 창(F1)으로 고를 수 있다 — 그때 단계는 세이브에 있으면 그것, 없으면 모두 6단계이고, 고치면 세이브에 남는다
 /// (나중에 열면 단계를 새로 굴린다).
 /// </summary>
@@ -267,7 +267,7 @@ public sealed class MetaProfile : IDisposable
     private static int RollStage() => UnityEngine.Random.Range(HeroStats.MinStage, HeroStats.MaxStage + 1);
 }
 
-/// <summary>판 하나의 보상(기획서 12.5): 클리어한 웨이브 × 보상 주사위 눈의 합.</summary>
+/// <summary>판 하나의 보상(기획서 12.4): 클리어한 웨이브 × 보상 주사위 눈의 합.</summary>
 public struct RunReward
 {
     /// <summary>클리어한 웨이브 수.</summary>

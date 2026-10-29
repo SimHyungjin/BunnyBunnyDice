@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>자홍 — 관통: 길고 얇은 곧은 선, 선 위 모두를 맞힌다(기획서 9.4). 사거리 안에서 가장 많이 꿰뚫는 쪽을 겨냥하므로
+/// <summary>자홍 — 관통: 길고 얇은 곧은 선, 선 위 모두를 맞힌다(기획서 6.5). 사거리 안에서 가장 많이 꿰뚫는 쪽을 겨냥하므로
 /// 곧은 통로를 만들어 두면 줄 전체를 꿰뚫는다 — 미로 모양으로 세기가 갈리는 공격.</summary>
 [CreateAssetMenu(menuName = "Def/Dice/Type/Pierce", fileName = "SO_Dice_")]
 public sealed class SO_DiceType_Pierce : SO_DiceType

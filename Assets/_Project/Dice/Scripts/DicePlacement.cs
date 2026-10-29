@@ -3,13 +3,13 @@ using UnityEngine;
 public enum PlacementResult
 {
     Ok,
-    Stack,        // 놓인 주사위 위에 얹는다(합성, 기획서 9.3)
+    Stack,        // 놓인 주사위 위에 얹는다(합성, 기획서 6.3)
     OutOfMap,
     NotBuildable, // 목표물·출현 구역
     Occupied,     // 주사위가 있다 — CheckStack으로 얹을 수 있는지 다시 본다
     AtCap,        // 눈이 상한에 닿은 주사위에 같거나 작은 면체를 얹으려 했다
     BlocksPath,   // 어느 출현 구역에서든 목표물까지 길이 끊긴다
-    Upgrade,      // 카드를 쓴다 — 주사위 대상 스킬은 놓인 주사위에, 칩 카드는 빈 칸이나 주사위 밑에(기획서 5.3·9.7)
+    Upgrade,      // 카드를 쓴다 — 주사위 대상 스킬은 놓인 주사위에, 칩 카드는 빈 칸이나 주사위 밑에(기획서 8·9.7)
     NoDice,       // 주사위 대상 스킬은 주사위가 있는 칸에만 쓴다
     SlotFull,     // 칸에 이미 칩이 있다(슬롯 1개)
     NoEffect,     // 써도 바뀌는 것이 없다(같은 색 페인트, 상한인 주사위에 잭팟)

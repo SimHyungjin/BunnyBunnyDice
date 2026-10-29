@@ -6,12 +6,12 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// 봇이 여러 판을 돈 뒤의 요약(기획서 11.5). 판마다 한 줄(깬 웨이브·처음 샌 웨이브·피해 비중·고른 카드 종류)과 맨 아래 평균을 CSV로 남긴다.
+/// 봇이 여러 판을 돈 뒤의 요약(기획서 11.4). 판마다 한 줄(깬 웨이브·처음 샌 웨이브·피해 비중·고른 카드 종류)과 맨 아래 평균을 CSV로 남긴다.
 /// 판마다의 자세한 기록은 WaveLog CSV가 따로 남으므로, 여기는 판끼리·설정끼리 비교할 숫자만 모은다 — 사람(또는 Claude)이 파일 하나만 읽으면 되게.
 /// od_* = 오버드라이브 상태의 주사위가 낸 피해 몫(single·area와 겹친다), ride = 웨이브 시간 중 영웅이 주사위에 올라탄 비율,
 /// offer_* = 레벨업 후보로 나온 수(pick_*는 그중 고른 수).
 /// 주사위 색마다 <색>_pct(주사위 피해 중 몫), <색>_dice·<색>_pips(웨이브 끝 판 위 주사위 수·눈 합의 웨이브 평균) — 몫을 이것으로 나눠 색 세기를 본다.
-/// 범위 스킬 종류마다 <이름>_uses(쓴 수), _pct(판 전체 피해 중 몫), _over_pct(낸 피해 중 넘쳐 버려진 몫), _kills(처치 수).
+/// 적 대상 스킬 종류마다 <이름>_uses(쓴 수), _pct(판 전체 피해 중 몫), _over_pct(낸 피해 중 넘쳐 버려진 몫), _kills(처치 수).
 /// </summary>
 public sealed class BotBatchReport
 {
@@ -37,22 +37,22 @@ public sealed class BotBatchReport
         public int PipsDrained, SkillUses;
         public int PickDice, PickSkill, PickChip, PickHero;
         public readonly int[] Offers = new int[WaveRecord.OfferKinds];
-        public readonly int[] AreaUses = new int[AreaSkillStats.Count];
-        public readonly float[] AreaDealt = new float[AreaSkillStats.Count];
-        public readonly float[] AreaOverkill = new float[AreaSkillStats.Count];
-        public readonly int[] AreaKills = new int[AreaSkillStats.Count];
+        public readonly int[] EnemySkillUses = new int[EnemySkillStats.Count];
+        public readonly float[] EnemySkillDealt = new float[EnemySkillStats.Count];
+        public readonly float[] EnemySkillOverkill = new float[EnemySkillStats.Count];
+        public readonly int[] EnemySkillKills = new int[EnemySkillStats.Count];
         public readonly float[] ColorShare = new float[WaveRecord.DiceColorCount];
         public readonly float[] ColorDice = new float[WaveRecord.DiceColorCount];
         public readonly float[] ColorPips = new float[WaveRecord.DiceColorCount];
     }
 
-    // 머리글 뒤에 범위 스킬 칸을 붙인다(종류 수가 바뀌어도 맞게).
+    // 머리글 뒤에 적 대상 스킬 칸을 붙인다(종류 수가 바뀌어도 맞게).
     private static string BuildHeader()
     {
         StringBuilder builder = new StringBuilder(Header);
-        for (int i = 0; i < AreaSkillStats.Count; i++)
+        for (int i = 0; i < EnemySkillStats.Count; i++)
         {
-            string name = AreaSkillStats.Names[i];
+            string name = EnemySkillStats.Names[i];
             builder.Append(',').Append(name).Append("_uses,").Append(name).Append("_pct,").Append(name).Append("_over_pct,").Append(name).Append("_kills");
         }
         for (int i = 0; i < WaveRecord.DiceColorCount; i++)
@@ -93,12 +93,12 @@ public sealed class BotBatchReport
                 run.ColorDice[k] += record.DiceCount[k];
                 run.ColorPips[k] += record.PipSum[k];
             }
-            for (int k = 0; k < AreaSkillStats.Count; k++)
+            for (int k = 0; k < EnemySkillStats.Count; k++)
             {
-                run.AreaUses[k] += record.AreaUses[k];
-                run.AreaDealt[k] += record.AreaDealt[k];
-                run.AreaOverkill[k] += record.AreaOverkill[k];
-                run.AreaKills[k] += record.AreaKills[k];
+                run.EnemySkillUses[k] += record.EnemySkillUses[k];
+                run.EnemySkillDealt[k] += record.EnemySkillDealt[k];
+                run.EnemySkillOverkill[k] += record.EnemySkillOverkill[k];
+                run.EnemySkillKills[k] += record.EnemySkillKills[k];
             }
             for (int i = 0; i < DamageSource.Count; i++)
             {
@@ -122,11 +122,11 @@ public sealed class BotBatchReport
             run.OverdriveHero /= total;
             run.OverdriveCard /= total;
             // 넘친 몫은 낸 피해(깎은 + 넘친) 대비로 바꾸기 전에 깎은 체력으로 계산한다.
-            for (int k = 0; k < AreaSkillStats.Count; k++)
+            for (int k = 0; k < EnemySkillStats.Count; k++)
             {
-                float spent = run.AreaDealt[k] + run.AreaOverkill[k];
-                run.AreaOverkill[k] = spent > 0f ? run.AreaOverkill[k] / spent : 0f;
-                run.AreaDealt[k] /= total;
+                float spent = run.EnemySkillDealt[k] + run.EnemySkillOverkill[k];
+                run.EnemySkillOverkill[k] = spent > 0f ? run.EnemySkillOverkill[k] / spent : 0f;
+                run.EnemySkillDealt[k] /= total;
             }
         }
         if (seconds > 0f) run.Ride /= seconds;
@@ -175,12 +175,12 @@ public sealed class BotBatchReport
                 sum.ColorDice[k] += run.ColorDice[k];
                 sum.ColorPips[k] += run.ColorPips[k];
             }
-            for (int k = 0; k < AreaSkillStats.Count; k++)
+            for (int k = 0; k < EnemySkillStats.Count; k++)
             {
-                sum.AreaUses[k] += run.AreaUses[k];
-                sum.AreaDealt[k] += run.AreaDealt[k];
-                sum.AreaOverkill[k] += run.AreaOverkill[k];
-                sum.AreaKills[k] += run.AreaKills[k];
+                sum.EnemySkillUses[k] += run.EnemySkillUses[k];
+                sum.EnemySkillDealt[k] += run.EnemySkillDealt[k];
+                sum.EnemySkillOverkill[k] += run.EnemySkillOverkill[k];
+                sum.EnemySkillKills[k] += run.EnemySkillKills[k];
             }
             sum.PickDice += run.PickDice;
             sum.PickSkill += run.PickSkill;
@@ -210,7 +210,7 @@ public sealed class BotBatchReport
             .Append((sum.PickChip / n).ToString("0.0", invariant)).Append(',')
             .Append((sum.PickHero / n).ToString("0.0", invariant));
         AppendOffers(builder, sum, n, invariant);
-        AppendAreaSkills(builder, sum, n, invariant);
+        AppendEnemySkills(builder, sum, n, invariant);
         AppendColors(builder, sum, n, invariant);
         builder.Append('\n');
 
@@ -254,21 +254,21 @@ public sealed class BotBatchReport
             .Append(run.PickChip).Append(',')
             .Append(run.PickHero);
         AppendOffers(builder, run, 1f, invariant);
-        AppendAreaSkills(builder, run, 1f, invariant);
+        AppendEnemySkills(builder, run, 1f, invariant);
         AppendColors(builder, run, 1f, invariant);
         builder.Append('\n');
     }
 
     // 넘친 몫의 평균은 판마다의 비율을 그냥 평균한다(쓰지 않은 판의 0도 들어간다 — 쓴 수를 같이 본다).
-    private static void AppendAreaSkills(StringBuilder builder, Run run, float divide, CultureInfo invariant)
+    private static void AppendEnemySkills(StringBuilder builder, Run run, float divide, CultureInfo invariant)
     {
         string countFormat = divide > 1f ? "0.0" : "0";
-        for (int k = 0; k < AreaSkillStats.Count; k++)
+        for (int k = 0; k < EnemySkillStats.Count; k++)
         {
-            builder.Append(',').Append((run.AreaUses[k] / divide).ToString(countFormat, invariant))
-                .Append(',').Append(Percent(run.AreaDealt[k] / divide))
-                .Append(',').Append(Percent(run.AreaOverkill[k] / divide))
-                .Append(',').Append((run.AreaKills[k] / divide).ToString(countFormat, invariant));
+            builder.Append(',').Append((run.EnemySkillUses[k] / divide).ToString(countFormat, invariant))
+                .Append(',').Append(Percent(run.EnemySkillDealt[k] / divide))
+                .Append(',').Append(Percent(run.EnemySkillOverkill[k] / divide))
+                .Append(',').Append((run.EnemySkillKills[k] / divide).ToString(countFormat, invariant));
         }
     }
 

@@ -6,12 +6,12 @@ public enum DamageKind
     Normal,
     Critical,
     Reduced, // 방어력에 깎였다
-    Poison,  // 독(지속 피해)
+    Burn,  // 화상(지속 피해)
     BonusExp, // 피해가 아니라 하우스 엣지(ExpBoost)로 더 받은 경험치 — 같은 튀는 숫자로 "+N"을 보인다
 }
 
 /// <summary>
-/// 피해 공식(기획서 9.11). 배율(치명타·저주)은 먼저 곱해 들어오고, 방어력은 나중에 뺀다
+/// 피해 공식(기획서 6.1). 배율(치명타·저주)은 먼저 곱해 들어오고, 방어력은 나중에 뺀다
 /// — 그래서 치명타·저주가 단단한 적에게 특히 강하다. 방어력을 넘는 피해가 없어도 최소 비율은 들어간다(면역 없음).
 /// </summary>
 public static class MonsterDamage

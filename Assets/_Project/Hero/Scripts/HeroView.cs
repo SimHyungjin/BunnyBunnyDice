@@ -48,7 +48,7 @@ public sealed class HeroView
     /// <summary>던진 카드가 나가는 자리(맵 로컬). 던지는 손이 없으면 null — 쓰는 쪽이 정한 높이를 쓴다.</summary>
     public Vector3? ThrowPoint => _hand != null && _parent != null ? _parent.InverseTransformPoint(_hand.position) : (Vector3?)null;
 
-    /// <summary>지금 발 높이(맵 로컬). 주사위·칩 위를 밟고 지나가면 그 윗면으로 오르내린다(기획서 10.8).</summary>
+    /// <summary>지금 발 높이(맵 로컬). 주사위·칩 위를 밟고 지나가면 그 윗면으로 오르내린다(기획서 4).</summary>
     public float Floor { get; private set; }
 
     /// <summary>주사위에 오르내리느라 깡총 뛰는 중인지.</summary>

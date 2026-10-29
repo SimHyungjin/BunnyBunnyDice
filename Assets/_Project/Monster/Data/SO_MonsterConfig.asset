@@ -20,8 +20,8 @@ MonoBehaviour:
   EmergeStartScale: 0.25
   EmergeDepth: -0.35
   EmergeHop: 0.3
-  PoisonTickInterval: 0.5
-  PoisonColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
+  BurnTickInterval: 0.5
+  BurnColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
   SlowColor: {r: 0.96, g: 0.85, b: 0.2, a: 1}
   FreezeColor: {r: 0.4, g: 0.8, b: 0.96, a: 1}
   VulnerableColor: {r: 1, g: 1, b: 1, a: 1}

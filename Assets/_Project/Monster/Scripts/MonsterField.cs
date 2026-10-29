@@ -7,7 +7,7 @@ using UnityEngine;
 /// 몬스터는 객체가 아니라 상태 배열(MonsterState)의 한 칸이다. 지울 때는 마지막 칸을 그 자리로 옮겨 배열을 빈틈없이 유지한다
 /// — 수가 많아져도 할당 없이 한 번에 훑을 수 있고, 나중에 ECS·GPU로 넘길 때 배열을 그대로 넘길 수 있게.
 /// 걷는 길은 밖(GameScene)에서 만들어 넣는다 — 경로 표시(MapPathView)와 같은 길을 써서 표시가 실제 움직임과 어긋나지 않게.
-/// 특성(기획서 9.11)도 여기서 적용한다: 방어력·이동 방해 저항은 맞을 때, 재생은 매 갱신, 분열은 치울 때.
+/// 특성(기획서 6.1)도 여기서 적용한다: 방어력·이동 방해 저항은 맞을 때, 재생은 매 갱신, 분열은 치울 때.
 /// </summary>
 public sealed class MonsterField : IDisposable
 {
@@ -135,9 +135,9 @@ public sealed class MonsterField : IDisposable
         ApplyDamage(slot, damage, penetration, critical ? DamageKind.Critical : DamageKind.Normal, source);
     }
 
-    /// <summary>독을 건다(초당 최대 체력의 ratio). 보스(거대)는 독 피해도 다른 피해처럼 피해 저항(SO_MonsterTrait.DamageResist)으로 줄여 받는다.</summary>
-    public void Poison(int slot, float ratio, float duration) =>
-        MonsterStatus.Poison(ref _states[slot], ratio, duration);
+    /// <summary>화상을 건다(초당 최대 체력의 ratio). 보스는 화상 피해도 다른 피해처럼 피해 저항(SO_MonsterTrait.DamageResist)으로 줄여 받는다.</summary>
+    public void Burn(int slot, float ratio, float duration) =>
+        MonsterStatus.Burn(ref _states[slot], ratio, duration);
 
     public void Vulnerable(int slot, float ratio, float duration) =>
         MonsterStatus.Vulnerable(ref _states[slot], ratio, duration);
@@ -154,7 +154,7 @@ public sealed class MonsterField : IDisposable
         MonsterStatus.Slow(ref _states[slot], ratio * KindOf(slot).ImpairScale, duration);
 
     /// <summary>
-    /// 처치한다(포켓 스킬, 기획서 5.3). 남은 체력만큼의 피해 숫자를 띄우고, 치우기·경험치는 다른 죽음과 같이 다음 갱신의 RemoveDead가 한다.
+    /// 처치한다(포켓 스킬, 기획서 8). 남은 체력만큼의 피해 숫자를 띄우고, 치우기·경험치는 다른 죽음과 같이 다음 갱신의 RemoveDead가 한다.
     /// 몸체는 스킬 처치 연출로 포켓에 들어간다(SinkBySkill).
     /// </summary>
     public void Execute(int slot)
@@ -236,10 +236,10 @@ public sealed class MonsterField : IDisposable
         for (int i = _count - 1; i >= 0; i--)
         {
             ref MonsterState state = ref _states[i];
-            float poison = MonsterStatus.Tick(ref state, deltaTime, _config.PoisonTickInterval);
-            // 독은 화상 칩에서만 걸린다(ChipEffects).
-            if (poison > 0f) ApplyDamage(i, poison, 0f, DamageKind.Poison, DamageSource.Burn);
-            // 독으로 죽었으면 걷지 않는다 — 죽은 채 목표물에 들어가 피해를 주지 않게(치우기는 다음 갱신의 RemoveDead).
+            float burn = MonsterStatus.Tick(ref state, deltaTime, _config.BurnTickInterval);
+            // 화상은 화상 칩(ChipEffects)과 틸트 카드(SO_HeroDebuffCard)가 건다.
+            if (burn > 0f) ApplyDamage(i, burn, 0f, DamageKind.Burn, DamageSource.Burn);
+            // 화상으로 죽었으면 걷지 않는다 — 죽은 채 목표물에 들어가 피해를 주지 않게(치우기는 다음 갱신의 RemoveDead).
             if (!state.IsAlive) continue;
             // 갇히면 죽는다(기획서 3.5) — 넓은 구역째 막히면 어느 주사위 사거리에도 들지 않아 웨이브가 끝나지 않을 수 있다.
             // 잡은 것으로 쳐서 경험치는 준다(치우기·알림은 다음 갱신의 RemoveDead).
@@ -267,28 +267,28 @@ public sealed class MonsterField : IDisposable
         }
     }
 
-    // 피해 종류는 숫자 색에 쓴다. 치명타·독은 그대로 두고, 일반 피해만 방어력에 깎였으면 깎임으로 바꾼다.
-    // 독은 최대 체력 비율이라 방어력을 받지 않는다(기획서 9.7). 방어력은 취약으로 깎인 만큼 빼고 본다.
+    // 피해 종류는 숫자 색에 쓴다. 치명타·화상은 그대로 두고, 일반 피해만 방어력에 깎였으면 깎임으로 바꾼다.
+    // 화상은 최대 체력 비율이라 방어력을 받지 않는다(기획서 7). 방어력은 취약으로 깎인 만큼 빼고 본다.
     private void ApplyDamage(int slot, float damage, float penetration, DamageKind kind, DamageSource source)
     {
         ref MonsterState state = ref _states[slot];
-        // 방깍(취약)은 받는 피해 배율이라 치명타처럼 방어력보다 먼저 곱한다(MonsterDamage). 화상(독)에도 붙는다 — "모든 공격".
+        // 방깍(취약)은 받는 피해 배율이라 치명타처럼 방어력보다 먼저 곱한다(MonsterDamage). 화상에도 붙는다 — "모든 공격".
         if (state.IsVulnerable) damage *= 1f + state.VulnerableRatio;
         MonsterKind target = _kinds[state.TypeIndex];
         float armor = target.Armor;
-        float raw = kind == DamageKind.Poison ? damage : MonsterDamage.Apply(damage, armor, penetration, _config.MinDamageRatio);
+        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, armor, penetration, _config.MinDamageRatio);
         // 피해 저항(거대)은 출처를 가리지 않는다 — 주사위·영웅·스킬·화상이 몬스터 특성을 몰라도 되게 받는 쪽에서 줄인다.
         // 방어력을 뺀 뒤에 줄인다: 먼저 줄이면 작아진 피해에서 방어력을 빼 단단한 보스(5웨이브 거대+단단함)가 의도(체력 1/10과 맞바꿈)보다 몇 배 단단해졌다.
         raw *= target.DamageScale;
 
         // 피해는 정수로 들어간다 — 화면 숫자와 실제로 깎인 체력이 같게. 맞힌 피해는 반올림하고 최소 1(맞혔는데 0이면 안 맞은 것처럼 보인다).
-        // 독은 한 번에 1이 안 될 만큼 작게 자주 들어오므로 나머지를 모아 1이 넘을 때 준다.
+        // 화상은 한 번에 1이 안 될 만큼 작게 자주 들어오므로 나머지를 모아 1이 넘을 때 준다.
         int dealt;
-        if (kind == DamageKind.Poison)
+        if (kind == DamageKind.Burn)
         {
-            float total = raw + state.PoisonCarry;
+            float total = raw + state.BurnCarry;
             dealt = Mathf.FloorToInt(total);
-            state.PoisonCarry = total - dealt;
+            state.BurnCarry = total - dealt;
             if (dealt <= 0) return;
         }
         else dealt = Mathf.Max(1, Mathf.RoundToInt(raw));

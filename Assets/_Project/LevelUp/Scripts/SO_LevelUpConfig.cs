@@ -45,15 +45,15 @@ public sealed class SO_LevelUpConfig : SO_Config
     [Min(0f)] public float InputLockDuration = 0.3f;
     [Tooltip("카드 밖을 누르고 있으면 제목·카드가 이 시간(초, 실제 시간)에 걸쳐 사라지고 떼면 다시 나타난다 — 고르기 전에 판을 보게(검정 가드는 그대로).")]
     [Min(0.01f)] public float PeekFadeDuration = 0.15f;
-    [Tooltip("색 상태별 출현 가중치(잠정). 8색이 같은 가중치로 나온다 — 단색이 받는 카드가 8종 중 2종이라는 등급의 근거(기획서 9.4·9.6). 0이거나 빠진 색은 나오지 않는다.")]
+    [Tooltip("색 상태별 출현 가중치(잠정). 8색이 같은 가중치로 나온다 — 단색이 받는 카드가 8종 중 2종이라는 등급의 근거(기획서 6.5·9.6). 0이거나 빠진 색은 나오지 않는다.")]
     public List<ColorWeight> ColorWeights = new List<ColorWeight>();
-    [Tooltip("면체별 출현 가중치(잠정). 테스트 동안은 모두 1 — d20 희귀도는 최종 조정 때 정한다(9.10).")]
+    [Tooltip("면체별 출현 가중치(잠정). 테스트 동안은 모두 1 — d20 희귀도는 최종 조정 때 정한다(13).")]
     public List<FacesWeight> FacesWeights = new List<FacesWeight>();
-    [Tooltip("나오는 스킬 카드(주사위 대상 — 페인트·다시 굴리기·잭팟·오버드라이브, 범위·판 전체 — 기획서 5.3). 가중치는 카드마다(Weight). 빠진 카드는 나오지 않는다. "
+    [Tooltip("나오는 스킬 카드(주사위 대상 — 페인트·다시 굴리기·잭팟·오버드라이브, 범위·판 전체 — 기획서 8). 가중치는 카드마다(Weight). 빠진 카드는 나오지 않는다. "
         + "캐릭터 전용 카드는 여기 넣지 않는다 — 넣으면 모두에게 나온다(SO_HeroCharacter.ExclusiveCard).")]
     [UnityEngine.Serialization.FormerlySerializedAs("UpgradeCards")]
     public List<SO_SkillCard> SkillCards = new List<SO_SkillCard>();
-    [Tooltip("나오는 칩 카드(7색, 기획서 9.7). 가중치는 카드마다(Weight). 판 시작 칩도 이 목록·가중치로 뽑는다(ChipField).")]
+    [Tooltip("나오는 칩 카드(7색, 기획서 7). 가중치는 카드마다(Weight). 판 시작 칩도 이 목록·가중치로 뽑는다(ChipField).")]
     public List<SO_ChipCard> ChipCards = new List<SO_ChipCard>();
     [Tooltip("나오는 영웅 강화 카드(기획서 10.4). 고르는 즉시 적용되고 손패에 들어가지 않는다. 가중치는 카드마다(Weight).")]
     public List<SO_HeroCard> HeroCards = new List<SO_HeroCard>();

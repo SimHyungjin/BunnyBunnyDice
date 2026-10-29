@@ -10,7 +10,7 @@ public static class HeroTerrain
     /// <summary>판 시작 자리 고르기용 — 바닥 칸만(목표물 위에서 시작하지 않는다).</summary>
     public static readonly Func<MapData, int, int, bool> Ground = IsGround;
 
-    // 판 안은 어디든 밟는다(기획서 10.8) — 주사위·칩·목표물·출현 구역 모두. 영웅이 걸어가서 놓으므로 막히면 벽에 둘러싸인 안쪽 칸에 못 가고
+    // 판 안은 어디든 밟는다(기획서 4) — 주사위·칩·목표물·출현 구역 모두. 영웅이 걸어가서 놓으므로 막히면 벽에 둘러싸인 안쪽 칸에 못 가고
     // 자기가 놓은 것에 갇히며, 목표물을 돌아 걸으면 길이 부자연스럽게 꺾인다. 출현 구역을 막던 이유(문을 틀어막아 출현 봉쇄)는
     // 몬스터가 영웅을 통과하므로 없다. 몬스터만 막힌다(MapData.IsWalkable). 판 안 벽(Wall)은 지금 생성기가 만들지 않는다.
     public static bool IsPassable(MapData map, int x, int y) => map.InBounds(x, y) && map.Get(x, y) != TileType.Wall;

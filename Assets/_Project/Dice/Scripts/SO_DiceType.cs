@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 주사위 한 종류(색 상태 하나)의 정의 — 종류마다 에셋 하나(기획서 9.4). 이름·색·기본 능력치는 여기, 공격 방식에만 있는 값과 각성은
+/// 주사위 한 종류(색 상태 하나)의 정의 — 종류마다 에셋 하나(기획서 6.5). 이름·색·기본 능력치는 여기, 공격 방식에만 있는 값과 각성은
 /// 공격 방식마다의 하위 클래스에 둔다. 그래서 주사위 하나를 고칠 때 파일 하나만 열면 되고, 인스펙터에는 그 공격 방식의 값만 보인다.
 /// 색 → 공격 방식 대응은 "어느 하위 클래스로 만든 에셋인가"가 정한다. 쏘는 규칙은 DiceAttack이 맡는다(데이터와 규칙을 떼어 둔다).
 /// 등급(단색 > 2색 > 하양)은 배율을 따로 두지 않고 기본값으로 표현한다: 단색일수록 높게.
@@ -13,16 +13,16 @@ public abstract class SO_DiceType : SO_Config
 {
     [Tooltip("이 종류의 색 상태. 종류 목록 안에서 겹치지 않게.")]
     public DiceColor Colors;
-    [Tooltip("한 단어 색 이름(기획서 9.4 7색 섞기). 기획·조정용 — 카드에는 아이콘 색으로 보인다.")]
+    [Tooltip("한 단어 색 이름(기획서 6.5 7색 섞기). 기획·조정용 — 카드에는 아이콘 색으로 보인다.")]
     [Localized] public string DisplayName;
     public Color Color = Color.gray;
 
     [Header("카드")]
-    [Tooltip("공격 방식 이름(기획서 9.4). 카드 제목.")]
+    [Tooltip("공격 방식 이름(기획서 6.5). 카드 제목.")]
     [Localized] public string AttackName;
     [Tooltip("한두 줄 설명. 카드를 누르고 있으면 읽힌다.")]
     [Localized, TextArea] public string Description;
-    [Tooltip("강한 상대(몬스터 특성, 기획서 9.11). 비우면 표시하지 않는다.")]
+    [Tooltip("강한 상대(몬스터 특성, 기획서 6.1). 비우면 표시하지 않는다.")]
     [Localized] public string StrongAgainst;
     [Tooltip("약한 상대. 비우면 표시하지 않는다.")]
     [Localized] public string WeakAgainst;

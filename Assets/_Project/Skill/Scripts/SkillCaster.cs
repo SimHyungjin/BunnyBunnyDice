@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 스킬 카드를 실제로 쓴다(기획서 5.3): 대상을 모으고, 몬스터·주사위를 바꾸고, 선·고리로 보여 준다.
+/// 스킬 카드를 실제로 쓴다(기획서 8): 대상을 모으고, 몬스터·주사위를 바꾸고, 선·고리로 보여 준다.
 /// 적 대상 스킬은 모두 즉발이고 판 위의 모든 적에게 쓴다(2026-10-29 사용자 결정 — 처음엔 한 점의 원이었다).
 /// 적 대상·판 전체 스킬은 대상이 없어도 맵 위면 쓸 수 있다 — 필요 없는 카드를 버리는 방법이기도 하다.
 /// 계산은 SkillRules, 끄는 동안의 표시는 SkillPreview — 미리보기도 같은 대상 모으기(CollectTargets)를 지나 실제와 어긋나지 않는다.
@@ -31,11 +31,11 @@ public sealed class SkillCaster
     /// <summary>스킬 카드를 썼다(어느 입구로든). 측정 기록(WaveLog)이 센다.</summary>
     public event Action<SO_SkillCard> Used;
 
-    /// <summary>범위 스킬 한 번의 결과(깎은 체력·넘친 피해·처치). 측정 기록(WaveLog)이 스킬별로 센다 — 배율이 남아도는지 보려고.</summary>
-    public event Action<SO_AreaSkillCard, AreaCastResult> AreaCast;
+    /// <summary>적 대상 스킬 한 번의 결과(깎은 체력·넘친 피해·처치). 측정 기록(WaveLog)이 스킬별로 센다 — 배율이 남아도는지 보려고.</summary>
+    public event Action<SO_EnemySkillCard, EnemyCastResult> EnemyCast;
 
     // 쓰는 동안 모으는 결과.
-    private AreaCastResult _result;
+    private EnemyCastResult _result;
 
     public SkillCaster(MonsterField monsters, DiceField diceField, ChipField chips, DiceCombat diceCombat, AttackEffects effects, HeroStats heroStats,
         SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack, ExpBoost expBoost,
@@ -83,7 +83,7 @@ public sealed class SkillCaster
     }
 
     /// <summary>쓰면 영향을 받을 몬스터 슬롯을 result에 채운다(판 위의 산 적 모두). 미리보기와 실제 사용이 같은 함수를 지난다.</summary>
-    public int CollectTargets(SO_AreaSkillCard card, List<int> result)
+    public int CollectTargets(SO_EnemySkillCard card, List<int> result)
     {
         result.Clear();
         if (card == null || _monsters.Route == null) return 0;
@@ -96,7 +96,7 @@ public sealed class SkillCaster
     }
 
     /// <summary>체크메이트의 왕: targets 중 체력이 가장 많이 남은 슬롯(같으면 먼저 모은 쪽). 체크메이트가 아니거나 대상이 없으면 -1.</summary>
-    public int FindKing(SO_AreaSkillCard card, List<int> targets)
+    public int FindKing(SO_EnemySkillCard card, List<int> targets)
     {
         if (!(card is SO_SkillCard_Checkmate) || targets.Count == 0) return -1;
         int best = targets[0];
@@ -108,7 +108,7 @@ public sealed class SkillCaster
     }
 
     /// <summary>레이크의 모음점: 놓은 칸(설 수 없으면 가장 가까운 설 수 있는 칸)의 중심. 레이크가 아니거나 판에 설 칸이 없으면 false.</summary>
-    public bool TryGetGatherPoint(SO_AreaSkillCard card, Vector2 center, out Vector2 gather)
+    public bool TryGetGatherPoint(SO_EnemySkillCard card, Vector2 center, out Vector2 gather)
     {
         gather = center;
         MapData map = _getMap();
@@ -118,7 +118,7 @@ public sealed class SkillCaster
     }
 
     /// <summary>center에 쓸 수 있는지 — 맵 위면 된다. 대상이 없어도 쓸 수 있다(카드를 버리는 방법).</summary>
-    public bool CanCast(SO_AreaSkillCard card, Vector2 center)
+    public bool CanCast(SO_EnemySkillCard card, Vector2 center)
     {
         MapData map = _getMap();
         if (card == null || map == null) return false;
@@ -127,11 +127,11 @@ public sealed class SkillCaster
     }
 
     /// <summary>CanCast가 참인 자리에만 부른다.</summary>
-    public void Cast(SO_AreaSkillCard card, Vector2 center)
+    public void Cast(SO_EnemySkillCard card, Vector2 center)
     {
         if (_monsters.Route == null) return;
         Used?.Invoke(card);
-        _result = new AreaCastResult { Targets = CollectTargets(card, _targets) };
+        _result = new EnemyCastResult { Targets = CollectTargets(card, _targets) };
         DamageTargets(card);
         switch (card)
         {
@@ -149,11 +149,11 @@ public sealed class SkillCaster
                 for (int i = 0; i < _targets.Count; i++) _monsters.Hold(_targets[i], check.Duration);
                 break;
         }
-        AreaCast?.Invoke(card, _result);
+        EnemyCast?.Invoke(card, _result);
     }
 
     // 모든 적에게 영웅 공격력 비례 피해(체크메이트의 왕은 왕 배율만 받는다). 적마다 영웅 치명타를 따로 굴린다. 죽은 적은 포켓으로 날려 보내고 대상에서 뺀다(특징은 산 적에게만).
-    private void DamageTargets(SO_AreaSkillCard card)
+    private void DamageTargets(SO_EnemySkillCard card)
     {
         int king = FindKing(card, _targets);
         float kingMultiplier = card is SO_SkillCard_Checkmate checkmate ? checkmate.KingMultiplier : 0f;

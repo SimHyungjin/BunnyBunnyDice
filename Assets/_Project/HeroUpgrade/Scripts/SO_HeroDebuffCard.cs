@@ -42,7 +42,7 @@ public sealed class SO_HeroDebuffCard : SO_HeroCard
             case HeroDebuff.Vulnerable: monsters.Vulnerable(slot, Ratio, duration); break;
             case HeroDebuff.Slow: monsters.Slow(slot, Ratio, duration); break;
             case HeroDebuff.Freeze: monsters.Freeze(slot, duration, Immunity); break;
-            case HeroDebuff.Burn: monsters.Poison(slot, Ratio, duration); break;
+            case HeroDebuff.Burn: monsters.Burn(slot, Ratio, duration); break;
         }
     }
 }

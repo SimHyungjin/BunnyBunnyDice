@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// 놓인 주사위 하나의 표시: 색을 입힌 몸체(면체별 모델) + 윗면의 눈 글자(기획서 9.9 — 눈은 윗면 숫자로만 보인다).
+/// 놓인 주사위 하나의 표시: 색을 입힌 몸체(면체별 모델) + 윗면의 눈 글자(기획서 6.8 — 눈은 윗면 숫자로만 보인다).
 /// 몸체는 DiceBody가 면체별 모델로 만든다(중심 피벗·크기 맞춤 — 배치 고스트와 같은 모양).
 /// 놓거나 얹을 때는 굴러 떨어지는 연출을 코드로 돌린다 — 모든 주사위가 같은 동작이라 애니메이션 클립을 따로 두지 않고,
 /// 높이·시간·회전 수를 SO로 조정한다. 눈은 판정 때 이미 정해졌지만 멈춘 뒤에 보여 준다(굴려서 나온 수로 보이게).
@@ -67,7 +67,7 @@ public sealed class DiceView
 
         _pips.fontSize = config.PipFontSize * model.PipScale;
         _pips.color = awakened ? config.AwakenedPipColor : config.PipColor;
-        // 면체는 모델 모양으로 보이므로 숫자만 둔다(기획서 9.9).
+        // 면체는 모델 모양으로 보이므로 숫자만 둔다(기획서 6.8).
         // 눈을 다 태운 주사위는 숫자를 비운다 — 꺼진 것을 몸 색이 아니라 눈으로 보인다(색은 공격 방식이라 그대로 둔다).
         _pips.text = dice.IsSpent ? string.Empty : dice.Pips.ToString();
         _pipPosition = new Vector3(cell.x, top + _halfHeight * 2f + config.PipLift, cell.y);

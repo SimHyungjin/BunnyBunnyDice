@@ -7,10 +7,10 @@ using UnityEngine;
 /// 손패 카드 놓기(CardPlacement)·스킬 쓰기(SkillCaster), 영웅 이동(Hero.MoveTo). 판이 끝나면 다시 하기를 누르고 측정 기록(WaveLog CSV)이 남는다.
 /// 규칙형이라 사람보다 서툴다 — "봇이 몇 웨이브까지 가는지"를 기준선으로 보고, 카드·캐릭터에 따른 차이를 비교하는 데 쓴다.
 /// 미로는 판 전체를 탐색한 목표 배치(MazePlanner)대로 짓는다.
-/// 판단은 사용자 판 교본 2차(2026-10-28, 기획서 11.5)를 옮겼다 — 판을 미로와 메인 딜 구간(BotBoard.KillZone)으로 나눈다:
+/// 판단은 사용자 판 교본 2차(2026-10-28, 기획서 11.4)를 옮겼다 — 판을 미로와 메인 딜 구간(BotBoard.KillZone)으로 나눈다:
 /// 미로는 d6·d12와 화상 칩(체력 비례 피해라 싼 주사위로도 후반까지 들어간다), 메인 딜 구간은 d20·범위 주사위와 디버프(종류마다 하나)·빨강·초록 칩.
 /// 영웅은 미로를 짓는 동안 남은 적을 쫓아 정리하고, 지은 뒤엔 메인 딜 구간에서 오가며 싸운다.
-/// 오버드라이브는 빠져나갈 적을 걸면 잡을 수 있을 때만(BotEscape). 범위 스킬·체크는 구간이 뚫릴 때만(Breached).
+/// 오버드라이브는 빠져나갈 적을 걸면 잡을 수 있을 때만(BotEscape). 적 대상 스킬·체크는 구간이 뚫릴 때만(Breached).
 /// 판단 값은 SO_BotConfig. 정한 판 수를 돌면 요약(BotBatchReport)을 남기고 멈춘다. 캐릭터를 돌아가며 돌릴 수도 있다(RotateCharacters).
 /// 비교 묶음(RunSets — 능력치 단계·카드 성향)마다 같은 맵(Seeds)으로 돌릴 수도 있다. 단계는 세이브와 이어져 있어(MetaProfile) 도는 동안은 세이브에도 그 단계가 남으므로,
 /// 끝나거나 끌 때 켤 때의 단계로 되돌린다.
@@ -668,12 +668,12 @@ public sealed class GameBot : IDisposable
         if (skill is SO_SkillCard_Overdrive overdrive) return TryCastOverdrive(overdrive);
         if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);
         SO_BotConfig.RunSet set = CurrentSet(_report.Count);
-        if (set != null && set.DamageSkillAnytime && skill is SO_AreaSkillCard anytime) return TryCastAnytime(anytime);
+        if (set != null && set.DamageSkillAnytime && skill is SO_EnemySkillCard anytime) return TryCastAnytime(anytime);
         if (!Breached(out bool bossBreaching)) return false;
         // 체크메이트: 보스가 뚫으려 하면 바로, 아니면 다른 적 대상 스킬처럼 떼가 넘어올 때.
-        if (skill is SO_SkillCard_Checkmate && bossBreaching) return TryCastAt((SO_AreaSkillCard)skill);
+        if (skill is SO_SkillCard_Checkmate && bossBreaching) return TryCastAt((SO_EnemySkillCard)skill);
         if (skill is SO_SkillCard_Check check) return TryCastCheck(check);
-        if (skill is SO_AreaSkillCard area) return TryCastArea(area);
+        if (skill is SO_EnemySkillCard enemies) return TryCastEnemies(enemies);
         return false;
     }
 
@@ -798,7 +798,7 @@ public sealed class GameBot : IDisposable
 
     // 적 대상 스킬은 판 전체라 놓는 자리는 레이크의 모음점만 정한다 — 메인 딜 구간 한가운데로 모은다(넘어온 적을 구간으로 되돌린다).
     // 구간이 없으면 판 한가운데.
-    private bool TryCastAt(SO_AreaSkillCard card)
+    private bool TryCastAt(SO_EnemySkillCard card)
     {
         MapData map = _getMap();
         if (map == null) return false;
@@ -809,14 +809,14 @@ public sealed class GameBot : IDisposable
     }
 
     // 메인 딜 구간을 넘어온 적이 몇 마리 이상일 때.
-    private bool TryCastArea(SO_AreaSkillCard card) =>
-        CountPastKillZone() >= _config.BreachAreaMinTargets && TryCastAt(card);
+    private bool TryCastEnemies(SO_EnemySkillCard card) =>
+        CountPastKillZone() >= _config.BreachEnemyMinTargets && TryCastAt(card);
 
     // 데미지형 위주 묶음: 뚫릴 때를 기다리지 않는다. 체크메이트는 보스가 있으면, 나머지는 판 위 적이 몇 마리 이상이면.
-    private bool TryCastAnytime(SO_AreaSkillCard card)
+    private bool TryCastAnytime(SO_EnemySkillCard card)
     {
         if (card is SO_SkillCard_Checkmate) return HasBoss() && TryCastAt(card);
-        return _skills.CollectTargets(card, _targets) >= _config.AnytimeAreaMinTargets && TryCastAt(card);
+        return _skills.CollectTargets(card, _targets) >= _config.AnytimeEnemyMinTargets && TryCastAt(card);
     }
 
     private bool HasBoss()
@@ -989,7 +989,7 @@ public sealed class GameBot : IDisposable
                 case HeroDebuff.Vulnerable: if (!state.IsVulnerable) return true; break;
                 case HeroDebuff.Slow: if (!state.IsSlowed) return true; break;
                 case HeroDebuff.Freeze: if (!state.IsFrozen) return true; break;
-                case HeroDebuff.Burn: if (!state.IsPoisoned) return true; break;
+                case HeroDebuff.Burn: if (!state.IsBurning) return true; break;
             }
         }
         return false;

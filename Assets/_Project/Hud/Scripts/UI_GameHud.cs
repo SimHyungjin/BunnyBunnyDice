@@ -93,7 +93,7 @@ public sealed class UI_GameHud : UI_Hud
         _expText.text = $"{exp}/{expToNext}";
     }
 
-    /// <summary>보스 체력 바를 띄운다(기획서 11.3). 잭팟 보스면 노랑 채움과 "잭팟 보스".</summary>
+    /// <summary>보스 체력 바를 띄운다(기획서 6.5). 잭팟 보스면 노랑 채움과 "잭팟 보스".</summary>
     public void ShowBoss(int health, int maxHealth, bool jackpot)
     {
         _bossBar.SetActive(true);

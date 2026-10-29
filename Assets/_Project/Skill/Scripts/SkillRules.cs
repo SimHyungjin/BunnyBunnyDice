@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 스킬 판정·계산 규칙(기획서 5.3). DiceRules·MonsterMovement처럼 값만 다루는 정적 함수로 둔다
+/// 스킬 판정·계산 규칙(기획서 8). DiceRules·MonsterMovement처럼 값만 다루는 정적 함수로 둔다
 /// — 드래그 미리보기가 같은 함수로 결과를 미리 계산하고, 몬스터 쪽 계산은 ECS로 옮겨 가기 쉽게.
 /// 적용(몬스터·주사위를 실제로 바꾸고 연출하기)은 SkillCaster가 맡는다.
 /// </summary>

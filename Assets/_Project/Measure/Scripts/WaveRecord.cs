@@ -34,11 +34,11 @@ public sealed class WaveRecord
     public int SkillUses;
     /// <summary>레벨업 후보로 나온 카드 수(CardKind 순서) — 고른 것만으로는 "안 나왔는지 안 골랐는지"가 안 갈려서.</summary>
     public readonly int[] Offers = new int[OfferKinds];
-    /// <summary>범위 스킬 종류별(AreaSkillStats 순서) 쓴 수·깎은 체력·넘친 피해·처치 수.</summary>
-    public readonly int[] AreaUses = new int[AreaSkillStats.Count];
-    public readonly float[] AreaDealt = new float[AreaSkillStats.Count];
-    public readonly float[] AreaOverkill = new float[AreaSkillStats.Count];
-    public readonly int[] AreaKills = new int[AreaSkillStats.Count];
+    /// <summary>적 대상 스킬 종류별(EnemySkillStats 순서) 쓴 수·깎은 체력·넘친 피해·처치 수.</summary>
+    public readonly int[] EnemySkillUses = new int[EnemySkillStats.Count];
+    public readonly float[] EnemySkillDealt = new float[EnemySkillStats.Count];
+    public readonly float[] EnemySkillOverkill = new float[EnemySkillStats.Count];
+    public readonly int[] EnemySkillKills = new int[EnemySkillStats.Count];
     /// <summary>웨이브가 끝났을 때 판 위 주사위 수·눈 합(색 = DamageSource.Index 순서, 주사위 출처만). 고른 카드 수로 나누면 얹어 섞인 카드가
     /// 섞인 색 몫으로 잡혀 단일형이 약해 보이므로, 판 위 주사위·눈으로 나눠 본다(2026-10-27 사용자 지적).</summary>
     public readonly int[] DiceCount = new int[DiceColorCount];

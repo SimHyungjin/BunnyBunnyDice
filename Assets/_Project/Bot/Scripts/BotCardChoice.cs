@@ -16,7 +16,7 @@ public struct BotChoiceContext
 }
 
 /// <summary>
-/// 봇의 레벨업 고르기(기획서 11.5 — 사용자 판 교본 2차, 2026-10-28). 카드마다 점수(SO_BotConfig.Choice)를 매겨 가장 높은 것을 고른다.
+/// 봇의 레벨업 고르기(기획서 11.4 — 사용자 판 교본 2차, 2026-10-28). 카드마다 점수(SO_BotConfig.Choice)를 매겨 가장 높은 것을 고른다.
 /// 받는 장수(x2)만큼 곱한다(사용자: 두 배가 맞다). 미로를 짓는 동안은 미로 주사위가 영웅 능력치 카드보다 먼저, 그다음 능력치 카드, 어느 정도 지은 뒤엔 d20·메인 딜 구간 칩.
 /// (처음엔 능력치 카드를 언제나 먼저 골랐다 — 주사위에 최대 체력 피해가 붙은 뒤로는 초반에 주사위를 못 모아 무너져 미로 주사위 아래로 내렸다, 2026-10-29.)
 /// 봇은 기준선이지 최선이 아니다.
@@ -51,7 +51,7 @@ public static class BotCardChoice
         if (skill is SO_SkillCard_CashOut) return context.HasCashOutTarget ? scores.CashOut : 0f;
         if (skill is SO_SkillCard_FullHouse || skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_Respin
             || skill is SO_SkillCard_HouseEdge || skill is SO_SkillCard_SevensHeaven) return scores.Exclusive;
-        if (skill is SO_AreaSkillCard) return scores.AreaSkill;
+        if (skill is SO_EnemySkillCard) return scores.EnemySkill;
         if (skill is SO_SkillCard_Check) return scores.Check;
         if (skill is SO_SkillCard_Overdrive) return scores.Overdrive;
         if (skill is SO_SkillCard_Jackpot) return scores.Jackpot;
@@ -94,6 +94,6 @@ public static class BotCardChoice
         if (card.IsDice) return set.DiceScale;
         if (card.IsHero) return set.HeroScale;
         if (card.IsChip) return set.ChipScale;
-        return card.Skill is SO_AreaSkillCard ? set.DamageSkillScale : set.OtherSkillScale;
+        return card.Skill is SO_EnemySkillCard ? set.DamageSkillScale : set.OtherSkillScale;
     }
 }

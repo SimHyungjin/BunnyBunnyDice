@@ -7,7 +7,7 @@ using UnityEngine;
 /// 거대(보스)는 이동 방해 저항만큼 짧게 멈춘다. 쓴 뒤 나오는 적은 걸리지 않는다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Skill/Check", fileName = "SO_SkillCard_Check")]
-public sealed class SO_SkillCard_Check : SO_AreaSkillCard
+public sealed class SO_SkillCard_Check : SO_EnemySkillCard
 {
     [Tooltip("멈추는 시간(초). 저항이 있으면 곱한다.")]
     [Min(0f)] public float Duration = 5f;

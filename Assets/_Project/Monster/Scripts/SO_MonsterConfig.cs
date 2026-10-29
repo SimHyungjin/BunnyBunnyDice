@@ -14,7 +14,7 @@ public sealed class SO_MonsterConfig : SO_Config
     public float TurnSpeed = 540f;
     [Tooltip("공격선이 몬스터에 닿는 높이(바닥 윗면에서).")]
     public float HitHeight = 0.3f;
-    [Tooltip("방어력이 아무리 높아도 원래 피해의 이 비율은 들어간다(기획서 9.11 — 면역이 아니라 효율 차이).")]
+    [Tooltip("방어력이 아무리 높아도 원래 피해의 이 비율은 들어간다(기획서 9.1 — 면역이 아니라 효율 차이).")]
     [Range(0f, 1f)] public float MinDamageRatio = 0.2f;
 
     [Header("포켓에서 나오기 (표시만)")]
@@ -46,18 +46,18 @@ public sealed class SO_MonsterConfig : SO_Config
     [Range(0.05f, 1f)] public float BossShrinkPortion = 0.25f;
 
     [Header("상태 이상")]
-    [Tooltip("독 피해를 주는 간격(초). 이 간격마다 모아 한 번에 준다. 방어력은 받지 않는다(최대 체력 비율).")]
-    [Min(0.05f)] public float PoisonTickInterval = 0.5f;
+    [Tooltip("화상 피해를 주는 간격(초). 이 간격마다 모아 한 번에 준다. 방어력은 받지 않는다(최대 체력 비율).")]
+    [Min(0.05f)] public float BurnTickInterval = 0.5f;
     // 상태는 체력바 아래 네모로 보인다(MonsterHealthBars) — 몸 색은 특성(SO_MonsterTrait.Tint)이 쓰고, 여러 상태가 겹쳐도 하나씩 보이게.
-    // 색은 그 상태를 거는 칩 색과 같게 둔다 — 칩과 상태를 한 번만 외우게(칩 색 = 효과, 기획서 9.7).
+    // 색은 그 상태를 거는 칩 색과 같게 둔다 — 칩과 상태를 한 번만 외우게(칩 색 = 효과, 기획서 7).
     [Tooltip("취약(받는 피해 증가) 표시 색. 취약 칩 색(하양).")]
     public Color VulnerableColor = Color.white;
     [Tooltip("둔화 표시 색. 둔화 칩 색(노랑).")]
     public Color SlowColor = new Color(0.96f, 0.85f, 0.2f);
     [Tooltip("얼림 표시 색. 얼림 칩 색(하늘).")]
     public Color FreezeColor = new Color(0.4f, 0.8f, 0.96f);
-    [Tooltip("화상(독) 표시 색. 화상 칩 색(자홍).")]
-    public Color PoisonColor = new Color(0.9f, 0.25f, 0.75f);
+    [Tooltip("화상 표시 색. 화상 칩 색(자홍).")]
+    public Color BurnColor = new Color(0.9f, 0.25f, 0.75f);
     [Tooltip("처음 잡아 두는 몬스터 칸 수. 넘으면 두 배로 늘린다 — 한 웨이브 최대 마릿수 정도로 두면 판 중에 늘리지 않는다.")]
     [Min(1)] public int InitialCapacity = 128;
     [Tooltip("분열한 조각들이 죽은 자리에서 걷던 방향으로 벌어지는 거리(칸). 완전히 겹치면 한 마리로 보인다.")]

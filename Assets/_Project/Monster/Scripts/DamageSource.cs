@@ -44,7 +44,7 @@ public readonly struct DamageSource
 public enum DamageBoost
 {
     None,
-    /// <summary>영웅이 올라탄 주사위(영웅 오버드라이브, 기획서 10.9).</summary>
+    /// <summary>영웅이 올라탄 주사위(영웅 오버드라이브, 기획서 10.5).</summary>
     Hero,
     /// <summary>오버드라이브 스킬 카드.</summary>
     Card,

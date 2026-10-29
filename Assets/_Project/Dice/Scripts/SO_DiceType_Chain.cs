@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>하늘 — 체인: 선두를 맞히고 가까운 몬스터로 차례로 튄다, 튈 때마다 약해진다(기획서 9.4).</summary>
+/// <summary>하늘 — 체인: 선두를 맞히고 가까운 몬스터로 차례로 튄다, 튈 때마다 약해진다(기획서 6.5).</summary>
 [CreateAssetMenu(menuName = "Def/Dice/Type/Chain", fileName = "SO_Dice_")]
 public sealed class SO_DiceType_Chain : SO_DiceType
 {

@@ -40,7 +40,7 @@ public sealed class SO_MetaConfig : SO_Config
     public List<UnlockRule> Unlocks = new List<UnlockRule>();
 
     [Header("재화 · 리롤")]
-    [Tooltip("판 보상 = 클리어한 웨이브 × (보상 주사위 눈의 합)(기획서 12.5). 주사위 면 수 — 로비 능력치 주사위와 같은 6면을 지킨다.")]
+    [Tooltip("판 보상 = 클리어한 웨이브 × (보상 주사위 눈의 합)(기획서 12.4). 주사위 면 수 — 로비 능력치 주사위와 같은 6면을 지킨다.")]
     [Min(1)] public int RewardDieFaces = 6;
     [Tooltip("클리어한 웨이브 이만큼마다 보상 주사위가 하나 는다(10이면 9웨이브까지 0개 = 보상 0). "
         + "웨이브가 갈수록 길어져 판 시간은 웨이브의 제곱쯤으로 느는데, 웨이브 × 주사위 수도 제곱으로 늘어 분당 재화가 판 길이와 상관없이 고르다(2026-10-28).")]

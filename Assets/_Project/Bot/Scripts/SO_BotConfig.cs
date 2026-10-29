@@ -51,7 +51,7 @@ public sealed class SO_BotConfig : SO_Config
         [Tooltip("영웅 디버프 카드(사용자: 좋지만 미묘).")]
         public float HeroDebuff = 40f;
         public float Jackpot = 200f;
-        public float AreaSkill = 120f;
+        public float EnemySkill = 120f;
         public float Check = 100f;
         public float Overdrive = 150f;
         public float Reroll = 80f;
@@ -77,12 +77,12 @@ public sealed class SO_BotConfig : SO_Config
         public int[] Stages = new int[0];
         [Min(0f)] public float DiceScale = 1f;
         [Min(0f)] public float ChipScale = 1f;
-        [Tooltip("데미지형 스킬 = 영웅 공격력 비례 범위 스킬(포켓·레이크·백스핀·체크메이트, SO_AreaSkillCard).")]
+        [Tooltip("데미지형 스킬 = 영웅 공격력 비례 적 대상 스킬(포켓·레이크·백스핀·체크메이트, SO_EnemySkillCard).")]
         [Min(0f)] public float DamageSkillScale = 1f;
         [Tooltip("그 밖의 스킬(잭팟·리롤·페인트·오버드라이브·체크·올인·전용 카드).")]
         [Min(0f)] public float OtherSkillScale = 1f;
         [Min(0f)] public float HeroScale = 1f;
-        [Tooltip("켜면 데미지형 스킬을 뚫릴 때까지 아끼지 않고 판 위 적이 AnytimeAreaMinTargets 이상이면 바로 쓴다(체크메이트는 보스가 보이면) " +
+        [Tooltip("켜면 데미지형 스킬을 뚫릴 때까지 아끼지 않고 판 위 적이 AnytimeEnemyMinTargets 이상이면 바로 쓴다(체크메이트는 보스가 보이면) " +
                  "— 데미지형 위주로 고르면서 아껴 두기만 하면 그 전략을 잴 수 없다.")]
         public bool DamageSkillAnytime;
     }
@@ -131,7 +131,7 @@ public sealed class SO_BotConfig : SO_Config
     [Tooltip("메인 딜 구간 중심 + 이 칸 수 안에 들어온 적부터 빠져나갈지 본다.")]
     [Min(0)] public int EscapeLookAhead = 2;
 
-    [Header("뚫림 — 이때만 범위 스킬·체크를 쓴다(사용자: 뚫릴 것 같을 때만 썼다)")]
+    [Header("뚫림 — 이때만 적 대상 스킬·체크를 쓴다(사용자: 뚫릴 것 같을 때만 썼다)")]
     [Tooltip("구간을 넘어온 적 중 체력이 이 비율 이상 남은 적이 BreachCount 이상이면 뚫린다고 본다.")]
     [Range(0f, 1f)] public float BreachHealthRatio = 0.4f;
     [Min(1)] public int BreachCount = 3;
@@ -140,14 +140,14 @@ public sealed class SO_BotConfig : SO_Config
     [Tooltip("목표물 중심에서 이 거리(칸) 안에 적이 오면 무조건 뚫린 것.")]
     [Min(0f)] public float DangerRadius = 2f;
     [Tooltip("뚫릴 때 적 대상 스킬(판 전체): 구간을 넘어온 적이 이만큼이면 쓴다.")]
-    [Min(1)] public int BreachAreaMinTargets = 2;
+    [Min(1)] public int BreachEnemyMinTargets = 2;
     [Tooltip("뚫릴 때 체크: 구간을 넘어온 적이 이만큼이면 쓴다.")]
     [Min(1)] public int CheckBreachCount = 5;
     [Tooltip("리스핀(더블 오어 낫싱 전용): 눈이 1인 주사위가 이만큼이면 쓴다.")]
     [Min(1)] public int RespinMinDice = 2;
 
     [Tooltip("데미지형 스킬을 바로 쓰는 묶음(RunSet.DamageSkillAnytime): 판 위 적이 이만큼이면 쓴다.")]
-    [Min(1)] public int AnytimeAreaMinTargets = 8;
+    [Min(1)] public int AnytimeEnemyMinTargets = 8;
 
     [Header("그 밖의 스킬")]
     [Tooltip("올인: 판 주사위의 평균 눈 비율이 이보다 낮을 때 쓴다.")]
