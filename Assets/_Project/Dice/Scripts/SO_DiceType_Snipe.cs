@@ -9,8 +9,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Def/Dice/Type/Snipe", fileName = "SO_Dice_")]
 public sealed class SO_DiceType_Snipe : SO_DiceType
 {
-    [Tooltip("한 방마다 더하는 피해 = 맞은 적 최대 체력 × 이 값. 치명타면 같이 두 배가 된다.")]
-    [Min(0f)] public float MaxHealthDamage = 0.005f;
-
+    // 최대 체력 피해는 모든 종류 공통 값이 되었다(SO_DiceType.MaxHealthDamage, 2026-10-29). 치명타면 같이 두 배가 된다.
     // 각성: 매 공격 확정 치명타(배율은 공통 배율, SO_DiceStatsConfig.CritMultiplier).
 }

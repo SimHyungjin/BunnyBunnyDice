@@ -25,6 +25,8 @@ MonoBehaviour:
   DamageGrowth: 0.5
   AttackSpeed: 0.7
   AttackSpeedGrowth: 0
-  Range: 1.8
+  Range: 2.8
+  MaxHealthDamage: 0
+  MaxHealthBossImmune: 0
   AwakenPulseDelay: 0.2
   AwakenPulseRatio: 0.5

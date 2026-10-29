@@ -164,12 +164,15 @@ public sealed class DiceCombat : IDisposable
                 speedScale = Mathf.Max(speedScale, _boostSpeed);
                 if (boost == DamageBoost.None) boost = DamageBoost.Hero;
             }
+            // 최대 체력 피해도 한 방 피해라 같은 배율을 받는다(오버드라이브·공격력 칩).
             stats.Damage *= damageScale;
+            stats.MaxHealthRatio *= damageScale;
             if (speedScale > 0f) stats.AttackInterval /= speedScale;
 
             // 붙은 강화는 그 칸의 칩이다(칩 위에 놓인 주사위가 받는다). 칩 위 주사위는 칩 두께만큼 올라앉아 있다.
             SO_ChipCard chip = _chips.Get(dice.Cell);
             stats.Damage *= 1f + ChipEffects.DamageBonus(chip);
+            stats.MaxHealthRatio *= 1f + ChipEffects.DamageBonus(chip);
             stats.AttackInterval /= 1f + ChipEffects.AttackSpeedBonus(chip);
             float top = chip != null ? _viewConfig.ChipHeight : _viewConfig.GetTileTop(TileType.Ground);
             DiceAttack.Shot shot = new DiceAttack.Shot

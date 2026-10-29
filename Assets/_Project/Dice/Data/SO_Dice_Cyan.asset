@@ -25,6 +25,8 @@ MonoBehaviour:
   AttackSpeed: 2
   AttackSpeedGrowth: 0
   Range: 3.8
+  MaxHealthDamage: 0.004
+  MaxHealthBossImmune: 0
   JumpRange: 1.6
   Falloff: 0.65
   MinJumpDamage: 2

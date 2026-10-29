@@ -25,5 +25,7 @@ MonoBehaviour:
   AttackSpeed: 0.4
   AttackSpeedGrowth: 0
   Range: 5.5
+  MaxHealthDamage: 0.003
+  MaxHealthBossImmune: 0
   HalfWidth: 0.15
   AwakenWidthScale: 2

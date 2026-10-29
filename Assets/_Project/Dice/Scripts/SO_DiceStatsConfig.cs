@@ -21,6 +21,9 @@ public sealed class SO_DiceStatsConfig : SO_Config
     [Header("각성")]
     [Tooltip("색이 있는 주사위의 눈이 이 값에 닿으면 각성한다(기획서 9.4). 20이면 d20을 꽉 채웠을 때만 — 세기 단계 없이 늘 온전한 효과.")]
     [Min(1)] public int AwakenPips = 20;
+    [Tooltip("각성하면 모든 색 공통으로 한 방 피해(고정 + 최대 체력 피해)에 곱한다 — 공격력만 키우면 후반엔 최대 체력 피해가 대부분이라 각성이 묻힌다. " +
+             "색마다의 각성 효과는 그 위에 더해진다(2026-10-29).")]
+    [Min(1f)] public float AwakenDamageScale = 2f;
 
     /// <summary>눈에 따른 성장 몫 (눈 − 1)^곡선.</summary>
     public float GetGrowth(int pips) => Mathf.Pow(Mathf.Max(pips - 1, 0), GrowthCurve);

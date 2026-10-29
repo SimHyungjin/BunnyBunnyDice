@@ -44,4 +44,11 @@ public abstract class SO_DiceType : SO_Config
     [Tooltip("켜면 사거리 안에서 최대 체력이 가장 큰 적(보스 등)부터 쏜다(같으면 선두). 단일형(빨강·초록·파랑)만 쓴다 — " +
              "선두만 쏘면 떼 속에 섞인 보스를 거의 맞히지 못해 빨강의 최대 체력 피해가 보스 웨이브에서도 몫이 늘지 않았다(2026-10-27). 앞은 범위형이 맡는다.")]
     public bool PreferToughest;
+
+    [Header("최대 체력 피해")]
+    [Tooltip("한 방마다 더하는 피해 = 맞은 적 최대 체력 × 이 값(2026-10-29 — 고정 피해만으로는 웨이브 체력 복리를 못 따라간다). " +
+             "눈으로 자라지 않고 각성 때만 고정 피해와 함께 커진다(SO_DiceStatsConfig.AwakenDamageScale). 범위형은 맞은 적마다 — 그래서 단일형보다 훨씬 작게 둔다.")]
+    [Min(0f)] public float MaxHealthDamage;
+    [Tooltip("켜면 보스에게는 최대 체력 피해가 들어가지 않는다(고정 피해는 그대로) — 범위형은 잡몹, 단일형은 보스를 맡는다(2026-10-29).")]
+    public bool MaxHealthBossImmune;
 }

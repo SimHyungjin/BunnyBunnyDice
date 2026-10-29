@@ -16,3 +16,4 @@ MonoBehaviour:
   CritChancePerPip: 0.01
   CritMultiplier: 2
   AwakenPips: 20
+  AwakenDamageScale: 2

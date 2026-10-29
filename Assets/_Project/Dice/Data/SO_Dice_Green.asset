@@ -26,5 +26,7 @@ MonoBehaviour:
   AttackSpeedGrowth: 0.25
   Range: 2.8
   PreferToughest: 1
+  MaxHealthDamage: 0.002
+  MaxHealthBossImmune: 0
   AwakenAttackSpeedBonus: 1
   FocusBonusPerHit: 0.05
