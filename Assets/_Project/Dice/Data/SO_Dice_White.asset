@@ -16,8 +16,7 @@ MonoBehaviour:
   DisplayName: "\uD558\uC591"
   Color: {r: 1, g: 1, b: 1, a: 1}
   AttackName: "\uD30C\uB3D9"
-  Description: "\uC8FC\uBCC0\uC758 \uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C
-    \uC900\uB2E4. \uC0AC\uAC70\uB9AC\uAC00 \uC9E7\uB2E4."
+  Description: "주변의 모든 적에게 피해를 준다."
   StrongAgainst: "\uBE60\uB984"
   WeakAgainst: "\uAC70\uB300"
   AwakenDescription: "\uD30C\uB3D9\uC774 \uB450 \uACB9\uC73C\uB85C \uD37C\uC9C4\uB2E4"

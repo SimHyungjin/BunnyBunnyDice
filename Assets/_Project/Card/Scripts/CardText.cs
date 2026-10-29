@@ -71,11 +71,12 @@ public static class CardText
 
         if (!TryGetNumber(source, name, out float value)) return false;
         if (sign != 0f) value = 1f + sign * value;
-        text = percent
-            ? (value * 100f).ToString("0.#", CultureInfo.InvariantCulture) + "%"
-            : value.ToString("0.##", CultureInfo.InvariantCulture);
+        text = percent ? FormatPercent(value) : value.ToString("0.##", CultureInfo.InvariantCulture);
         return true;
     }
+
+    /// <summary>비율을 "%" 글로. 소수 둘째 자리까지 — 최대 체력 피해처럼 1%보다 작은 값(0.05%)이 한 자리로는 반올림돼 틀리게 보였다.</summary>
+    public static string FormatPercent(float ratio) => (ratio * 100f).ToString("0.##", CultureInfo.InvariantCulture) + "%";
 
     private static bool TryGetNumber(object source, string name, out float value)
     {

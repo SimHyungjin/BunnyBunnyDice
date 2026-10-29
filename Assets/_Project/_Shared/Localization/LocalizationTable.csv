@@ -58,13 +58,13 @@
 관통선이 {AwakenWidthScale}배 굵어진다,Piercing line becomes {AwakenWidthScale}x wider,SO_Dice_Magenta.AwakenDescription
 빨강,Red,SO_Dice_Red.DisplayName
 강타,Smash,SO_Dice_Red.AttackName
-느리지만 강한 한 방. 맞은 적 최대 체력의 {MaxHealthDamage%}를 더 준다. 최대 체력이 가장 큰 적부터 노린다.,A slow but powerful strike. Deals an extra {MaxHealthDamage%} of the target's max HP. Targets the enemy with the highest max HP first.,SO_Dice_Red.Description
+느리지만 강한 한 방. 최대 체력이 가장 큰 적부터 노린다.,A slow but powerful strike. Targets the enemy with the highest max HP first.,SO_Dice_Red.Description
 "단단함, 보스, 재생","Armored, Boss, Regen",SO_Dice_Red.StrongAgainst
 분열,Split,SO_Dice_Red.WeakAgainst | SO_Dice_Yellow.StrongAgainst
 모든 공격이 치명타가 된다,Every attack is a critical hit,SO_Dice_Red.AwakenDescription
 하양,White,SO_Dice_White.DisplayName
 파동,Pulse,SO_Dice_White.AttackName
-주변의 모든 적에게 피해를 준다. 사거리가 짧다.,Damages all nearby enemies. Short range.,SO_Dice_White.Description
+주변의 모든 적에게 피해를 준다.,Damages all nearby enemies.,SO_Dice_White.Description
 거대,Giant,SO_Dice_White.WeakAgainst
 파동이 두 겹으로 퍼진다,The pulse spreads in two waves,SO_Dice_White.AwakenDescription
 노랑,Yellow,SO_Dice_Yellow.DisplayName
@@ -161,16 +161,18 @@
 배경음,Music,UI_SettingsPopup/SafeRoot/Area/Window/Label_music
 효과음,Sound Effects,UI_SettingsPopup/SafeRoot/Area/Window/Label_sound
 포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
-"{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:156
-강함: {0},Strong: {0},CardView.cs:287
-약함: {0},Weak: {0},CardView.cs:288
+"{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:157
+맞은 적 최대 체력의 {0}를 더 준다.,Deals an extra {0} of the target's max HP.,CardView.cs:171
+피해 {0}배 · {1},Damage x{0} · {1},CardView.cs:179
+강함: {0},Strong: {0},CardView.cs:304
+약함: {0},Weak: {0},CardView.cs:305
 특성 없음,No Trait,UI_CharacterSelectPopup.cs:133 | UI_LobbyPopup.cs:82
 눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:134
 이동 속도,Move Speed,HeroStatText.cs:15
 {0}초,{0}s,HeroStatText.cs:52
-잭팟 보스 {0}/{1},Jackpot Boss {0}/{1},UI_GameHud.cs:107
-보스 {0}/{1},Boss {0}/{1},UI_GameHud.cs:108
-웨이브 {0},Wave {0},UI_GameHud.cs:121
+잭팟 보스 {0}/{1},Jackpot Boss {0}/{1},UI_GameHud.cs:113
+보스 {0}/{1},Boss {0}/{1},UI_GameHud.cs:114
+웨이브 {0},Wave {0},UI_GameHud.cs:130
 {0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:93
 웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:99 | UnlockText.cs:8
 주사위 각성 {0}회,Dice awakenings: {0},UnlockText.cs:9
