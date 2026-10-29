@@ -20,5 +20,8 @@ public enum SkillTarget
 /// </summary>
 public abstract class SO_SkillCard : SO_Card
 {
+    [Tooltip("캐릭터 전용 카드(SO_HeroCharacter.ExclusiveCard)면 켠다 — 카드 종류가 전용(CardKind.Exclusive)이 되어 테두리 색·부제가 따로 나온다. 쓰는 법은 스킬과 같다.")]
+    public bool Exclusive;
+
     public abstract SkillTarget Target { get; }
 }

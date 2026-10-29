@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e724713419145969ad76ab969edc1ca, type: 3}
   m_Name: SO_SkillCard_DoubleUp
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_DoubleUp
+  Exclusive: 1
   DisplayName: "\uB354\uBE14 \uC5C5"
   Description: "{Duration}\uCD08\uAC04 \uCC98\uCE58 \uACBD\uD5D8\uCE58\uAC00 {ExpScale}\uBC30\uAC00
     \uB41C\uB2E4."

@@ -7,6 +7,9 @@ public enum CardKind
     Skill,
     Chip,
     Hero,
+    // 캐릭터 전용 카드(SO_SkillCard.Exclusive). 쓰는 법은 스킬과 같고 종류만 따로 — 테두리 색·부제가 달라 공용 스킬과 섞여 보이지 않게(2026-10-30 사용자).
+    // 맨 뒤에 둔다 — 측정 기록(WaveRecord.Offers)이 이 순서의 칸을 쓴다.
+    Exclusive,
 }
 
 /// <summary>
@@ -30,7 +33,8 @@ public readonly struct HandCard : IEquatable<HandCard>
     public bool IsHero => Hero != null;
     public bool IsDice => Skill == null && Chip == null && Hero == null;
 
-    public CardKind Kind => IsSkill ? CardKind.Skill : IsChip ? CardKind.Chip : IsHero ? CardKind.Hero : CardKind.Dice;
+    public CardKind Kind => IsSkill ? (Skill.Exclusive ? CardKind.Exclusive : CardKind.Skill)
+        : IsChip ? CardKind.Chip : IsHero ? CardKind.Hero : CardKind.Dice;
 
     /// <summary>SO로 된 카드(칩·스킬·영웅 강화)의 공통 내용. 주사위 카드면 null.</summary>
     public SO_Card Asset => Chip != null ? Chip : Skill != null ? Skill : Hero;

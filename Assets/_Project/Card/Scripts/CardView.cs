@@ -93,7 +93,7 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
 
         // 테두리 등은 카드 종류(주사위·칩·스킬·영웅 강화)를 나타낸다. 주사위의 색과 면체는 아이콘이 보인다
         // — 흰 기반 아이콘 3장(면체별)에 색을 곱해 8색 × 3면체를 모두 그린다.
-        Color kind = card.IsChip ? config.ChipCardColor : card.IsSkill ? config.SkillCardColor
+        Color kind = card.IsChip ? config.ChipCardColor : card.IsSkill ? (card.Skill.Exclusive ? config.ExclusiveCardColor : config.SkillCardColor)
             : card.IsHero ? config.HeroCardColor : config.DiceCardColor;
         for (int i = 0; i < _kindTinted.Length; i++) _kindTinted[i].color = kind;
         _titleBack.color = new Color(kind.r, kind.g, kind.b, config.TitleBackAlpha);
@@ -172,21 +172,23 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     }
 
     // 스킬은 쓰는 곳(주사위·적 전체·판 전체·칸)을 종류 칸에 적는다 — 놓을 곳이 카드마다 달라서.
+    // 전용 카드는 부제만 다르다(쓰는 법은 스킬과 같아 종류 칸은 그대로).
     private void ShowSkill(SO_SkillCard card, SO_CardHandConfig config)
     {
+        string sub = card.Exclusive ? config.ExclusiveSubText : config.SkillSubText;
         switch (card.Target)
         {
             case SkillTarget.Enemies:
-                ShowCardAsset(card, config.SkillSubText, config.SkillEnemiesLabel, config.SkillEnemiesText, config);
+                ShowCardAsset(card, sub, config.SkillEnemiesLabel, config.SkillEnemiesText, config);
                 break;
             case SkillTarget.Board:
-                ShowCardAsset(card, config.SkillSubText, config.SkillBoardLabel, config.SkillBoardText, config);
+                ShowCardAsset(card, sub, config.SkillBoardLabel, config.SkillBoardText, config);
                 break;
             case SkillTarget.Cell:
-                ShowCardAsset(card, config.SkillSubText, config.SkillCellLabel, config.SkillCellText, config);
+                ShowCardAsset(card, sub, config.SkillCellLabel, config.SkillCellText, config);
                 break;
             default:
-                ShowCardAsset(card, config.SkillSubText, config.SkillDiceLabel, config.SkillDiceText, config);
+                ShowCardAsset(card, sub, config.SkillDiceLabel, config.SkillDiceText, config);
                 break;
         }
     }

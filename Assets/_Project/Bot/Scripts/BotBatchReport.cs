@@ -17,7 +17,7 @@ public sealed class BotBatchReport
 {
     private const string Header =
         "run,set,character,stages,seed,maze,wave_cleared,first_leak,minutes,hero_pct,skill_pct,single_pct,area_pct,basic_pct,raise_hero_pct,raise_card_pct,ride_pct," +
-        "pips_drained,skill_uses,pick_dice,pick_skill,pick_chip,pick_hero,offer_dice,offer_skill,offer_chip,offer_hero";
+        "pips_drained,skill_uses,pick_dice,pick_skill,pick_chip,pick_hero,offer_dice,offer_skill,offer_chip,offer_hero,offer_exclusive";
 
     // 피해 출처 번호(DamageSource.Index = 주사위 색 비트): 단일 = 빨강·초록·파랑, 범위 = 섞인 색·하양, 기본 = 검정.
     private static readonly int[] SingleSources = { (int)DiceColor.Red, (int)DiceColor.Green, (int)DiceColor.Blue };
@@ -272,7 +272,7 @@ public sealed class BotBatchReport
         }
     }
 
-    // 머리글 순서(dice·skill·chip·hero)로 쓴다 — CardKind 순서(Dice·Skill·Chip·Hero)와 같다.
+    // 머리글 순서(dice·skill·chip·hero·exclusive)로 쓴다 — CardKind 순서와 같다. 고른 수(pick_*)는 에셋 이름으로 세어 전용 카드가 skill에 든다.
     private static void AppendOffers(StringBuilder builder, Run run, float divide, CultureInfo invariant)
     {
         for (int k = 0; k < run.Offers.Length; k++)

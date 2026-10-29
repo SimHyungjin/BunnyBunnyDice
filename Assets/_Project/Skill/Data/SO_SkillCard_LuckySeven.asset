@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 254ca8bf28c14c7398fb52a7c615d8a4, type: 3}
   m_Name: SO_SkillCard_LuckySeven
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_LuckySeven
+  Exclusive: 1
   DisplayName: "\uB7ED\uD0A4 \uC138\uBE10"
   Description: "{Duration}\uCD08\uAC04 \uBAA8\uB4E0 \uC8FC\uC0AC\uC704\uAC00 \uAC01\uC131\uD55C\uB2E4."
   StrongAgainst: 

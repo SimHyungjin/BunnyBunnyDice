@@ -2,6 +2,7 @@
 스킬 카드,Skill Card,SO_CardHandConfig.SkillSubText
 칩 카드,Chip Card,SO_CardHandConfig.ChipSubText
 영웅 강화,Hero Upgrade,SO_CardHandConfig.HeroSubText
+전용 카드,Signature Card,SO_CardHandConfig.ExclusiveSubText
 칩,Chip,SO_CardHandConfig.ChipKindLabel
 빈 칸이나 주사위 밑에 놓는다.,Place on an empty tile or under a die.,SO_CardHandConfig.ChipKindText
 주사위,Die,SO_CardHandConfig.SkillDiceLabel
@@ -171,8 +172,8 @@
 포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
 "{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:156
 최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:171
-강함: {0},Strong: {0},CardView.cs:296
-약함: {0},Weak: {0},CardView.cs:297
+강함: {0},Strong: {0},CardView.cs:298
+약함: {0},Weak: {0},CardView.cs:299
 특성 없음,No Trait,UI_CharacterSelectPopup.cs:133 | UI_LobbyPopup.cs:82
 눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:134
 이동 속도,Move Speed,HeroStatText.cs:15

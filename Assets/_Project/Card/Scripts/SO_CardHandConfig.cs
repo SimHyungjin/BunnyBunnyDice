@@ -25,12 +25,16 @@ public sealed class SO_CardHandConfig : SO_Config
     public Color ChipCardColor = new Color(1f, 0.729f, 0.2f);
     [Tooltip("영웅 강화 카드 테두리 색. 주사위(자홍)·스킬(민트)·칩(금색)과 겹치지 않는 하늘색.")]
     public Color HeroCardColor = new Color(0.35f, 0.65f, 1f);
+    [Tooltip("캐릭터 전용 카드 테두리 색. 주사위(자홍)·스킬(민트)·칩(금색)·영웅(하늘)과 겹치지 않는 보라 — 판을 뒤집는 카드라 눈에 띄게.")]
+    public Color ExclusiveCardColor = new Color(0.62f, 0.36f, 1f);
     [Tooltip("스킬 카드 부제.")]
     [Localized] public string SkillSubText = "스킬 카드";
     [Tooltip("칩 카드 부제.")]
     [Localized] public string ChipSubText = "칩 카드";
     [Tooltip("영웅 강화 카드 부제.")]
     [Localized] public string HeroSubText = "영웅 강화";
+    [Tooltip("캐릭터 전용 카드 부제.")]
+    [Localized] public string ExclusiveSubText = "전용 카드";
     [Tooltip("칩·스킬 카드의 종류 칸(주사위 카드의 각성 칸 자리). 어디에 놓는지가 고르는 기준이라 크게 적는다(기획서 5장).")]
     [UnityEngine.Serialization.FormerlySerializedAs("AttachLabel")]
     [Localized] public string ChipKindLabel = "칩";

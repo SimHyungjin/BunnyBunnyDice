@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9729904a62e3493b97a36c0b07ea93ce, type: 3}
   m_Name: SO_SkillCard_BreakShot
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_BreakShot
+  Exclusive: 1
   DisplayName: "\uBE0C\uB808\uC774\uD06C \uC0F7"
   Description: "{Duration}\uCD08\uAC04 \uC601\uC6C5\uC758 \uACF5\uACA9\uB825\uC774
     {DamageScale}\uBC30, \uACF5\uACA9 \uC18D\uB3C4\uAC00 {SpeedScale}\uBC30\uAC00
