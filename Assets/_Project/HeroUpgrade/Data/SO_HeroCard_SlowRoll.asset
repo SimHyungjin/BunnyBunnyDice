@@ -22,6 +22,6 @@ MonoBehaviour:
   Amount: 1
   Flat: 0
   Debuff: 1
-  Ratio: 0.6
+  Ratio: 0.4
   Duration: 2
   Immunity: 1.5

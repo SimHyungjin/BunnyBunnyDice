@@ -17,12 +17,12 @@
 공격 속도,Attack Speed,SO_ChipCard_AttackSpeed.DisplayName | HeroStatText.cs:14
 이 칩 위 주사위의 공격 속도가 {Ratio%} 늘어난다.,The die on this chip attacks {Ratio%} faster.,SO_ChipCard_AttackSpeed.Description
 화상,Burn,SO_ChipCard_Burn.DisplayName | HeroStatText.cs:46
-맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입는다. 방어력을 무시한다. 보스는 절반만 입는다.,Hit enemies take {MaxHealthRatio%} of their max HP as damage every second for {Duration}s. Ignores armor. Bosses take half.,SO_ChipCard_Burn.Description
+맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입는다. 방어력을 무시한다.,Hit enemies take {MaxHealthRatio%} of their max HP as damage every second for {Duration}s. Ignores armor.,SO_ChipCard_Burn.Description
 보스,Boss,SO_ChipCard_Burn.StrongAgainst
 공격력,Attack,SO_ChipCard_Damage.DisplayName | SO_HeroCard_Attack.DisplayName | CardView/Detail/DiceContent/StatLabel0
 이 칩 위 주사위의 공격력이 {Ratio%} 늘어난다.,The die on this chip deals {Ratio%} more damage.,SO_ChipCard_Damage.Description
 얼림,Freeze,SO_ChipCard_Freeze.DisplayName | HeroStatText.cs:45
-맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다. 보스는 절반만 언다.,Freezes hit enemies for {Duration}s. They can't be frozen again for {Immunity}s after thawing. Bosses freeze for half as long.,SO_ChipCard_Freeze.Description
+맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다.,Freezes hit enemies for {Duration}s. They can't be frozen again for {Immunity}s after thawing.,SO_ChipCard_Freeze.Description
 사거리,Range,SO_ChipCard_Range.DisplayName | CardView/Detail/DiceContent/StatLabel2 | HeroStatText.cs:16
 이 칩 위 주사위의 사거리가 {Ratio%} 늘어난다.,The die on this chip gets {Ratio%} more range.,SO_ChipCard_Range.Description
 둔화,Slow,SO_ChipCard_Slow.DisplayName | HeroStatText.cs:44
@@ -89,7 +89,7 @@
 주사위를 굴릴 때 가운데 {MiddleExcludeRatio%}의 눈은 나오지 않는다.,"When rolling dice, the middle {MiddleExcludeRatio%} of pips never comes up.",SO_HeroTrait_NoMiddle.Description
 영웅의 공격력이 캐릭터 기본값 기준으로 오른다. 스킬 위력도 함께 오른다. 여러 장은 합산된다.,Raises the hero's attack based on the character's base value. Also raises skill power. Multiple cards stack additively.,SO_HeroCard_Attack.Description
 콜드 덱,Cold Deck,SO_HeroCard_ColdDeck.DisplayName
-맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다. 보스는 절반만 언다. 여러 장은 어는 시간이 합산된다.,Freezes the target for {Duration}s. It can't be frozen again for {Immunity}s after thawing. Bosses freeze for half as long. Multiple copies add freeze time.,SO_HeroCard_ColdDeck.Description
+맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다. 여러 장은 어는 시간이 합산된다.,Freezes the target for {Duration}s. It can't be frozen again for {Immunity}s after thawing. Multiple copies add freeze time.,SO_HeroCard_ColdDeck.Description
 치명타 확률,Crit Chance,SO_HeroCard_CritChance.DisplayName | HeroStatText.cs:17
 "영웅 공격과 스킬의 치명타 확률이 오른다. 여러 장은 합산되고, 100%를 넘는 몫은 치명타 피해가 된다.","Raises crit chance for hero attacks and skills. Multiple cards stack additively, and chance over 100% turns into crit damage.",SO_HeroCard_CritChance.Description
 치명타 피해,Crit Damage,SO_HeroCard_CritDamage.DisplayName | HeroStatText.cs:18
@@ -101,7 +101,7 @@
 슬로우롤,Slow Roll,SO_HeroCard_SlowRoll.DisplayName
 맞은 적이 {Duration}초 동안 {Ratio%} 느려진다. 여러 장은 지속 시간이 합산된다.,The target is slowed by {Ratio%} for {Duration}s. Multiple copies add duration.,SO_HeroCard_SlowRoll.Description
 틸트,Tilt,SO_HeroCard_Tilt.DisplayName
-맞은 적이 {Duration}초 동안 매초 최대 체력의 {Ratio%} 피해를 입는다. 방어력을 무시한다. 보스는 절반만 입는다. 여러 장은 지속 시간이 합산된다.,The target takes {Ratio%} of its max HP as damage every second for {Duration}s. Ignores defense. Bosses take half. Multiple copies add duration.,SO_HeroCard_Tilt.Description
+맞은 적이 {Duration}초 동안 매초 최대 체력의 {Ratio%} 피해를 입는다. 방어력을 무시한다. 여러 장은 지속 시간이 합산된다.,The target takes {Ratio%} of its max HP as damage every second for {Duration}s. Ignores defense. Multiple copies add duration.,SO_HeroCard_Tilt.Description
 올인,All In,SO_SkillCard_AllIn.DisplayName
 판 위의 모든 주사위를 다시 굴린다.,Rerolls every die on the board.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
