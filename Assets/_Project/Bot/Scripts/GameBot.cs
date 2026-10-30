@@ -23,6 +23,8 @@ public sealed partial class GameBot : IDisposable
     private readonly Func<MapData> _getMap;
     private readonly Func<int> _getWave;
     private readonly HeroStats _heroStats;
+    // 레이즈 배율처럼 특성이 바꾸는 값을 실제와 같게 읽는다.
+    private readonly TraitHooks _traits;
     private readonly IReadOnlyList<SO_HeroCharacter> _characters;
     // 이번에 돌아가며 돌릴 캐릭터들 — 켤 때의 캐릭터는 빼고(이미 돌려 본 기준선) 나머지를 목록 순서로.
     private readonly List<SO_HeroCharacter> _rotation = new List<SO_HeroCharacter>();
@@ -83,6 +85,7 @@ public sealed partial class GameBot : IDisposable
     {
         _config = config;
         _heroStats = heroStats;
+        _traits = new TraitHooks(heroStats);
         _characters = characters;
         _getMap = getMap;
         _getWave = getWave;

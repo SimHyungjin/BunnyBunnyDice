@@ -29,6 +29,8 @@ public sealed class SkillCaster
     private readonly TryRollCard _rollCard;
     // 경험치 없이 레벨을 올린다(PlayerLevel.LevelUp).
     private readonly Action<int> _levelUp;
+    private readonly TraitHooks _traits;
+    private readonly HotStreak _hotStreak;
     // 쓸 때 대상을 모아 두는 작업 공간(할당 없이).
     private readonly List<int> _targets = new List<int>();
 
@@ -45,8 +47,10 @@ public sealed class SkillCaster
 
     public SkillCaster(MonsterField monsters, DiceField diceField, ChipField chips, DiceCombat diceCombat, AttackEffects effects, HeroStats heroStats,
         SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack, ExpBoost expBoost,
-        Func<CardHand> getHand, TryRollCard rollCard, Action<int> levelUp)
+        Func<CardHand> getHand, TryRollCard rollCard, Action<int> levelUp, TraitHooks traits, HotStreak hotStreak)
     {
+        _traits = traits;
+        _hotStreak = hotStreak;
         _rollCard = rollCard;
         _levelUp = levelUp;
         _monsters = monsters;
@@ -81,7 +85,8 @@ public sealed class SkillCaster
         }
         if (card is SO_SkillCard_Raise raise)
         {
-            _diceCombat.Raise(_diceField.IndexOf(cell), raise.DamageScale, raise.SpeedScale, raise.Duration);
+            raise.GetScales(_traits, out float damageScale, out float speedScale);
+            _diceCombat.Raise(_diceField.IndexOf(cell), damageScale, speedScale, raise.Duration);
             // 쓰는 순간 퍼지는 고리 + 지속되는 동안 주사위 밑에 머무는 고리 — 어느 주사위가 빨라졌는지 보이게.
             _effects.ShowBurst(Ground(cell), raise.BurstRadius, card.IconColor);
             _effects.ShowRing(Ground(cell), raise.RingRadius, card.IconColor, raise.Duration);
@@ -272,6 +277,9 @@ public sealed class SkillCaster
                 break;
             case SO_SkillCard_StackedDeck stackedDeck:
                 StackedDeck(stackedDeck);
+                break;
+            case SO_SkillCard_HotStreak hotStreak:
+                _hotStreak.Start(hotStreak);
                 break;
             case SO_SkillCard_DoubleUp doubleUp:
                 _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);

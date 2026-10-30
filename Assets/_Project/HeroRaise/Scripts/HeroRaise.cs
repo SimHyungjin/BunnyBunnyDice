@@ -18,6 +18,7 @@ public sealed class HeroRaise : IDisposable
     private readonly DiceField _diceField;
     private readonly DiceCombat _diceCombat;
     private readonly MonsterField _monsters;
+    private readonly TraitHooks _traits;
     // 주사위(칸)마다 쌓인 머문 시간. 철거되면 지우고 새 판이면 비운다.
     private readonly Dictionary<Vector2Int, float> _elapsed = new Dictionary<Vector2Int, float>();
 
@@ -28,8 +29,9 @@ public sealed class HeroRaise : IDisposable
     /// <summary>눈이 하나 깎였다. 측정용(어느 주사위를 얼마나 태웠는지).</summary>
     public event Action<Vector2Int> PipDrained;
 
-    public HeroRaise(SO_HeroConfig config, Hero hero, DiceField diceField, DiceCombat diceCombat, MonsterField monsters)
+    public HeroRaise(SO_HeroConfig config, Hero hero, DiceField diceField, DiceCombat diceCombat, MonsterField monsters, TraitHooks traits)
     {
+        _traits = traits;
         _config = config;
         _hero = hero;
         _diceField = diceField;
@@ -70,7 +72,8 @@ public sealed class HeroRaise : IDisposable
 
         Active = true;
         Cell = cell;
-        _diceCombat.SetBoost(cell, raise.DamageScale, raise.SpeedScale);
+        raise.GetScales(_traits, out float damageScale, out float speedScale);
+        _diceCombat.SetBoost(cell, damageScale, speedScale);
 
         _elapsed.TryGetValue(cell, out float elapsed);
         if (!_monsters.Paused && _monsters.Count > 0 && !_diceCombat.IsRaised(cell))

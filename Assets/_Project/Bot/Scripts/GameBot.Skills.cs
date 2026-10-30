@@ -15,8 +15,8 @@ public sealed partial class GameBot
         if (skill is SO_SkillCard_DoubleUp) return _monsters.Count > 0 && CastBoard(skill);
         if (skill is SO_SkillCard_CoinFlip) return CastBoard(skill);
         if (skill is SO_SkillCard_StackedDeck) return CountHandSkills() >= _config.StackedDeckMinSkills && CastBoard(skill);
-        // 화력 카드(풀 하우스·브레이크 샷)는 다른 스킬처럼 뚫릴 때.
-        if (skill is SO_SkillCard_BreakShot) return Breached(out _) && CastBoard(skill);
+        // 화력 카드(풀 하우스·브레이크 샷·핫 스트릭)는 다른 스킬처럼 뚫릴 때.
+        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_HotStreak) return Breached(out _) && CastBoard(skill);
         if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
         if (skill is SO_SkillCard_Raise raise) return TryCastRaise(raise);
         if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);
@@ -33,7 +33,8 @@ public sealed partial class GameBot
     // 레이즈 카드: 빠져나갈 적을 걸면 잡을 수 있는 주사위에만(BotEscape). 영웅이 올라탄 주사위는 이미 레이즈다.
     private bool TryCastRaise(SO_SkillCard_Raise card)
     {
-        if (!FindRaiseTarget(card.DamageScale, card.SpeedScale, card.Duration, true, out Vector2Int cell)) return false;
+        card.GetScales(_traits, out float damageScale, out float speedScale);
+        if (!FindRaiseTarget(damageScale, speedScale, card.Duration, true, out Vector2Int cell)) return false;
         _skills.CastOnCell(cell, card);
         return true;
     }

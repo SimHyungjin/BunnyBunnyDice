@@ -74,6 +74,7 @@
 토끼공듀,Bunny Princess,SO_HeroCharacter_Break.DisplayName
 도박사,Gambler,SO_HeroCharacter_Double.DisplayName
 카드 카운터,Card Counter,SO_HeroCharacter_CardCounter.DisplayName
+하이 스테이크,High Stakes,SO_HeroCharacter_HighStakes.DisplayName
 쾌락주의자,Hedonist,SO_HeroCharacter_DoubleOrNothing.DisplayName
 건설가,Builder,SO_HeroCharacter_HighRoller.DisplayName
 바니걸,Bunny Girl,SO_HeroCharacter_Rainbow.DisplayName
@@ -83,6 +84,8 @@
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
 카드 카운터,Card Counter,SO_HeroTrait_CardCounter.DisplayName
 스킬 카드를 고르면 {Copies}장 얻는다.,Picking a skill card gives x{Copies}.,SO_HeroTrait_CardCounter.Description
+하이 스테이크,High Stakes,SO_HeroTrait_HighStakes.DisplayName
+"레이즈가 공격력 x{DamageScale}, 공격 속도 x{SpeedScale}가 된다.","Raise becomes x{DamageScale} attack, x{SpeedScale} attack speed.",SO_HeroTrait_HighStakes.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
 주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
@@ -145,6 +148,8 @@
 {Chance%} 확률로 무작위 카드 {Count}장을 얻는다.,"{Chance%} chance: gain random cards x{Count}.",SO_SkillCard_CoinFlip.Description
 스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName
 손패의 스킬 카드가 {StackScale}배로 늘어난다.,Skill cards in hand are multiplied x{StackScale}.,SO_SkillCard_StackedDeck.Description
+핫 스트릭,Hot Streak,SO_SkillCard_HotStreak.DisplayName
+{Duration}초간 영웅이 밟은 주사위마다 {RaiseDuration}초 레이즈가 걸린다. 눈은 깎이지 않는다.,"For {Duration}s, every die the hero steps on gets Raise for {RaiseDuration}s. No pip loss.",SO_SkillCard_HotStreak.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title

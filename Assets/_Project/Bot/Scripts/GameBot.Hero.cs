@@ -14,7 +14,9 @@ public sealed partial class GameBot
     {
         if (_hero.Held || !_board.Read(map, _config.KillZoneRadius)) return;
         SO_SkillCard_Raise raise = _heroRaise();
-        if (raise != null && FindRaiseTarget(raise.DamageScale, raise.SpeedScale, float.MaxValue, false, out Vector2Int ride))
+        float damageScale = 1f, speedScale = 1f;
+        raise?.GetScales(_traits, out damageScale, out speedScale);
+        if (raise != null && FindRaiseTarget(damageScale, speedScale, float.MaxValue, false, out Vector2Int ride))
         {
             if (_hasHeroCell && ride == _heroCell) return;
             if (_hero.MoveTo(ride))

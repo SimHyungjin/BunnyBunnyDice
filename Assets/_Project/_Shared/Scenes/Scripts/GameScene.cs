@@ -42,6 +42,7 @@ public sealed partial class GameScene : SceneBase
     private SO_LevelUpConfig _levelUpConfig;
     private CardHand _hand;
     private ExpBoost _expBoost;
+    private HotStreak _hotStreak;
     private HandFraming _handFraming;
     private CardDragController _drag;
     private HeroStats _heroStats;
@@ -236,12 +237,13 @@ public sealed partial class GameScene : SceneBase
         _diceAttack = new DiceAttack(diceStatsConfig, _monsterConfig, _viewConfig, _monsters, _attackEffects);
         _diceCombat = new DiceCombat(_viewConfig, diceStatsConfig, diceConfig, _diceField, _chips, _monsters, _diceAttack);
         _diceAwakenEffect = new DiceAwakenEffect(diceConfig, _diceField, _attackEffects);
-        _heroRaise = new HeroRaise(heroConfig, _hero, _diceField, _diceCombat, _monsters);
+        _heroRaise = new HeroRaise(heroConfig, _hero, _diceField, _diceCombat, _monsters, _traits);
         _heroRaiseView = new HeroRaiseView(heroConfig, _viewConfig, _heroRaise, _attackEffects);
         _expBoost = new ExpBoost();
+        _hotStreak = new HotStreak(heroConfig, _viewConfig, _hero, _diceField, _diceCombat, _attackEffects, _traits);
         _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal,
             () => _heroAttack, _expBoost, () => _hand,
-            (out HandCard card) => CardRoll.RollOne(levelUpConfig, _traits, IsUsefulCard, out card), count => _level.LevelUp(count));
+            (out HandCard card) => CardRoll.RollOne(levelUpConfig, _traits, IsUsefulCard, out card), count => _level.LevelUp(count), _traits, _hotStreak);
         _skillPreview = new SkillPreview(_mapRoot, previewConfig, _viewConfig, _skills, _monsters, () => _map, _hero);
         _heroCards = new HeroCardShots(_mapRoot, heroConfig.CardShot, _monsters, _monsterConfig, _viewConfig);
         _heroAttack = new HeroAttack(heroConfig, _heroStats, _hero, _monsters, _heroCards,
@@ -437,6 +439,7 @@ public sealed partial class GameScene : SceneBase
         _cutIn?.Dispose();
         _heroAttack?.Dispose();
         _expBoost?.Dispose();
+        _hotStreak?.Dispose();
         _skillPreview?.Dispose();
         _heroRaiseView?.Dispose();
         _diceAwakenEffect?.Dispose();
@@ -482,6 +485,7 @@ public sealed partial class GameScene : SceneBase
         _diceAttack.Clear();
         _heroAttack.Clear();
         _expBoost.Clear();
+        _hotStreak.Clear();
 
         // 검사는 판마다 새로 만든다 — 요청이 겹치면(R 키 연타·설정 변경) 두 생성이 버퍼를 함께 쓰지 않게.
         MazeRouteProbe probe = new MazeRouteProbe(_mazeConfig);
