@@ -26,6 +26,6 @@ MonoBehaviour:
   Attack: 60
   AttackSpeed: 2
   MoveSpeed: 3
-  Range: 1.6
+  Range: 2
   CritChance: 0.1
   CritDamage: 2.5

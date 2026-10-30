@@ -40,7 +40,7 @@ MonoBehaviour:
   VignetteColor: {r: 0.035, g: 0.02, b: 0.05, a: 1}
   VignetteSmoothness: 0.45
   OutlineShader: {fileID: 4800000, guid: 5414a7151ca54a3c9a44e8d879f1bdb0, type: 3}
-  OutlineColor: {r: 0.05, g: 0.03, b: 0.07, a: 1}
+  OutlineColor: {r: 0, g: 0, b: 0, a: 1}
   OutlineWidth: 0.0025
   OutlineDepthBias: 0.04
   CharacterOutlineDepthBias: -0.05

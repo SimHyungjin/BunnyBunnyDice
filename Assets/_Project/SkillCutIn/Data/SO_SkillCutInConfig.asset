@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_SkillCutInConfig
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCutInConfig
   InDuration: 0.12
-  HoldDuration: 0.45
-  OutDuration: 0.15
+  HoldDuration: 0.8
+  OutDuration: 0.3
   TitleFadeDuration: 0.1
   BackTextAlpha: 0.28

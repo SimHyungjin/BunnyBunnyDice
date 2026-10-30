@@ -16,7 +16,8 @@ MonoBehaviour:
   DisplayName: "\uD30C\uB791"
   Color: {r: 0.2, g: 0.42, b: 0.95, a: 1}
   AttackName: "\uC800\uACA9"
-  Description: "\uBA40\uB9AC \uC788\uB294 \uC801\uC77C\uC218\uB85D \uC138\uAC8C \uB9DE\uD78C\uB2E4(\uD55C \uCE78\uB9C8\uB2E4 +{FarDamagePerCell%})."
+  Description: "\uBA40\uB9AC \uC788\uB294 \uC801\uC77C\uC218\uB85D \uC138\uAC8C \uB9DE\uD78C\uB2E4(\uD55C
+    \uCE78\uB9C8\uB2E4 +{FarDamagePerCell%})."
   StrongAgainst: "\uBE60\uB984"
   WeakAgainst: 
   AwakenDescription: "\uC0AC\uAC70\uB9AC {1+AwakenRangeBonus}\uBC30"

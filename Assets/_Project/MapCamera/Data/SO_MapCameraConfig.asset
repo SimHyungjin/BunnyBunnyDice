@@ -18,7 +18,7 @@ MonoBehaviour:
   CharacterHeadroom: 0.4
   AutoOrient: 1
   OrientYawOffset: 90
-  MarginTop: 0.1
+  MarginTop: 0.15
   MarginBottom: 0.25
   EmptyHandMarginBottom: 0.25
   MarginSide: 0.025
