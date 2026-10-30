@@ -150,29 +150,42 @@ public sealed class CardDragController : IDisposable
         bool placing = _placing;
         SetPlacing(false);
 
-        if (placing && card.Card.IsHero)
+        // 카드를 쓰는 길은 모두 손패에서 먼저 빼고 효과를 낸다 — 효과가 레벨업 창을 열면(더블 업) 창이 끄는 중인 카드를
+        // 손패로 되돌려(Cancel) 뒤늦은 소모가 아무 일도 하지 않았다.
+        HandCard held = card.Card;
+        if (placing && held.IsHero)
         {
-            if (_hasPoint)
+            if (!_hasPoint)
             {
-                _skills.UseHeroCard(card.Card.Hero);
-                _hand.ConsumeHeld();
+                _hand.ReturnHeld();
+                return;
             }
-            else _hand.ReturnHeld();
+            _hand.ConsumeHeld();
+            _skills.UseHeroCard(held.Hero);
             return;
         }
 
-        if (placing && IsPointSkill(card.Card))
+        if (placing && IsPointSkill(held))
         {
-            if (_hasPoint && TryCastAtPoint(card.Card.Skill)) _hand.ConsumeHeld();
-            else _hand.ReturnHeld();
+            if (!_hasPoint || !CanCastAtPoint(held.Skill))
+            {
+                _hand.ReturnHeld();
+                return;
+            }
+            _hand.ConsumeHeld();
+            CastAtPoint(held.Skill);
             return;
         }
 
         if (placing && _hasCell && DicePlacement.IsAccepted(_cellResult))
         {
-            HandCard held = card.Card;
-            if (held.IsSkill) _skills.CastOnCell(_cell, held.Skill);
-            else if (!_placement.TryPlace(_getMap(), _cell, held))
+            if (held.IsSkill)
+            {
+                _hand.ConsumeHeld();
+                _skills.CastOnCell(_cell, held.Skill);
+                return;
+            }
+            if (!_placement.TryPlace(_getMap(), _cell, held))
             {
                 _hand.ReturnHeld();
                 return;
@@ -190,17 +203,13 @@ public sealed class CardDragController : IDisposable
         card.IsSkill && (card.Skill.Target == SkillTarget.Enemies || card.Skill.Target == SkillTarget.Board);
 
     // 범위·판 전체는 맵 위면 쓴다(대상이 없어도 — 카드를 버리는 방법이기도 하다).
-    private bool TryCastAtPoint(SO_SkillCard card)
+    private bool CanCastAtPoint(SO_SkillCard card) =>
+        card is SO_EnemySkillCard enemies ? _skills.CanCast(enemies, _point) : _skills.CanCastBoard(card);
+
+    private void CastAtPoint(SO_SkillCard card)
     {
-        if (card is SO_EnemySkillCard enemies)
-        {
-            if (!_skills.CanCast(enemies, _point)) return false;
-            _skills.Cast(enemies, _point);
-            return true;
-        }
-        if (!_skills.CanCastBoard(card)) return false;
-        _skills.CastBoard(card);
-        return true;
+        if (card is SO_EnemySkillCard enemies) _skills.Cast(enemies, _point);
+        else _skills.CastBoard(card);
     }
 
     private void UpdateAim(Vector2 screenPosition)
