@@ -26,6 +26,8 @@ public sealed class MapPicker
 
         // 높은 윗면부터 본다. 벽을 가리키면 벽 칸을 돌려준다(배치 불가로 보여야 손가락 아래 모습과 맞는다).
         if (TryRayToCell(ray, map, _viewConfig.WallHeight, out cell) && map.Get(cell.x, cell.y) == TileType.Wall) return true;
+        // 두 장 쌓인 칩(사이드 팟)은 더 높이 솟아 있다.
+        if (TryRayToCell(ray, map, _viewConfig.ChipHeight * ChipField.MaxLayers, out cell) && map.ChipLayers(cell.x, cell.y) >= ChipField.MaxLayers) return true;
         if (TryRayToCell(ray, map, _viewConfig.ChipHeight, out cell) && map.HasChip(cell.x, cell.y)) return true;
         return TryRayToCell(ray, map, 0f, out cell);
     }

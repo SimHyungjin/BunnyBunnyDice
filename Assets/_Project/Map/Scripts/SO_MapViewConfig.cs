@@ -71,10 +71,10 @@ public sealed class SO_MapViewConfig : SO_Config
     [Min(0f)] public float PrintLift = 0.002f;
 
     /// <summary>가장 높은 칸 윗면. 카메라가 맵 전체를 담을 때 위쪽 경계로 쓴다.</summary>
-    public float MaxTileTop => Mathf.Max(ChipHeight, WallHeight);
+    public float MaxTileTop => Mathf.Max(ChipHeight * ChipField.MaxLayers, WallHeight);
 
     public float GetTileTop(TileType type) => type == TileType.Wall ? WallHeight : 0f;
 
     /// <summary>칸 윗면 높이. 칩이 놓인 칸은 칩 윗면이다(주사위가 그 위에 앉는다).</summary>
-    public float GetCellTop(MapData map, int x, int y) => map.HasChip(x, y) ? ChipHeight : GetTileTop(map.Get(x, y));
+    public float GetCellTop(MapData map, int x, int y) => map.HasChip(x, y) ? ChipHeight * map.ChipLayers(x, y) : GetTileTop(map.Get(x, y));
 }

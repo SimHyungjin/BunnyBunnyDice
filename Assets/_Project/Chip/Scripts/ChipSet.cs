@@ -19,6 +19,9 @@ public readonly struct ChipSet
 
     public bool IsEmpty => First == null && Second == null;
 
+    /// <summary>쌓인 칩 장수 — 그 위 주사위가 앉는 높이(ChipHeight × 장수).</summary>
+    public int Layers => (First != null ? 1 : 0) + (Second != null ? 1 : 0);
+
     public bool Contains<T>() where T : SO_ChipCard => First is T || Second is T;
 
     /// <summary>사거리를 늘리는 비율(0.5 = 1.5배).</summary>

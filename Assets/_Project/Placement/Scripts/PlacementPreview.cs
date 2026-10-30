@@ -96,6 +96,33 @@ public sealed class PlacementPreview
         else if (_ring != null) _ring.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// 사이드 팟을 끄는 동안 — 고스트 칩은 지금 칩 위에 얹힐 모양 그대로(카드 칩 색)이고, 칸에 주사위가 있으면
+    /// 그 주사위가 두 장을 받았을 때의 사거리를 보인다(칩 카드와 같은 이유 — 파랑 칩 효과가 보이게).
+    /// </summary>
+    /// <param name="dice">칸에 놓인 주사위. 없으면 null.</param>
+    public void ShowSidePot(Vector2Int cell, bool valid, SO_ChipCard card, DiceState? dice)
+    {
+        float ground = _viewConfig.GetTileTop(TileType.Ground);
+        ShowHighlight(cell, ground, valid);
+        if (_ghost != null) _ghost.SetActive(false);
+        if (!valid || card == null)
+        {
+            if (_ghostChip != null) _ghostChip.gameObject.SetActive(false);
+            if (_ring != null) _ring.gameObject.SetActive(false);
+            return;
+        }
+
+        if (_ghostChip == null) CreateGhostChip();
+        RendererTint.Apply(_ghostChip.gameObject, card.IconColor);
+        float top = _viewConfig.ChipHeight * ChipField.MaxLayers;
+        _ghostChip.transform.localPosition = new Vector3(cell.x, ground + _viewConfig.ChipHeight + _config.GhostHover, cell.y);
+        _ghostChip.gameObject.SetActive(true);
+
+        if (dice.HasValue) ShowRange(cell, ground + top, _chips.PreviewExtra(cell, card).RangeBonus, dice.Value);
+        else if (_ring != null) _ring.gameObject.SetActive(false);
+    }
+
     /// <summary>칸 대상 스킬(캐시 아웃)을 끄는 동안 — 칸 하이라이트만 보인다(거둘 주사위·칩은 그대로 보여 무엇이 사라지는지 알게).</summary>
     public void ShowCell(Vector2Int cell, bool valid)
     {

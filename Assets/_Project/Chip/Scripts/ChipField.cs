@@ -10,13 +10,16 @@ using UnityEngine.Rendering;
 /// 판 중에는 칩 카드를 빈 칸이나 칩 없는 주사위 칸에 놓으면 칩이 생긴다.
 /// 맵은 길을 막는지만 알고(MapData.HasChip), 어떤 강화인지와 표시는 여기서 든다 — 주사위(DiceField)와 같은 나눔.
 /// 칩은 한 장이고 색이 곧 강화 종류다(카드 IconColor — 카드와 칩이 같은 색이라 이어진다). 윗면에 카지노 칩처럼 링을 인쇄한다.
-/// 사이드 팟(칩 리더 전용)으로 칩 칸에 다른 종류 한 장을 더 얹을 수 있다(한 칸 두 장까지). 두 장이면 반 두께 칩 둘을 쌓아 높이는 그대로다
-/// — 칩 위 주사위가 앉는 높이(ChipHeight)를 칩 수에 따라 바꾸지 않으려고.
+/// 사이드 팟(칩 리더 전용)으로 칩 칸에 다른 종류 한 장을 더 얹을 수 있다(한 칸 두 장까지). 두 장이면 칩 두 장을 실제로 쌓고(맵이 장수를 든다 — MapData.ChipLayers)
+/// 그 위 주사위도 그만큼 올라앉는다 — 처음엔 높이를 그대로 두려고 반 두께 둘로 쌓았는데 아래 칩이 거의 안 보여 색이 바뀐 것처럼 보였다(2026-10-31 사용자).
 /// 효과는 ChipSet으로 읽는다(두 장 + 세기 — IChipScale).
 /// </summary>
 public sealed class ChipField
 {
     private static readonly int SmoothnessId = Shader.PropertyToID("_Smoothness");
+
+    /// <summary>한 칸에 쌓을 수 있는 칩 장수(사이드 팟 규칙 — 조정 값이 아니라 규칙이다).</summary>
+    public const int MaxLayers = 2;
 
     private struct Chip
     {
@@ -42,6 +45,9 @@ public sealed class ChipField
 
     /// <summary>판 중에 칩이 놓였다. 빈 칸이면 길이 막혔을 수 있고, 주사위 칸이면 주사위가 칩 위로 올라앉는다.</summary>
     public event Action<Vector2Int> ChipPlaced;
+
+    /// <summary>칩 칸에 한 장이 더 얹혔다(사이드 팟). 길은 그대로고 그 위 주사위가 한 장만큼 올라앉는다.</summary>
+    public event Action<Vector2Int> ChipStacked;
 
     /// <summary>칩이 없어졌다(캐시 아웃). 빈 칸의 칩은 벽이었으므로 길이 바뀐다.</summary>
     public event Action<Vector2Int> ChipRemoved;
@@ -91,6 +97,13 @@ public sealed class ChipField
     /// <summary>칩 카드 한 장(아직 놓지 않은 카드 — 끄는 동안의 미리보기·봇 판단)의 효과를 지금 세기로.</summary>
     public ChipSet Preview(SO_ChipCard card) => new ChipSet(card, null, Strength);
 
+    /// <summary>cell의 칩에 card를 얹었을 때의 묶음(사이드 팟을 끄는 동안의 사거리 미리보기).</summary>
+    public ChipSet PreviewExtra(Vector2Int cell, SO_ChipCard card)
+    {
+        int index = IndexOf(cell);
+        return index >= 0 ? new ChipSet(_chips[index].Card, card, Strength) : Preview(card);
+    }
+
     /// <summary>cell에 card를 두 번째 칩으로 얹을 수 있는지 — 칩이 한 장 있고 그 칩과 종류가 다르다.</summary>
     public bool CanAddExtra(Vector2Int cell, SO_ChipCard card)
     {
@@ -106,10 +119,14 @@ public sealed class ChipField
         Chip chip = _chips[index];
         chip.Extra = card;
         _chips[index] = chip;
-        if (chip.View == null) return;
-        _views.Remove(chip.View.GameObject.transform);
-        chip.View.Dispose();
-        BuildView(index);
+        _map?.SetChipLayers(cell.x, cell.y, MaxLayers);
+        if (chip.View != null)
+        {
+            _views.Remove(chip.View.GameObject.transform);
+            chip.View.Dispose();
+            BuildView(index);
+        }
+        ChipStacked?.Invoke(cell);
     }
 
     private int IndexOf(Vector2Int cell)
@@ -230,7 +247,7 @@ public sealed class ChipField
     }
 
     // 칩 한 장 + 윗면 링(링 색 원판 위에 칩 색 원판, 겹쳐 깜빡이지 않게 조금씩 띄운다). 판 위로 그림자를 드리워야 입체감이 난다.
-    // 두 장이면 반 두께 칩 둘을 쌓는다(아래 = 처음 칩, 위 = 얹은 칩). 윗면 링은 위 칩 색이다.
+    // 두 장이면 칩 두 장을 쌓는다(아래 = 처음 칩, 위 = 얹은 칩). 윗면 링은 맨 위 칩에 인쇄한다.
     private void BuildView(int index)
     {
         Chip chip = _chips[index];
@@ -238,15 +255,13 @@ public sealed class ChipField
         float height = _config.ChipHeight;
         float outer = _config.ChipDiameter * _config.ChipRingOuter;
         float inner = _config.ChipDiameter * _config.ChipRingInner;
-        Vector3 top = Vector3.up * height;
+        _builder.Add(_chipMesh, Matrix4x4.identity, color);
         if (chip.Extra != null)
         {
-            Vector3 half = new Vector3(1f, 0.5f, 1f);
-            _builder.Add(_chipMesh, Matrix4x4.Scale(half), color);
             color = chip.Extra.IconColor;
-            _builder.Add(_chipMesh, Matrix4x4.TRS(Vector3.up * height * 0.5f, Quaternion.identity, half), color);
+            _builder.Add(_chipMesh, Matrix4x4.Translate(Vector3.up * height), color);
         }
-        else _builder.Add(_chipMesh, Matrix4x4.identity, color);
+        Vector3 top = Vector3.up * height * (chip.Extra != null ? MaxLayers : 1);
         _builder.Add(_disc, Matrix4x4.TRS(top + Vector3.up * _config.PrintLift, Quaternion.identity, new Vector3(outer, 1f, outer)), _config.ChipRingColor);
         _builder.Add(_disc, Matrix4x4.TRS(top + Vector3.up * _config.PrintLift * 2f, Quaternion.identity, new Vector3(inner, 1f, inner)), color);
 

@@ -280,6 +280,8 @@ public sealed partial class GameScene : SceneBase
             _diceField.RefreshAt(cell);
             RebuildRoute();
         };
+        // 한 장 더 얹히면 그 위 주사위가 올라앉는다(길은 그대로).
+        _chips.ChipStacked += _diceField.RefreshAt;
         _monsters.ReachedGoal += (type, _) =>
         {
             // 무적이어도 받았을 피해를 센다 — 무적으로 버티며 높은 웨이브를 잴 때도 얼마나 뚫렸는지 보이게.

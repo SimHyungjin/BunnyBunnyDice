@@ -215,7 +215,7 @@ public sealed class DiceCombat : IDisposable
         stats.Damage *= 1f + chip.DamageBonus;
         stats.MaxHealthRatio *= 1f + chip.DamageBonus;
         stats.AttackInterval /= 1f + chip.AttackSpeedBonus;
-        float top = !chip.IsEmpty ? _viewConfig.ChipHeight : _viewConfig.GetTileTop(TileType.Ground);
+        float top = !chip.IsEmpty ? _viewConfig.ChipHeight * chip.Layers : _viewConfig.GetTileTop(TileType.Ground);
         DiceAttack.Shot shot = new DiceAttack.Shot
         {
             Dice = state,
