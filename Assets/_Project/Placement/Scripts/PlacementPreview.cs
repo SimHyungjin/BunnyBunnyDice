@@ -53,7 +53,7 @@ public sealed class PlacementPreview
             if (_ring != null) _ring.gameObject.SetActive(false);
             return float.NaN;
         }
-        ShowRange(cell, top, ChipEffects.RangeBonus(_chips.Get(cell)), dice);
+        ShowRange(cell, top, _chips.GetSet(cell).RangeBonus, dice);
         if (_ghost == null || _ghostFaces != dice.Faces)
         {
             if (_ghost != null) Object.Destroy(_ghost);
@@ -92,7 +92,7 @@ public sealed class PlacementPreview
         _ghostChip.transform.localPosition = new Vector3(cell.x, ground + _config.GhostHover, cell.y);
         _ghostChip.gameObject.SetActive(true);
 
-        if (dice.HasValue) ShowRange(cell, ground + _viewConfig.ChipHeight, ChipEffects.RangeBonus(card), dice.Value);
+        if (dice.HasValue) ShowRange(cell, ground + _viewConfig.ChipHeight, _chips.Preview(card).RangeBonus, dice.Value);
         else if (_ring != null) _ring.gameObject.SetActive(false);
     }
 

@@ -33,7 +33,7 @@ public sealed partial class GameBot
         {
             Vector2Int at = placed[i].Cell;
             if (_chips.Get(at) != null) continue;
-            float range = RangeAt(at, placed[i].Dice.Colors, null);
+            float range = RangeAt(at, placed[i].Dice.Colors, default);
             int tier = CoversKillZone(at, range) ? (BotDice.IsArea(placed[i].Dice.Colors) ? 2 : 1) : 0;
             float score = _board.Traffic(at, range);
             if (tier < bestTier || (tier == bestTier && score <= best)) continue;
@@ -57,7 +57,7 @@ public sealed partial class GameBot
             DiceState dice = placed[i].Dice;
             if (_chips.Get(at) != null) continue;
             if (chip is SO_ChipCard_Damage && dice.Colors == DiceColor.Red) continue;
-            float range = RangeAt(at, dice.Colors, null);
+            float range = RangeAt(at, dice.Colors, default);
             int tier = CoversKillZone(at, range) ? 1 : 0;
             float score = _board.Traffic(at, range) * (1f + dice.Pips) * (BotDice.IsArea(dice.Colors) ? _config.AreaStackWeight : 1f);
             if (tier < bestTier || (tier == bestTier && score <= best)) continue;
@@ -77,8 +77,8 @@ public sealed partial class GameBot
         _burned.Clear();
         for (int i = 0; i < placed.Count; i++)
         {
-            if (!(_chips.Get(placed[i].Cell) is SO_ChipCard_Burn)) continue;
-            float range = RangeAt(placed[i].Cell, placed[i].Dice.Colors, _chips.Get(placed[i].Cell));
+            if (!_chips.GetSet(placed[i].Cell).Contains<SO_ChipCard_Burn>()) continue;
+            float range = RangeAt(placed[i].Cell, placed[i].Dice.Colors, _chips.GetSet(placed[i].Cell));
             MarkRoute(placed[i].Cell, range, _burned);
         }
 
@@ -89,7 +89,7 @@ public sealed partial class GameBot
             Vector2Int at = placed[i].Cell;
             DiceState dice = placed[i].Dice;
             if (_chips.Get(at) != null) continue;
-            float range = RangeAt(at, dice.Colors, null);
+            float range = RangeAt(at, dice.Colors, default);
             int tier = (BotDice.IsArea(dice.Colors) ? 2 : 0) + (CoversKillZone(at, range) ? 0 : 1);
             DiceStats stats = DiceStats.Compute(dice, _diceConfig.GetDiceType(dice.Colors), _statsConfig);
             float speed = stats.AttackInterval > 0f ? 1f / stats.AttackInterval : 0f;
@@ -108,7 +108,7 @@ public sealed partial class GameBot
     private bool HasBurnSpot()
     {
         return TryFindBurnCell(out Vector2Int cell) && _diceField.TryGetPlaced(cell, out PlacedDice placed)
-            && BotDice.IsArea(placed.Dice.Colors) && NewRouteCells(cell, RangeAt(cell, placed.Dice.Colors, null), _burned) > 0;
+            && BotDice.IsArea(placed.Dice.Colors) && NewRouteCells(cell, RangeAt(cell, placed.Dice.Colors, default), _burned) > 0;
     }
 
     private void MarkRoute(Vector2Int center, float range, HashSet<Vector2Int> marked)
@@ -133,14 +133,14 @@ public sealed partial class GameBot
     private bool TryFindRangeCell(SO_ChipCard chip, out Vector2Int cell)
     {
         cell = default;
-        float bonus = ChipEffects.RangeBonus(chip);
+        float bonus = _chips.Preview(chip).RangeBonus;
         float best = -1f;
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         for (int i = 0; i < placed.Count; i++)
         {
             Vector2Int at = placed[i].Cell;
             if (_chips.Get(at) != null) continue;
-            float range = RangeAt(at, placed[i].Dice.Colors, null);
+            float range = RangeAt(at, placed[i].Dice.Colors, default);
             float boosted = range * (1f + bonus);
             float score = _board.Traffic(at, boosted) * (1f + placed[i].Dice.Pips);
             if (CoversKillZone(at, boosted))

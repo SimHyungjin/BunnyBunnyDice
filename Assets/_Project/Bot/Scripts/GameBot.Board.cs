@@ -58,10 +58,10 @@ public sealed partial class GameBot
         return count;
     }
 
-    // 칸의 주사위가 colors일 때의 사거리(칩 보너스 포함 — 실제 공격과 같은 계산, ChipEffects.RangeBonus).
-    private float RangeAt(Vector2Int cell, DiceColor colors, SO_ChipCard chip)
+    // 칸의 주사위가 colors일 때의 사거리(칩 보너스 포함 — 실제 공격과 같은 계산, ChipSet.RangeBonus). 칩 없이 재면 default.
+    private float RangeAt(Vector2Int cell, DiceColor colors, ChipSet chip)
     {
         SO_DiceType type = _diceConfig.GetDiceType(colors);
-        return type != null ? type.Range * (1f + ChipEffects.RangeBonus(chip)) : 0f;
+        return type != null ? type.Range * (1f + chip.RangeBonus) : 0f;
     }
 }

@@ -10,6 +10,9 @@ using UnityEngine.Rendering;
 /// 판 중에는 칩 카드를 빈 칸이나 칩 없는 주사위 칸에 놓으면 칩이 생긴다.
 /// 맵은 길을 막는지만 알고(MapData.HasChip), 어떤 강화인지와 표시는 여기서 든다 — 주사위(DiceField)와 같은 나눔.
 /// 칩은 한 장이고 색이 곧 강화 종류다(카드 IconColor — 카드와 칩이 같은 색이라 이어진다). 윗면에 카지노 칩처럼 링을 인쇄한다.
+/// 사이드 팟(칩 리더 전용)으로 칩 칸에 다른 종류 한 장을 더 얹을 수 있다(한 칸 두 장까지). 두 장이면 반 두께 칩 둘을 쌓아 높이는 그대로다
+/// — 칩 위 주사위가 앉는 높이(ChipHeight)를 칩 수에 따라 바꾸지 않으려고.
+/// 효과는 ChipSet으로 읽는다(두 장 + 세기 — IChipScale).
 /// </summary>
 public sealed class ChipField
 {
@@ -19,6 +22,8 @@ public sealed class ChipField
     {
         public Vector2Int Cell;
         public SO_ChipCard Card;
+        // 사이드 팟으로 얹은 두 번째 칩. 없으면 null.
+        public SO_ChipCard Extra;
         public PaletteMesh View;
     }
 
@@ -33,6 +38,7 @@ public sealed class ChipField
     private Mesh _chipMesh;
     private Mesh _disc;
     private MapData _map;
+    private readonly TraitHooks _traits;
 
     /// <summary>판 중에 칩이 놓였다. 빈 칸이면 길이 막혔을 수 있고, 주사위 칸이면 주사위가 칩 위로 올라앉는다.</summary>
     public event Action<Vector2Int> ChipPlaced;
@@ -44,8 +50,10 @@ public sealed class ChipField
     public IReadOnlyList<Transform> Views => _views;
 
     /// <param name="outline">툰 아웃라인 머티리얼(SceneLighting.OutlineMaterial). 없으면 null.</param>
-    public ChipField(Transform parent, SO_MapViewConfig config, Material outline)
+    /// <param name="traits">칩 세기 갈고리(IChipScale)를 묻는다. 없으면 null.</param>
+    public ChipField(Transform parent, SO_MapViewConfig config, Material outline, TraitHooks traits)
     {
+        _traits = traits;
         _config = config;
         _outline = outline;
         _root = new GameObject("Chips").transform;
@@ -61,6 +69,56 @@ public sealed class ChipField
             if (_chips[i].Cell == cell) return _chips[i].Card;
         }
         return null;
+    }
+
+    /// <summary>지금 칩 효과의 세기(특성이 바꾸면 그 값, 아니면 1).</summary>
+    public float Strength
+    {
+        get
+        {
+            IChipScale scale = _traits?.Find<IChipScale>();
+            return scale != null ? scale.ChipStrength : 1f;
+        }
+    }
+
+    /// <summary>cell의 칩 묶음(두 장까지 + 세기). 칩이 없으면 비어 있다.</summary>
+    public ChipSet GetSet(Vector2Int cell)
+    {
+        int index = IndexOf(cell);
+        return index >= 0 ? new ChipSet(_chips[index].Card, _chips[index].Extra, Strength) : new ChipSet(null, null, Strength);
+    }
+
+    /// <summary>칩 카드 한 장(아직 놓지 않은 카드 — 끄는 동안의 미리보기·봇 판단)의 효과를 지금 세기로.</summary>
+    public ChipSet Preview(SO_ChipCard card) => new ChipSet(card, null, Strength);
+
+    /// <summary>cell에 card를 두 번째 칩으로 얹을 수 있는지 — 칩이 한 장 있고 그 칩과 종류가 다르다.</summary>
+    public bool CanAddExtra(Vector2Int cell, SO_ChipCard card)
+    {
+        int index = IndexOf(cell);
+        return index >= 0 && card != null && _chips[index].Extra == null && _chips[index].Card != card;
+    }
+
+    /// <summary>판정(CanAddExtra)을 통과한 칸에만 부른다. 칩 칸은 이미 벽이라 길은 바뀌지 않는다.</summary>
+    public void AddExtra(Vector2Int cell, SO_ChipCard card)
+    {
+        int index = IndexOf(cell);
+        if (index < 0) return;
+        Chip chip = _chips[index];
+        chip.Extra = card;
+        _chips[index] = chip;
+        if (chip.View == null) return;
+        _views.Remove(chip.View.GameObject.transform);
+        chip.View.Dispose();
+        BuildView(index);
+    }
+
+    private int IndexOf(Vector2Int cell)
+    {
+        for (int i = 0; i < _chips.Count; i++)
+        {
+            if (_chips[i].Cell == cell) return i;
+        }
+        return -1;
     }
 
     /// <summary>
@@ -102,7 +160,7 @@ public sealed class ChipField
         ChipPlaced?.Invoke(cell);
     }
 
-    /// <summary>cell의 칩을 없앤다(캐시 아웃). 칩이 없으면 false.</summary>
+    /// <summary>cell의 칩을 없앤다(캐시 아웃 — 두 장이면 둘 다). 칩이 없으면 false.</summary>
     public bool Remove(Vector2Int cell)
     {
         for (int i = 0; i < _chips.Count; i++)
@@ -172,6 +230,7 @@ public sealed class ChipField
     }
 
     // 칩 한 장 + 윗면 링(링 색 원판 위에 칩 색 원판, 겹쳐 깜빡이지 않게 조금씩 띄운다). 판 위로 그림자를 드리워야 입체감이 난다.
+    // 두 장이면 반 두께 칩 둘을 쌓는다(아래 = 처음 칩, 위 = 얹은 칩). 윗면 링은 위 칩 색이다.
     private void BuildView(int index)
     {
         Chip chip = _chips[index];
@@ -180,7 +239,14 @@ public sealed class ChipField
         float outer = _config.ChipDiameter * _config.ChipRingOuter;
         float inner = _config.ChipDiameter * _config.ChipRingInner;
         Vector3 top = Vector3.up * height;
-        _builder.Add(_chipMesh, Matrix4x4.identity, color);
+        if (chip.Extra != null)
+        {
+            Vector3 half = new Vector3(1f, 0.5f, 1f);
+            _builder.Add(_chipMesh, Matrix4x4.Scale(half), color);
+            color = chip.Extra.IconColor;
+            _builder.Add(_chipMesh, Matrix4x4.TRS(Vector3.up * height * 0.5f, Quaternion.identity, half), color);
+        }
+        else _builder.Add(_chipMesh, Matrix4x4.identity, color);
         _builder.Add(_disc, Matrix4x4.TRS(top + Vector3.up * _config.PrintLift, Quaternion.identity, new Vector3(outer, 1f, outer)), _config.ChipRingColor);
         _builder.Add(_disc, Matrix4x4.TRS(top + Vector3.up * _config.PrintLift * 2f, Quaternion.identity, new Vector3(inner, 1f, inner)), color);
 

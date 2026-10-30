@@ -44,6 +44,6 @@ public struct DiceStats
         };
     }
 
-    /// <summary>칩 보너스(사거리 칩 — ChipEffects.RangeBonus, 비율)를 곱한 실제 사거리.</summary>
+    /// <summary>칩 보너스(사거리 칩 — ChipSet.RangeBonus, 비율)를 곱한 실제 사거리.</summary>
     public float GetRange(float bonus) => Range * (1f + bonus);
 }

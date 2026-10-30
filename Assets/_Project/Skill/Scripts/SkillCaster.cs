@@ -329,10 +329,14 @@ public sealed class SkillCaster
             HandCard dice = HandCard.Of(new DiceCard(placed.Dice.Faces, placed.Dice.Colors));
             for (int i = 0; i < card.Copies; i++) hand?.Add(dice);
         }
-        SO_ChipCard chip = _chips.Get(cell);
-        if (chip != null && _chips.Remove(cell))
+        ChipSet chips = _chips.GetSet(cell);
+        if (!chips.IsEmpty && _chips.Remove(cell))
         {
-            for (int i = 0; i < card.Copies; i++) hand?.Add(HandCard.Of(chip));
+            for (int i = 0; i < card.Copies; i++)
+            {
+                if (chips.First != null) hand?.Add(HandCard.Of(chips.First));
+                if (chips.Second != null) hand?.Add(HandCard.Of(chips.Second));
+            }
         }
         _effects.ShowBurst(Ground(cell), CashOutBurstRadius, card.IconColor);
     }

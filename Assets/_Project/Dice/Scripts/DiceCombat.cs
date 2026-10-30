@@ -99,7 +99,7 @@ public sealed class DiceCombat : IDisposable
     {
         if (!_diceField.TryGetPlaced(cell, out PlacedDice dice)) return 0f;
         DiceStats stats = DiceStats.Compute(dice.Dice, _diceConfig.GetDiceType(dice.Dice.Colors), _statsConfig);
-        return stats.GetRange(ChipEffects.RangeBonus(_chips.Get(cell)));
+        return stats.GetRange(_chips.GetSet(cell).RangeBonus);
     }
 
     /// <summary>cell의 주사위에 레이즈 카드 시간이 남아 있는지. 영웅 레이즈는 이 시간을 먼저 쓴다(그동안 눈이 깎이지 않는다).</summary>
@@ -211,11 +211,11 @@ public sealed class DiceCombat : IDisposable
         if (speedScale > 0f) stats.AttackInterval /= speedScale;
 
         // 붙은 강화는 그 칸의 칩이다(칩 위에 놓인 주사위가 받는다). 칩 위 주사위는 칩 두께만큼 올라앉아 있다.
-        SO_ChipCard chip = _chips.Get(dice.Cell);
-        stats.Damage *= 1f + ChipEffects.DamageBonus(chip);
-        stats.MaxHealthRatio *= 1f + ChipEffects.DamageBonus(chip);
-        stats.AttackInterval /= 1f + ChipEffects.AttackSpeedBonus(chip);
-        float top = chip != null ? _viewConfig.ChipHeight : _viewConfig.GetTileTop(TileType.Ground);
+        ChipSet chip = _chips.GetSet(dice.Cell);
+        stats.Damage *= 1f + chip.DamageBonus;
+        stats.MaxHealthRatio *= 1f + chip.DamageBonus;
+        stats.AttackInterval /= 1f + chip.AttackSpeedBonus;
+        float top = !chip.IsEmpty ? _viewConfig.ChipHeight : _viewConfig.GetTileTop(TileType.Ground);
         DiceAttack.Shot shot = new DiceAttack.Shot
         {
             Dice = state,
@@ -223,7 +223,7 @@ public sealed class DiceCombat : IDisposable
             Stats = stats,
             Origin = dice.Cell,
             Muzzle = new Vector3(dice.Cell.x, top + _diceConfig.MuzzleHeight, dice.Cell.y),
-            Range = stats.GetRange(ChipEffects.RangeBonus(chip)),
+            Range = stats.GetRange(chip.RangeBonus),
             ShotNumber = _shotCounts[i] + 1,
             Attachment = chip,
             Boost = boost,

@@ -192,7 +192,7 @@ public sealed partial class GameScene : SceneBase
         _traits = new TraitHooks(_heroStats);
         _diceField = new DiceField(_mapRoot, diceConfig, diceStatsConfig, _viewConfig, () => Core.Camera.MainCamera, _lighting.OutlineMaterial,
             _traits);
-        _chips = new ChipField(_mapRoot, _viewConfig, _lighting.OutlineMaterial);
+        _chips = new ChipField(_mapRoot, _viewConfig, _lighting.OutlineMaterial, _traits);
         // 시작 칩 종류는 레벨업에 나오는 칩 카드에서 같은 가중치로 뽑는다.
         _levelUpConfig = levelUpConfig;
         _preview = new PlacementPreview(_mapRoot, previewConfig, _viewConfig, diceConfig, diceStatsConfig, _chips, _lighting.OutlineMaterial);

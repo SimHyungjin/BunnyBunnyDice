@@ -324,8 +324,9 @@ public sealed partial class GameBot : IDisposable
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         for (int i = 0; i < placed.Count; i++)
         {
-            if (!(_chips.Get(placed[i].Cell) is T)) continue;
-            if (CoversKillZone(placed[i].Cell, RangeAt(placed[i].Cell, placed[i].Dice.Colors, _chips.Get(placed[i].Cell)))) return true;
+            ChipSet chips = _chips.GetSet(placed[i].Cell);
+            if (!chips.Contains<T>()) continue;
+            if (CoversKillZone(placed[i].Cell, RangeAt(placed[i].Cell, placed[i].Dice.Colors, chips))) return true;
         }
         return false;
     }

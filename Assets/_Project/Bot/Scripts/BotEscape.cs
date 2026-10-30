@@ -90,10 +90,10 @@ public sealed class BotEscape
             DiceState dice = placed[d].Dice;
             SO_DiceType type = diceConfig.GetDiceType(dice.Colors);
             DiceStats stats = DiceStats.Compute(dice, type, statsConfig);
-            SO_ChipCard chip = chips.Get(placed[d].Cell);
+            ChipSet chip = chips.GetSet(placed[d].Cell);
             bool shoots = !dice.IsSpent && stats.AttackInterval > 0f;
-            _dps.Add(shoots ? stats.Damage * (1f + ChipEffects.DamageBonus(chip)) * (1f + ChipEffects.AttackSpeedBonus(chip)) / stats.AttackInterval : 0f);
-            _range.Add(stats.GetRange(ChipEffects.RangeBonus(chip)));
+            _dps.Add(shoots ? stats.Damage * (1f + chip.DamageBonus) * (1f + chip.AttackSpeedBonus) / stats.AttackInterval : 0f);
+            _range.Add(stats.GetRange(chip.RangeBonus));
         }
     }
 

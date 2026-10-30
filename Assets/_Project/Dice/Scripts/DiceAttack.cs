@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,8 +27,8 @@ public sealed class DiceAttack : IDisposable
         public float Range;
         /// <summary>이 주사위의 몇 번째 공격인지(1부터). 저격 각성의 "N번째마다 확정 치명타"에 쓴다.</summary>
         public int ShotNumber;
-        /// <summary>주사위가 올라앉은 칩. 없으면 null.</summary>
-        public SO_ChipCard Attachment;
+        /// <summary>주사위가 올라앉은 칩(두 장까지 + 세기). 없으면 비어 있다.</summary>
+        public ChipSet Attachment;
         /// <summary>레이즈 상태로 쏘는지(측정용 — 배율은 Stats에 이미 들어 있다).</summary>
         public DamageBoost Boost;
         /// <summary>각성으로 쏘는지(눈이 각성 눈에 닿았다).</summary>
@@ -45,7 +45,7 @@ public sealed class DiceAttack : IDisposable
         public float CritChance;
         public Color Color;
         public float Delay;
-        public SO_ChipCard Attachment;
+        public ChipSet Attachment;
         public DamageSource Source;
     }
 
@@ -59,7 +59,7 @@ public sealed class DiceAttack : IDisposable
     private int[] _targets = new int[8];
     private float[] _remaining = new float[8];
     // 지금 쏘는 주사위의 붙은 강화. 맞히는 곳마다 넘기지 않으려고 Fire 동안 들고 있는다.
-    private SO_ChipCard _attachment;
+    private ChipSet _attachment;
     // 지금 쏘는 주사위의 색(측정 기록의 피해 출처). 붙은 강화와 같은 이유로 들고 있는다.
     private DamageSource _source;
     // 속사(초록)가 주사위 칸마다 이어 맞히는 적(MonsterState.Id)과 이어 맞힌 수. 대상이 바뀌면 0부터.
@@ -374,7 +374,7 @@ public sealed class DiceAttack : IDisposable
     // 강화를 피해보다 먼저 건다 — 취약이 그 공격부터 적용되게(취약을 붙이고 처음 맞힐 때 손해 보지 않게).
     private void Hit(int slot, float damage, bool critical)
     {
-        if (_attachment != null) ChipEffects.OnHit(_monsters, slot, _attachment);
+        _attachment.OnHit(_monsters, slot);
         _monsters.Hit(slot, damage, _source, 0f, critical);
     }
 

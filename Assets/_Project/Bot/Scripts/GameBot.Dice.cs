@@ -100,7 +100,7 @@ public sealed partial class GameBot
             DiceRules.Stack(ref after, card, (card.Faces + 1) / 2);
             if (after.Pips <= dice.Pips) continue;
             Vector2Int at = placed[i].Cell;
-            float range = RangeAt(at, after.Colors, _chips.Get(at));
+            float range = RangeAt(at, after.Colors, _chips.GetSet(at));
             if (zoneOnly && !CoversKillZone(at, range)) continue;
             float score = _board.Traffic(at, range) * (1f + after.Pips)
                 * (BotDice.IsArea(after.Colors) ? _config.AreaStackWeight : 1f)

@@ -221,7 +221,7 @@ public sealed partial class GameBot
 
     private float DiceSkillScore(SO_SkillCard card, in DiceState dice, Vector2Int cell)
     {
-        float range = RangeAt(cell, dice.Colors, _chips.Get(cell));
+        float range = RangeAt(cell, dice.Colors, _chips.GetSet(cell));
         float traffic = _board.Traffic(cell, range) * (CoversKillZone(cell, range) ? _config.KillZoneStackWeight : 1f);
         int missing = dice.Faces - dice.Pips;
         if (card is SO_SkillCard_Jackpot) return traffic * missing;
