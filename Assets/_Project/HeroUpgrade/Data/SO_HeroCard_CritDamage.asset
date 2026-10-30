@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uCE58\uBA85\uD0C0 \uD53C\uD574"
   Description: "\uC601\uC6C5\uC758 \uCE58\uBA85\uD0C0 \uD53C\uD574\uAC00 \uC624\uB978\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: ccb207e94f2739c4e94c5720265fc78b, type: 3}
+  TintIcon: 0
   IconColor: {r: 1, g: 1, b: 1, a: 1}
   Weight: 1
   Stat: 5

@@ -16,8 +16,10 @@ MonoBehaviour:
   Description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C {HeroDamage} \uD53C\uD574\uB97C \uC785\uD788\uACE0,
     {Duration}\uCD08\uAC04 \uBA48\uCD98\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 6eb523f2adf48cd4eb46a00b80704c20, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.75, g: 0.92, b: 1, a: 1}
   Weight: 1
+  Exclusive: 0
   DamageMultiplier: 3
   Duration: 5

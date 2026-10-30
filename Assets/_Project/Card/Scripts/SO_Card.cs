@@ -15,9 +15,11 @@ public abstract class SO_Card : SO_Config
     [Localized, TextArea] public string Description;
     [Tooltip("강한 상대(몬스터 특성, 기획서 9.1). 비우면 표시하지 않는다.")]
     [Localized] public string StrongAgainst;
-    [Tooltip("카드 아이콘. 흰 기반 그림에 IconColor를 곱해 쓴다.")]
+    [Tooltip("카드 아이콘. 흰 그림이면 IconColor를 곱해 쓰고(TintIcon), 색칠된 그림이면 그대로 쓴다.")]
     public Sprite Icon;
-    [Tooltip("아이콘 색. 칩 카드는 판 위 칩 색이기도 하다.")]
+    [Tooltip("아이콘에 IconColor를 곱할지. 흰 그림 하나를 색만 바꿔 돌려 쓰는 카드(칩)는 켜고, 색칠된 그림은 끈다 — 끄면 그림이 물들지 않는다.")]
+    public bool TintIcon = true;
+    [Tooltip("카드의 색 — 아이콘(TintIcon일 때)과 연출(스킬 고리·영웅 외곽선·판 위 칩 색)에 쓴다.")]
     public Color IconColor = Color.white;
 
     [Header("출현")]

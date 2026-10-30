@@ -17,7 +17,8 @@ MonoBehaviour:
     \uD480\uB9B0 \uB4A4 {Immunity}\uCD08 \uB3D9\uC548\uC740 \uB2E4\uC2DC \uC5BC\uC9C0
     \uC54A\uB294\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  Icon: {fileID: 21300000, guid: 9f8d07deacc3b6b4d81e971b3c5b8d91, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.4, g: 0.8, b: 0.96, a: 1}
   Weight: 1
   Stat: 0

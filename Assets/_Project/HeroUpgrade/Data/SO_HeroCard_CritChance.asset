@@ -17,7 +17,8 @@ MonoBehaviour:
     100%\uB97C \uB118\uB294 \uB9CC\uD07C\uC740 \uCE58\uBA85\uD0C0 \uD53C\uD574\uAC00
     \uB41C\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: a50fabb84d79ea44bbe75915631f2c47, type: 3}
+  TintIcon: 0
   IconColor: {r: 1, g: 1, b: 1, a: 1}
   Weight: 1
   Stat: 4

@@ -15,7 +15,9 @@ MonoBehaviour:
   DisplayName: "\uB178\uB791 \uD398\uC778\uD2B8"
   Description: "\uD574\uB2F9 \uC8FC\uC0AC\uC704\uB97C \uB178\uB791\uC73C\uB85C \uCE60\uD55C\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 21300000, guid: 081e12cd102dcd7469a5e6a0fc796012, type: 3}
+  Icon: {fileID: 21300000, guid: bc8954720a06511459e630b72573f36e, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.96, g: 0.85, b: 0.2, a: 1}
   Weight: 1
+  Exclusive: 0
   Colors: 3

@@ -16,6 +16,8 @@ MonoBehaviour:
   Description: "\uD574\uB2F9 \uC8FC\uC0AC\uC704\uC758 \uBA74\uCCB4\uC640 \uB208\uC744
     \uB2E4\uC2DC \uAD74\uB9B0\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: a8962017b76dcce4f9b221090d78236f, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.85, g: 0.85, b: 0.92, a: 1}
   Weight: 1
+  Exclusive: 0

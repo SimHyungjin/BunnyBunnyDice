@@ -16,7 +16,8 @@ MonoBehaviour:
   Description: "\uB9DE\uC740 \uC801\uC774 {Duration}\uCD08 \uB3D9\uC548 {Ratio%}
     \uB290\uB824\uC9C4\uB2E4."
   StrongAgainst: 
-  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  Icon: {fileID: 21300000, guid: 5880248c8ce23ba4e988cd3e3e5ad7ef, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.96, g: 0.85, b: 0.2, a: 1}
   Weight: 1
   Stat: 0

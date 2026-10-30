@@ -227,7 +227,7 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     private void ShowCardAsset(SO_Card card, string subText, string kindLabel, string kindText, SO_CardHandConfig config)
     {
         _icon.sprite = card.Icon;
-        _icon.color = card.IconColor;
+        _icon.color = card.TintIcon ? card.IconColor : Color.white;
         _titleText.text = App.Localize(card.DisplayName);
         _subText.text = App.Localize(subText);
         _upgradeDescriptionText.text = CardText.Fill(card.Description, card, _heroStats);

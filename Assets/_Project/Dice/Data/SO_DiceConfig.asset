@@ -27,21 +27,21 @@ MonoBehaviour:
     Model: {fileID: 919132149155446097, guid: 5793a96e692270448ba356d37dd924aa, type: 3}
     Size: 0.7
     Rotation: {x: 0, y: 0, z: 0}
-    Icon: {fileID: 21300000, guid: 081e12cd102dcd7469a5e6a0fc796012, type: 3}
+    Icon: {fileID: 21300000, guid: 400b63dc466c6e3488cae768279606f5, type: 3}
     PipScale: 1
   - Faces: 12
     DisplayName: "\uC2ED\uC774\uBA74\uCCB4"
     Model: {fileID: 919132149155446097, guid: b8798c8d4246b534492290e9947bc120, type: 3}
     Size: 1
     Rotation: {x: 0, y: 0, z: 0}
-    Icon: {fileID: 21300000, guid: 9194abe496a927f46b2dad445b1d9f08, type: 3}
+    Icon: {fileID: 21300000, guid: e521b74f47a829d4881ee652324a91f0, type: 3}
     PipScale: 1
   - Faces: 20
     DisplayName: "\uC774\uC2ED\uBA74\uCCB4"
     Model: {fileID: 919132149155446097, guid: 551aab8c205d3534baf067c669038eea, type: 3}
     Size: 1
     Rotation: {x: 0, y: 0, z: 0}
-    Icon: {fileID: 21300000, guid: da5f9f8be06b9664b9e6d9c90907eae5, type: 3}
+    Icon: {fileID: 21300000, guid: 862e8ce8c10019a418c08f90406fc818, type: 3}
     PipScale: 1
   Prefab: {fileID: 7782896027894679524, guid: 4e171a9d811e48359ce35199b1e246e3, type: 3}
   PrefabSize: 0.7
@@ -51,9 +51,16 @@ MonoBehaviour:
   RollTurns: 2
   LandPortion: 0.7
   BounceHeight: 0.12
+  PopDuration: 0.3
+  PopOvershoot: 1.7
+  PopTurns: 1
+  StackPopStart: 0.7
   PipFont: {fileID: 11400000, guid: 743e12e08f2c09549b7a59ee5599b03e, type: 2}
   PipMaterial: {fileID: 2100000, guid: 2ce988fb6d5b40e4ad4199394aa014c9, type: 2}
   PipFontSize: 4.2
   PipLift: 0.02
   PipColor: {r: 1, g: 1, b: 1, a: 1}
   AwakenedPipColor: {r: 1, g: 0.82, b: 0.2, a: 1}
+  AwakenedOutlineColor: {r: 1, g: 0.82, b: 0.2, a: 1}
+  AwakenRingColor: {r: 1, g: 0.82, b: 0.2, a: 1}
+  AwakenRingRadius: 0.7
