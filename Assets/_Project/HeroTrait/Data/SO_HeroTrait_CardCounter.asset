@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c29f287836a4ac9b305e61ebb741797, type: 3}
   m_Name: SO_HeroTrait_CardCounter
-  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_SkillCount
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_SkillCopies
   DisplayName: "\uCE74\uB4DC \uCE74\uC6B4\uD130"
-  Description: "\uB808\uBCA8\uC5C5 \uD6C4\uBCF4\uC5D0 \uC2A4\uD0AC \uCE74\uB4DC\uAC00 {SkillCount}\uC7A5 \uC774\uC0C1 \uB098\uC628\uB2E4."
-  SkillCount: 2
+  Description: "\uC2A4\uD0AC \uCE74\uB4DC\uB97C \uACE0\uB974\uBA74 {Copies}\uC7A5 \uC5BB\uB294\uB2E4."
+  Copies: 2

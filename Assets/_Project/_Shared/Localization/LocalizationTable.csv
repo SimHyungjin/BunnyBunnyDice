@@ -82,7 +82,7 @@
 더블,Double,SO_HeroTrait_Double.DisplayName
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
 카드 카운터,Card Counter,SO_HeroTrait_CardCounter.DisplayName
-레벨업 후보에 스킬 카드가 {SkillCount}장 이상 나온다.,Level-up offers include at least {SkillCount} skill cards.,SO_HeroTrait_CardCounter.Description
+스킬 카드를 고르면 {Copies}장 얻는다.,Picking a skill card gives x{Copies}.,SO_HeroTrait_CardCounter.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
 주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
