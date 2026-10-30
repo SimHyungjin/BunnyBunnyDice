@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_ChipScale
   DisplayName: "\uCE69 \uB9AC\uB354"
   Description: "\uBAA8\uB4E0 \uCE69 \uD6A8\uACFC\uAC00 {Strength}\uBC30\uAC00 \uB41C\uB2E4."
-  Strength: 2
+  Strength: 1.5
