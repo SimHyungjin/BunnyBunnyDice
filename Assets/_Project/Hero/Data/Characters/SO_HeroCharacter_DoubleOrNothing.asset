@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uCF8C\uB77D\uC8FC\uC758\uC790"
   Id: Hedonist
   Trait: {fileID: 11400000, guid: ecfd58e5b29a4dc59a3d011237c38442, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: fc90c2fcee0a4bd3b0e0b79fbb2b401a, type: 2}
+  ExclusiveCards:
+  - {fileID: 11400000, guid: fc90c2fcee0a4bd3b0e0b79fbb2b401a, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 0.75, g: 0.4, b: 1, a: 1}

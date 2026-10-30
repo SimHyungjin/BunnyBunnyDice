@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uCE74\uB4DC \uCE74\uC6B4\uD130"
   Id: CardCounter
   Trait: {fileID: 11400000, guid: 95efe3dd016f4365a438a453b9e3545f, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: efe34e1cbdc84e4ab447bac6b6aaab39, type: 2}
+  ExclusiveCards:
+  - {fileID: 11400000, guid: efe34e1cbdc84e4ab447bac6b6aaab39, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 0.85, g: 0.55, b: 1, a: 1}

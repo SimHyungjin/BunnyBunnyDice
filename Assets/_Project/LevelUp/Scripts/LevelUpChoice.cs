@@ -87,7 +87,7 @@ public sealed class LevelUpChoice
     private async UniTaskVoid ShowNextAsync()
     {
         _pending--;
-        CardRoll.Pick(_config, _traits, _config.ChoiceCount, _picked, IsUseful, _heroStats?.Character?.ExclusiveCard);
+        CardRoll.Pick(_config, _traits, _config.ChoiceCount, _picked, IsUseful, _heroStats?.Character?.ExclusiveCards);
         RollCopies();
         // 후보가 없으면(설정 비어 있음) 고를 것이 없으니 넘어간다 — 빈 팝업에 갇히지 않게.
         if (_picked.Count == 0)

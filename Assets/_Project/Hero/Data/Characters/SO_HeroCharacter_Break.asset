@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uD1A0\uB07C\uACF5\uB4C0"
   Id: Princess
   Trait: {fileID: 11400000, guid: b02e383336a439e4180ca6d3991f342c, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: 9d3076cf13af18447bccdd85953ff9c9, type: 2}
+  ExclusiveCards:
+  - {fileID: 11400000, guid: 9d3076cf13af18447bccdd85953ff9c9, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 1, g: 0.6, b: 0.8, a: 1}

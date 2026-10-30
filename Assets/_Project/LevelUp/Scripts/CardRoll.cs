@@ -24,13 +24,13 @@ public static class CardRoll
     /// <summary>겹치지 않는 카드를 count장까지 result에 채운다. 뽑을 수 있는 카드가 없으면 비어 있다.</summary>
     /// <param name="traits">특성 갈고리. 없으면 null.</param>
     /// <param name="useful">false면 그 카드를 후보에서 뺀다(골라도 바뀌는 것이 없는 카드 — 치명타 100%의 확률 카드). 없으면 null.</param>
-    /// <param name="exclusive">캐릭터 전용 카드. 없으면 null.</param>
+    /// <param name="exclusives">캐릭터 전용 카드들(한 자리에 그중 한 장). 없으면 null.</param>
     public static void Pick(SO_LevelUpConfig config, TraitHooks traits, int count, List<HandCard> result, Func<SO_Card, bool> useful = null,
-        SO_SkillCard exclusive = null)
+        IReadOnlyList<SO_SkillCard> exclusives = null)
     {
         _useful = useful;
         result.Clear();
-        bool hasExclusive = exclusive != null && count > 0 && GameRandom.Cards.Value < config.ExclusiveChance;
+        bool hasExclusive = exclusives != null && exclusives.Count > 0 && count > 0 && GameRandom.Cards.Value < config.ExclusiveChance;
         if (hasExclusive) count--;
         for (int i = 0; i < count; i++)
         {
@@ -44,7 +44,10 @@ public static class CardRoll
             }
         }
         // 전용 카드는 무작위 자리에 끼운다 — 늘 같은 자리면 보지도 않고 알게 된다. 공용 카드끼리의 종류 몫(레인보우)은 전용 카드를 세지 않는다.
-        if (hasExclusive) result.Insert(GameRandom.Cards.Next(result.Count + 1), HandCard.Of(exclusive));
+        if (!hasExclusive) return;
+        // 한 장뿐이면 고르는 굴림을 하지 않는다 — 전용 카드가 한 장인 캐릭터는 같은 시드에서 전과 같은 판이 나오게.
+        SO_SkillCard exclusive = exclusives.Count == 1 ? exclusives[0] : exclusives[GameRandom.Cards.Next(exclusives.Count)];
+        if (exclusive != null) result.Insert(GameRandom.Cards.Next(result.Count + 1), HandCard.Of(exclusive));
     }
 
     /// <summary>

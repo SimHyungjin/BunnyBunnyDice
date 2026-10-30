@@ -36,7 +36,7 @@ public sealed class SO_LevelUpConfig : SO_Config
     [Min(1)] public int ChoiceCount = 3;
     [Tooltip("고르는 동안의 게임 속도 배율(기획: 50%). 카드를 끄는 감속과 겹치면 더 느린 쪽을 쓴다.")]
     [Range(0.05f, 1f)] public float ChoiceTimeScale = 0.5f;
-    [Tooltip("레벨업마다 캐릭터 전용 카드(SO_HeroCharacter.ExclusiveCard)가 후보 한 자리에 나올 확률. 나오면 나머지 자리만 공용 카드로 뽑는다 " +
+    [Tooltip("레벨업마다 캐릭터 전용 카드(SO_HeroCharacter.ExclusiveCards 중 한 장)가 후보 한 자리에 나올 확률. 나오면 나머지 자리만 공용 카드로 뽑는다 " +
              "— 다 뽑은 뒤 덮어쓰면 레인보우의 '종류가 모두 다름'이 깨지고 고르려던 카드가 사라졌다(2026-10-29 사용자).")]
     [Range(0f, 1f)] public float ExclusiveChance = 0.2f;
     [Tooltip("x2 후보 카드(특성 — 더블)가 팝업이 열릴 때 이 배율에서 원래 크기로 톡 줄어든다 — 붙은 것이 눈에 띄게.")]
@@ -50,7 +50,7 @@ public sealed class SO_LevelUpConfig : SO_Config
     [Tooltip("면체별 출현 가중치(잠정). 테스트 동안은 모두 1 — d20 희귀도는 최종 조정 때 정한다(13).")]
     public List<FacesWeight> FacesWeights = new List<FacesWeight>();
     [Tooltip("나오는 스킬 카드(주사위 대상 — 페인트·다시 굴리기·잭팟·레이즈, 범위·판 전체 — 기획서 8). 가중치는 카드마다(Weight). 빠진 카드는 나오지 않는다. "
-        + "캐릭터 전용 카드는 여기 넣지 않는다 — 넣으면 모두에게 나온다(SO_HeroCharacter.ExclusiveCard).")]
+        + "캐릭터 전용 카드는 여기 넣지 않는다 — 넣으면 모두에게 나온다(SO_HeroCharacter.ExclusiveCards).")]
     [UnityEngine.Serialization.FormerlySerializedAs("UpgradeCards")]
     public List<SO_SkillCard> SkillCards = new List<SO_SkillCard>();
     [Tooltip("나오는 칩 카드(7색, 기획서 7). 가중치는 카드마다(Weight). 판 시작 칩도 이 목록·가중치로 뽑는다(ChipField).")]

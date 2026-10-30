@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uB3C4\uBC15\uC0AC"
   Id: Gambler
   Trait: {fileID: 11400000, guid: 68db41cd4afd4b4d83fa91b3ce29d23b, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: ee09e97ef03666f4ca50baf4677707bc, type: 2}
+  ExclusiveCards:
+  - {fileID: 11400000, guid: ee09e97ef03666f4ca50baf4677707bc, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 0.3, g: 0.85, b: 0.85, a: 1}

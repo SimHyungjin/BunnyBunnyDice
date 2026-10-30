@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uBC14\uB2C8\uAC78"
   Id: BunnyGirl
   Trait: {fileID: 11400000, guid: 14ea47de257c42ceaf5d6e7d35f01a19, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: 57024678172fa4b429522bd985805dd9, type: 2}
+  ExclusiveCards:
+  - {fileID: 11400000, guid: 57024678172fa4b429522bd985805dd9, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 0.95, g: 0.85, b: 0.3, a: 1}

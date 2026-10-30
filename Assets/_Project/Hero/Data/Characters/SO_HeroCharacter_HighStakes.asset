@@ -15,7 +15,8 @@ MonoBehaviour:
   DisplayName: "\uD558\uC774 \uC2A4\uD14C\uC774\uD06C"
   Id: HighStakes
   Trait: {fileID: 11400000, guid: 1425ec20cbf04b54b87c8363a4356716, type: 2}
-  ExclusiveCard: {fileID: 11400000, guid: ea462f52ab214c8186f0b115652d8bcd, type: 2}
+  ExclusiveCards:
+  - {fileID: 11400000, guid: ea462f52ab214c8186f0b115652d8bcd, type: 2}
   Prefab: {fileID: -1728013695380148634, guid: 50d5782b55169d6428af29affea3a621, type: 3}
   ModelHeight: 0.9
   Color: {r: 1, g: 0.45, b: 0.25, a: 1}

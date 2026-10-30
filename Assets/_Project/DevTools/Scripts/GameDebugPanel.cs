@@ -259,10 +259,14 @@ public sealed class GameDebugPanel : MonoBehaviour
         SO_HeroTrait trait = character != null ? character.Trait : null;
         if (trait == null) GUILayout.Label("특성 없음", _label);
         else GUILayout.Label($"특성: {trait.DisplayName} — {CardText.Fill(trait.Description, trait)}", _wrapLabel);
-        SO_SkillCard card = character != null ? character.ExclusiveCard : null;
-        if (card == null) return;
-        GUI.backgroundColor = card.IconColor;
-        if (GUILayout.Button($"전용: {card.DisplayName}", _button, GUILayout.Height(ButtonHeight))) _addCard?.Invoke(HandCard.Of(card));
+        if (character == null) return;
+        for (int i = 0; i < character.ExclusiveCards.Count; i++)
+        {
+            SO_SkillCard card = character.ExclusiveCards[i];
+            if (card == null) continue;
+            GUI.backgroundColor = card.IconColor;
+            if (GUILayout.Button($"전용: {card.name}", _button, GUILayout.Height(ButtonHeight))) _addCard?.Invoke(HandCard.Of(card));
+        }
         GUI.backgroundColor = Color.white;
     }
 
