@@ -11,8 +11,7 @@ public static class SkillRules
     private const float KnockbackStep = 0.1f;
 
     /// <summary>주사위 대상 스킬을 이 주사위에 쓸 수 있는지.</summary>
-    /// <param name="nextFaces">한 단계 큰 면체(DiceField.NextFaces). 더 큰 면체가 없으면 지금 면체.</param>
-    public static PlacementResult CheckDice(in DiceState dice, SO_SkillCard card, int nextFaces)
+    public static PlacementResult CheckDice(in DiceState dice, SO_SkillCard card)
     {
         if (card == null) return PlacementResult.NoEffect;
 
@@ -24,10 +23,7 @@ public static class SkillRules
                 return colors == DiceColor.Clear || colors == dice.Colors ? PlacementResult.NoEffect : PlacementResult.Upgrade;
             case SO_SkillCard_Jackpot _:
                 return dice.IsMaxed ? PlacementResult.NoEffect : PlacementResult.Upgrade;
-            // 리롤은 올릴 면체가 있어야 한다.
-            case SO_SkillCard_Reroll _:
-                return nextFaces > dice.Faces ? PlacementResult.Upgrade : PlacementResult.NoEffect;
-            // 레이즈는 늘 된다.
+            // 리롤·레이즈는 늘 된다(리롤은 가장 큰 면체면 눈만 다시 굴린다 — 판단에 맡긴다).
             default:
                 return PlacementResult.Upgrade;
         }

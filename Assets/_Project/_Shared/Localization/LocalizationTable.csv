@@ -141,7 +141,7 @@
 레이즈,Raise,SO_SkillCard_Raise.DisplayName
 "{Duration}초간 해당 주사위의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the die's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_Raise.Description
 리롤,Reroll,SO_SkillCard_Reroll.DisplayName
-해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다.,"Upgrades the die to the next size and rerolls its pips.",SO_SkillCard_Reroll.Description
+해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다. 이십면체는 눈만 다시 굴린다.,"Upgrades the die to the next size and rerolls its pips. A D20 only rerolls its pips.",SO_SkillCard_Reroll.Description
 코인 플립,Coin Flip,SO_SkillCard_CoinFlip.DisplayName
 {Chance%} 확률로 무작위 카드 {Count}장을 얻는다.,"{Chance%} chance: gain random cards x{Count}.",SO_SkillCard_CoinFlip.Description
 스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName

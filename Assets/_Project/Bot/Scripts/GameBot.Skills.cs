@@ -230,7 +230,7 @@ public sealed partial class GameBot
         for (int i = 0; i < placed.Count; i++)
         {
             DiceState dice = placed[i].Dice;
-            if (!DicePlacement.IsAccepted(SkillRules.CheckDice(dice, card, _diceField.NextFaces(dice.Faces)))) continue;
+            if (!DicePlacement.IsAccepted(SkillRules.CheckDice(dice, card))) continue;
             float score = DiceSkillScore(card, dice, placed[i].Cell);
             if (score <= best) continue;
             best = score;
@@ -248,8 +248,13 @@ public sealed partial class GameBot
         int missing = dice.Faces - dice.Pips;
         if (card is SO_SkillCard_Jackpot) return traffic * missing;
         // 다시 굴리기는 눈이 절반 밑일 때만 — 기대값이 지금보다 높다.
-        // 리롤은 면체가 커지는 만큼 — 약한 육면체부터.
-        if (card is SO_SkillCard_Reroll) return traffic * Mathf.Max(_diceField.NextFaces(dice.Faces) - dice.Faces, 0);
+        // 리롤은 면체가 커지는 만큼 — 약한 육면체부터. 가장 큰 면체는 눈만 다시 굴리므로 눈이 절반 밑일 때만(기대값이 지금보다 높다).
+        if (card is SO_SkillCard_Reroll)
+        {
+            int grow = _diceField.NextFaces(dice.Faces) - dice.Faces;
+            if (grow > 0) return traffic * grow;
+            return dice.Pips * 2 < dice.Faces ? traffic * missing : 0f;
+        }
         // 페인트는 섞인 색(등급이 낮은) 주사위를 단색으로 되돌릴 때만.
         if (card is SO_SkillCard_Paint) return BotDice.ColorCount(dice.Colors) >= 2 ? traffic : 0f;
         return 0f;

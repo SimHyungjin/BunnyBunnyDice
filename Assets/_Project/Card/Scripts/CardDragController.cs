@@ -294,11 +294,10 @@ public sealed class CardDragController : IDisposable
             _cellResult = PlacementResult.NoDice;
             return;
         }
-        int nextFaces = _diceField.NextFaces(placed.Dice.Faces);
-        _cellResult = SkillRules.CheckDice(placed.Dice, card, nextFaces);
+        _cellResult = SkillRules.CheckDice(placed.Dice, card);
         _ghostDice = placed.Dice;
-        // 리롤은 고스트가 커진 면체로 보인다(눈은 지금 눈 그대로 — 굴려야 정해진다).
-        if (card is SO_SkillCard_Reroll) _ghostDice.Faces = nextFaces;
+        // 리롤은 고스트가 커진 면체로 보인다(가장 큰 면체면 그대로, 눈은 지금 눈 그대로 — 굴려야 정해진다).
+        if (card is SO_SkillCard_Reroll) _ghostDice.Faces = _diceField.NextFaces(placed.Dice.Faces);
         SkillRules.ApplyDice(ref _ghostDice, card, placed.Dice.Pips);
     }
 
