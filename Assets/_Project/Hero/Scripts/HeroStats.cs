@@ -22,9 +22,6 @@ public sealed class HeroStats
     private readonly float[] _bonuses = new float[StatCount];
     // 그대로 더하는 강화(치명타 카드 — SO_HeroCard.Flat).
     private readonly float[] _flats = new float[StatCount];
-    // 이번 판에 고른 디버프 카드와 장수(같은 카드끼리 모은다). 새 판에서 비운다.
-    private readonly List<SO_HeroDebuffCard> _debuffCards = new List<SO_HeroDebuffCard>();
-    private readonly List<int> _debuffCopies = new List<int>();
 
     /// <summary>캐릭터가 바뀌었다 — 겉모습을 다시 만든다.</summary>
     public event Action CharacterChanged;
@@ -86,17 +83,6 @@ public sealed class HeroStats
 
     public void Apply(SO_HeroCard card)
     {
-        if (card is SO_HeroDebuffCard debuff)
-        {
-            int index = _debuffCards.IndexOf(debuff);
-            if (index >= 0) _debuffCopies[index]++;
-            else
-            {
-                _debuffCards.Add(debuff);
-                _debuffCopies.Add(1);
-            }
-            return;
-        }
         if (card.Flat) _flats[(int)card.Stat] += card.Amount;
         else _bonuses[(int)card.Stat] += card.Amount;
     }
@@ -106,31 +92,13 @@ public sealed class HeroStats
     /// — 넘친 몫을 치명타 피해로 옮기긴 하지만 확률 카드 한 장의 몫이 치명타 피해 카드보다 훨씬 작아 고르면 손해인 함정 카드가 된다.
     /// </summary>
     public bool IsUseful(SO_HeroCard card) =>
-        card is SO_HeroDebuffCard || card.Stat != HeroStat.CritChance || Get(HeroStat.CritChance) < 1f;
-
-    /// <summary>고른 디버프 카드 종류 수. 영웅 공격이 맞힐 때마다 0..DebuffCount-1을 건다.</summary>
-    public int DebuffCount => _debuffCards.Count;
-
-    public SO_HeroDebuffCard GetDebuff(int index, out int copies)
-    {
-        copies = _debuffCopies[index];
-        return _debuffCards[index];
-    }
-
-    /// <summary>이 디버프 카드를 이번 판에 몇 장 골랐는지.</summary>
-    public int CopiesOf(SO_HeroDebuffCard card)
-    {
-        int index = _debuffCards.IndexOf(card);
-        return index >= 0 ? _debuffCopies[index] : 0;
-    }
+        card.Stat != HeroStat.CritChance || Get(HeroStat.CritChance) < 1f;
 
     /// <summary>새 판: 강화를 비운다.</summary>
     public void ResetBonuses()
     {
         for (int i = 0; i < _bonuses.Length; i++) _bonuses[i] = 0f;
         for (int i = 0; i < _flats.Length; i++) _flats[i] = 0f;
-        _debuffCards.Clear();
-        _debuffCopies.Clear();
     }
 
     /// <summary>강화 전 값(캐릭터 한계값 × 단계 비율). 강화 %의 기준이다.</summary>

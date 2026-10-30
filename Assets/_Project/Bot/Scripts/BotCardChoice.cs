@@ -44,7 +44,7 @@ public static class BotCardChoice
     private static float Score(SO_BotConfig.ChoiceScores scores, HandCard card, in BotChoiceContext context)
     {
         if (card.IsDice) return DiceScore(scores, card.Dice, context.MazeEnough);
-        if (card.IsHero) return card.Hero is SO_HeroDebuffCard ? scores.HeroDebuff : scores.HeroStat;
+        if (card.IsHero) return scores.HeroStat;
         if (card.IsChip) return ChipScore(scores, card.Chip, context);
 
         SO_SkillCard skill = card.Skill;

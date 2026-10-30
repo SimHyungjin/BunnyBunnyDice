@@ -35,27 +35,9 @@ public static class HeroStatText
         }
     }
 
-    /// <summary>디버프 이름 — 칩 디버프와 같은 말(색 = 뜻).</summary>
-    public static string GetDebuffName(HeroDebuff debuff)
-    {
-        switch (debuff)
-        {
-            case HeroDebuff.Vulnerable: return App.Localize("취약");
-            case HeroDebuff.Slow: return App.Localize("둔화");
-            case HeroDebuff.Freeze: return App.Localize("얼림");
-            default: return App.Localize("화상");
-        }
-    }
-
-    /// <summary>디버프 카드를 copies장 골랐을 때의 지속 시간(여러 장은 시간만 는다).</summary>
-    public static string FormatDebuff(SO_HeroDebuffCard card, int copies) =>
-        App.Localize("{0}초", card.DurationFor(copies).ToString("0.0#"));
-
     /// <summary>카드 제목에 붙이는 오르는 양 — 기본값의 %면 "+100%", 그대로 더하면 확률 "+20%p" · 배율 "+1".</summary>
     public static string FormatAmount(SO_HeroCard card)
     {
-        // 디버프 카드는 오르는 양 대신 수치 칸에 "지금 → 고른 뒤" 세기를 보인다(FormatDebuff).
-        if (card is SO_HeroDebuffCard) return "";
         if (!card.Flat) return $"+{card.Amount * 100f:0.#}%";
         return card.Stat == HeroStat.CritChance ? $"+{card.Amount * 100f:0.#}%p" : $"+{card.Amount:0.##}";
     }

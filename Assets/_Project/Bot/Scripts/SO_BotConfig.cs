@@ -48,8 +48,6 @@ public sealed class SO_BotConfig : SO_Config
         [Tooltip("메인 딜 구간에 이미 있는 디버프 칩.")]
         public float DuplicateDebuffChip = 120f;
         public float RangeChip = 120f;
-        [Tooltip("영웅 디버프 카드(사용자: 좋지만 미묘).")]
-        public float HeroDebuff = 40f;
         public float Jackpot = 200f;
         public float EnemySkill = 120f;
         public float Check = 100f;
@@ -121,9 +119,6 @@ public sealed class SO_BotConfig : SO_Config
         + "사용자: 메인 딜 구간 앞부터 디버프가 묻은 구역까지 카이팅한다.")]
     [Min(0)] public int KiteFront = 3;
     [Min(0)] public int KiteBack = 2;
-    [Tooltip("영웅 디버프 카드가 있으면 선두를 쫓는 대신, 디버프가 안 묻은 적이 영웅 사거리 안에 이만큼 이상 모이는 곳으로 다닌다 — "
-        + "디버프 카드의 값어치는 여러 적에게 묻히는 데서 나온다(사용자). 대상 고르기(가장 가까운 적)는 그대로라 선두를 막는 역할은 남는다.")]
-    [Min(1)] public int PaintMinTargets = 3;
 
     [Header("레이즈 (영웅 올라타기·스킬 카드 — BotEscape)")]
     [Tooltip("남은 길에서 받을 피해 어림에 곱한다. 1이면 어림 그대로, 낮을수록 \"못 잡을 것\"으로 봐 일찍·자주 쓴다.")]

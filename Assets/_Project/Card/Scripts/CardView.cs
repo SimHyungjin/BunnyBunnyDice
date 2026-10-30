@@ -201,14 +201,6 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
         // 오르는 %는 제목에 코드로 붙인다 — 설명에 숫자를 적어 두면 SO 값을 고칠 때 글과 실제가 어긋난다.
         string percent = HeroStatText.FormatAmount(card);
         _titleText.text = percent.Length > 0 ? $"{App.Localize(card.DisplayName)} {percent}" : App.Localize(card.DisplayName);
-        if (card is SO_HeroDebuffCard debuff)
-        {
-            int copies = heroStats != null ? heroStats.CopiesOf(debuff) : 0;
-            _heroStatLabel.text = HeroStatText.GetDebuffName(debuff.Debuff);
-            _heroStatValue.text = $"{HeroStatText.FormatDebuff(debuff, copies)} → {HeroStatText.FormatDebuff(debuff, copies + 1)}";
-            _heroDescriptionText.text = CardText.Fill(card.Description, card, heroStats);
-            return;
-        }
         _heroStatLabel.text = HeroStatText.GetName(card.Stat);
         _heroStatValue.text = heroStats != null ? FormatHeroChange(card, card.Stat, heroStats) : percent;
         // 치명타 확률이 100%를 넘으면 넘친 몫이 치명타 피해로 간다 — 확률만 보이면 "100% → 100%"라 고를 이유가 안 보인다.

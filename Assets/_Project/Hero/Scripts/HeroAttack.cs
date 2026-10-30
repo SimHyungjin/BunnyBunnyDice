@@ -151,12 +151,6 @@ public sealed class HeroAttack : IDisposable
             bool critical = GameRandom.Crit.Value < _stats.CritChance;
             float damage = _stats.Attack * (IsBoosted ? _boostDamage : 1f);
             _monsters.Hit(slot, damage * (critical ? _stats.CritMultiplier : 1f), DamageSource.Hero, 0f, critical);
-            // 디버프 카드(칩 디버프의 센 버전)는 카드마다 건다 — 투사체가 늘면 거는 적도 는다.
-            for (int d = 0; d < _stats.DebuffCount; d++)
-            {
-                SO_HeroDebuffCard debuff = _stats.GetDebuff(d, out int copies);
-                debuff.Apply(_monsters, slot, copies);
-            }
             _cards.Throw(from, launch, states[slot].Id, critical, i, count);
         }
     }

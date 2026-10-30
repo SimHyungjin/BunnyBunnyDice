@@ -245,7 +245,7 @@ public sealed class MonsterField : IDisposable
         {
             ref MonsterState state = ref _states[i];
             float burn = MonsterStatus.Tick(ref state, deltaTime, _config.BurnTickInterval);
-            // 화상은 화상 칩(ChipEffects)과 핫 핸드 카드(SO_HeroDebuffCard)가 건다.
+            // 화상은 화상 칩(ChipEffects)이 건다.
             if (burn > 0f) ApplyDamage(i, burn, 0f, DamageKind.Burn, DamageSource.Burn);
             // 화상으로 죽었으면 걷지 않는다 — 죽은 채 목표물에 들어가 피해를 주지 않게(치우기는 다음 갱신의 RemoveDead).
             if (!state.IsAlive) continue;

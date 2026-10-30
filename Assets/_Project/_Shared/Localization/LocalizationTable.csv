@@ -22,14 +22,14 @@
 공격력,Attack,SO_ChipCard_Damage.DisplayName | SO_HeroCard_Attack.DisplayName | CardView/Detail/DiceContent/StatLabel0
 이 칩 위 주사위의 공격력이 {Ratio%} 늘어난다.,The die on this chip deals {Ratio%} more damage.,SO_ChipCard_Damage.Description
 얼림,Freeze,SO_ChipCard_Freeze.DisplayName | HeroStatText.cs:45
-맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다.,Freezes hit enemies for {Duration}s. They can't be frozen again for {Immunity}s after thawing.,SO_ChipCard_Freeze.Description | SO_HeroCard_ColdDeck.Description
+맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다.,Freezes hit enemies for {Duration}s. They can't be frozen again for {Immunity}s after thawing.,SO_ChipCard_Freeze.Description
 사거리,Range,SO_ChipCard_Range.DisplayName | CardView/Detail/DiceContent/StatLabel2 | HeroStatText.cs:16
 이 칩 위 주사위의 사거리가 {Ratio%} 늘어난다.,The die on this chip gets {Ratio%} more range.,SO_ChipCard_Range.Description
 둔화,Slow,SO_ChipCard_Slow.DisplayName | HeroStatText.cs:44
-맞은 적이 {Duration}초 동안 {Ratio%} 느려진다.,Hit enemies are slowed by {Ratio%} for {Duration}s.,SO_ChipCard_Slow.Description | SO_HeroCard_SlowRoll.Description
+맞은 적이 {Duration}초 동안 {Ratio%} 느려진다.,Hit enemies are slowed by {Ratio%} for {Duration}s.,SO_ChipCard_Slow.Description
 빠름,Fast,SO_ChipCard_Slow.StrongAgainst | SO_Dice_Blue.StrongAgainst | SO_Dice_White.StrongAgainst
 취약,Vulnerable,SO_ChipCard_Vulnerable.DisplayName | HeroStatText.cs:43
-맞은 적이 {Duration}초 동안 받는 피해가 {Ratio%} 늘어난다.,Hit enemies take {Ratio%} more damage for {Duration}s.,SO_ChipCard_Vulnerable.Description | SO_HeroCard_Mark.Description
+맞은 적이 {Duration}초 동안 받는 피해가 {Ratio%} 늘어난다.,Hit enemies take {Ratio%} more damage for {Duration}s.,SO_ChipCard_Vulnerable.Description
 육면체,D6,SO_DiceConfig.Models[0].DisplayName
 십이면체,D12,SO_DiceConfig.Models[1].DisplayName
 이십면체,D20,SO_DiceConfig.Models[2].DisplayName
@@ -93,17 +93,12 @@
 레인보우,Rainbow,SO_HeroTrait_Rainbow.DisplayName
 레벨업 후보 카드가 항상 다른 종류로 나온다.,Level-up choices are always different types.,SO_HeroTrait_Rainbow.Description
 영웅의 공격력이 오른다.,Raises the hero's attack.,SO_HeroCard_Attack.Description
-콜드 덱,Cold Deck,SO_HeroCard_ColdDeck.DisplayName
 치명타 확률,Crit Chance,SO_HeroCard_CritChance.DisplayName | HeroStatText.cs:17
 영웅의 치명타 확률이 오른다. 100%를 넘는 만큼은 치명타 피해가 된다.,Raises the hero's crit chance. Any amount over 100% becomes crit damage.,SO_HeroCard_CritChance.Description
 치명타 피해,Crit Damage,SO_HeroCard_CritDamage.DisplayName | HeroStatText.cs:18
 영웅의 치명타 피해가 오른다.,Raises the hero's crit damage.,SO_HeroCard_CritDamage.Description
-핫 핸드,Hot Hand,SO_HeroCard_HotHand.DisplayName
-맞은 적이 {Duration}초 동안 매초 최대 체력의 {Ratio%} 피해를 입는다. 방어력을 무시한다.,Hit enemies take {Ratio%} of their max HP as damage every second for {Duration}s. Ignores armor.,SO_HeroCard_HotHand.Description
-마킹,Marking,SO_HeroCard_Mark.DisplayName
 투사체,Projectile,SO_HeroCard_Projectile.DisplayName | HeroStatText.cs:19
 영웅이 한 번에 던지는 카드가 늘어난다.,The hero throws more cards at once.,SO_HeroCard_Projectile.Description
-슬로우롤,Slow Roll,SO_HeroCard_SlowRoll.DisplayName
 올인,All In,SO_SkillCard_AllIn.DisplayName
 "목표물 체력을 최대치로 채우고, 모든 주사위의 눈을 다시 굴린다.",Fully restores the goal and rerolls the pips of every die.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
@@ -182,7 +177,6 @@
 특성 없음,No Trait,UI_CharacterSelectPopup.cs:133 | UI_LobbyPopup.cs:82
 눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:134
 이동 속도,Move Speed,HeroStatText.cs:15
-{0}초,{0}s,HeroStatText.cs:52
 잭팟 보스 {0}/{1},Jackpot Boss {0}/{1},UI_GameHud.cs:113
 보스 {0}/{1},Boss {0}/{1},UI_GameHud.cs:114
 웨이브 {0},Wave {0},UI_GameHud.cs:130

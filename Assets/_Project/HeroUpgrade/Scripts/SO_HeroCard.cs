@@ -20,7 +20,7 @@ public class SO_HeroCard : SO_Card
 #if UNITY_EDITOR
     protected override void OnValidate()
     {
-        if (Stat == HeroStat.Range && !(this is SO_HeroDebuffCard)) Debug.LogWarning($"[SO_HeroCard] {name}: 사거리는 강화 카드로 올리지 않는다(기획서 10.4).", this);
+        if (Stat == HeroStat.Range) Debug.LogWarning($"[SO_HeroCard] {name}: 사거리는 강화 카드로 올리지 않는다(기획서 10.4).", this);
         base.OnValidate();
     }
 #endif

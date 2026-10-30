@@ -7,7 +7,7 @@ public sealed partial class GameBot
 {
     // 영웅(사용자 판 교본 2차):
     // 1) 빠져나갈 적을 레이즈로 잡을 수 있으면 그 주사위에 올라탄다(BotEscape) — 올라탄 동안 눈이 영구로 깎이니 그때만.
-    // 2) 미로를 짓는 동안엔 주사위가 못 잡은 적을 쫓아 정리한다(영웅 디버프 카드가 있으면 안 묻은 적이 몰린 곳으로).
+    // 2) 미로를 짓는 동안엔 주사위가 못 잡은 적을 쫓아 정리한다.
     // 3) 미로를 지은 뒤엔 메인 딜 구간 앞부터 디버프가 묻는 구역까지 오가며 싸운다 — 구역을 지난(뚫린) 적이 있으면 그쪽부터,
     //    없으면 구역 안에서 가장 앞선 적, 적이 없으면 구역 앞에서 기다린다. 영웅이 주 딜이라 취약(+30%)이 묻는 곳에서 때려야 한다.
     private void MoveHero(MapData map)
@@ -29,8 +29,7 @@ public sealed partial class GameBot
 
         if (!MazeBuilt())
         {
-            if (_heroStats.DebuffCount > 0 && TryFindPaintCell(out Vector2Int paint)) MoveHeroTo(paint);
-            else MoveHeroTo(TryFindLead(0, int.MaxValue, out Vector2Int lead) ? lead : ZoneFrontCell(map));
+            MoveHeroTo(TryFindLead(0, int.MaxValue, out Vector2Int lead) ? lead : ZoneFrontCell(map));
             return;
         }
 
@@ -81,47 +80,5 @@ public sealed partial class GameBot
             best = route[i];
         }
         return best;
-    }
-
-    // 영웅이 서면 사거리 안에 디버프가 안 묻은 적이 가장 많이 드는 적의 칸(주사위 없는 칸). PaintMinTargets보다 적으면 false.
-    // 후보를 적이 선 칸으로만 잡는다 — 적이 있는 곳 둘레가 곧 묻힐 곳이라 판 전체 칸을 훑지 않아도 된다.
-    private bool TryFindPaintCell(out Vector2Int cell)
-    {
-        cell = default;
-        float rangeSqr = _heroStats.Range * _heroStats.Range;
-        MonsterState[] states = _monsters.States;
-        int best = _config.PaintMinTargets - 1;
-        for (int i = 0; i < _monsters.Count; i++)
-        {
-            if (!states[i].IsAlive || !NeedsHeroDebuff(states[i])) continue;
-            Vector2Int candidate = Vector2Int.RoundToInt(states[i].Position);
-            if (_board.DistanceAt(candidate) < 0 || _diceField.TryGetPlaced(candidate, out _)) continue;
-            int count = 0;
-            for (int j = 0; j < _monsters.Count; j++)
-            {
-                if (!states[j].IsAlive || !NeedsHeroDebuff(states[j])) continue;
-                if ((states[j].Position - states[i].Position).sqrMagnitude <= rangeSqr) count++;
-            }
-            if (count <= best) continue;
-            best = count;
-            cell = candidate;
-        }
-        return best >= _config.PaintMinTargets;
-    }
-
-    // 영웅 디버프 중 하나라도 안 묻어 있는지(칩이 건 같은 디버프도 묻은 것으로 본다 — 센 쪽이 남으니 덧칠은 낭비에 가깝다).
-    private bool NeedsHeroDebuff(in MonsterState state)
-    {
-        for (int d = 0; d < _heroStats.DebuffCount; d++)
-        {
-            switch (_heroStats.GetDebuff(d, out _).Debuff)
-            {
-                case HeroDebuff.Vulnerable: if (!state.IsVulnerable) return true; break;
-                case HeroDebuff.Slow: if (!state.IsSlowed) return true; break;
-                case HeroDebuff.Freeze: if (!state.IsFrozen) return true; break;
-                case HeroDebuff.Burn: if (!state.IsBurning) return true; break;
-            }
-        }
-        return false;
     }
 }
