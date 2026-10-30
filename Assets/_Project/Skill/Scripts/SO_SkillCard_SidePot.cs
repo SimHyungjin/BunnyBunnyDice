@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -12,6 +13,9 @@ public sealed class SO_SkillCard_SidePot : SO_SkillCard, ICardTextTokens
     public SO_ChipCard Chip;
 
     public override SkillTarget Target => SkillTarget.Cell;
+
+    // 실행 중 조정(GameTuning)이 원본 칩 에셋을 고치지 않게 복사본으로 바꿔 끼운다.
+    public override void SwapNested(Func<SO_Config, SO_Config> swap) => Chip = (SO_ChipCard)swap(Chip);
 
     // {Chip} = 얹는 칩 이름(번역).
     public bool TryGetToken(string key, HeroStats hero, out string text)

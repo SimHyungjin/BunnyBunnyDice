@@ -108,8 +108,12 @@ public sealed class ChipField
     public bool CanAddExtra(Vector2Int cell, SO_ChipCard card)
     {
         int index = IndexOf(cell);
-        return index >= 0 && card != null && _chips[index].Extra == null && _chips[index].Card != card;
+        return index >= 0 && card != null && _chips[index].Extra == null && !SameKind(_chips[index].Card, card);
     }
+
+    // 종류(클래스 — 칩 종류마다 하나)로 비교한다. 판의 칩과 카드의 칩이 같은 에셋이어도 실행 중 복사본(ConfigTuning)은 따로 만들어져
+    // 물건으로 비교하면 다르다고 나왔다 — 같은 색 칩이 얹혔다(2026-10-31 사용자).
+    private static bool SameKind(SO_ChipCard a, SO_ChipCard b) => a != null && b != null && a.GetType() == b.GetType();
 
     /// <summary>판정(CanAddExtra)을 통과한 칸에만 부른다. 칩 칸은 이미 벽이라 길은 바뀌지 않는다.</summary>
     public void AddExtra(Vector2Int cell, SO_ChipCard card)
