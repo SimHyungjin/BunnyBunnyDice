@@ -143,8 +143,6 @@ public sealed class SO_BotConfig : SO_Config
     [Min(1)] public int BreachEnemyMinTargets = 2;
     [Tooltip("뚫릴 때 체크: 구간을 넘어온 적이 이만큼이면 쓴다.")]
     [Min(1)] public int CheckBreachCount = 5;
-    [Tooltip("스네이크 아이즈(더블 오어 낫싱 전용): 눈이 1인 주사위가 이만큼이면 쓴다.")]
-    [Min(1)] public int SnakeEyesMinDice = 2;
 
     [Tooltip("데미지형 스킬을 바로 쓰는 묶음(RunSet.DamageSkillAnytime): 판 위 적이 이만큼이면 쓴다.")]
     [Min(1)] public int AnytimeEnemyMinTargets = 8;

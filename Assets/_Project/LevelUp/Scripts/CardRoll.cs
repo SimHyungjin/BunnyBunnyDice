@@ -47,6 +47,20 @@ public static class CardRoll
         if (hasExclusive) result.Insert(GameRandom.Cards.Next(result.Count + 1), HandCard.Of(exclusive));
     }
 
+    /// <summary>
+    /// 레벨업 후보와 같은 몫(종류·가중치·특성 갈고리)으로 공용 카드 한 장을 뽑는다 — 코인 플립처럼 카드를 여러 장 주는 스킬이 쓴다.
+    /// 장마다 따로 굴리므로 같은 카드가 겹칠 수 있다(손패에서 쌓인다). 전용 카드는 나오지 않는다. 뽑을 것이 없으면 false.
+    /// </summary>
+    public static bool RollOne(SO_LevelUpConfig config, TraitHooks traits, Func<SO_Card, bool> useful, out HandCard card)
+    {
+        _useful = useful;
+        NoPicked.Clear();
+        return TryRoll(config, traits, NoPicked, out card) || TryRoll(config, null, NoPicked, out card);
+    }
+
+    // RollOne에는 함께 뽑힌 후보가 없다.
+    private static readonly List<HandCard> NoPicked = new List<HandCard>();
+
     /// <param name="picked">이번 선택에서 이미 뽑힌 후보(종류 몫 갈고리가 본다).</param>
     private static bool TryRoll(SO_LevelUpConfig config, TraitHooks traits, IReadOnlyList<HandCard> picked, out HandCard card)
     {

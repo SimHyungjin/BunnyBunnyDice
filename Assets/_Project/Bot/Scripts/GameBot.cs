@@ -398,6 +398,12 @@ public sealed partial class GameBot : IDisposable
         if (card.IsDice) return TryPlaceDice(map, card);
         if (card.IsChip) return TryPlaceChip(map, card);
         if (card.IsSkill) return TryCast(card.Skill);
+        // 레벨업 밖(코인 플립)에서 들어온 영웅 강화 카드는 바로 쓴다 — 아껴 둘 이유가 없다.
+        if (card.IsHero)
+        {
+            _skills.UseHeroCard(card.Hero);
+            return true;
+        }
         return false;
     }
 }

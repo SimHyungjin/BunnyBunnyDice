@@ -240,8 +240,9 @@ public sealed partial class GameScene : SceneBase
         _heroRaiseView = new HeroRaiseView(heroConfig, _viewConfig, _heroRaise, _attackEffects);
         _expBoost = new ExpBoost();
         _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal,
-            () => _heroAttack, _expBoost, () => _hand);
-        _skillPreview = new SkillPreview(_mapRoot, previewConfig, _viewConfig, _skills, _monsters, _diceField, () => _map, _hero);
+            () => _heroAttack, _expBoost, () => _hand,
+            (out HandCard card) => CardRoll.RollOne(levelUpConfig, _traits, IsUsefulCard, out card));
+        _skillPreview = new SkillPreview(_mapRoot, previewConfig, _viewConfig, _skills, _monsters, () => _map, _hero);
         _heroCards = new HeroCardShots(_mapRoot, heroConfig.CardShot, _monsters, _monsterConfig, _viewConfig);
         _heroAttack = new HeroAttack(heroConfig, _heroStats, _hero, _monsters, _heroCards,
             _diceCombat.GetRange);
@@ -721,6 +722,9 @@ public sealed partial class GameScene : SceneBase
         MapCameraFitter.Fit(Core.Camera.MainCamera, _mapRoot, _map, _cameraConfig, _viewConfig, _handFraming != null ? _handFraming.Weight : 0f);
         _lobbyStage.ApplyCamera();
     }
+
+    // 코인 플립이 주는 카드도 레벨업 후보처럼 골라도 바뀌는 것이 없는 영웅 강화 카드(치명타 100%의 확률 카드)는 뺀다.
+    private bool IsUsefulCard(SO_Card card) => !(card is SO_HeroCard hero) || _heroStats.IsUseful(hero);
 
     private void GainExp(int exp)
     {

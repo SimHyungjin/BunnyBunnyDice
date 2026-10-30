@@ -11,9 +11,9 @@ public sealed partial class GameBot
     {
         if (skill is SO_SkillCard_AllIn) return TryCastAllIn(skill);
         if (skill is SO_SkillCard_CashOut) return TryCastCashOut(skill);
-        // 더블 업은 일찍 쓸수록 이득이다 — 적이 있으면 바로. 스네이크 아이즈는 1이 둘 이상일 때.
+        // 더블 업은 일찍 쓸수록 이득이다 — 적이 있으면 바로. 코인 플립은 기다려 얻는 것이 없어 바로 던진다.
         if (skill is SO_SkillCard_DoubleUp) return _monsters.Count > 0 && CastBoard(skill);
-        if (skill is SO_SkillCard_SnakeEyes) return CountLowest() >= _config.SnakeEyesMinDice && CastBoard(skill);
+        if (skill is SO_SkillCard_CoinFlip) return CastBoard(skill);
         // 화력 카드(풀 하우스·브레이크 샷)는 다른 스킬처럼 뚫릴 때.
         if (skill is SO_SkillCard_BreakShot) return Breached(out _) && CastBoard(skill);
         if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
@@ -105,17 +105,6 @@ public sealed partial class GameBot
         if (!_skills.CanCastBoard(card)) return false;
         _skills.CastBoard(card);
         return true;
-    }
-
-    private int CountLowest()
-    {
-        int count = 0;
-        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
-        for (int i = 0; i < placed.Count; i++)
-        {
-            if (placed[i].Dice.Pips == 1) count++;
-        }
-        return count;
     }
 
     // 풀 하우스: 메인 딜 구간에 닿는 주사위 중 그 사거리로 덮는 몰림이 가장 큰 주사위.

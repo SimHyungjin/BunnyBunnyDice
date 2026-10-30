@@ -166,26 +166,6 @@ public sealed class DiceField : IDisposable
         }
     }
 
-    /// <summary>판의 눈이 1인 주사위만 지금 면체로 다시 굴린다(스네이크 아이즈 — 더블 오어 낫싱 전용 카드). 다시 굴린 수를 돌려준다.</summary>
-    public int RerollLowest()
-    {
-        int count = 0;
-        for (int i = 0; i < _placed.Count; i++)
-        {
-            PlacedDice placed = _placed[i];
-            if (placed.Dice.Pips != 1) continue;
-            bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
-            placed.Dice.Pips = Roll(placed.Dice.Faces, false);
-            DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
-            _placed[i] = placed;
-            Refresh(i);
-            _views[i].Roll(_config.StackDropHeight);
-            NotifyAwakened(wasAwakened, placed.Dice, placed.Cell);
-            count++;
-        }
-        return count;
-    }
-
     /// <summary>
     /// cell의 주사위 눈을 1 깎는다(영웅 레이즈, 기획서 10.5). 0 아래로는 내려가지 않는다 — 0이면 공격을 멈추고 벽으로만 남는다.
     /// 깎였으면 true. 주사위가 없거나 이미 0이면 false.

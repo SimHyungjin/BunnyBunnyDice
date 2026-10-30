@@ -25,6 +25,8 @@ public sealed class SkillCaster
     private readonly Func<HeroAttack> _getHeroAttack;
     private readonly ExpBoost _expBoost;
     private readonly Func<CardHand> _getHand;
+    // 무작위 공용 카드 한 장(레벨업과 같은 몫). 뽑을 것이 없으면 false.
+    private readonly TryRollCard _rollCard;
     // 쓸 때 대상을 모아 두는 작업 공간(할당 없이).
     private readonly List<int> _targets = new List<int>();
 
@@ -37,10 +39,13 @@ public sealed class SkillCaster
     // 쓰는 동안 모으는 결과.
     private EnemyCastResult _result;
 
+    public delegate bool TryRollCard(out HandCard card);
+
     public SkillCaster(MonsterField monsters, DiceField diceField, ChipField chips, DiceCombat diceCombat, AttackEffects effects, HeroStats heroStats,
         SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack, ExpBoost expBoost,
-        Func<CardHand> getHand)
+        Func<CardHand> getHand, TryRollCard rollCard)
     {
+        _rollCard = rollCard;
         _monsters = monsters;
         _diceField = diceField;
         _chips = chips;
@@ -259,12 +264,29 @@ public sealed class SkillCaster
             case SO_SkillCard_BreakShot breakShot:
                 _getHeroAttack()?.Boost(breakShot.DamageScale, breakShot.SpeedScale, breakShot.Duration);
                 break;
-            case SO_SkillCard_SnakeEyes _:
-                _diceField.RerollLowest();
+            case SO_SkillCard_CoinFlip coinFlip:
+                CoinFlip(coinFlip);
                 break;
             case SO_SkillCard_DoubleUp doubleUp:
                 _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// 손패의 영웅 강화 카드를 쓴다 — 레벨업 밖(코인 플립)에서 들어온 영웅 강화 카드는 판에 끌어 놓으면 적용된다.
+    /// 레벨업에서 고른 것과 같다(HeroStats.Apply). 봇도 이것을 부른다.
+    /// </summary>
+    public void UseHeroCard(SO_HeroCard card) => _heroStats.Apply(card);
+
+    private void CoinFlip(SO_SkillCard_CoinFlip card)
+    {
+        if (GameRandom.Skill.Value >= card.Chance) return;
+        CardHand hand = _getHand();
+        if (hand == null) return;
+        for (int i = 0; i < card.Count; i++)
+        {
+            if (_rollCard(out HandCard rolled)) hand.Add(rolled);
         }
     }
 

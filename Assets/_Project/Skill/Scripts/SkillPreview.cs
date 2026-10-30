@@ -7,8 +7,7 @@ using UnityEngine;
 /// 규칙 하나로 맞춘다(2026-10-29 사용자 — 카드마다 표시가 제각각이었다):
 /// - 어디에 놓나: 적 대상·판 전체는 판 전체를 연한 초록으로 깐다(판 위 아무 곳 — 손가락이 판 밖이면 깔지 않는다).
 /// - 누가 따로 골라지나: 전부가 받으면(모든 적·모든 주사위) 판 색만. 일부·한 점이면 그 대상에 표시 —
-///   적·영웅은 밑에 카드 색 고리(랙 모음점·체크메이트 왕·포켓에 들어갈 적·브레이크 샷의 영웅),
-///   주사위는 칸 하이라이트(스네이크 아이즈의 눈 1) — 주사위 밑 고리는 몸체에 가려 안 보인다.
+///   적·영웅은 밑에 카드 색 고리(랙 모음점·체크메이트 왕·포켓에 들어갈 적·브레이크 샷과 영웅 강화 카드의 영웅).
 /// 처음엔 손가락 밑 고리였는데 "그 자리에 쓰는" 범위 스킬처럼 보였다(2026-10-29 사용자).
 /// 대상은 체력·위치가 바뀌며 달라지므로 손가락이 멈춰 있어도 매 프레임 다시 고른다 — 놓는 순간의 판정(SkillCaster)과 같은 함수를 지난다.
 /// </summary>
@@ -32,30 +31,27 @@ public sealed class SkillPreview : IDisposable
     private readonly SO_MapViewConfig _viewConfig;
     private readonly SkillCaster _caster;
     private readonly MonsterField _monsters;
-    private readonly DiceField _diceField;
     private readonly Func<MapData> _getMap;
     private readonly Hero _hero;
     private readonly List<int> _targets = new List<int>();
     private readonly List<Ring> _marks = new List<Ring>();
-    private readonly List<GameObject> _highlights = new List<GameObject>();
     private Ring _board;
     // 판 색 메시 버퍼(할당 없이 다시 채운다).
     private readonly Vector3[] _boardVertices = new Vector3[4];
     private readonly Color[] _boardColors = new Color[4];
     private static readonly int[] BoardTriangles = { 0, 2, 1, 1, 2, 3 };
     private SO_EnemySkillCard _enemyCard;
-    private SO_SkillCard _boardCard;
+    private SO_Card _boardCard;
     private Vector2 _center;
 
     public SkillPreview(Transform parent, SO_PlacementPreviewConfig config, SO_MapViewConfig viewConfig, SkillCaster caster,
-        MonsterField monsters, DiceField diceField, Func<MapData> getMap, Hero hero)
+        MonsterField monsters, Func<MapData> getMap, Hero hero)
     {
         _hero = hero;
         _config = config;
         _viewConfig = viewConfig;
         _caster = caster;
         _monsters = monsters;
-        _diceField = diceField;
         _getMap = getMap;
         _root = new GameObject("SkillPreview").transform;
         _root.SetParent(parent, false);
@@ -77,8 +73,8 @@ public sealed class SkillPreview : IDisposable
         DrawEnemies();
     }
 
-    /// <summary>판 전체 스킬 표시를 띄운다(판 위에 손가락이 있을 때만 부른다). 숨길 때까지 매 프레임 다시 그린다.</summary>
-    public void ShowBoard(SO_SkillCard card)
+    /// <summary>판 전체 스킬·영웅 강화 카드 표시를 띄운다(판 위에 손가락이 있을 때만 부른다). 숨길 때까지 매 프레임 다시 그린다.</summary>
+    public void ShowBoard(SO_Card card)
     {
         _enemyCard = null;
         _boardCard = card;
@@ -90,7 +86,6 @@ public sealed class SkillPreview : IDisposable
         _enemyCard = null;
         _boardCard = null;
         HideMarks();
-        HideHighlights();
     }
 
     /// <summary>만들어 둔 표시를 버린다. 설정(칸 하이라이트 프리팹 등)이 바뀌면 다음에 새로 만든다.</summary>
@@ -102,8 +97,6 @@ public sealed class SkillPreview : IDisposable
         _board = null;
         for (int i = 0; i < _marks.Count; i++) DestroyRing(_marks[i]);
         _marks.Clear();
-        for (int i = 0; i < _highlights.Count; i++) UnityEngine.Object.Destroy(_highlights[i]);
-        _highlights.Clear();
     }
 
     // 끄는 동안 적·영웅이 움직이고 체력이 바뀌므로 매 프레임 다시 고른다.
@@ -115,7 +108,6 @@ public sealed class SkillPreview : IDisposable
 
     private void DrawEnemies()
     {
-        HideHighlights();
         MapData map = _getMap();
         if (_config.RangeMaterial == null || map == null || !_caster.CanCast(_enemyCard, _center))
         {
@@ -148,7 +140,6 @@ public sealed class SkillPreview : IDisposable
 
     private void DrawBoard()
     {
-        HideHighlights();
         MapData map = _getMap();
         if (_config.RangeMaterial == null || map == null)
         {
@@ -159,23 +150,9 @@ public sealed class SkillPreview : IDisposable
 
         int used = 0;
         // 영웅에 거는 카드는 영웅 밑에 고리.
-        if (_boardCard is SO_SkillCard_BreakShot && _hero != null)
+        if ((_boardCard is SO_SkillCard_BreakShot || _boardCard is SO_HeroCard) && _hero != null)
             FillRing(GetMark(used++), _hero.Position, y, _config.SkillTargetMarkRadius, _config.SkillMarkWidth, _boardCard.IconColor);
         HideMarksFrom(used);
-
-        // 일부 주사위만 바뀌는 카드는 그 칸을 밝힌다(스네이크 아이즈 = 눈이 1). 모든 주사위가 받는 카드(올인)는 판 색만.
-        if (!(_boardCard is SO_SkillCard_SnakeEyes)) return;
-        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
-        float ground = _viewConfig.GetTileTop(TileType.Ground);
-        int lit = 0;
-        for (int i = 0; i < placed.Count; i++)
-        {
-            if (placed[i].Dice.Pips != 1) continue;
-            GameObject highlight = GetHighlight(lit++);
-            highlight.transform.localPosition = new Vector3(placed[i].Cell.x, ground, placed[i].Cell.y);
-            RendererTint.Apply(highlight, _config.ValidColor);
-            highlight.SetActive(true);
-        }
     }
 
     // 판 전체를 연하게 깐다. 고리를 그릴 높이를 돌려준다.
@@ -218,11 +195,6 @@ public sealed class SkillPreview : IDisposable
         ring.Object.SetActive(true);
     }
 
-    private void HideHighlights()
-    {
-        for (int i = 0; i < _highlights.Count; i++) _highlights[i].SetActive(false);
-    }
-
     private void FillRing(Ring ring, Vector2 center, float y, float radius, float width, Color color)
     {
         // 재질·굵기는 그릴 때마다 넣는다 — 실행 중 설정을 고치면 바로 반영되게.
@@ -244,18 +216,6 @@ public sealed class SkillPreview : IDisposable
     {
         while (_marks.Count <= index) _marks.Add(CreateRing("SkillMark"));
         return _marks[index];
-    }
-
-    private GameObject GetHighlight(int index)
-    {
-        while (_highlights.Count <= index)
-        {
-            GameObject highlight = UnityEngine.Object.Instantiate(_config.HighlightPrefab, _root, false);
-            float size = 1f - _viewConfig.Gap;
-            highlight.transform.localScale = new Vector3(size, 1f, size);
-            _highlights.Add(highlight);
-        }
-        return _highlights[index];
     }
 
     // 바닥에 눕힌 고리 메시(RingMesh) — 사거리 고리와 같은 방식.

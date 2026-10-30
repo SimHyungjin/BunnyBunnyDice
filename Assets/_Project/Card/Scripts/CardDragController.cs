@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 /// 칩 카드는 칸에 놓인다 — 빈 칸이면 새 벽, 칩 없는 주사위 칸이면 그 밑으로 들어간다(ChipField).
 /// 스킬 카드는 쓰는 곳에 따라 다르다(기획서 8): 주사위 대상은 주사위가 있는 칸에만 쓰고 고스트는 쓴 뒤의 주사위 모양(페인트면 바뀐 색),
 /// 범위는 칸이 아니라 손가락 아래 점을 중심으로 한 원(SkillPreview), 판 전체는 판 위 아무 곳에나 놓으면 쓴다. 모두 한 번의 드래그로 발동한다.
+/// 영웅 강화 카드는 레벨업 밖(코인 플립)에서 손패로 들어온 것만 끈다 — 판 전체 스킬처럼 판 위 아무 곳에 놓으면 적용된다.
 /// </summary>
 public sealed class CardDragController : IDisposable
 {
@@ -149,6 +150,17 @@ public sealed class CardDragController : IDisposable
         bool placing = _placing;
         SetPlacing(false);
 
+        if (placing && card.Card.IsHero)
+        {
+            if (_hasPoint)
+            {
+                _skills.UseHeroCard(card.Card.Hero);
+                _hand.ConsumeHeld();
+            }
+            else _hand.ReturnHeld();
+            return;
+        }
+
         if (placing && IsPointSkill(card.Card))
         {
             if (_hasPoint && TryCastAtPoint(card.Card.Skill)) _hand.ConsumeHeld();
@@ -194,9 +206,10 @@ public sealed class CardDragController : IDisposable
     private void UpdateAim(Vector2 screenPosition)
     {
         MapData map = _getMap();
-        if (IsPointSkill(_hand.Held.Card))
+        HandCard aimed = _hand.Held.Card;
+        if (aimed.IsHero || IsPointSkill(aimed))
         {
-            AimPoint(map, screenPosition, _hand.Held.Card.Skill);
+            AimPoint(map, screenPosition, aimed.Asset);
             return;
         }
 
@@ -269,8 +282,8 @@ public sealed class CardDragController : IDisposable
         SkillRules.ApplyDice(ref _ghostDice, card, placed.Dice.Pips);
     }
 
-    // 범위는 손가락 아래 원, 판 전체는 영향을 받을 주사위 칸들을 보인다. 맵 밖이면 아무것도 보이지 않는다(놓으면 손패로 돌아간다).
-    private void AimPoint(MapData map, Vector2 screenPosition, SO_SkillCard card)
+    // 적 대상·판 전체·영웅 강화는 판 위 아무 곳(SkillPreview 규칙). 맵 밖이면 아무것도 보이지 않는다(놓으면 손패로 돌아간다).
+    private void AimPoint(MapData map, Vector2 screenPosition, SO_Card card)
     {
         _hasPoint = _picker.TryScreenToPoint(_getCamera(), map, screenPosition, out _point);
         if (!_hasPoint)

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee03af34735a4b7a901b1da35e67a26d, type: 3}
+  m_Name: SO_SkillCard_CoinFlip
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_CoinFlip
+  DisplayName: "코인 플립"
+  Description: "{Chance%} 확률로 무작위 카드 {Count}장을
+    얻는다."
+  StrongAgainst: 
+  Icon: {fileID: 0}
+  TintIcon: 0
+  IconColor: {r: 0.247, g: 0.878, b: 1, a: 1}
+  Weight: 1
+  Exclusive: 1
+  Chance: 0.5
+  Count: 10
