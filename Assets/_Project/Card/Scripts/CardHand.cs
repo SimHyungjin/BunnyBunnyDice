@@ -147,6 +147,9 @@ public sealed class CardHand
     /// <summary>index번째 뭉치의 카드.</summary>
     public HandCard GetCard(int index) => _cards[index].Card;
 
+    /// <summary>index번째 카드가 겹친 장수.</summary>
+    public int GetStack(int index) => _cards[index].Stack;
+
     /// <summary>
     /// 끌지 않고 카드 한 장을 쓴다(봇 — UI를 거치지 않는 게임 행동, 기획서 11.2). 겹친 뭉치면 한 장만 줄인다. 없으면 false.
     /// </summary>

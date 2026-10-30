@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d1050b0344224b9b86e3d7b4189d3412, type: 2}
   - {fileID: 11400000, guid: 5912655400a74ec2834a24849224cdb9, type: 2}
   - {fileID: 11400000, guid: e2292d372847402fb1b83c10542a2c9f, type: 2}
+  - {fileID: 11400000, guid: d09c355a7d3a4f36872d735da0f96341, type: 2}
   StageFloorRatio: 0.4
   CritOverflowToDamage: 1
   TurnSpeed: 720

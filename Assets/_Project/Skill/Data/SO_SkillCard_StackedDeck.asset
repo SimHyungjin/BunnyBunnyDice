@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c6062ddfb4c4db69b51da3e7b3318cf, type: 3}
+  m_Name: SO_SkillCard_StackedDeck
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_StackedDeck
+  DisplayName: "\uC2A4\uD0DD \uB371"
+  Description: "\uC190\uD328\uC758 \uC2A4\uD0AC \uCE74\uB4DC\uAC00 {StackScale}\uBC30\uB85C \uB298\uC5B4\uB09C\uB2E4."
+  StrongAgainst: 
+  Icon: {fileID: 0}
+  TintIcon: 0
+  IconColor: {r: 0.85, g: 0.55, b: 1, a: 1}
+  Weight: 1
+  Exclusive: 1
+  StackScale: 2

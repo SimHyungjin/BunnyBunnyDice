@@ -270,6 +270,9 @@ public sealed class SkillCaster
             case SO_SkillCard_CoinFlip coinFlip:
                 CoinFlip(coinFlip);
                 break;
+            case SO_SkillCard_StackedDeck stackedDeck:
+                StackedDeck(stackedDeck);
+                break;
             case SO_SkillCard_DoubleUp doubleUp:
                 _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);
                 _levelUp(doubleUp.LevelUps);
@@ -282,6 +285,20 @@ public sealed class SkillCaster
     /// 레벨업에서 고른 것과 같다(HeroStats.Apply). 봇도 이것을 부른다.
     /// </summary>
     public void UseHeroCard(SO_HeroCard card) => _heroStats.Apply(card);
+
+    // 같은 카드는 손패에서 한 칸에 겹치므로(CardHand.Add) 칸 수는 바뀌지 않는다 — 늘리는 동안 번호가 밀리지 않는다.
+    private void StackedDeck(SO_SkillCard_StackedDeck card)
+    {
+        CardHand hand = _getHand();
+        if (hand == null) return;
+        for (int i = 0; i < hand.Count; i++)
+        {
+            HandCard held = hand.GetCard(i);
+            if (!held.IsSkill || held.Skill.Exclusive) continue;
+            int added = hand.GetStack(i) * (card.StackScale - 1);
+            for (int k = 0; k < added; k++) hand.Add(held);
+        }
+    }
 
     private void CoinFlip(SO_SkillCard_CoinFlip card)
     {

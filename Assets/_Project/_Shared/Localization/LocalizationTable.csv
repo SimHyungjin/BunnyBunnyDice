@@ -73,6 +73,7 @@
 폭발 반경 {1+AwakenExplosionRadiusBonus}배,Explosion radius x{1+AwakenExplosionRadiusBonus},SO_Dice_Yellow.AwakenDescription
 토끼공듀,Bunny Princess,SO_HeroCharacter_Break.DisplayName
 도박사,Gambler,SO_HeroCharacter_Double.DisplayName
+카드 카운터,Card Counter,SO_HeroCharacter_CardCounter.DisplayName
 쾌락주의자,Hedonist,SO_HeroCharacter_DoubleOrNothing.DisplayName
 건설가,Builder,SO_HeroCharacter_HighRoller.DisplayName
 바니걸,Bunny Girl,SO_HeroCharacter_Rainbow.DisplayName
@@ -80,6 +81,8 @@
 기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
 더블,Double,SO_HeroTrait_Double.DisplayName
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
+카드 카운터,Card Counter,SO_HeroTrait_CardCounter.DisplayName
+레벨업 후보에 스킬 카드가 {SkillCount}장 이상 나온다.,Level-up offers include at least {SkillCount} skill cards.,SO_HeroTrait_CardCounter.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
 주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
@@ -140,6 +143,8 @@
 해당 주사위의 면체와 눈을 다시 굴린다.,Rerolls the die's type and pips.,SO_SkillCard_Reroll.Description
 코인 플립,Coin Flip,SO_SkillCard_CoinFlip.DisplayName
 {Chance%} 확률로 무작위 카드 {Count}장을 얻는다.,"{Chance%} chance: gain random cards x{Count}.",SO_SkillCard_CoinFlip.Description
+스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName
+손패의 스킬 카드가 {StackScale}배로 늘어난다.,Skill cards in hand are multiplied x{StackScale}.,SO_SkillCard_StackedDeck.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title

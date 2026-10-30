@@ -43,6 +43,8 @@ public static class CardRoll
                 break;
             }
         }
+        // 종류 몫 갈고리는 앞자리부터 채운다(카드 카운터의 스킬 2장) — 늘 같은 자리에 나오지 않게 자리를 섞는다.
+        if (traits?.Find<ICardKindShare>() != null) Shuffle(result);
         // 전용 카드는 무작위 자리에 끼운다 — 늘 같은 자리면 보지도 않고 알게 된다. 공용 카드끼리의 종류 몫(레인보우)은 전용 카드를 세지 않는다.
         if (hasExclusive) result.Insert(GameRandom.Cards.Next(result.Count + 1), HandCard.Of(exclusive));
     }
@@ -56,6 +58,17 @@ public static class CardRoll
         _useful = useful;
         NoPicked.Clear();
         return TryRoll(config, traits, NoPicked, out card) || TryRoll(config, null, NoPicked, out card);
+    }
+
+    private static void Shuffle(List<HandCard> cards)
+    {
+        for (int i = cards.Count - 1; i > 0; i--)
+        {
+            int j = GameRandom.Cards.Next(i + 1);
+            HandCard swap = cards[i];
+            cards[i] = cards[j];
+            cards[j] = swap;
+        }
     }
 
     // RollOne에는 함께 뽑힌 후보가 없다.

@@ -14,6 +14,7 @@ public sealed partial class GameBot
         // 더블 업은 일찍 쓸수록 이득이다 — 적이 있으면 바로. 코인 플립은 기다려 얻는 것이 없어 바로 던진다.
         if (skill is SO_SkillCard_DoubleUp) return _monsters.Count > 0 && CastBoard(skill);
         if (skill is SO_SkillCard_CoinFlip) return CastBoard(skill);
+        if (skill is SO_SkillCard_StackedDeck) return CountHandSkills() >= _config.StackedDeckMinSkills && CastBoard(skill);
         // 화력 카드(풀 하우스·브레이크 샷)는 다른 스킬처럼 뚫릴 때.
         if (skill is SO_SkillCard_BreakShot) return Breached(out _) && CastBoard(skill);
         if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
@@ -135,6 +136,18 @@ public sealed partial class GameBot
             if (card.IsSkill && card.Skill is SO_SkillCard_CashOut) return true;
         }
         return false;
+    }
+
+    // 손패의 공용 스킬 카드 장수(겹친 수 포함, 전용 카드 빼고) — 스택 덱이 늘리는 몫.
+    private int CountHandSkills()
+    {
+        int count = 0;
+        for (int i = 0; i < _hand.Count; i++)
+        {
+            HandCard card = _hand.GetCard(i);
+            if (card.IsSkill && !card.Skill.Exclusive) count += _hand.GetStack(i);
+        }
+        return count;
     }
 
     // 적 대상 스킬은 판 전체라 놓는 자리는 랙의 모음점만 정한다 — 메인 딜 구간 한가운데로 모은다(넘어온 적을 구간으로 되돌린다).

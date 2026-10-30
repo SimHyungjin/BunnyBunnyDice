@@ -150,6 +150,8 @@ public sealed class SO_BotConfig : SO_Config
     [Header("그 밖의 스킬")]
     [Tooltip("올인: 판 주사위의 평균 눈 비율이 이보다 낮을 때 쓴다.")]
     [Range(0f, 1f)] public float AllInBelow = 0.35f;
+    [Tooltip("스택 덱(카드 카운터 전용): 손패의 스킬 카드(전용 카드 빼고)가 이만큼 모이면 쓴다 — 모일수록 세다.")]
+    [Min(1)] public int StackedDeckMinSkills = 4;
 
     [Header("여러 판 돌리기")]
     [Tooltip("켠 뒤 이만큼 판을 돌리면 요약 파일(RunLogs/bot_summary_*.csv)을 남기고 멈춘다. 0이면 끌 때까지 계속.")]
