@@ -26,8 +26,6 @@ public sealed class DiceCombat : IDisposable
     private readonly List<float> _raiseSpeed = new List<float>();
     // 풀 하우스(레인보우 전용 카드): 남은 시간 동안 7색 공격 방식을 한 번에 모두 쏜다.
     private readonly List<float> _fullHouseTimes = new List<float>();
-    // 럭키 세븐(777 전용 카드): 남은 시간 동안 판 위 모든 주사위가 각성으로 쏜다(그사이 놓은 주사위 포함).
-    private float _awakenAllTime;
     // 풀 하우스가 쏘는 7색(검정 빼고). 순서는 DiceColor 값 — 연출이 매번 같은 순서로 나간다.
     private static readonly DiceColor[] AllColors =
     {
@@ -78,20 +76,6 @@ public sealed class DiceCombat : IDisposable
         SyncSlots(_diceField.Placed.Count);
         if (index < 0 || index >= _fullHouseTimes.Count) return;
         _fullHouseTimes[index] = duration;
-    }
-
-    /// <summary>럭키 세븐: duration초 동안 판 위 모든 주사위가 각성으로 쏜다. 다시 걸면 긴 쪽을 남긴다.</summary>
-    public void AwakenAll(float duration)
-    {
-        _awakenAllTime = Mathf.Max(_awakenAllTime, duration);
-        _diceField.SetBoardAwakened(_awakenAllTime > 0f);
-    }
-
-    /// <summary>판이 바뀌면 판 전체에 걸린 상태(럭키 세븐)를 지운다. 주사위마다 붙은 상태는 주사위가 비면 같이 비워진다.</summary>
-    public void Clear()
-    {
-        _awakenAllTime = 0f;
-        _diceField.SetBoardAwakened(false);
     }
 
     /// <summary>
@@ -169,8 +153,6 @@ public sealed class DiceCombat : IDisposable
         // 게임 오버로 몬스터가 멈추면 공격도 멈춘다(뚫린 자리를 그대로 보여 주게).
         if (_monsters.Paused || _monsters.Route == null) return;
 
-        _awakenAllTime = Mathf.Max(_awakenAllTime - deltaTime, 0f);
-        if (_awakenAllTime <= 0f) _diceField.SetBoardAwakened(false);
         for (int i = 0; i < placed.Count; i++)
         {
             _raiseTimes[i] = Mathf.Max(_raiseTimes[i] - deltaTime, 0f);
@@ -182,7 +164,7 @@ public sealed class DiceCombat : IDisposable
             PlacedDice dice = placed[i];
             // 눈을 다 태운 주사위는 쏘지 않는다(벽으로만 남는다).
             if (dice.Dice.IsSpent) continue;
-            bool awakened = _statsConfig.IsAwakened(dice.Dice) || _awakenAllTime > 0f;
+            bool awakened = _statsConfig.IsAwakened(dice.Dice);
             // 공격 간격은 주사위 자신의 색으로 센다 — 풀 하우스는 그 간격마다 7색을 한 번에 쏜다.
             if (!TryFire(i, dice, dice.Dice.Colors, awakened, out float interval)) continue;
             if (_fullHouseTimes[i] > 0f)

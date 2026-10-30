@@ -19,7 +19,7 @@ public struct DiceStats
     public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config) =>
         Compute(dice, type, config, config.IsAwakened(dice));
 
-    /// <param name="awakened">각성으로 칠지 — 눈이 모자라도 스킬(럭키 세븐)이 잠깐 각성시킬 수 있다.</param>
+    /// <param name="awakened">각성으로 칠지.</param>
     public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config, bool awakened)
     {
         if (type == null) return default;

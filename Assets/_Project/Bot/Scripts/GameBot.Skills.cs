@@ -14,8 +14,8 @@ public sealed partial class GameBot
         // 더블 업은 일찍 쓸수록 이득이다 — 적이 있으면 바로. 스네이크 아이즈는 1이 둘 이상일 때.
         if (skill is SO_SkillCard_DoubleUp) return _monsters.Count > 0 && CastBoard(skill);
         if (skill is SO_SkillCard_SnakeEyes) return CountLowest() >= _config.SnakeEyesMinDice && CastBoard(skill);
-        // 화력 카드(풀 하우스·브레이크 샷·럭키 세븐)는 다른 스킬처럼 뚫릴 때.
-        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_LuckySeven) return Breached(out _) && CastBoard(skill);
+        // 화력 카드(풀 하우스·브레이크 샷)는 다른 스킬처럼 뚫릴 때.
+        if (skill is SO_SkillCard_BreakShot) return Breached(out _) && CastBoard(skill);
         if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
         if (skill is SO_SkillCard_Raise raise) return TryCastRaise(raise);
         if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);

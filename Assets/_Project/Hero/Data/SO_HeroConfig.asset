@@ -17,7 +17,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 64bebf3dc17f4c96b362c375792470ab, type: 2}
   - {fileID: 11400000, guid: d1050b0344224b9b86e3d7b4189d3412, type: 2}
   - {fileID: 11400000, guid: 5912655400a74ec2834a24849224cdb9, type: 2}
-  - {fileID: 11400000, guid: b9909c39e5804891b336ab9a62a69f04, type: 2}
   - {fileID: 11400000, guid: e2292d372847402fb1b83c10542a2c9f, type: 2}
   StageFloorRatio: 0.4
   CritOverflowToDamage: 1

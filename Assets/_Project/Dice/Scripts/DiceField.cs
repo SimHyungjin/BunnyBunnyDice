@@ -27,8 +27,6 @@ public sealed class DiceField : IDisposable
     private readonly List<DiceView> _views = new List<DiceView>();
     private MapData _map;
     private float _lastYaw = float.NaN;
-    // 판 전체 일시 각성(럭키 세븐) 중인지 — 판정은 DiceCombat이 세고, 여기서는 표시만 맞춘다.
-    private bool _boardAwakened;
 
     /// <summary>빈 칸에 새로 놓였다. 칸이 막혀 길이 바뀌었을 수 있으므로 경로 표시 등이 구독해 갱신한다.</summary>
     public event Action<Vector2Int> DicePlaced;
@@ -237,7 +235,7 @@ public sealed class DiceField : IDisposable
         return models.Count > 0 ? models[GameRandom.Dice.Next(models.Count)].Faces : current;
     }
 
-    // 타워 주사위 굴림. 특성이 굴림을 바꾸면(더블 오어 낫싱·777) 그것을 쓴다. placing = 손패에서 놓거나 얹는 굴림.
+    // 타워 주사위 굴림. 특성이 굴림을 바꾸면(더블 오어 낫싱·하이 롤러) 그것을 쓴다. placing = 손패에서 놓거나 얹는 굴림.
     private int Roll(int faces, bool placing)
     {
         IDicePipRoller roller = _traits?.Find<IDicePipRoller>();
@@ -291,7 +289,6 @@ public sealed class DiceField : IDisposable
         for (int i = 0; i < _views.Count; i++) _views[i].Destroy();
         _views.Clear();
         _placed.Clear();
-        _boardAwakened = false;
     }
 
     /// <summary>cell에 놓인 주사위의 번호(Placed 순서). 없으면 -1.</summary>
@@ -310,7 +307,7 @@ public sealed class DiceField : IDisposable
         if (_map == null) return;
         PlacedDice placed = _placed[index];
         float top = _viewConfig.GetCellTop(_map, placed.Cell.x, placed.Cell.y);
-        _views[index].Apply(placed.Cell, top, placed.Dice, ShowsAwakened(placed.Dice), _config);
+        _views[index].Apply(placed.Cell, top, placed.Dice, _statsConfig.IsAwakened(placed.Dice), _config);
         // 새로 만든 글자는 아직 돌려지지 않았으므로 다음 LateTick에서 전부 다시 돌린다.
         _lastYaw = float.NaN;
     }
@@ -318,19 +315,6 @@ public sealed class DiceField : IDisposable
     // 굴리는 연출을 진행하고, 카메라가 돌았을 때만(화면 회전) 눈 글자를 다시 돌린다.
     // 놓는 연출(솟아나기·굴러 떨어지기)은 실제 시간이다 — 멈춘 동안 놓아도 주사위가 나타나고 눈 숫자까지 보이게.
     // 판정은 연출을 기다리지 않으므로(DiceView) 게임 결과는 바뀌지 않는다. 카메라를 마주 보는 것은 카메라가 움직인 뒤(LateUpdate)에 한다.
-    /// <summary>판 전체 일시 각성(럭키 세븐)의 표시를 켜고 끈다. 판정은 DiceCombat이 따로 센다.</summary>
-    public void SetBoardAwakened(bool on)
-    {
-        if (_boardAwakened == on) return;
-        _boardAwakened = on;
-        // 판 치우기(DetachViews) 뒤에는 표시가 없다.
-        for (int i = 0; i < _views.Count && i < _placed.Count; i++) _views[i].SetAwakened(ShowsAwakened(_placed[i].Dice), _config);
-    }
-
-    // 공격이 각성으로 쏘는지와 같게 보인다(DiceCombat — 일시 각성은 검정도 각성으로 쏜다). 다만 눈을 다 태운 주사위는 쏘지 않으니 꺼진 것으로 둔다.
-    private bool ShowsAwakened(in DiceState dice) =>
-        _statsConfig.IsAwakened(dice) || (_boardAwakened && !dice.IsSpent);
-
     private void Tick(float deltaTime)
     {
         for (int i = 0; i < _views.Count; i++)

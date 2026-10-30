@@ -479,7 +479,6 @@ public sealed partial class GameScene : SceneBase
         _heroCards.Clear();
         _damageNumbers.Clear();
         _diceAttack.Clear();
-        _diceCombat.Clear();
         _heroAttack.Clear();
         _expBoost.Clear();
 
@@ -707,12 +706,7 @@ public sealed partial class GameScene : SceneBase
         if (_hand == null) return;
         _drag?.Cancel();
         _hand.Clear();
-        IStartHandCard hook = _traits?.Find<IStartHandCard>();
-        for (int i = 0; i < _handConfig.StartHand.Count; i++)
-        {
-            DiceCard card = _handConfig.StartHand[i];
-            _hand.Add(HandCard.Of(hook != null ? hook.StartCard(card) : card));
-        }
+        for (int i = 0; i < _handConfig.StartHand.Count; i++) _hand.Add(HandCard.Of(_handConfig.StartHand[i]));
     }
 
     private void RefreshHud()

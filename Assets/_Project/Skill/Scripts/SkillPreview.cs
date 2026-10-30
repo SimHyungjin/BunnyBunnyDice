@@ -163,7 +163,7 @@ public sealed class SkillPreview : IDisposable
             FillRing(GetMark(used++), _hero.Position, y, _config.SkillTargetMarkRadius, _config.SkillMarkWidth, _boardCard.IconColor);
         HideMarksFrom(used);
 
-        // 일부 주사위만 바뀌는 카드는 그 칸을 밝힌다(스네이크 아이즈 = 눈이 1). 모든 주사위가 받는 카드(올인·럭키 세븐)는 판 색만.
+        // 일부 주사위만 바뀌는 카드는 그 칸을 밝힌다(스네이크 아이즈 = 눈이 1). 모든 주사위가 받는 카드(올인)는 판 색만.
         if (!(_boardCard is SO_SkillCard_SnakeEyes)) return;
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         float ground = _viewConfig.GetTileTop(TileType.Ground);

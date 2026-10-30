@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 하이 롤러: 타워 주사위를 굴리면 높은 눈이 더 자주 나온다(2026-10-30 사용자 — 레벨업 면체를 기울이던 것에서 바꿨다. 면체는 카드 고를 때만 티가 나 체감이 약했다).
 /// 눈 k의 가중치 = 1 + (k - 1) × Strength. 1이면 눈 = 가중치(1:2:3…)라 각성 확률이 면체와 상관없이 거의 두 배가 된다.
-/// 놓기·얹기·리롤·올인 모두에 건다 — 다시 굴리는 스킬도 높게 나와야 이름과 맞는다(777은 놓을 때만이라 결이 다르다).
+/// 놓기·얹기·리롤·올인 모두에 건다 — 다시 굴리는 스킬도 높게 나와야 이름과 맞는다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/HeroTrait/Pip Bias", fileName = "SO_HeroTrait_PipBias")]
 public sealed class SO_HeroTrait_PipBias : SO_HeroTrait, IDicePipRoller

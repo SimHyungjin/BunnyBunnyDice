@@ -4,7 +4,7 @@
 /// </summary>
 public interface IDicePipRoller
 {
-    /// <param name="placing">손패에서 놓거나 얹는 굴림이면 true, 스킬로 다시 굴리는 것(리롤·올인 등)이면 false — 777은 놓을 때만 7이다.</param>
+    /// <param name="placing">손패에서 놓거나 얹는 굴림이면 true, 스킬로 다시 굴리는 것(리롤·올인 등)이면 false.</param>
     /// <returns>1 ~ faces 사이의 눈.</returns>
     int RollPips(int faces, bool placing);
 }

@@ -71,14 +71,11 @@
 범위 폭발,Explosion,SO_Dice_Yellow.AttackName
 맞은 자리에서 폭발해 주변 적에게도 피해를 준다.,"Explodes on hit, damaging nearby enemies too.",SO_Dice_Yellow.Description
 폭발 반경 {1+AwakenExplosionRadiusBonus}배,Explosion radius x{1+AwakenExplosionRadiusBonus},SO_Dice_Yellow.AwakenDescription
-럭키보이,Lucky Boy,SO_HeroCharacter_777.DisplayName
 토끼공듀,Bunny Princess,SO_HeroCharacter_Break.DisplayName
 도박사,Gambler,SO_HeroCharacter_Double.DisplayName
 쾌락주의자,Hedonist,SO_HeroCharacter_DoubleOrNothing.DisplayName
 건설가,Builder,SO_HeroCharacter_HighRoller.DisplayName
 바니걸,Bunny Girl,SO_HeroCharacter_Rainbow.DisplayName
-777,777,SO_HeroTrait_777.DisplayName
-"육면체가 나오지 않고, 주사위를 놓으면 항상 {PlacePips}이 나온다.","No D6 ever, and dice always land on {PlacePips} when placed.",SO_HeroTrait_777.Description
 브레이크,Break,SO_HeroTrait_Break.DisplayName
 기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
 더블,Double,SO_HeroTrait_Double.DisplayName
@@ -119,8 +116,6 @@
 {Duration}초간 해당 주사위가 7가지 공격 방식을 모두 동시에 쓴다.,"For {Duration}s, the die uses all 7 attack types at once.",SO_SkillCard_FullHouse.Description
 잭팟,Jackpot,SO_SkillCard_Jackpot.DisplayName
 해당 주사위의 눈을 최대치로 올린다.,Raises the die's pips to max.,SO_SkillCard_Jackpot.Description
-럭키 세븐,Lucky Seven,SO_SkillCard_LuckySeven.DisplayName
-{Duration}초간 모든 주사위가 각성한다.,"For {Duration}s, every die is awakened.",SO_SkillCard_LuckySeven.Description
 파랑 페인트,Blue Paint,SO_SkillCard_Paint_Blue.DisplayName
 해당 주사위를 파랑으로 칠한다.,Paints the die blue.,SO_SkillCard_Paint_Blue.Description
 하늘 페인트,Cyan Paint,SO_SkillCard_Paint_Cyan.DisplayName

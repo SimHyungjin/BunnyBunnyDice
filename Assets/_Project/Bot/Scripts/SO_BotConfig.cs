@@ -60,7 +60,7 @@ public sealed class SO_BotConfig : SO_Config
         [Tooltip("캐시 아웃(하이 롤러) — 미로를 어느 정도 지은 뒤, 메인 딜 구간을 막는 칸이 있고 손에 캐시 아웃이 없을 때만. 아니면 0.")]
         [UnityEngine.Serialization.FormerlySerializedAs("Fold")]
         public float CashOut = 250f;
-        [Tooltip("그 밖의 캐릭터 전용 카드(풀 하우스·브레이크 샷·스네이크 아이즈·더블 업·럭키 세븐) — 판을 뒤집는 카드라 높게.")]
+        [Tooltip("그 밖의 캐릭터 전용 카드(풀 하우스·브레이크 샷·스네이크 아이즈·더블 업) — 판을 뒤집는 카드라 높게.")]
         public float Exclusive = 300f;
     }
 

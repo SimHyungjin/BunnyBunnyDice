@@ -22,9 +22,6 @@ MonoBehaviour:
   - Character: {fileID: 11400000, guid: 5912655400a74ec2834a24849224cdb9, type: 2}
     Kind: 2
     Target: 10
-  - Character: {fileID: 11400000, guid: b9909c39e5804891b336ab9a62a69f04, type: 2}
-    Kind: 3
-    Target: 10
   - Character: {fileID: 11400000, guid: e2292d372847402fb1b83c10542a2c9f, type: 2}
     Kind: 4
     Target: 100

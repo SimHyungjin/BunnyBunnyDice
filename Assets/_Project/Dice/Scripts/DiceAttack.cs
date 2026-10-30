@@ -31,7 +31,7 @@ public sealed class DiceAttack : IDisposable
         public SO_ChipCard Attachment;
         /// <summary>레이즈 상태로 쏘는지(측정용 — 배율은 Stats에 이미 들어 있다).</summary>
         public DamageBoost Boost;
-        /// <summary>각성으로 쏘는지. 눈(20)으로 각성했거나 스킬(럭키 세븐)이 잠깐 각성시켰다.</summary>
+        /// <summary>각성으로 쏘는지(눈이 각성 눈에 닿았다).</summary>
         public bool Awakened;
     }
 

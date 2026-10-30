@@ -126,7 +126,7 @@ public static class CardRoll
         return picked;
     }
 
-    // 면체 가중치(특성이 바꾸면 곱한다 — 777은 육면체를 뺀다).
+    // 면체 가중치(특성이 바꾸면 곱한다).
     private static float FacesWeight(SO_LevelUpConfig.FacesWeight entry, ILevelUpFaces faces) =>
         entry.Weight * (faces != null ? Mathf.Max(faces.ScaleFaces(entry.Faces), 0f) : 1f);
 

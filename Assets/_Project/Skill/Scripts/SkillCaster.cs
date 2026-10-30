@@ -265,9 +265,6 @@ public sealed class SkillCaster
             case SO_SkillCard_DoubleUp doubleUp:
                 _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);
                 break;
-            case SO_SkillCard_LuckySeven luckySeven:
-                _diceCombat.AwakenAll(luckySeven.Duration);
-                break;
         }
     }
 
