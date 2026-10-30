@@ -278,7 +278,7 @@ public sealed class CardDragController : IDisposable
     {
         if (card.Target == SkillTarget.Cell)
         {
-            _cellResult = SkillRules.CheckCell(_diceField.IndexOf(cell) >= 0, _chips.Get(cell) != null);
+            _cellResult = _skills.CheckCell(cell, card);
             return;
         }
         if (!_diceField.TryGetPlaced(cell, out PlacedDice placed))

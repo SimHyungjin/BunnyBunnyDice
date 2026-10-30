@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c218230421d642feb5f81ee4bd2fc6a0, type: 3}
+  m_Name: SO_HeroTrait_ChipLeader
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_ChipScale
+  DisplayName: "\uCE69 \uB9AC\uB354"
+  Description: "\uBAA8\uB4E0 \uCE69 \uD6A8\uACFC\uAC00 {Strength}\uBC30\uAC00 \uB41C\uB2E4."
+  Strength: 2

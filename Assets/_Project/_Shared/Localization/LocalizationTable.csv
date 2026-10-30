@@ -75,6 +75,7 @@
 도박사,Gambler,SO_HeroCharacter_Double.DisplayName
 카드 카운터,Card Counter,SO_HeroCharacter_CardCounter.DisplayName
 하이 스테이크,High Stakes,SO_HeroCharacter_HighStakes.DisplayName
+칩 리더,Chip Leader,SO_HeroCharacter_ChipLeader.DisplayName
 쾌락주의자,Hedonist,SO_HeroCharacter_DoubleOrNothing.DisplayName
 건설가,Builder,SO_HeroCharacter_HighRoller.DisplayName
 바니걸,Bunny Girl,SO_HeroCharacter_Rainbow.DisplayName
@@ -86,6 +87,8 @@
 스킬 카드를 고르면 {Copies}장 얻는다.,Picking a skill card gives x{Copies}.,SO_HeroTrait_CardCounter.Description
 하이 스테이크,High Stakes,SO_HeroTrait_HighStakes.DisplayName
 "레이즈가 공격력 x{DamageScale}, 공격 속도 x{SpeedScale}가 된다.","Raise becomes x{DamageScale} attack, x{SpeedScale} attack speed.",SO_HeroTrait_HighStakes.Description
+칩 리더,Chip Leader,SO_HeroTrait_ChipLeader.DisplayName
+모든 칩 효과가 {Strength}배가 된다.,All chip effects are x{Strength}.,SO_HeroTrait_ChipLeader.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
 주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
@@ -145,6 +148,8 @@
 손패의 스킬 카드가 {StackScale}배로 늘어난다.,Skill cards in hand are multiplied x{StackScale}.,SO_SkillCard_StackedDeck.Description
 핫 스트릭,Hot Streak,SO_SkillCard_HotStreak.DisplayName
 {Duration}초간 영웅이 밟은 주사위마다 {RaiseDuration}초 레이즈가 걸린다. 눈은 깎이지 않는다.,"For {Duration}s, every die the hero steps on gets Raise for {RaiseDuration}s. No pip loss.",SO_SkillCard_HotStreak.Description
+사이드 팟,Side Pot,SO_SkillCard_SidePot_Damage.DisplayName | SO_SkillCard_SidePot_AttackSpeed.DisplayName | SO_SkillCard_SidePot_Range.DisplayName | SO_SkillCard_SidePot_Vulnerable.DisplayName | SO_SkillCard_SidePot_Slow.DisplayName | SO_SkillCard_SidePot_Freeze.DisplayName | SO_SkillCard_SidePot_Burn.DisplayName
+칩이 한 장 있는 칸에 {Chip} 칩을 한 장 더 얹는다.,Stacks one more {Chip} chip on a tile with a single chip.,SO_SkillCard_SidePot_Damage.Description | SO_SkillCard_SidePot_AttackSpeed.Description | SO_SkillCard_SidePot_Range.Description | SO_SkillCard_SidePot_Vulnerable.Description | SO_SkillCard_SidePot_Slow.Description | SO_SkillCard_SidePot_Freeze.Description | SO_SkillCard_SidePot_Burn.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title

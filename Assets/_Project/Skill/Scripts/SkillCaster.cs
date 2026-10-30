@@ -67,6 +67,15 @@ public sealed class SkillCaster
         _getHand = getHand;
     }
 
+    /// <summary>칸 대상 스킬을 cell에 쓸 수 있는지. 끄는 동안의 표시와 봇이 같은 판정을 쓴다.</summary>
+    public PlacementResult CheckCell(Vector2Int cell, SO_SkillCard card)
+    {
+        // 사이드 팟은 칩이 한 장 있고 그 칩과 종류가 다른 칸에만.
+        if (card is SO_SkillCard_SidePot sidePot)
+            return _chips.CanAddExtra(cell, sidePot.Chip) ? PlacementResult.Upgrade : PlacementResult.NoEffect;
+        return SkillRules.CheckCell(_diceField.IndexOf(cell) >= 0, !_chips.GetSet(cell).IsEmpty);
+    }
+
     /// <summary>판정(SkillRules.CheckDice·CheckCell)을 통과한 칸에만 부른다 — 주사위 대상·칸 대상 스킬.</summary>
     public void CastOnCell(Vector2Int cell, SO_SkillCard card)
     {
@@ -74,6 +83,12 @@ public sealed class SkillCaster
         if (card is SO_SkillCard_CashOut cashOut)
         {
             CashOut(cell, cashOut);
+            return;
+        }
+        if (card is SO_SkillCard_SidePot sidePot)
+        {
+            _chips.AddExtra(cell, sidePot.Chip);
+            _effects.ShowBurst(Ground(cell), CashOutBurstRadius, card.IconColor);
             return;
         }
         if (card is SO_SkillCard_FullHouse fullHouse)
@@ -341,7 +356,7 @@ public sealed class SkillCaster
         _effects.ShowBurst(Ground(cell), CashOutBurstRadius, card.IconColor);
     }
 
-    // 캐시 아웃 고리는 칸 하나를 덮는 크기(칸 = 1) — 조정 값이 아니라 대상 칸의 크기다.
+    // 캐시 아웃·사이드 팟 고리는 칸 하나를 덮는 크기(칸 = 1) — 조정 값이 아니라 대상 칸의 크기다.
     private const float CashOutBurstRadius = 0.5f;
 
     private Vector3 Ground(Vector2 position) => new Vector3(position.x, _viewConfig.GetTileTop(TileType.Ground), position.y);
