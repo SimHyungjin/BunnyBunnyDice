@@ -11,7 +11,8 @@ public static class SkillRules
     private const float KnockbackStep = 0.1f;
 
     /// <summary>주사위 대상 스킬을 이 주사위에 쓸 수 있는지.</summary>
-    public static PlacementResult CheckDice(in DiceState dice, SO_SkillCard card)
+    /// <param name="nextFaces">한 단계 큰 면체(DiceField.NextFaces). 더 큰 면체가 없으면 지금 면체.</param>
+    public static PlacementResult CheckDice(in DiceState dice, SO_SkillCard card, int nextFaces)
     {
         if (card == null) return PlacementResult.NoEffect;
 
@@ -23,7 +24,10 @@ public static class SkillRules
                 return colors == DiceColor.Clear || colors == dice.Colors ? PlacementResult.NoEffect : PlacementResult.Upgrade;
             case SO_SkillCard_Jackpot _:
                 return dice.IsMaxed ? PlacementResult.NoEffect : PlacementResult.Upgrade;
-            // 리롤은 상한에 닿은 주사위에도 막지 않는다(판단에 맡긴다). 레이즈는 늘 된다.
+            // 리롤은 올릴 면체가 있어야 한다.
+            case SO_SkillCard_Reroll _:
+                return nextFaces > dice.Faces ? PlacementResult.Upgrade : PlacementResult.NoEffect;
+            // 레이즈는 늘 된다.
             default:
                 return PlacementResult.Upgrade;
         }
@@ -35,7 +39,7 @@ public static class SkillRules
 
     /// <summary>
     /// 주사위 상태를 바꾸는 스킬을 적용한다(페인트·리롤·잭팟). 상태를 바꾸지 않는 스킬(레이즈)은 아무 일도 없다.
-    /// roll은 리롤의 새 눈 — 미리보기에서는 지금 눈을 넘겨 그대로 둔다. 리롤의 새 면체는 부르는 쪽(DiceField)이 먼저 넣는다.
+    /// roll은 리롤의 새 눈 — 미리보기에서는 지금 눈을 넘겨 그대로 둔다. 리롤의 새 면체는 부르는 쪽(DiceField.NextFaces)이 먼저 넣는다.
     /// </summary>
     public static void ApplyDice(ref DiceState dice, SO_SkillCard card, int roll)
     {

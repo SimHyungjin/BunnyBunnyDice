@@ -108,10 +108,10 @@ public sealed class SkillCaster
             return;
         }
         // 상태를 바꾸는 스킬(페인트·리롤·잭팟). 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 온다.
-        // 리롤은 면체부터 다시 뽑는다. 눈은 늘 한 번 굴린다 — 눈을 쓰지 않는 스킬(페인트·잭팟)도 굴려 판 난수의 차례가 스킬 종류에 따라 갈리지 않게.
+        // 리롤은 면체를 한 단계 올린다. 눈은 늘 한 번 굴린다 — 눈을 쓰지 않는 스킬(페인트·잭팟)도 굴려 판 난수의 차례가 스킬 종류에 따라 갈리지 않게.
         _diceField.Change(cell, (ref DiceState dice) =>
         {
-            if (card is SO_SkillCard_Reroll) dice.Faces = _diceField.RollFaces(dice.Faces);
+            if (card is SO_SkillCard_Reroll) dice.Faces = _diceField.NextFaces(dice.Faces);
             SkillRules.ApplyDice(ref dice, card, _diceField.RollPips(dice.Faces));
         }, SkillRules.Rolls(card));
     }
@@ -186,21 +186,29 @@ public sealed class SkillCaster
         EnemyCast?.Invoke(card, _result);
     }
 
-    // 모든 적에게 영웅 공격력 비례 피해(체크메이트의 왕은 왕 배율만 받는다). 적마다 영웅 치명타를 따로 굴린다. 죽은 적은 포켓으로 날려 보내고 대상에서 뺀다(특징은 산 적에게만).
+    // 모든 적에게 영웅 공격력 비례 피해. 적마다 영웅 치명타를 따로 굴린다. 죽은 적은 포켓으로 날려 보내고 대상에서 뺀다(특징은 산 적에게만).
+    // 체크메이트의 왕은 영웅 공격력 대신 자기 최대 체력의 배수를 받는다(방어력 무시, 치명타 없음 — 피해 저항은 받아 보스는 절반쯤).
     private void DamageTargets(SO_EnemySkillCard card)
     {
         int king = FindKing(card, _targets);
-        float kingMultiplier = card is SO_SkillCard_Checkmate checkmate ? checkmate.KingMultiplier : 0f;
+        SO_SkillCard_Checkmate checkmate = card as SO_SkillCard_Checkmate;
         for (int i = _targets.Count - 1; i >= 0; i--)
         {
             int slot = _targets[i];
-            float multiplier = slot == king ? kingMultiplier : card.DamageMultiplier;
-            if (multiplier <= 0f) continue;
-            float damage = _heroStats.Attack * multiplier;
-            bool critical = GameRandom.Crit.Value < _heroStats.CritChance;
             ref MonsterState state = ref _monsters.States[slot];
             double before = state.Health;
-            _monsters.Hit(slot, critical ? damage * _heroStats.CritMultiplier : damage, DamageSource.Skill, 0f, critical);
+            if (slot == king && checkmate != null)
+            {
+                if (checkmate.KingMaxHealth <= 0f) continue;
+                _monsters.Hit(slot, (float)(state.MaxHealth * checkmate.KingMaxHealth), DamageSource.Skill, float.MaxValue);
+            }
+            else
+            {
+                if (card.DamageMultiplier <= 0f) continue;
+                float damage = _heroStats.Attack * card.DamageMultiplier;
+                bool critical = GameRandom.Crit.Value < _heroStats.CritChance;
+                _monsters.Hit(slot, critical ? damage * _heroStats.CritMultiplier : damage, DamageSource.Skill, 0f, critical);
+            }
             _result.Dealt += (float)(before - Math.Max(state.Health, 0d));
             if (state.IsAlive) continue;
             // 방어력을 지난 뒤 남은 체력을 넘은 몫 — 화력이 남아도는지.
@@ -211,25 +219,14 @@ public sealed class SkillCaster
         }
     }
 
-    /// <summary>
-    /// 포켓을 지금 쓰면 slot이 처치되는지(피해 뒤 처치선 아래). 치명타는 터지지 않는다고 본다 — 미리보기는 확실히 들어가는 적만 보인다.
-    /// </summary>
-    public bool WillPocket(SO_SkillCard_Pocket card, int slot)
-    {
-        ref MonsterState state = ref _monsters.States[slot];
-        if (!state.IsAlive) return false;
-        double after = state.Health - _monsters.EstimateHit(slot, _heroStats.Attack * card.DamageMultiplier);
-        return after <= state.MaxHealth * card.HealthThreshold;
-    }
-
-    // 피해(DamageTargets) 뒤 처치선 아래로 내려간 적을 가장 가까운 포켓으로 굴려 넣는다(보스 포함).
+    // 피해(DamageTargets) 뒤 살아남은 적마다 확률로 가장 가까운 포켓으로 굴려 넣는다(보스 포함). 판 난수(GameRandom.Skill)라 시드로 재현된다.
     private void CastPocket(SO_SkillCard_Pocket card)
     {
         for (int i = 0; i < _targets.Count; i++)
         {
             int slot = _targets[i];
             ref MonsterState state = ref _monsters.States[slot];
-            if (state.Health > state.MaxHealth * card.HealthThreshold) continue;
+            if (GameRandom.Skill.Value >= card.ExecuteChance) continue;
             _result.Dealt += (float)state.Health;
             _result.Kills++;
             _monsters.Execute(slot);
@@ -253,10 +250,13 @@ public sealed class SkillCaster
         }
     }
 
-    // 걷던 방향의 반대쪽으로 곧게 밀어낸다. 저항(거대)이 있으면 거리를 줄인다.
+    // 걷던 방향의 반대쪽으로 벽에 닿을 때까지 곧게 밀어낸다. 저항(거대)이 있으면 거리를 줄인다.
     private void CastBackspin(SO_SkillCard_Backspin card)
     {
         GridRouteField route = _monsters.Route;
+        MapData map = _getMap();
+        // 판 어디서든 벽에 닿는 거리 — 조정 값이 아니라 "끝까지"다.
+        float reach = map != null ? map.Width + map.Height : 0f;
         for (int i = 0; i < _targets.Count; i++)
         {
             int slot = _targets[i];
@@ -265,10 +265,10 @@ public sealed class SkillCaster
             Vector2 forward = state.Heading.sqrMagnitude > 0f ? state.Heading : state.Waypoint - state.Position;
             if (forward.sqrMagnitude <= 0f) continue;
             Vector2 from = state.Position;
-            Vector2 to = SkillRules.Knockback(route, from, -forward.normalized, card.Distance * _monsters.KindOf(slot).ImpairScale);
+            Vector2 to = SkillRules.Knockback(route, from, -forward.normalized, reach * _monsters.KindOf(slot).ImpairScale);
             if (to == from) continue;
             // 맞아서 튕겨 나가므로 점점 느려진다.
-            _monsters.Displace(slot, to, card.SlideDuration, false);
+            _monsters.Displace(slot, to, Vector2.Distance(from, to) / card.SlideSpeed, false);
         }
     }
 

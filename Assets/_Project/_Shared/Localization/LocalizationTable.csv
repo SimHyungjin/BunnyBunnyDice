@@ -105,7 +105,7 @@
 올인,All In,SO_SkillCard_AllIn.DisplayName
 "목표물 체력을 최대치로 채우고, 모든 주사위의 눈을 다시 굴린다.",Fully restores the goal and rerolls the pips of every die.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
-"모든 적에게 {HeroDamage} 피해를 입히고, 오던 길로 {Distance}칸 밀어낸다.",Deals {HeroDamage} damage to all enemies and knocks them back {Distance} tiles.,SO_SkillCard_Backspin.Description
+"모든 적에게 {HeroDamage} 피해를 입히고, 오던 길로 벽까지 밀어낸다.","Deals {HeroDamage} damage to all enemies and knocks them back the way they came, up to a wall.",SO_SkillCard_Backspin.Description
 브레이크 샷,Break Shot,SO_SkillCard_BreakShot.DisplayName
 "{Duration}초간 영웅의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the hero's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_BreakShot.Description
 캐시 아웃,Cash Out,SO_SkillCard_CashOut.DisplayName
@@ -113,7 +113,7 @@
 체크,Check,SO_SkillCard_Check.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, {Duration}초간 멈춘다.",Deals {HeroDamage} damage to all enemies and stops them for {Duration}s.,SO_SkillCard_Check.Description
 체크메이트,Checkmate,SO_SkillCard_Checkmate.DisplayName
-"모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적에게는 {KingDamage} 피해를 입힌다.",Deals {HeroDamage} damage to all enemies and {KingDamage} to the one with the most HP.,SO_SkillCard_Checkmate.Description
+"모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적에게는 최대 체력의 {KingMaxHealth}배 피해를 입힌다. 방어력을 무시한다.","Deals {HeroDamage} damage to all enemies, and x{KingMaxHealth} its max HP to the enemy with the most HP. Ignores armor.",SO_SkillCard_Checkmate.Description
 더블 업,Double Up,SO_SkillCard_DoubleUp.DisplayName
 "바로 {LevelUps}번 레벨업하고, {Duration}초간 처치 경험치가 {ExpScale}배가 된다.","Level up x{LevelUps} now, and kill EXP is x{ExpScale} for {Duration}s.",SO_SkillCard_DoubleUp.Description
 풀 하우스,Full House,SO_SkillCard_FullHouse.DisplayName
@@ -135,13 +135,13 @@
 노랑 페인트,Yellow Paint,SO_SkillCard_Paint_Yellow.DisplayName
 해당 주사위를 노랑으로 칠한다.,Paints the die yellow.,SO_SkillCard_Paint_Yellow.Description
 포켓,Pocket,SO_SkillCard_Pocket.DisplayName
-"모든 적에게 {HeroDamage} 피해를 입히고, 체력이 {HealthThreshold%} 이하인 적은 처형한다.",Deals {HeroDamage} damage to all enemies and executes those at or below {HealthThreshold%} HP.,SO_SkillCard_Pocket.Description
+"모든 적에게 {HeroDamage} 피해를 입히고, 적마다 {ExecuteChance%} 확률로 처형한다.","Deals {HeroDamage} damage to all enemies, then each has a {ExecuteChance%} chance to be executed.",SO_SkillCard_Pocket.Description
 랙,Rack,SO_SkillCard_Rack.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 해당 지점으로 모은다.",Deals {HeroDamage} damage to all enemies and pulls them to the spot.,SO_SkillCard_Rack.Description
 레이즈,Raise,SO_SkillCard_Raise.DisplayName
 "{Duration}초간 해당 주사위의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the die's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_Raise.Description
 리롤,Reroll,SO_SkillCard_Reroll.DisplayName
-해당 주사위의 면체와 눈을 다시 굴린다.,Rerolls the die's type and pips.,SO_SkillCard_Reroll.Description
+해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다.,"Upgrades the die to the next size and rerolls its pips.",SO_SkillCard_Reroll.Description
 코인 플립,Coin Flip,SO_SkillCard_CoinFlip.DisplayName
 {Chance%} 확률로 무작위 카드 {Count}장을 얻는다.,"{Chance%} chance: gain random cards x{Count}.",SO_SkillCard_CoinFlip.Description
 스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName

@@ -7,7 +7,7 @@ using UnityEngine;
 /// 규칙 하나로 맞춘다(2026-10-29 사용자 — 카드마다 표시가 제각각이었다):
 /// - 어디에 놓나: 적 대상·판 전체는 판 전체를 연한 초록으로 깐다(판 위 아무 곳 — 손가락이 판 밖이면 깔지 않는다).
 /// - 누가 따로 골라지나: 전부가 받으면(모든 적·모든 주사위) 판 색만. 일부·한 점이면 그 대상에 표시 —
-///   적·영웅은 밑에 카드 색 고리(랙 모음점·체크메이트 왕·포켓에 들어갈 적·브레이크 샷과 영웅 강화 카드의 영웅).
+///   적·영웅은 밑에 카드 색 고리(랙 모음점·체크메이트 왕·브레이크 샷과 영웅 강화 카드의 영웅). 포켓은 확률이라 따로 골라지는 적이 없다.
 /// 처음엔 손가락 밑 고리였는데 "그 자리에 쓰는" 범위 스킬처럼 보였다(2026-10-29 사용자).
 /// 대상은 체력·위치가 바뀌며 달라지므로 손가락이 멈춰 있어도 매 프레임 다시 고른다 — 놓는 순간의 판정(SkillCaster)과 같은 함수를 지난다.
 /// </summary>
@@ -125,15 +125,6 @@ public sealed class SkillPreview : IDisposable
             _caster.CollectTargets(_enemyCard, _targets);
             int king = _caster.FindKing(_enemyCard, _targets);
             if (king >= 0) FillRing(GetMark(used++), _monsters.States[king].Position, y, _config.SkillKingMarkRadius, _config.SkillMarkWidth, mark);
-        }
-        if (_enemyCard is SO_SkillCard_Pocket pocket)
-        {
-            _caster.CollectTargets(_enemyCard, _targets);
-            for (int i = 0; i < _targets.Count; i++)
-            {
-                if (!_caster.WillPocket(pocket, _targets[i])) continue;
-                FillRing(GetMark(used++), _monsters.States[_targets[i]].Position, y, _config.SkillTargetMarkRadius, _config.SkillMarkWidth, mark);
-            }
         }
         HideMarksFrom(used);
     }

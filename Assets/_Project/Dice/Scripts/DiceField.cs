@@ -207,12 +207,17 @@ public sealed class DiceField : IDisposable
         if (!wasAwakened && _statsConfig.IsAwakened(dice)) DiceAwakened?.Invoke(cell);
     }
 
-    // 리롤의 새 면체: 모델이 있는 면체(SO_DiceConfig.Models) 중 같은 확률로. 목록이 비면 그대로.
-    /// <summary>모델이 있는 면체 중 하나를 같은 확률로 뽑는다(리롤). 판 난수(GameRandom.Dice)를 쓴다.</summary>
-    public int RollFaces(int current)
+    /// <summary>모델이 있는 면체(SO_DiceConfig.Models) 중 current보다 큰 것 가운데 가장 작은 면체(리롤). 없으면 current.</summary>
+    public int NextFaces(int current)
     {
+        int next = int.MaxValue;
         List<SO_DiceConfig.FaceModel> models = _config.Models;
-        return models.Count > 0 ? models[GameRandom.Dice.Next(models.Count)].Faces : current;
+        for (int i = 0; i < models.Count; i++)
+        {
+            int faces = models[i].Faces;
+            if (faces > current && faces < next) next = faces;
+        }
+        return next == int.MaxValue ? current : next;
     }
 
     // 타워 주사위 굴림. 특성이 굴림을 바꾸면(더블 오어 낫싱·하이 롤러) 그것을 쓴다. placing = 손패에서 놓거나 얹는 굴림.
