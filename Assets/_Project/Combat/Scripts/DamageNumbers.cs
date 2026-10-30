@@ -23,7 +23,7 @@ public sealed class DamageNumbers : IDisposable
 {
     private struct Number
     {
-        public int Value;
+        public long Value;
         /// <summary>앞에 "+"를 붙이는지(더 받은 경험치).</summary>
         public bool Plus;
         public Color Color;
@@ -74,11 +74,12 @@ public sealed class DamageNumbers : IDisposable
     // 숫자는 판 위에서만 뜨므로 판보다 넉넉한 경계면 화면 밖으로 잘리지 않는다(맵 로컬, 칸 단위).
     private static readonly Bounds MeshBounds = new Bounds(Vector3.zero, Vector3.one * 1000f);
 
-    // 쓰는 글자: 0~9와 "+".
-    private const string Characters = "0123456789+";
+    // 쓰는 글자: 0~9와 "+", 세 자리마다 끊는 ",". 후반 피해는 수십억이라 쉼표가 없으면 자릿수를 세야 읽힌다.
+    private const string Characters = "0123456789+,";
     private const int PlusIndex = 10;
-    // int 최대 10자리 + "+".
-    private const int MaxDigits = 11;
+    private const int CommaIndex = 11;
+    // long 최대 19자리 + 쉼표 6개 + "+".
+    private const int MaxDigits = 26;
 
     private readonly SO_DamageNumberConfig _config;
     private readonly Func<Camera> _getCamera;
@@ -130,7 +131,7 @@ public sealed class DamageNumbers : IDisposable
 
     /// <param name="position">맞은 몬스터의 맵 로컬 (x, z).</param>
     /// <param name="ground">그 자리 바닥 윗면 높이.</param>
-    public void Show(Vector2 position, float ground, float amount, DamageKind kind)
+    public void Show(Vector2 position, float ground, double amount, DamageKind kind)
     {
         if (!_config.Enabled) return;
 
@@ -142,8 +143,8 @@ public sealed class DamageNumbers : IDisposable
         float launch = UnityEngine.Random.Range(_config.LaunchSpeed.x, _config.LaunchSpeed.y);
         _active.Add(new Number
         {
-            // 피해는 정수로 들어온다(MonsterField.ApplyDamage).
-            Value = Mathf.Max(Mathf.RoundToInt(amount), 0),
+            // 피해는 정수 값으로 들어온다(MonsterField.ApplyDamage). long을 넘는 피해는 끝 값에 묶는다.
+            Value = amount >= long.MaxValue ? long.MaxValue : (long)Math.Max(Math.Round(amount), 0d),
             Plus = kind == DamageKind.BonusExp,
             Color = color,
             Origin = new Vector3(position.x, ground + _config.StartHeight, position.y),
@@ -232,8 +233,9 @@ public sealed class DamageNumbers : IDisposable
 
     private static int CharacterCount(in Number number)
     {
-        int count = 1;
-        for (int value = number.Value; value >= 10 && count < MaxDigits - 1; value /= 10) count++;
+        int digits = 1;
+        for (long value = number.Value; value >= 10; value /= 10) digits++;
+        int count = digits + (digits - 1) / 3;
         return number.Plus ? count + 1 : count;
     }
 
@@ -270,13 +272,16 @@ public sealed class DamageNumbers : IDisposable
     {
         // 자릿수를 뒤에서부터 뽑아 앞으로 돌린다(문자열을 만들지 않게). 자리 수는 CharacterCount와 같아야 한다.
         int count = 0;
-        int value = number.Value;
+        int digits = 0;
+        long value = number.Value;
         do
         {
-            _digits[count++] = value % 10;
+            if (digits > 0 && digits % 3 == 0) _digits[count++] = CommaIndex;
+            _digits[count++] = (int)(value % 10);
+            digits++;
             value /= 10;
         }
-        while (value > 0 && count < MaxDigits - 1);
+        while (value > 0);
         if (number.Plus) _digits[count++] = PlusIndex;
 
         // 가로는 글자 진행 폭의 가운데, 세로는 줄의 위아래 가운데(TMP 가운데 맞춤과 같다).

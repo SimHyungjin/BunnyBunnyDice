@@ -360,7 +360,7 @@ public sealed class DiceAttack : IDisposable
     private float MaxHealthBonus(int slot, float ratio)
     {
         if (ratio <= 0f) return 0f;
-        return _monsters.States[slot].MaxHealth * ratio;
+        return (float)(_monsters.States[slot].MaxHealth * ratio);
     }
 
     // 치명타 배율은 방어력보다 먼저 곱한다(MonsterDamage) — 큰 주사위가 단단한 적에게 강한 이유.

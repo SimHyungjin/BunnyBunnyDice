@@ -88,8 +88,8 @@ public sealed class MonsterHealthBars : IDisposable
         for (int i = 0; i < _monsters.Count; i++)
         {
             MonsterState state = states[i];
-            if (!state.IsAlive || state.MaxHealth <= 0f) continue;
-            float ratio = Mathf.Clamp01(state.Health / state.MaxHealth);
+            if (!state.IsAlive || state.MaxHealth <= 0d) continue;
+            float ratio = Mathf.Clamp01((float)(state.Health / state.MaxHealth));
 
             float scale = _monsters.KindOf(i).VisualScale;
             float halfWidth = _config.HealthBarWidth * scale * 0.5f;

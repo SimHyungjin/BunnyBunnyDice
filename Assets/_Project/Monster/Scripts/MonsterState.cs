@@ -19,10 +19,11 @@ public struct MonsterState
     /// <summary>목표물까지 길이 없다(주사위에 갇힘). 갇히면 MonsterField가 그 자리에서 죽인다(기획서 3.5).</summary>
     public bool Trapped;
     /// <summary>0 이하면 죽은 것. 맞은 그 자리에서 지우지 않고 MonsterField가 다음 갱신 때 한꺼번에 치운다
-    /// — 공격하는 쪽이 같은 프레임에 슬롯 번호를 들고 있어도 번호가 바뀌지 않게.</summary>
-    public float Health;
+    /// — 공격하는 쪽이 같은 프레임에 슬롯 번호를 들고 있어도 번호가 바뀌지 않게.
+    /// 체력은 double이다 — 후반 보스는 수십억이라 float(유효 7자리)면 끝자리가 뭉개지고 작은 피해가 아예 깎이지 않는다.</summary>
+    public double Health;
     /// <summary>나온 때의 체력(웨이브 배율 포함). 재생은 이 비율로 회복하고, 분열한 조각의 체력도 이것을 나눈다.</summary>
-    public float MaxHealth;
+    public double MaxHealth;
     /// <summary>나온 웨이브의 일반 몬스터 기본 체력(특성 체력 배율·보스 몫 없이). 방어력의 체력 비례 몫이 이것을 쓴다(MonsterKind.GetArmor).</summary>
     public float WaveHealth;
 
@@ -44,7 +45,7 @@ public struct MonsterState
     public float VulnerableRatio;
     public float VulnerableTime;
 
-    public bool IsAlive => Health > 0f;
+    public bool IsAlive => Health > 0d;
     public bool IsBurning => BurnTime > 0f;
     public bool IsSlowed => SlowTime > 0f;
     public bool IsFrozen => FreezeTime > 0f;

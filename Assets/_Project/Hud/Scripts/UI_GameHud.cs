@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -51,8 +52,8 @@ public sealed class UI_GameHud : UI_Hud
     // 언어가 바뀌면 웨이브·보스 글을 다시 쓴다(나머지는 숫자). 다음 갱신까지 기다리지 않게 마지막 값을 들고 있는다.
     private int _wave;
     // 보스 바 글도 언어가 바뀌면 다시 쓴다.
-    private int _bossHealth;
-    private int _bossMax;
+    private long _bossHealth;
+    private long _bossMax;
     private bool _bossJackpot;
 
     public RectTransform HandRoot => _handRoot;
@@ -98,12 +99,12 @@ public sealed class UI_GameHud : UI_Hud
     }
 
     /// <summary>보스 체력 바를 띄운다(기획서 9.4). 잭팟 보스면 노랑 채움과 "잭팟 보스".</summary>
-    public void ShowBoss(int health, int maxHealth, bool jackpot)
+    public void ShowBoss(long health, long maxHealth, bool jackpot)
     {
         _bossBar.SetActive(true);
         _bossFill.gameObject.SetActive(!jackpot);
         _jackpotFill.gameObject.SetActive(jackpot);
-        SetFill(jackpot ? _jackpotFill : _bossFill, maxHealth > 0 ? (float)health / maxHealth : 0f);
+        SetFill(jackpot ? _jackpotFill : _bossFill, maxHealth > 0 ? (float)((double)health / maxHealth) : 0f);
         _bossHealth = health;
         _bossMax = maxHealth;
         _bossJackpot = jackpot;
@@ -114,8 +115,11 @@ public sealed class UI_GameHud : UI_Hud
 
     private void ShowBossText()
     {
-        if (_bossJackpot) _bossText.text = App.Localize("잭팟 보스 {0}/{1}", _bossHealth, _bossMax);
-        else _bossText.text = App.Localize("보스 {0}/{1}", _bossHealth, _bossMax);
+        // 세 자리마다 쉼표(언어와 상관없이 같은 모양) — 후반 보스는 수십억이라 끊지 않으면 읽히지 않는다.
+        string health = _bossHealth.ToString("N0", CultureInfo.InvariantCulture);
+        string max = _bossMax.ToString("N0", CultureInfo.InvariantCulture);
+        if (_bossJackpot) _bossText.text = App.Localize("잭팟 보스 {0}/{1}", health, max);
+        else _bossText.text = App.Localize("보스 {0}/{1}", health, max);
     }
 
     // 언어가 바뀌면 숫자가 아닌 글(웨이브·보스)만 다시 쓴다.

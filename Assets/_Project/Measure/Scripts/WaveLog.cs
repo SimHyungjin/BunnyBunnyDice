@@ -110,11 +110,11 @@ public sealed class WaveLog : IDisposable
         if (_current != null && _current.Wave == wave) _current.Cleared = true;
     }
 
-    public void CountDamage(DamageSource source, float amount)
+    public void CountDamage(DamageSource source, double amount)
     {
         if (_current == null) return;
-        _current.Damage[source.Index] += amount;
-        if (source.Boost != DamageBoost.None) _current.BoostDamage[(int)source.Boost] += amount;
+        _current.Damage[source.Index] += (float)amount;
+        if (source.Boost != DamageBoost.None) _current.BoostDamage[(int)source.Boost] += (float)amount;
     }
 
     public void CountPipDrained(Vector2Int _)

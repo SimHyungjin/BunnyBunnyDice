@@ -71,7 +71,7 @@ public static class MonsterStatus
             while (state.BurnTick >= tickInterval)
             {
                 state.BurnTick -= tickInterval;
-                poisonDamage += state.BurnRatio * state.MaxHealth * tickInterval;
+                poisonDamage += (float)(state.BurnRatio * state.MaxHealth * tickInterval);
             }
             if (!state.IsBurning)
             {

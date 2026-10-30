@@ -59,7 +59,7 @@ public sealed class BotEscape
                 _time.Add(time);
                 remaining += _dps[d] * time;
             }
-            float health = states[i].Health;
+            double health = states[i].Health;
             // 걸지 않아도 죽는다.
             if (health <= remaining * margin) continue;
             for (int d = 0; d < placed.Count; d++)

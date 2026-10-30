@@ -23,16 +23,16 @@ public sealed class MonsterField : IDisposable
     private GridRouteField _route;
 
     /// <summary>몬스터가 목표물에 닿았다(이미 치운 뒤): 모양과 남은 체력. 피해는 받는 쪽이 모양(GoalDamage)을 보고 정한다.</summary>
-    public event Action<MonsterKind, float> ReachedGoal;
+    public event Action<MonsterKind, double> ReachedGoal;
 
-    /// <summary>피해가 들어갔다: 맞은 자리(맵 로컬 x, z), 실제로 들어간 피해, 종류. 피해 숫자 표시가 구독한다.</summary>
-    public event Action<Vector2, float, DamageKind> Damaged;
+    /// <summary>피해가 들어갔다: 맞은 자리(맵 로컬 x, z), 실제로 들어간 피해(정수 값), 종류. 피해 숫자 표시가 구독한다.</summary>
+    public event Action<Vector2, double, DamageKind> Damaged;
 
     /// <summary>
     /// 피해가 들어갔다: 출처와 실제로 깎인 체력(남은 체력을 넘는 몫은 빼고). 측정 기록(WaveLog)이 구독한다
     /// — 넘친 몫까지 세면 큰 한 방이 실제보다 일한 것처럼 보인다.
     /// </summary>
-    public event Action<DamageSource, float> DamageDealt;
+    public event Action<DamageSource, double> DamageDealt;
 
     /// <summary>몬스터가 죽었다(이미 치운 뒤). 경험치 등은 받는 쪽이 모양을 보고 정한다.</summary>
     public event Action<MonsterKind, Vector2> Killed;
@@ -84,7 +84,7 @@ public sealed class MonsterField : IDisposable
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.SpawnGates[gate % _map.SpawnGates.Count];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, Mathf.Max(1f, Mathf.Round(kind.Base.Health * kind.HealthScale * healthScale)), kind.Base.Health * healthScale, origin);
+        Add(kind, cell, SpawnHealth(kind, healthScale), kind.Base.Health * healthScale, origin);
     }
 
     /// <summary>
@@ -96,8 +96,12 @@ public sealed class MonsterField : IDisposable
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.InBounds(_map.BossPocket.x, _map.BossPocket.y) ? _map.BossPocket : _map.SpawnGates[0];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, Mathf.Max(1f, Mathf.Round(kind.Base.Health * kind.HealthScale * healthScale)), kind.Base.Health * waveHealthScale, origin);
+        Add(kind, cell, SpawnHealth(kind, healthScale), kind.Base.Health * waveHealthScale, origin);
     }
+
+    // 체력은 double로 곱한다 — 후반 보스는 수십억이라 float(유효 7자리)로 곱하면 끝자리가 뭉개진 채 나온다.
+    private static double SpawnHealth(MonsterKind kind, float healthScale) =>
+        Math.Max(1d, Math.Round((double)kind.Base.Health * kind.HealthScale * healthScale));
 
     /// <summary>
     /// 출현 구역 칸 → 몬스터가 솟아 나오는 표시상의 자리(맵 로컬, 포켓 구멍 가운데). 테이블 모양을 아는 쪽(EnvironmentView)이 정한다.
@@ -105,7 +109,7 @@ public sealed class MonsterField : IDisposable
     /// </summary>
     public Func<Vector2Int, Vector3> SpawnOrigin { get; set; }
 
-    private void Add(MonsterKind kind, Vector2 position, float health, float waveHealth, Vector3? origin = null)
+    private void Add(MonsterKind kind, Vector2 position, double health, float waveHealth, Vector3? origin = null)
     {
         int kindIndex = _kinds.IndexOf(kind);
         if (kindIndex < 0)
@@ -165,9 +169,9 @@ public sealed class MonsterField : IDisposable
     {
         ref MonsterState state = ref _states[slot];
         if (!state.IsAlive) return;
-        int dealt = Mathf.CeilToInt(state.Health);
+        double dealt = Math.Ceiling(state.Health);
         DamageDealt?.Invoke(DamageSource.Skill, state.Health);
-        state.Health = 0f;
+        state.Health = 0d;
         SinkBySkill(slot);
         Damaged?.Invoke(state.Position, dealt, DamageKind.Critical);
     }
@@ -249,21 +253,21 @@ public sealed class MonsterField : IDisposable
             // 잡은 것으로 쳐서 경험치는 준다(치우기·알림은 다음 갱신의 RemoveDead).
             if (state.Trapped)
             {
-                state.Health = 0f;
+                state.Health = 0d;
                 continue;
             }
 
             MonsterKind kind = _kinds[state.TypeIndex];
             float regen = kind.RegenRatio;
             if (regen > 0f)
-                state.Health = Mathf.Min(state.Health + state.MaxHealth * regen * deltaTime, state.MaxHealth);
+                state.Health = Math.Min(state.Health + state.MaxHealth * regen * deltaTime, state.MaxHealth);
 
             float speed = kind.MoveSpeed * MonsterStatus.GetSpeedScale(state) * SpeedScale;
             MonsterMovement.Advance(ref state, speed * deltaTime, _route);
             // 목표물 영역에 발을 들이면 닿은 것으로 본다(길 끝인 목표물 칸 중심까지 걸어 들어가지 않는다).
             if (!goal.Contains(GridCircle.CellOf(state.Position))) continue;
 
-            float health = state.Health;
+            double health = state.Health;
             RemoveAt(i);
             ReachedGoal?.Invoke(kind, health);
             // 이번 피해로 게임 오버가 되면 남은 몬스터는 이번 프레임부터 멈춘다.
@@ -276,8 +280,8 @@ public sealed class MonsterField : IDisposable
     /// <summary>
     /// slot에 damage를 맞히면 깎일 체력(Hit과 같은 공식, 상태는 바꾸지 않는다). 스킬 미리보기가 놓기 전에 결과를 보여 줄 때 쓴다(포켓 처치 예상).
     /// </summary>
-    public int EstimateHit(int slot, float damage, float penetration = 0f) =>
-        Mathf.Max(1, Mathf.RoundToInt(RawDamage(slot, damage, penetration, DamageKind.Normal, out _)));
+    public double EstimateHit(int slot, float damage, float penetration = 0f) =>
+        Math.Max(1d, Math.Round((double)RawDamage(slot, damage, penetration, DamageKind.Normal, out _)));
 
     // 방어력·취약·피해 저항을 지난 피해(반올림 전). damage는 취약을 곱한 값으로 돌려준다(작아진 피해 표시 판단용).
     private float RawDamage(int slot, float damage, float penetration, DamageKind kind, out float boosted)
@@ -300,17 +304,18 @@ public sealed class MonsterField : IDisposable
 
         // 피해는 정수로 들어간다 — 화면 숫자와 실제로 깎인 체력이 같게. 맞힌 피해는 반올림하고 최소 1(맞혔는데 0이면 안 맞은 것처럼 보인다).
         // 화상은 한 번에 1이 안 될 만큼 작게 자주 들어오므로 나머지를 모아 1이 넘을 때 준다.
-        int dealt;
+        // 정수 값을 double로 든다 — int로 바꾸면 21억을 넘는 한 방(후반 최대 체력 비율 피해)이 음수가 되어 오히려 체력을 채웠다.
+        double dealt;
         if (kind == DamageKind.Burn)
         {
             float total = raw + state.BurnCarry;
-            dealt = Mathf.FloorToInt(total);
-            state.BurnCarry = total - dealt;
-            if (dealt <= 0) return;
+            dealt = Math.Floor((double)total);
+            state.BurnCarry = (float)(total - dealt);
+            if (dealt <= 0d) return;
         }
-        else dealt = Mathf.Max(1, Mathf.RoundToInt(raw));
+        else dealt = Math.Max(1d, Math.Round((double)raw));
         // 이미 죽은 몬스터(치우기 전)를 더 때린 몫은 0이다.
-        DamageDealt?.Invoke(source, Mathf.Clamp(dealt, 0f, Mathf.Max(state.Health, 0f)));
+        DamageDealt?.Invoke(source, Math.Min(dealt, Math.Max(state.Health, 0d)));
         state.Health -= dealt;
 
         if (Damaged == null) return;
@@ -347,7 +352,7 @@ public sealed class MonsterField : IDisposable
         if (split == null || dead.Trapped) return;
 
         MonsterKind piece = kind.GetPiece();
-        float health = Mathf.Max(1f, Mathf.Round(dead.MaxHealth * split.SplitHealthRatio));
+        double health = Math.Max(1d, Math.Round(dead.MaxHealth * split.SplitHealthRatio));
         Vector2 direction = dead.Heading.sqrMagnitude > 0f ? dead.Heading.normalized : Vector2.zero;
         for (int i = 0; i < split.SplitCount; i++)
         {

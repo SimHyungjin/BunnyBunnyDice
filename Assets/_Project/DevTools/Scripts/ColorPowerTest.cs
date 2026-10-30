@@ -157,15 +157,15 @@ public sealed class ColorPowerTest : IDisposable
         if (Running) _seconds += deltaTime;
     }
 
-    private void CountDamage(DamageSource source, float amount)
+    private void CountDamage(DamageSource source, double amount)
     {
-        if (Running) _dealt += amount;
+        if (Running) _dealt += (float)amount;
     }
 
-    private void CountLeak(MonsterKind kind, float health)
+    private void CountLeak(MonsterKind kind, double health)
     {
         if (!Running) return;
-        _leakedHealth += health;
+        _leakedHealth += (float)health;
         _leaks++;
     }
 

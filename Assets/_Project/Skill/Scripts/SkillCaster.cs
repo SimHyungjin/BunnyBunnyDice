@@ -179,12 +179,12 @@ public sealed class SkillCaster
             float damage = _heroStats.Attack * multiplier;
             bool critical = GameRandom.Crit.Value < _heroStats.CritChance;
             ref MonsterState state = ref _monsters.States[slot];
-            float before = state.Health;
+            double before = state.Health;
             _monsters.Hit(slot, critical ? damage * _heroStats.CritMultiplier : damage, DamageSource.Skill, 0f, critical);
-            _result.Dealt += before - Mathf.Max(state.Health, 0f);
+            _result.Dealt += (float)(before - Math.Max(state.Health, 0d));
             if (state.IsAlive) continue;
             // 방어력을 지난 뒤 남은 체력을 넘은 몫 — 화력이 남아도는지.
-            _result.Overkill -= state.Health;
+            _result.Overkill -= (float)state.Health;
             _result.Kills++;
             _monsters.SinkBySkill(slot);
             _targets.RemoveAt(i);
@@ -198,7 +198,7 @@ public sealed class SkillCaster
     {
         ref MonsterState state = ref _monsters.States[slot];
         if (!state.IsAlive) return false;
-        float after = state.Health - _monsters.EstimateHit(slot, _heroStats.Attack * card.DamageMultiplier);
+        double after = state.Health - _monsters.EstimateHit(slot, _heroStats.Attack * card.DamageMultiplier);
         return after <= state.MaxHealth * card.HealthThreshold;
     }
 
@@ -210,7 +210,7 @@ public sealed class SkillCaster
             int slot = _targets[i];
             ref MonsterState state = ref _monsters.States[slot];
             if (state.Health > state.MaxHealth * card.HealthThreshold) continue;
-            _result.Dealt += state.Health;
+            _result.Dealt += (float)state.Health;
             _result.Kills++;
             _monsters.Execute(slot);
         }
