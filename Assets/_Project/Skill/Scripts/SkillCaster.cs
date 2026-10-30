@@ -27,6 +27,8 @@ public sealed class SkillCaster
     private readonly Func<CardHand> _getHand;
     // 무작위 공용 카드 한 장(레벨업과 같은 몫). 뽑을 것이 없으면 false.
     private readonly TryRollCard _rollCard;
+    // 경험치 없이 레벨을 올린다(PlayerLevel.LevelUp).
+    private readonly Action<int> _levelUp;
     // 쓸 때 대상을 모아 두는 작업 공간(할당 없이).
     private readonly List<int> _targets = new List<int>();
 
@@ -43,9 +45,10 @@ public sealed class SkillCaster
 
     public SkillCaster(MonsterField monsters, DiceField diceField, ChipField chips, DiceCombat diceCombat, AttackEffects effects, HeroStats heroStats,
         SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack, ExpBoost expBoost,
-        Func<CardHand> getHand, TryRollCard rollCard)
+        Func<CardHand> getHand, TryRollCard rollCard, Action<int> levelUp)
     {
         _rollCard = rollCard;
+        _levelUp = levelUp;
         _monsters = monsters;
         _diceField = diceField;
         _chips = chips;
@@ -269,6 +272,7 @@ public sealed class SkillCaster
                 break;
             case SO_SkillCard_DoubleUp doubleUp:
                 _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);
+                _levelUp(doubleUp.LevelUps);
                 break;
         }
     }

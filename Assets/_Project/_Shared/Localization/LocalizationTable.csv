@@ -111,7 +111,7 @@
 체크메이트,Checkmate,SO_SkillCard_Checkmate.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적에게는 {KingDamage} 피해를 입힌다.",Deals {HeroDamage} damage to all enemies and {KingDamage} to the one with the most HP.,SO_SkillCard_Checkmate.Description
 더블 업,Double Up,SO_SkillCard_DoubleUp.DisplayName
-{Duration}초간 처치 경험치가 {ExpScale}배가 된다.,"For {Duration}s, kill EXP is x{ExpScale}.",SO_SkillCard_DoubleUp.Description
+"바로 {LevelUps}번 레벨업하고, {Duration}초간 처치 경험치가 {ExpScale}배가 된다.","Level up x{LevelUps} now, and kill EXP is x{ExpScale} for {Duration}s.",SO_SkillCard_DoubleUp.Description
 풀 하우스,Full House,SO_SkillCard_FullHouse.DisplayName
 {Duration}초간 해당 주사위가 7가지 공격 방식을 모두 동시에 쓴다.,"For {Duration}s, the die uses all 7 attack types at once.",SO_SkillCard_FullHouse.Description
 잭팟,Jackpot,SO_SkillCard_Jackpot.DisplayName

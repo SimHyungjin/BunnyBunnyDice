@@ -38,4 +38,13 @@ public sealed class PlayerLevel
         Changed?.Invoke();
         for (int i = 0; i < levels; i++) LeveledUp?.Invoke();
     }
+
+    /// <summary>경험치 없이 count레벨 올린다(더블 업). 모아 둔 경험치는 그대로 남는다 — 쓰는 순간까지 모은 것을 버리지 않게.</summary>
+    public void LevelUp(int count)
+    {
+        if (count <= 0) return;
+        Level += count;
+        Changed?.Invoke();
+        for (int i = 0; i < count; i++) LeveledUp?.Invoke();
+    }
 }

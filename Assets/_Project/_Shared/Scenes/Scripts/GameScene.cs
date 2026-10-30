@@ -241,7 +241,7 @@ public sealed partial class GameScene : SceneBase
         _expBoost = new ExpBoost();
         _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal,
             () => _heroAttack, _expBoost, () => _hand,
-            (out HandCard card) => CardRoll.RollOne(levelUpConfig, _traits, IsUsefulCard, out card));
+            (out HandCard card) => CardRoll.RollOne(levelUpConfig, _traits, IsUsefulCard, out card), count => _level.LevelUp(count));
         _skillPreview = new SkillPreview(_mapRoot, previewConfig, _viewConfig, _skills, _monsters, () => _map, _hero);
         _heroCards = new HeroCardShots(_mapRoot, heroConfig.CardShot, _monsters, _monsterConfig, _viewConfig);
         _heroAttack = new HeroAttack(heroConfig, _heroStats, _hero, _monsters, _heroCards,
