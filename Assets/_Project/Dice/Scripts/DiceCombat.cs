@@ -24,8 +24,11 @@ public sealed class DiceCombat : IDisposable
     private readonly List<float> _raiseTimes = new List<float>();
     private readonly List<float> _raiseDamage = new List<float>();
     private readonly List<float> _raiseSpeed = new List<float>();
-    // 풀 하우스(레인보우 전용 카드): 남은 시간 동안 7색 공격 방식을 한 번에 모두 쏜다.
+    // 풀 하우스(레인보우 전용 카드): 남은 시간 동안 한 자리에 7색 주사위가 같이 있는 것처럼 쏜다.
     private readonly List<float> _fullHouseTimes = new List<float>();
+    // 풀 하우스 동안 색마다의 대기 시간(AllColors 순서). 색마다 자기 사거리·공격 간격으로 따로 쏜다 —
+    // 처음엔 주사위 자신의 색 간격에 맞춰 7색을 한꺼번에 쏴서, 자기 색 사거리에 적이 없으면 나머지 색도 못 쐈다(2026-10-31 사용자).
+    private readonly List<float[]> _fullHouseCooldowns = new List<float[]>();
     // 풀 하우스가 쏘는 7색(검정 빼고). 순서는 DiceColor 값 — 연출이 매번 같은 순서로 나간다.
     private static readonly DiceColor[] AllColors =
     {
@@ -68,14 +71,19 @@ public sealed class DiceCombat : IDisposable
         _raiseDamage.RemoveAt(index);
         _raiseSpeed.RemoveAt(index);
         _fullHouseTimes.RemoveAt(index);
+        _fullHouseCooldowns.RemoveAt(index);
     }
 
-    /// <summary>풀 하우스: index번째 주사위가 duration초 동안 7색 공격 방식을 모두 동시에 쏜다. 다시 걸면 시간이 새로 시작한다.</summary>
+    /// <summary>
+    /// 풀 하우스: index번째 주사위 자리에 duration초 동안 7색 주사위가 같이 있는 것처럼 쏜다(색마다 자기 사거리·공격 간격). 다시 걸면 시간이 새로 시작한다.
+    /// 다른 색은 대기 없이 바로 쏜다 — 쓰자마자 7색이 보이게.
+    /// </summary>
     public void FullHouse(int index, float duration)
     {
         SyncSlots(_diceField.Placed.Count);
         if (index < 0 || index >= _fullHouseTimes.Count) return;
         _fullHouseTimes[index] = duration;
+        Array.Clear(_fullHouseCooldowns[index], 0, AllColors.Length);
     }
 
     /// <summary>
@@ -132,6 +140,7 @@ public sealed class DiceCombat : IDisposable
             _raiseDamage.Clear();
             _raiseSpeed.Clear();
             _fullHouseTimes.Clear();
+            _fullHouseCooldowns.Clear();
         }
         while (_cooldowns.Count < count)
         {
@@ -141,6 +150,7 @@ public sealed class DiceCombat : IDisposable
             _raiseDamage.Add(1f);
             _raiseSpeed.Add(1f);
             _fullHouseTimes.Add(0f);
+            _fullHouseCooldowns.Add(new float[AllColors.Length]);
         }
     }
 
@@ -159,23 +169,29 @@ public sealed class DiceCombat : IDisposable
             _fullHouseTimes[i] = Mathf.Max(_fullHouseTimes[i] - deltaTime, 0f);
             // 적이 없으면 준비된 채로 기다릴 뿐 쌓아 두지 않는다 — 적이 들어오자마자 몰아 쏘지 않게.
             _cooldowns[i] = Mathf.Max(_cooldowns[i] - deltaTime, 0f);
-            if (_cooldowns[i] > 0f) continue;
 
             PlacedDice dice = placed[i];
             // 눈을 다 태운 주사위는 쏘지 않는다(벽으로만 남는다).
             if (dice.Dice.IsSpent) continue;
             bool awakened = _statsConfig.IsAwakened(dice.Dice);
-            // 공격 간격은 주사위 자신의 색으로 센다 — 풀 하우스는 그 간격마다 7색을 한 번에 쏜다.
+            if (_fullHouseTimes[i] > 0f) FireFullHouse(i, dice, awakened, deltaTime);
+            if (_cooldowns[i] > 0f) continue;
             if (!TryFire(i, dice, dice.Dice.Colors, awakened, out float interval)) continue;
-            if (_fullHouseTimes[i] > 0f)
-            {
-                for (int c = 0; c < AllColors.Length; c++)
-                {
-                    if (AllColors[c] != dice.Dice.Colors) TryFire(i, dice, AllColors[c], awakened, out _);
-                }
-            }
             _cooldowns[i] = interval;
             _shotCounts[i]++;
+        }
+    }
+
+    // 풀 하우스: 주사위 자신의 색을 뺀 6색을 색마다 따로 쏜다 — 같은 자리에 그 색 주사위가 놓인 것처럼 자기 사거리·공격 간격으로.
+    private void FireFullHouse(int i, in PlacedDice dice, bool awakened, float deltaTime)
+    {
+        float[] cooldowns = _fullHouseCooldowns[i];
+        for (int c = 0; c < AllColors.Length; c++)
+        {
+            if (AllColors[c] == dice.Dice.Colors) continue;
+            cooldowns[c] = Mathf.Max(cooldowns[c] - deltaTime, 0f);
+            if (cooldowns[c] > 0f) continue;
+            if (TryFire(i, dice, AllColors[c], awakened, out float interval)) cooldowns[c] = interval;
         }
     }
 
