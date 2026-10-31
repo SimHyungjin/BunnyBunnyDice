@@ -7,7 +7,7 @@ using UnityEngine;
 /// 같은 카드를 여러 번 고르면 더한다(곱하지 않는다) — 몇 장 모았는지로 세기가 바로 읽히게.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/HeroUpgrade/Hero Card", fileName = "SO_HeroCard_")]
-public class SO_HeroCard : SO_Card
+public class SO_HeroCard : SO_Card, ICardTextTokens
 {
     [Header("영웅 강화")]
     [Tooltip("올리는 능력치. 사거리는 올리지 않는다(2026-10-25 — 캐릭터마다 고정).")]
@@ -16,6 +16,15 @@ public class SO_HeroCard : SO_Card
     [Min(0f)] public float Amount = 1f;
     [Tooltip("Amount를 기본값의 %가 아니라 값에 그대로 더한다.")]
     public bool Flat;
+
+    // {RepeatHitScale%} = 같은 적에게 겹친 카드의 피해 배율(투사체 카드 글). 값은 영웅 공격 규칙이라 영웅 설정에 두고 능력치로 읽는다.
+    public bool TryGetToken(string key, HeroStats hero, out string text)
+    {
+        text = null;
+        if (key != nameof(HeroStats.RepeatHitScale) + "%" || hero == null) return false;
+        text = CardText.FormatPercent(hero.RepeatHitScale);
+        return true;
+    }
 
 #if UNITY_EDITOR
     protected override void OnValidate()

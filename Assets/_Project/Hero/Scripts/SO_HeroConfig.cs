@@ -58,6 +58,9 @@ public sealed class SO_HeroConfig : SO_Config
     public float AttackHeight = 0.6f;
     [Tooltip("던지는 순간 처음 노린 적을 놓지 않는 사거리 배수. 준비 동작 동안 적이 걸어 사거리 끝을 살짝 넘어도 그 적을 맞힌다 — 다른 적으로 바꿀 때는 원래 사거리.")]
     [Min(1f)] public float AttackKeepRangeScale = 1.2f;
+    [Tooltip("한 번 던질 때 이미 맞은 적에게 겹쳐 맞는 카드의 피해 배율(기획서 10.4). 투사체가 한 마리에 다 몰리면 공격력·치명과 세 갈래로 곱해져 " +
+             "영웅 몰빵이 판을 깼다 — 겹친 몫만 줄여 떼에 흩뿌리는 값은 그대로 둔다. 겹칠수록 더 주는 등비 대신 고정 비율(2026-10-31 사용자).")]
+    [Range(0f, 1f)] public float RepeatHitScale = 0.3f;
     [Tooltip("던진 카드가 날아가는 모습(표시만).")]
     public SO_HeroCardShotConfig CardShot;
 

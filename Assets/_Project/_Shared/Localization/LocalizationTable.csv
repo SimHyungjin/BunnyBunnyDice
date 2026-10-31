@@ -101,7 +101,7 @@
 치명타 피해,Crit Damage,SO_HeroCard_CritDamage.DisplayName | HeroStatText.cs:18
 영웅의 치명타 피해가 오른다.,Raises the hero's crit damage.,SO_HeroCard_CritDamage.Description
 투사체,Projectile,SO_HeroCard_Projectile.DisplayName | HeroStatText.cs:19
-영웅이 한 번에 던지는 카드가 늘어난다.,The hero throws more cards at once.,SO_HeroCard_Projectile.Description
+영웅이 한 번에 던지는 카드가 늘어난다. 같은 적에게 겹친 카드는 {RepeatHitScale%} 피해를 준다.,"The hero throws more cards at once. Extra cards on the same enemy deal {RepeatHitScale%} damage.",SO_HeroCard_Projectile.Description
 올인,All In,SO_SkillCard_AllIn.DisplayName
 "목표물 체력을 최대치로 채우고, 모든 주사위의 눈을 다시 굴린다.",Fully restores the goal and rerolls the pips of every die.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
