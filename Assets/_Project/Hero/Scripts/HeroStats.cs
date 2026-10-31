@@ -123,7 +123,7 @@ public sealed class HeroStats
     public float CritMultiplier => Get(HeroStat.CritDamage);
     /// <summary>한 번에 던지는 카드 수(1 이상).</summary>
     public int Projectiles => Mathf.Max(1, Mathf.RoundToInt(Get(HeroStat.Projectile)));
-    /// <summary>한 번 던질 때 같은 적에게 겹쳐 맞는 카드의 피해 배율(투사체 카드 글이 읽는다).</summary>
+    /// <summary>한 번 던질 때 같은 적에게 겹칠 때마다 곱하는 피해 배율(투사체 카드 글이 읽는다).</summary>
     public float RepeatHitScale => _config.RepeatHitScale;
 
     // extra 카드를 더 받았다고 치고 stat을 계산한다(미리보기용, 지금 값은 extra 없음).

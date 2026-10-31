@@ -28,8 +28,9 @@ public sealed class HeroAttack : IDisposable
     private readonly List<int> _targets = new List<int>();
     // _targets(고정 대상 다음부터)와 같은 순서의 거리 제곱 — 가까운 순으로 끼워 넣을 자리를 찾는다.
     private readonly List<float> _targetSqr = new List<float>();
-    // 이번에 던진 카드가 이미 맞힌 슬롯 — 겹쳐 맞는 카드는 RepeatHitScale만 준다.
+    // 이번에 던진 카드가 맞힌 슬롯과 그 슬롯이 맞은 횟수(같은 순서) — 겹칠 때마다 RepeatHitScale을 한 번 더 곱한다.
     private readonly List<int> _hitSlots = new List<int>();
+    private readonly List<int> _hitCounts = new List<int>();
     // 강화(브레이크 전용 카드 — 브레이크 샷): 남은 시간과 공격력·공격 속도 배율.
     private float _boostTime;
     private float _boostDamage = 1f;
@@ -125,7 +126,8 @@ public sealed class HeroAttack : IDisposable
     // 카드가 손을 떠나는 순간. 한 번에 던지는 카드 수(투사체)만큼 대상을 고르고 고르게 나눠 맞힌다.
     // 첫 대상은 처음 노린 적이 살아 있고 조금 넓힌 사거리 안이면 그 적, 아니면(주사위가 먼저 잡았거나 멀어졌으면) 지금 가장 가까운 적.
     // 나머지는 사거리 안 가까운 적부터 한 마리에 한 장씩, 적이 카드보다 적으면 앞에서부터 다시 돈다(한 마리면 다 그 적에게).
-    // 이미 맞은 적에게 겹친 카드는 RepeatHitScale만 준다 — 다 몰리면 투사체가 공격력·치명과 곱해져 보스까지 녹였다.
+    // 같은 적에게 겹칠 때마다 피해가 RepeatHitScale배로 준다(등비) — 다 몰리면 투사체가 공격력·치명과 곱해져 보스까지 녹였다.
+    // 한 마리가 받는 합은 1/(1 - RepeatHitScale)배를 넘지 않는다.
     // 카드마다 따로 맞히므로 치명타도 방어력도 카드마다다 — 공격력 강화(한 방이 셈)와 갈리는 지점이다.
     // 아무도 없으면 던지지 않고 쿨다운도 돌려준다 — 드문 일이라 헛손질로 벌하지 않는다.
     private void Release(Vector2 position, float range, int targetId)
@@ -144,18 +146,18 @@ public sealed class HeroAttack : IDisposable
         Vector3 launch = new Vector3(from.x - position.x, 0f, from.z - position.y);
         MonsterState[] states = _monsters.States;
         _hitSlots.Clear();
+        _hitCounts.Clear();
         for (int i = 0; i < count; i++)
         {
             int slot = _targets[i % _targets.Count];
             // 앞 카드에 죽었으면 살아 있는 다른 대상에게. 다 죽었으면 남는 카드는 버린다(남는 피해).
             if (!states[slot].IsAlive) slot = FirstAliveTarget();
             if (slot < 0) break;
-            bool repeat = _hitSlots.Contains(slot);
-            if (!repeat) _hitSlots.Add(slot);
+            int hits = CountHit(slot);
 
             // 치명타는 영웅 공격과 스킬에만 있는 영웅 능력치다(기획서 10.2) — 주사위 치명타(SO_DiceStatsConfig)와 따로 굴린다.
             bool critical = GameRandom.Crit.Value < _stats.CritChance;
-            float damage = _stats.Attack * (IsBoosted ? _boostDamage : 1f) * (repeat ? _config.RepeatHitScale : 1f);
+            float damage = _stats.Attack * (IsBoosted ? _boostDamage : 1f) * Mathf.Pow(_config.RepeatHitScale, hits);
             _monsters.Hit(slot, damage * (critical ? _stats.CritMultiplier : 1f), DamageSource.Hero, 0f, critical);
             _cards.Throw(from, launch, states[slot].Id, critical, i, count);
         }
@@ -195,6 +197,19 @@ public sealed class HeroAttack : IDisposable
                 _targets.RemoveAt(start + wanted);
             }
         }
+    }
+
+    // slot이 이번 던지기에서 앞서 맞은 횟수를 돌려주고 한 번 더 센다.
+    private int CountHit(int slot)
+    {
+        int index = _hitSlots.IndexOf(slot);
+        if (index < 0)
+        {
+            _hitSlots.Add(slot);
+            _hitCounts.Add(1);
+            return 0;
+        }
+        return _hitCounts[index]++;
     }
 
     private int FirstAliveTarget()

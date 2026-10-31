@@ -17,7 +17,7 @@ public class SO_HeroCard : SO_Card, ICardTextTokens
     [Tooltip("Amount를 기본값의 %가 아니라 값에 그대로 더한다.")]
     public bool Flat;
 
-    // {RepeatHitScale%} = 같은 적에게 겹친 카드의 피해 배율(투사체 카드 글). 값은 영웅 공격 규칙이라 영웅 설정에 두고 능력치로 읽는다.
+    // {RepeatHitScale%} = 같은 적에게 겹칠 때마다 곱하는 피해 배율(투사체 카드 글). 값은 영웅 공격 규칙이라 영웅 설정에 두고 능력치로 읽는다.
     public bool TryGetToken(string key, HeroStats hero, out string text)
     {
         text = null;
