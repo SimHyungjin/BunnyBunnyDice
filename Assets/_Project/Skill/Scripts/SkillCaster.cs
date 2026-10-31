@@ -93,7 +93,13 @@ public sealed class SkillCaster
         }
         if (card is SO_SkillCard_FullHouse fullHouse)
         {
-            _diceCombat.FullHouse(_diceField.IndexOf(cell), fullHouse.Duration);
+            int index = _diceField.IndexOf(cell);
+            _diceCombat.FullHouse(index, fullHouse.Duration);
+            if (fullHouse.Raise != null)
+            {
+                fullHouse.Raise.GetScales(_traits, out float damageScale, out float speedScale);
+                _diceCombat.Raise(index, damageScale, speedScale, fullHouse.Duration);
+            }
             _effects.ShowBurst(Ground(cell), fullHouse.BurstRadius, card.IconColor);
             _effects.ShowRing(Ground(cell), fullHouse.BurstRadius * 0.5f, card.IconColor, fullHouse.Duration);
             return;
