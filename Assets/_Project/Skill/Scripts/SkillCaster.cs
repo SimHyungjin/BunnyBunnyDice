@@ -99,6 +99,9 @@ public sealed class SkillCaster
             {
                 fullHouse.Raise.GetScales(_traits, out float damageScale, out float speedScale);
                 _diceCombat.Raise(index, damageScale, speedScale, fullHouse.Duration);
+                // 레이즈 카드와 같은 고리(색·크기) — 없으면 영웅이 올라탈 때 나오는 레이즈 고리가 레이즈가 한 번 더 붙는 것처럼 보였다(2026-10-31 사용자).
+                // 올라타도 겹쳐 세지 않고 눈도 안 깎이므로(카드 시간을 먼저 씀) 같은 고리가 겹쳐 보이는 게 맞다.
+                _effects.ShowRing(Ground(cell), fullHouse.Raise.RingRadius, fullHouse.Raise.IconColor, fullHouse.Duration);
             }
             _effects.ShowBurst(Ground(cell), fullHouse.BurstRadius, card.IconColor);
             _effects.ShowRing(Ground(cell), fullHouse.BurstRadius * 0.5f, card.IconColor, fullHouse.Duration);
