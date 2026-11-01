@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_ColorTestConfig
   Colors: 01000000020000000400000003000000050000000600000007000000
   Seeds: 91bffe05d198580321465403
+  Ranges: []
+  MaxDice: 0
+  FillOffPath: 0
+  Traits: []
   Faces: 20
   SpeedScale: 0.556
   MaxWave: 100

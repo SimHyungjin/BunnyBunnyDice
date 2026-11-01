@@ -90,12 +90,12 @@ public sealed class DiceAttack : IDisposable
         {
             case SO_DiceType_Explosion explosion: return FireExplosion(shot, explosion, awaken, color);
             case SO_DiceType_Snipe snipe: return FireSnipe(shot, snipe, awaken, color);
-            case SO_DiceType_Rapid rapid: return FireRapid(shot, rapid, color);
-            case SO_DiceType_LongRange longRange: return FireLongRange(shot, longRange, color);
+            case SO_DiceType_Rapid rapid: return FireRapid(shot, rapid, awaken, color);
+            case SO_DiceType_LongRange longRange: return FireLongRange(shot, longRange, awaken, color);
             case SO_DiceType_Pierce pierce: return FirePierce(shot, pierce, awaken, color);
             case SO_DiceType_Chain chain: return FireChain(shot, chain, awaken, color);
             case SO_DiceType_Pulse pulse: return FirePulse(shot, pulse, awaken, color);
-            // 검정은 평범한 단일 공격이다. 속사의 빠르기와 각성(공격 속도), 저격의 각성(사거리)은 능력치(DiceStats)에서 나온다.
+            // 검정은 평범한 단일 공격이다. 속사의 빠르기는 능력치(DiceStats)에서 나온다.
             default: return FireSingle(shot, color);
         }
     }
@@ -131,8 +131,8 @@ public sealed class DiceAttack : IDisposable
         return true;
     }
 
-    // 속사(초록): 같은 적을 이어 맞힐 때마다 피해가 쌓인다. 주사위 칸으로 누구를 몇 번 맞혔는지 기억한다.
-    private bool FireRapid(in Shot shot, SO_DiceType_Rapid type, Color color)
+    // 속사(초록): 각성하면 같은 적을 이어 맞힐 때마다 피해가 쌓인다. 주사위 칸으로 누구를 몇 번 맞혔는지 기억한다(각성 전에도 세어 두어 각성하는 순간 이어진다).
+    private bool FireRapid(in Shot shot, SO_DiceType_Rapid type, bool awaken, Color color)
     {
         int target = FindFirst(shot);
         if (target < 0) return false;
@@ -140,19 +140,21 @@ public sealed class DiceAttack : IDisposable
         Vector2Int cell = Vector2Int.RoundToInt(shot.Origin);
         int hits = _focus.TryGetValue(cell, out var focus) && focus.id == state.Id ? focus.hits + 1 : 0;
         _focus[cell] = (state.Id, hits);
-        bool critical = HitDirect(target, DamageOn(shot, target, 1f + type.FocusBonusPerHit * hits), shot.Stats.CritChance);
+        float scale = awaken ? 1f + type.FocusBonusPerHit * hits : 1f;
+        bool critical = HitDirect(target, DamageOn(shot, target, scale), shot.Stats.CritChance);
         _effects.Show(shot.Muzzle, ToHitPoint(state.Position), color, critical);
         return true;
     }
 
-    // 저격(파랑): 멀리 있는 적일수록 세다 — 한 칸마다 FarDamagePerCell씩, 상한 없이(사거리가 늘면 끝의 피해도 는다).
-    private bool FireLongRange(in Shot shot, SO_DiceType_LongRange type, Color color)
+    // 저격(파랑): 각성하면 멀리 있는 적일수록 세다 — 한 칸마다 FarDamagePerCell씩, 상한 없이(사거리가 늘면 끝의 피해도 는다).
+    private bool FireLongRange(in Shot shot, SO_DiceType_LongRange type, bool awaken, Color color)
     {
         int target = FindFirst(shot);
         if (target < 0) return false;
         Vector2 position = _monsters.States[target].Position;
         float distance = (position - shot.Origin).magnitude;
-        bool critical = HitDirect(target, DamageOn(shot, target, 1f + type.FarDamagePerCell * distance), shot.Stats.CritChance);
+        float far = awaken ? 1f + type.FarDamagePerCell * distance : 1f;
+        bool critical = HitDirect(target, DamageOn(shot, target, far), shot.Stats.CritChance);
         _effects.Show(shot.Muzzle, ToHitPoint(position), color, critical);
         return true;
     }

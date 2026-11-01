@@ -6,10 +6,10 @@ using UnityEngine.InputSystem;
 /// </summary>
 public sealed partial class GameScene
 {
-    partial void SetUpDebugTools(SO_LevelUpConfig levelUpConfig, SO_DiceConfig diceConfig, SO_HeroConfig heroConfig);
+    partial void SetUpDebugTools(SO_LevelUpConfig levelUpConfig, SO_DiceConfig diceConfig, SO_HeroConfig heroConfig, SO_WaveConfig waveConfig);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    partial void SetUpDebugTools(SO_LevelUpConfig levelUpConfig, SO_DiceConfig diceConfig, SO_HeroConfig heroConfig)
+    partial void SetUpDebugTools(SO_LevelUpConfig levelUpConfig, SO_DiceConfig diceConfig, SO_HeroConfig heroConfig, SO_WaveConfig waveConfig)
     {
         // 테스트 키. 같은 목록이 테스트 창(F1)의 "기능" 탭에 버튼·키 안내로 나온다.
         GameDebugKeys keys = _mapRoot.gameObject.AddComponent<GameDebugKeys>();
@@ -30,7 +30,7 @@ public sealed partial class GameScene
         keys.Add(Key.A, false, "자동 플레이(봇, 보면서 — SO_BotConfig.BatchRuns판 뒤 요약을 남기고 멈춘다)", () => ToggleBot(false), () => _bot.Enabled && !_bot.Fast);
         keys.Add(Key.A, true, "빠른 시뮬(봇, 화면을 그리지 않는다 — 결과는 A와 같다)", () => ToggleBot(true), () => _bot.Enabled && _bot.Fast);
         // 색마다 순수 딜을 재는 시험(기획서 11.5). 빠른 시뮬로 SO_ColorTestConfig.Seeds × Colors판을 돌고 RunLogs/color_test_*.csv를 남긴다.
-        _colorTest = new ColorPowerTest(_colorTestConfig, () => _map, _diceField, _monsters, _waves, TestRetry);
+        _colorTest = new ColorPowerTest(_colorTestConfig, diceConfig, waveConfig, () => _map, _diceField, _monsters, _waves, TestRetry);
         _colorTest.RunningChanged += SetColorTestMode;
         keys.Add(Key.T, false, "색 시험(미로 전부를 한 색 d20 눈 20으로 — 영웅·칩 없이, 적은 늘 디버프)", ToggleColorTest, () => _colorTest.Running);
         // 원하는 카드를 골라 넣는 테스트 창(F1).

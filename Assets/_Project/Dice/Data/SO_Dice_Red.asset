@@ -17,12 +17,10 @@ MonoBehaviour:
   Color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   AttackName: "강타"
   Description: "느리지만 강한 한 방."
-  StrongAgainst: "단단함, 보스, 재생"
-  WeakAgainst: "분열"
   AwakenDescription: "모든 공격이 치명타가 된다"
-  Damage: 100
+  Damage: 90
   DamageGrowth: 0.5
-  AttackSpeed: 0.7
+  AttackSpeed: 1.5
   AttackSpeedGrowth: 0
-  Range: 2.8
-  MaxHealthDamage: 0.04
+  Range: 2.3
+  MaxHealthDamage: 0.01

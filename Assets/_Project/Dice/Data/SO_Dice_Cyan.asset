@@ -18,16 +18,14 @@ MonoBehaviour:
   AttackName: "\uCCB4\uC778"
   Description: "\uAC00\uAE4C\uC6B4 \uC801\uC5D0\uAC8C \uD295\uAE34\uB2E4. \uD295\uAE38
     \uB54C\uB9C8\uB2E4 \uD53C\uD574\uAC00 {Falloff%}\uB85C \uC904\uC5B4\uB4E0\uB2E4."
-  StrongAgainst: 
-  WeakAgainst: "\uB2E8\uB2E8\uD568"
   AwakenDescription: "\uD295\uAE38 \uB54C\uB9C8\uB2E4 {1-AwakenFalloff%}\uB9CC \uC904\uC5B4\uB4E0\uB2E4"
-  Damage: 12
+  Damage: 10
   DamageGrowth: 0.5
-  AttackSpeed: 2
+  AttackSpeed: 1.5
   AttackSpeedGrowth: 0
-  Range: 3.8
-  MaxHealthDamage: 0.004
+  Range: 4.4
+  MaxHealthDamage: 0.0015
   JumpRange: 1.6
-  Falloff: 0.65
+  Falloff: 0.8
   MinJumpDamage: 2
-  AwakenFalloff: 0.85
+  AwakenFalloff: 0.9

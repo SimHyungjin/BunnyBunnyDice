@@ -16,16 +16,12 @@ MonoBehaviour:
   DisplayName: "\uCD08\uB85D"
   Color: {r: 0.2, g: 0.72, b: 0.3, a: 1}
   AttackName: "\uC18D\uC0AC"
-  Description: "\uAC19\uC740 \uC801\uC744 \uC774\uC5B4 \uB9DE\uD790 \uB54C\uB9C8\uB2E4
-    \uD53C\uD574\uAC00 {FocusBonusPerHit%}\uC529 \uC624\uB978\uB2E4."
-  StrongAgainst: "\uBE60\uB984, \uC7AC\uC0DD"
-  WeakAgainst: "\uB2E8\uB2E8\uD568"
-  AwakenDescription: "\uACF5\uACA9 \uC18D\uB3C4 {1+AwakenAttackSpeedBonus}\uBC30"
-  Damage: 27
+  Description: "빠르게 쏘는 약한 공격."
+  AwakenDescription: "같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다."
+  Damage: 18
   DamageGrowth: 0.1
-  AttackSpeed: 3.5
+  AttackSpeed: 3.4
   AttackSpeedGrowth: 0.25
-  Range: 2.8
+  Range: 3.5
   MaxHealthDamage: 0.002
-  FocusBonusPerHit: 0.05
-  AwakenAttackSpeedBonus: 1
+  FocusBonusPerHit: 0.02

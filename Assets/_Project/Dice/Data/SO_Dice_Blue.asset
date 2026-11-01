@@ -16,16 +16,12 @@ MonoBehaviour:
   DisplayName: "\uD30C\uB791"
   Color: {r: 0.2, g: 0.42, b: 0.95, a: 1}
   AttackName: "\uC800\uACA9"
-  Description: "\uBA40\uB9AC \uC788\uB294 \uC801\uC77C\uC218\uB85D \uC138\uAC8C \uB9DE\uD78C\uB2E4(\uD55C
-    \uCE78\uB9C8\uB2E4 +{FarDamagePerCell%})."
-  StrongAgainst: "\uBE60\uB984"
-  WeakAgainst: 
-  AwakenDescription: "\uC0AC\uAC70\uB9AC {1+AwakenRangeBonus}\uBC30"
-  Damage: 32
+  Description: "가장 멀리 닿는 공격."
+  AwakenDescription: "멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%})."
+  Damage: 40
   DamageGrowth: 0.5
-  AttackSpeed: 1.2
+  AttackSpeed: 0.67
   AttackSpeedGrowth: 0
   Range: 5.5
-  MaxHealthDamage: 0.02
+  MaxHealthDamage: 0.007
   FarDamagePerCell: 0.3
-  AwakenRangeBonus: 0.5

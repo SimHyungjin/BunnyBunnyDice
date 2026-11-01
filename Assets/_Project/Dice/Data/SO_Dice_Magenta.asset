@@ -17,14 +17,12 @@ MonoBehaviour:
   Color: {r: 0.9, g: 0.25, b: 0.75, a: 1}
   AttackName: "\uAD00\uD1B5"
   Description: "\uC77C\uC9C1\uC120\uC73C\uB85C \uAFF0\uB6AB\uB294\uB2E4."
-  StrongAgainst: "\uB2E8\uB2E8\uD568, \uBCF4\uC2A4"
-  WeakAgainst: 
   AwakenDescription: "\uAD00\uD1B5\uC120\uC774 {AwakenWidthScale}\uBC30 \uAD75\uC5B4\uC9C4\uB2E4"
-  Damage: 27
+  Damage: 20
   DamageGrowth: 0.5
-  AttackSpeed: 0.4
+  AttackSpeed: 1
   AttackSpeedGrowth: 0
-  Range: 5.5
+  Range: 3.5
   MaxHealthDamage: 0.003
-  HalfWidth: 0.15
+  HalfWidth: 0.35
   AwakenWidthScale: 2

@@ -18,15 +18,13 @@ MonoBehaviour:
   AttackName: "\uBC94\uC704 \uD3ED\uBC1C"
   Description: "\uB9DE\uC740 \uC790\uB9AC\uC5D0\uC11C \uD3ED\uBC1C\uD574 \uC8FC\uBCC0
     \uC801\uC5D0\uAC8C\uB3C4 \uD53C\uD574\uB97C \uC900\uB2E4."
-  StrongAgainst: "\uBD84\uC5F4"
-  WeakAgainst: "\uB2E8\uB2E8\uD568"
   AwakenDescription: "\uD3ED\uBC1C \uBC18\uACBD {1+AwakenExplosionRadiusBonus}\uBC30"
-  Damage: 13
+  Damage: 20
   DamageGrowth: 0.27
-  AttackSpeed: 2
+  AttackSpeed: 2.25
   AttackSpeedGrowth: 0
-  Range: 2.3
-  MaxHealthDamage: 0.001
+  Range: 2.85
+  MaxHealthDamage: 0.0015
   ExplosionRadius: 0.9
   ExplosionRadiusGrowth: 0.1
   MaxExplosionRadius: 2
