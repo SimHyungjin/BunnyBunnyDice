@@ -23,7 +23,7 @@ public sealed class UI_LobbyPopup : UI_Popup
     [SerializeField] private Button _characterButton;
     [SerializeField] private TMP_Text _traitName;
     [SerializeField] private TMP_Text _traitDescription;
-    [Tooltip("HeroStat 순서(공격력·공격 속도·이동 속도·사거리·치명타 확률·치명타 피해).")]
+    [Tooltip("CellStats 순서(공격력·공격 속도·치명타 확률·치명타 피해·이동 속도·사거리).")]
     [SerializeField] private UI_LobbyStatCell[] _statCells;
     [SerializeField] private Button _startButton;
     [Header("재화 · 설정")]
@@ -42,6 +42,13 @@ public sealed class UI_LobbyPopup : UI_Popup
     private Action _selectCharacter;
     private Action _openSettings;
     private HeroStat _selected = HeroStat.Attack;
+
+    // 칸에 보이는 순서. 화력(공격·치명)을 앞에, 조작감(이동·사거리)을 뒤에 묶는다(2026-11-01 사용자).
+    // HeroStat 순서는 세이브의 단계 배열 순서라 바꾸지 않고 보이는 순서만 따로 둔다.
+    private static readonly HeroStat[] CellStats =
+    {
+        HeroStat.Attack, HeroStat.AttackSpeed, HeroStat.CritChance, HeroStat.CritDamage, HeroStat.MoveSpeed, HeroStat.Range,
+    };
     private bool _cellsHooked;
 
     /// <param name="selectCharacter">이름 버튼. 없으면 눌러도 아무 일도 없다.</param>
@@ -82,9 +89,9 @@ public sealed class UI_LobbyPopup : UI_Popup
         _traitName.text = trait != null ? App.Localize(trait.DisplayName) : App.Localize("특성 없음");
         _traitDescription.text = trait != null ? CardText.Fill(trait.Description, trait) : "";
 
-        for (int i = 0; i < _statCells.Length && i < HeroStats.StatCount; i++)
+        for (int i = 0; i < _statCells.Length && i < CellStats.Length; i++)
         {
-            HeroStat stat = (HeroStat)i;
+            HeroStat stat = CellStats[i];
             _statCells[i].Show(stat, _stats.GetStage(stat), _stats.GetBase(stat));
             _statCells[i].SetSelected(stat == _selected);
         }
@@ -104,9 +111,9 @@ public sealed class UI_LobbyPopup : UI_Popup
     {
         if (_cellsHooked) return;
         _cellsHooked = true;
-        for (int i = 0; i < _statCells.Length; i++)
+        for (int i = 0; i < _statCells.Length && i < CellStats.Length; i++)
         {
-            HeroStat stat = (HeroStat)i;
+            HeroStat stat = CellStats[i];
             _statCells[i].Clicked += () =>
             {
                 _selected = stat;
@@ -132,15 +139,23 @@ public sealed class UI_LobbyPopup : UI_Popup
         if (_meta == null) return;
         // 다시 그리기는 MetaProfile.Changed가 부른다(칸은 새 값을 받아 두고 착지 때 그린다).
         int rolled = _meta.Reroll(_selected);
-        if (rolled > 0) _statCells[(int)_selected].Roll(_diceConfig, rolled);
+        int cell = CellIndex(_selected);
+        if (rolled > 0 && cell >= 0) _statCells[cell].Roll(_diceConfig, rolled);
     }
 
     // 지금 캐릭터가 열렸다: 첫 능력치를 하나씩 굴려 보인다. 단계는 이미 정해져 칸에 들어와 있다.
     private void OnUnlocked(SO_HeroCharacter character)
     {
         if (_stats == null || character != _stats.Character) return;
-        for (int i = 0; i < _statCells.Length && i < HeroStats.StatCount; i++)
-            _statCells[i].Roll(_diceConfig, _stats.GetStage((HeroStat)i), i * _diceConfig.Stagger, reveal: true);
+        for (int i = 0; i < _statCells.Length && i < CellStats.Length; i++)
+            _statCells[i].Roll(_diceConfig, _stats.GetStage(CellStats[i]), i * _diceConfig.Stagger, reveal: true);
+    }
+
+    private int CellIndex(HeroStat stat)
+    {
+        for (int i = 0; i < _statCells.Length && i < CellStats.Length; i++)
+            if (CellStats[i] == stat) return i;
+        return -1;
     }
 
     private void Unsubscribe()
