@@ -332,7 +332,7 @@ public sealed class DiceAttack : IDisposable
             Vector2 at = states[i].Position;
             HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio), critChance);
             any = true;
-            _effects.ShowBurst(new Vector3(at.x, ground, at.y), type.HitSparkRadius, color);
+            _effects.ShowSpark(new Vector3(at.x, ground, at.y), type.HitSparkRadius, color);
         }
         return any;
     }

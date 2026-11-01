@@ -25,6 +25,8 @@ public sealed class SO_AttackEffectConfig : SO_Config
     [Min(3)] public int BurstSegments = 48;
     [Tooltip("바닥 위로 띄우는 높이. 고리는 바닥에 눕힌 메시라 바닥과 같은 높이면 깜빡인다.")]
     [Min(0f)] public float BurstLift = 0.03f;
+    [Tooltip("작은 고리(맞은 적마다 — ShowSpark)를 이루는 점 수. 수백 개를 한 메시에 그리므로 폭발 고리보다 적게.")]
+    [Min(3)] public int SparkSegments = 16;
 
     [Tooltip("처음 잡아 두는 선 수. 모자라면 더 만든다.")]
     [Min(1)] public int InitialCapacity = 32;

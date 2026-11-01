@@ -22,4 +22,5 @@ MonoBehaviour:
   BurstStartScale: 0.3
   BurstSegments: 48
   BurstLift: 0.03
+  SparkSegments: 16
   InitialCapacity: 32

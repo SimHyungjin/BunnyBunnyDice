@@ -36,6 +36,22 @@ public sealed class AttackEffects : IDisposable
         public bool Expand;
     }
 
+    // 맞은 적 고리(하양 파동 — 범위 안 적마다 하나라 수백 개가 된다). 고리마다 오브젝트·메시를 두면 프레임이 떨어져 메시 하나에 모아 그린다.
+    private struct Spark
+    {
+        public Vector3 Center;
+        public float Radius;
+        public Color Color;
+        public float Remaining;
+    }
+
+    private readonly List<Spark> _sparks = new List<Spark>();
+    private GameObject _sparkObject;
+    private MeshRenderer _sparkRenderer;
+    private Mesh _sparkMesh;
+    private readonly List<Vector3> _sparkVertices = new List<Vector3>();
+    private readonly List<Color> _sparkColors = new List<Color>();
+    private readonly List<int> _sparkTriangles = new List<int>();
     private readonly List<Shot> _active = new List<Shot>();
     private readonly Stack<LineRenderer> _idle = new Stack<LineRenderer>();
     private readonly List<Burst> _bursts = new List<Burst>();
@@ -84,6 +100,13 @@ public sealed class AttackEffects : IDisposable
     public void ShowBurst(Vector3 center, float radius, Color color) =>
         AddRing(center, radius, color, _config.BurstDuration, true);
 
+    /// <summary>
+    /// 맵 로컬 center(바닥 높이)에 작은 고리가 퍼지며 사라진다 — ShowBurst와 같은 모습이지만 한꺼번에 많이 띄우는 것(맞은 적마다)을
+    /// 메시 하나에 모아 그린다.
+    /// </summary>
+    public void ShowSpark(Vector3 center, float radius, Color color) =>
+        _sparks.Add(new Spark { Center = center, Radius = radius, Color = color, Remaining = _config.BurstDuration });
+
     /// <summary>duration 동안 제자리에 머물며 흐려지는 고리(레이즈·풀 하우스 지속 등).</summary>
     public void ShowRing(Vector3 center, float radius, Color color, float duration) =>
         AddRing(center, radius, color, duration, false);
@@ -126,6 +149,8 @@ public sealed class AttackEffects : IDisposable
         _active.Clear();
         for (int i = 0; i < _bursts.Count; i++) ReleaseBurst(_bursts[i].Ring);
         _bursts.Clear();
+        _sparks.Clear();
+        if (_sparkObject != null) _sparkObject.SetActive(false);
         HideHeldRing();
     }
 
@@ -163,6 +188,94 @@ public sealed class AttackEffects : IDisposable
             PlaceBurst(burst);
             _bursts[i] = burst;
         }
+
+        for (int i = _sparks.Count - 1; i >= 0; i--)
+        {
+            Spark spark = _sparks[i];
+            spark.Remaining -= deltaTime;
+            if (spark.Remaining <= 0f)
+            {
+                _sparks[i] = _sparks[_sparks.Count - 1];
+                _sparks.RemoveAt(_sparks.Count - 1);
+                continue;
+            }
+            _sparks[i] = spark;
+        }
+        DrawSparks();
+    }
+
+    // 모든 작은 고리를 메시 하나로 다시 채운다(퍼지는 크기·투명도는 PlaceBurst와 같은 곡선).
+    // 색은 정점 색에 넣고(고리마다 다를 수 있다) 블룸 밝기는 머티리얼 색(흰색 × Intensity)으로 곱한다.
+    private void DrawSparks()
+    {
+        if (_sparks.Count == 0)
+        {
+            if (_sparkObject != null) _sparkObject.SetActive(false);
+            return;
+        }
+        if (_sparkObject == null) CreateSparkObject();
+        // 머티리얼·밝기는 켤 때만 넣는다(실행 중 설정을 고치면 다음에 켤 때 반영) — 매 프레임 넣으면 색 입히기가 렌더러를 찾느라 할당이 생긴다.
+        if (!_sparkObject.activeSelf)
+        {
+            _sparkObject.SetActive(true);
+            _sparkRenderer.sharedMaterial = _config.Material;
+            Tint(_sparkObject, Color.white);
+        }
+
+        int segments = Mathf.Max(_config.SparkSegments, 3);
+        float half = _config.BurstWidth * 0.5f;
+        _sparkVertices.Clear();
+        _sparkColors.Clear();
+        _sparkTriangles.Clear();
+        for (int s = 0; s < _sparks.Count; s++)
+        {
+            Spark spark = _sparks[s];
+            float t = 1f - spark.Remaining / _config.BurstDuration;
+            float radius = spark.Radius * Mathf.Lerp(_config.BurstStartScale, 1f, 1f - (1f - t) * (1f - t));
+            float inner = Mathf.Max(radius - half, 0f);
+            float outer = radius + half;
+            Color color = spark.Color;
+            color.a = 1f - t;
+            Vector3 center = spark.Center + Vector3.up * _config.BurstLift;
+            int start = _sparkVertices.Count;
+            for (int i = 0; i < segments; i++)
+            {
+                float angle = i * Mathf.PI * 2f / segments;
+                Vector3 direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+                _sparkVertices.Add(center + direction * inner);
+                _sparkVertices.Add(center + direction * outer);
+                _sparkColors.Add(color);
+                _sparkColors.Add(color);
+                int a = start + i * 2;
+                int b = start + (i + 1) % segments * 2;
+                _sparkTriangles.Add(a);
+                _sparkTriangles.Add(b);
+                _sparkTriangles.Add(a + 1);
+                _sparkTriangles.Add(a + 1);
+                _sparkTriangles.Add(b);
+                _sparkTriangles.Add(b + 1);
+            }
+        }
+        _sparkMesh.Clear();
+        _sparkMesh.SetVertices(_sparkVertices);
+        _sparkMesh.SetColors(_sparkColors);
+        _sparkMesh.SetTriangles(_sparkTriangles, 0);
+        _sparkMesh.RecalculateBounds();
+    }
+
+    private void CreateSparkObject()
+    {
+        _sparkObject = new GameObject("Sparks");
+        _sparkObject.transform.SetParent(_root, false);
+        _sparkMesh = RingMesh.Create("Sparks");
+        // 고리 수백 개면 정점이 65535를 넘는다.
+        _sparkMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        _meshes.Add(_sparkMesh);
+        _sparkObject.AddComponent<MeshFilter>().sharedMesh = _sparkMesh;
+        _sparkRenderer = _sparkObject.AddComponent<MeshRenderer>();
+        _sparkRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        _sparkRenderer.receiveShadows = false;
+        _sparkObject.SetActive(false);
     }
 
     // 폭발은 반경의 일부에서 시작해 반경까지 퍼지며 흐려진다. 머무는 고리는 크기 그대로 흐려지기만 한다.
