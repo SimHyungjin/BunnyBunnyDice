@@ -138,7 +138,7 @@
 리롤,Reroll,SO_SkillCard_Reroll.DisplayName
 해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다. 이십면체는 눈만 다시 굴린다.,Upgrades the die to the next size and rerolls its pips. A D20 only rerolls its pips.,SO_SkillCard_Reroll.Description
 스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName
-손패의 스킬 카드가 {StackScale}배로 늘어난다.,Skill cards in hand are multiplied x{StackScale}.,SO_SkillCard_StackedDeck.Description
+손패의 스킬 카드가 종류마다 {AddPerStack}장씩 늘어난다.,Adds {AddPerStack} of each skill card in hand.,SO_SkillCard_StackedDeck.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title

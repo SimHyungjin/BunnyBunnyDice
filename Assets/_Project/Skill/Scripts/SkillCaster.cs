@@ -343,8 +343,7 @@ public sealed class SkillCaster
         {
             HandCard held = hand.GetCard(i);
             if (!held.IsSkill || held.Skill.Exclusive) continue;
-            int added = hand.GetStack(i) * (card.StackScale - 1);
-            for (int k = 0; k < added; k++) hand.Add(held);
+            for (int k = 0; k < card.AddPerStack; k++) hand.Add(held);
         }
     }
 
