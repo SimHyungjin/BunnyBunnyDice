@@ -55,6 +55,8 @@ MonoBehaviour:
   PopOvershoot: 1.7
   PopTurns: 1
   StackPopStart: 0.7
+  BustBurstRadius: 0.7
+  BustColor: {r: 0.45, g: 0.4, b: 0.5, a: 1}
   PipFont: {fileID: 11400000, guid: 743e12e08f2c09549b7a59ee5599b03e, type: 2}
   PipMaterial: {fileID: 2100000, guid: 2ce988fb6d5b40e4ad4199394aa014c9, type: 2}
   PipFontSize: 4.2

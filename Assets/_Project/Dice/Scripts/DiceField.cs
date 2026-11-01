@@ -27,6 +27,10 @@ public sealed class DiceField : IDisposable
     private readonly List<DiceView> _views = new List<DiceView>();
     private MapData _map;
     private float _lastYaw = float.NaN;
+    // 올인에서 부서질 칸(RerollAll). 매번 새로 만들지 않게 들고 있는다.
+    // 눈과 상관없이 각성으로 보일 칸(풀 하우스 — DiceCombat이 켜고 끈다). 표시만이고 판정은 DiceCombat이 따로 한다.
+    private readonly HashSet<Vector2Int> _forcedAwake = new HashSet<Vector2Int>();
+    private readonly List<Vector2Int> _busted = new List<Vector2Int>();
 
     /// <summary>빈 칸에 새로 놓였다. 칸이 막혀 길이 바뀌었을 수 있으므로 경로 표시 등이 구독해 갱신한다.</summary>
     public event Action<Vector2Int> DicePlaced;
@@ -39,6 +43,9 @@ public sealed class DiceField : IDisposable
 
     /// <summary>주사위가 각성했다(놓기·얹기·스킬로 눈이 바뀌어 각성에 닿았다). 측정용(한 판 각성 수, 기획서 12.4).</summary>
     public event Action<Vector2Int> DiceAwakened;
+
+    /// <summary>굴림에 실패해 주사위가 부서졌다(더블 오어 낫싱 — 놓기는 생기지 않았고, 나머지는 칸의 주사위가 사라졌다). 연출용.</summary>
+    public event Action<Vector2Int> DiceBusted;
 
     /// <summary>
     /// 주사위의 각성이 화면에 막 드러났다(굴림이 끝난 뒤 — 판 전체 일시 각성 포함). 켜지는 순간 연출용이라 측정(DiceAwakened)과 따로 둔다.
@@ -96,8 +103,15 @@ public sealed class DiceField : IDisposable
     public void Place(MapData map, Vector2Int cell, DiceCard card)
     {
         _map = map;
+        int pips = Roll(card.Faces);
+        // 부서지면(더블 오어 낫싱) 주사위가 생기지 않는다 — 칸을 막기 전에 굴려 길도 그대로다.
+        if (pips <= 0)
+        {
+            DiceBusted?.Invoke(cell);
+            return;
+        }
         map.SetDice(cell.x, cell.y, true);
-        DiceState dice = DiceRules.Create(card, Roll(card.Faces, true));
+        DiceState dice = DiceRules.Create(card, pips);
         DiceRules.ResolveBlack(ref dice, _statsConfig.AwakenPips);
         _placed.Add(new PlacedDice
         {
@@ -117,9 +131,16 @@ public sealed class DiceField : IDisposable
     {
         int index = IndexOf(cell);
         if (index < 0) return;
+        int pips = Roll(card.Faces);
+        // 부서지면 쌓아 둔 주사위째 사라진다(더블 오어 낫싱 — 예외 없이 "굴리면 최대 아니면 파괴").
+        if (pips <= 0)
+        {
+            Bust(cell);
+            return;
+        }
         PlacedDice placed = _placed[index];
         bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
-        DiceRules.Stack(ref placed.Dice, card, Roll(card.Faces, true));
+        DiceRules.Stack(ref placed.Dice, card, pips);
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
         Refresh(index);
@@ -153,17 +174,26 @@ public sealed class DiceField : IDisposable
     /// <summary>판의 모든 주사위를 지금 면체로 다시 굴린다(올인, 기획서 8). 다시 굴리기를 모두에게 한 번씩 쓰는 것과 같다.</summary>
     public void RerollAll()
     {
+        // 부서질 주사위는 다 굴린 뒤에 없앤다 — 도는 중에 빼면 번호가 당겨져 다음 주사위를 건너뛴다.
+        _busted.Clear();
         for (int i = 0; i < _placed.Count; i++)
         {
             PlacedDice placed = _placed[i];
+            int pips = Roll(placed.Dice.Faces);
+            if (pips <= 0)
+            {
+                _busted.Add(placed.Cell);
+                continue;
+            }
             bool wasAwakened = _statsConfig.IsAwakened(placed.Dice);
-            placed.Dice.Pips = Roll(placed.Dice.Faces, false);
+            placed.Dice.Pips = pips;
             DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
             _placed[i] = placed;
             Refresh(i);
             _views[i].Roll(_config.StackDropHeight);
             NotifyAwakened(wasAwakened, placed.Dice, placed.Cell);
         }
+        for (int i = 0; i < _busted.Count; i++) Bust(_busted[i]);
     }
 
     /// <summary>
@@ -181,6 +211,20 @@ public sealed class DiceField : IDisposable
         return true;
     }
 
+    /// <summary>
+    /// cell의 주사위를 눈과 상관없이 각성으로 보이게 한다(풀 하우스 동안). 켜지면 각성 고리도 뜬다(AwakenRevealed). 표시만이다 —
+    /// 측정(DiceAwakened)과 IsAwakened는 눈 그대로라 한 판 각성 수에 세지 않는다.
+    /// </summary>
+    public void SetForcedAwake(Vector2Int cell, bool on)
+    {
+        if (on) _forcedAwake.Add(cell);
+        else _forcedAwake.Remove(cell);
+        int index = IndexOf(cell);
+        if (index >= 0 && index < _views.Count) _views[index].SetAwakened(LooksAwakened(_placed[index]), _config);
+    }
+
+    private bool LooksAwakened(in PlacedDice placed) => _statsConfig.IsAwakened(placed.Dice) || _forcedAwake.Contains(placed.Cell);
+
     /// <summary>cell의 주사위가 각성했는지.</summary>
     public bool IsAwakened(Vector2Int cell)
     {
@@ -193,12 +237,19 @@ public sealed class DiceField : IDisposable
     {
         int index = IndexOf(cell);
         if (index < 0) return false;
+        _forcedAwake.Remove(cell);
         _map?.SetDice(cell.x, cell.y, false);
         _views[index].Destroy();
         _views.RemoveAt(index);
         _placed.RemoveAt(index);
         DiceRemoved?.Invoke(index, cell);
         return true;
+    }
+
+    /// <summary>cell의 주사위가 굴림에 실패해 부서진다(더블 오어 낫싱). 없애기는 Remove와 같고 부서짐 연출을 알린다.</summary>
+    public void Bust(Vector2Int cell)
+    {
+        if (Remove(cell)) DiceBusted?.Invoke(cell);
     }
 
     // 각성하지 않았던 주사위가 각성에 닿았을 때만 알린다(이미 각성한 주사위를 다시 굴려 또 닿은 것은 새 각성이 아니다).
@@ -220,15 +271,15 @@ public sealed class DiceField : IDisposable
         return next == int.MaxValue ? current : next;
     }
 
-    // 타워 주사위 굴림. 특성이 굴림을 바꾸면(더블 오어 낫싱·하이 롤러) 그것을 쓴다. placing = 손패에서 놓거나 얹는 굴림.
-    private int Roll(int faces, bool placing)
+    // 타워 주사위 굴림. 특성이 굴림을 바꾸면(더블 오어 낫싱·하이 롤러) 그것을 쓴다. 0 = 부서짐.
+    private int Roll(int faces)
     {
         IDicePipRoller roller = _traits?.Find<IDicePipRoller>();
-        return roller != null ? Mathf.Clamp(roller.RollPips(faces, placing), 1, faces) : DiceRules.Roll(faces);
+        return roller != null ? Mathf.Clamp(roller.RollPips(faces), 0, faces) : DiceRules.Roll(faces);
     }
 
-    /// <summary>놓인 주사위를 다시 굴리는 눈(스킬). 특성의 굴림이 있으면 그것을 쓴다.</summary>
-    public int RollPips(int faces) => Roll(faces, false);
+    /// <summary>놓인 주사위를 다시 굴리는 눈(스킬). 특성의 굴림이 있으면 그것을 쓴다. 0이면 부서짐 — 부르는 쪽이 Bust로 없앤다.</summary>
+    public int RollPips(int faces) => Roll(faces);
 
     /// <summary>cell의 주사위 표시를 다시 맞춘다(밑에 칩이 들어와 올라앉을 때). 주사위가 없으면 아무 일도 없다.</summary>
     public void RefreshAt(Vector2Int cell)
@@ -274,6 +325,7 @@ public sealed class DiceField : IDisposable
         for (int i = 0; i < _views.Count; i++) _views[i].Destroy();
         _views.Clear();
         _placed.Clear();
+        _forcedAwake.Clear();
     }
 
     /// <summary>cell에 놓인 주사위의 번호(Placed 순서). 없으면 -1.</summary>
@@ -292,7 +344,7 @@ public sealed class DiceField : IDisposable
         if (_map == null) return;
         PlacedDice placed = _placed[index];
         float top = _viewConfig.GetCellTop(_map, placed.Cell.x, placed.Cell.y);
-        _views[index].Apply(placed.Cell, top, placed.Dice, _statsConfig.IsAwakened(placed.Dice), _config);
+        _views[index].Apply(placed.Cell, top, placed.Dice, LooksAwakened(placed), _config);
         // 새로 만든 글자는 아직 돌려지지 않았으므로 다음 LateTick에서 전부 다시 돌린다.
         _lastYaw = float.NaN;
     }

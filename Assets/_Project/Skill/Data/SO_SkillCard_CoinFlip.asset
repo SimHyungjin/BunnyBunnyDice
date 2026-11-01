@@ -15,11 +15,10 @@ MonoBehaviour:
   DisplayName: "코인 플립"
   Description: "{Chance%} 확률로 무작위 카드 {Count}장을
     얻는다."
-  StrongAgainst: 
   Icon: {fileID: 0}
   TintIcon: 0
   IconColor: {r: 0.247, g: 0.878, b: 1, a: 1}
   Weight: 1
   Exclusive: 1
   Chance: 0.5
-  Count: 10
+  Count: 5

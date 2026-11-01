@@ -11,7 +11,7 @@ public sealed class SO_HeroTrait_PipBias : SO_HeroTrait, IDicePipRoller
     [Tooltip("높은 눈 쪽으로 기우는 정도. 0 = 고르게, 1 = 눈이 곧 가중치(1:2:3…).")]
     [Min(0f)] public float Strength = 1f;
 
-    public int RollPips(int faces, bool placing)
+    public int RollPips(int faces)
     {
         // 가중치가 등차라 합은 공식으로 구한다.
         float total = faces + Strength * faces * (faces - 1) * 0.5f;

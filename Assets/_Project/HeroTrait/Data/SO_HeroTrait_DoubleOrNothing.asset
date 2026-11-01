@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: SO_HeroTrait_DoubleOrNothing
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_NoMiddle
   DisplayName: "\uB354\uBE14 \uC624\uC5B4 \uB0AB\uC2F1"
-  Description: "\uC8FC\uC0AC\uC704\uB97C \uAD74\uB9AC\uBA74 \uAC00\uC7A5 \uB0AE\uC740
-    \uB208 \uC544\uB2C8\uBA74 \uAC00\uC7A5 \uB192\uC740 \uB208\uB9CC \uB098\uC628\uB2E4."
+  Description: "주사위를 굴리면 가장 높은 눈 아니면 부서진다."
   HighChance: 0.5

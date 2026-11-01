@@ -65,6 +65,11 @@ public sealed class SO_DiceConfig : SO_Config
     [Tooltip("얹을 때 몸체가 이 크기에서 제 크기로 톡 튀며 커진다(새로 놓을 때는 0에서).")]
     [Range(0f, 1f)] public float StackPopStart = 0.7f;
 
+    [Header("부서짐 (더블 오어 낫싱)")]
+    [Tooltip("주사위가 부서진 칸에 퍼지는 고리 반지름(칸 단위). 사라진 자리를 보이게.")]
+    [Min(0f)] public float BustBurstRadius = 0.7f;
+    public Color BustColor = new Color(0.45f, 0.4f, 0.5f);
+
     [Header("눈 글자")]
     public TMP_FontAsset PipFont;
     [Tooltip("눈 글자 머티리얼. 주사위 색과 겹쳐도 읽히게 외곽선이 있는 것.")]

@@ -12,7 +12,7 @@ public sealed class SO_SkillCard_CoinFlip : SO_SkillCard
     [Tooltip("카드를 받을 확률.")]
     [Range(0f, 1f)] public float Chance = 0.5f;
     [Tooltip("받는 카드 수.")]
-    [Min(1)] public int Count = 10;
+    [Min(1)] public int Count = 5;
 
     public override SkillTarget Target => SkillTarget.Board;
 }

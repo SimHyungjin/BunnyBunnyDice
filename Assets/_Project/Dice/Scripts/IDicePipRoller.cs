@@ -4,7 +4,6 @@
 /// </summary>
 public interface IDicePipRoller
 {
-    /// <param name="placing">손패에서 놓거나 얹는 굴림이면 true, 스킬로 다시 굴리는 것(리롤·올인 등)이면 false.</param>
-    /// <returns>1 ~ faces 사이의 눈.</returns>
-    int RollPips(int faces, bool placing);
+    /// <returns>1 ~ faces 사이의 눈. 0이면 그 주사위가 부서진다(더블 오어 낫싱 — DiceField·SkillCaster가 없앤다).</returns>
+    int RollPips(int faces);
 }
