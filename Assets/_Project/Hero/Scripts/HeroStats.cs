@@ -107,7 +107,9 @@ public sealed class HeroStats
         // 투사체는 단계가 없다 — 단계 비율을 곱하면 1장이 0.4장이 된다.
         if (stat == HeroStat.Projectile) return Character.GetMax(stat);
         float t = (GetStage(stat) - MinStage) / (float)(MaxStage - MinStage);
-        return Character.GetMax(stat) * Mathf.Lerp(_config.StageFloorRatio, 1f, t);
+        // 이동 속도·사거리는 하한을 따로 둔다 — 단계가 리롤 이유가 되는 건 화력 쪽이고, 둘이 낮으면 손으로 할 때 불편만 남는다.
+        bool mobility = stat == HeroStat.MoveSpeed || stat == HeroStat.Range;
+        return Character.GetMax(stat) * Mathf.Lerp(mobility ? _config.MobilityFloorRatio : _config.StageFloorRatio, 1f, t);
     }
 
     public float Get(HeroStat stat) => Compute(stat, null);

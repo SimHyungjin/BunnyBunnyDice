@@ -22,6 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f8ef40a28ea14deaa4b53b63715affac, type: 2}
   - {fileID: 11400000, guid: aef4a0983ccf437a8a3e5ccba1168a0a, type: 2}
   StageFloorRatio: 0.4
+  MobilityFloorRatio: 0.7
   CritOverflowToDamage: 1
   TurnSpeed: 720
   SpringRebuildScaleStep: 0.1

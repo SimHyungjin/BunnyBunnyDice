@@ -14,6 +14,9 @@ public sealed class SO_HeroConfig : SO_Config
     public List<SO_HeroCharacter> Characters = new List<SO_HeroCharacter>();
     [Tooltip("능력치 1단계 값 = 한계값 × 이 비율. 6단계 = 한계값, 사이는 고르게(기획서 10.3). 1/6로 두면 낮은 단계 캐릭터를 쓸 수 없다.")]
     [Range(0f, 1f)] public float StageFloorRatio = 0.4f;
+    [Tooltip("이동 속도·사거리의 1단계 비율(나머지는 StageFloorRatio). 둘은 화력보다 조작감에 걸려 낮은 단계가 답답함이 된다 — " +
+             "0.4면 사거리 2칸이 1단계 0.8칸이다. 봇은 이 불편을 못 느껴 단계 차이가 없게 나왔다(2026-11-01 사용자).")]
+    [Range(0f, 1f)] public float MobilityFloorRatio = 0.7f;
 
     [Header("능력치 규칙")]
     [Tooltip("치명타 확률이 100%를 넘은 몫을 치명타 피해 배율로 옮기는 비율(기획서 10.4). 1이면 넘친 10%p → 배율 +0.1.")]
