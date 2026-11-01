@@ -38,6 +38,11 @@ public readonly struct DamageSource
     public static readonly DamageSource Burn = new DamageSource(BurnIndex);
 
     public static string NameOf(int index) => Names[index];
+
+    /// <summary>
+    /// 주사위 쪽 피해(주사위 공격 — 레이즈·칩 효과 포함 — 과 칩이 거는 화상). 보스 피해 저항은 이것만 받는다(기획서 9.4).
+    /// </summary>
+    public bool IsDiceSide => Index < DiceCount || Index == BurnIndex;
 }
 
 /// <summary>주사위가 어떤 레이즈로 쐈는지. 카드 시간이 남아 있으면 영웅이 올라타 있어도 카드 몫이다(카드 시간을 먼저 쓴다).</summary>

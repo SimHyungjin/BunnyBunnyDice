@@ -17,7 +17,7 @@ MonoBehaviour:
   VisualScale: 1.6
   HealthScale: 1
   SpeedScale: 0.5
-  ImpairResist: 0.9
+  ImpairResist: 0
   DamageResist: 0.9
   Armor: 0
   RegenRatio: 0

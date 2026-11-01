@@ -143,7 +143,7 @@ public sealed class MonsterField : IDisposable
         ApplyDamage(slot, damage, penetration, critical ? DamageKind.Critical : DamageKind.Normal, source);
     }
 
-    /// <summary>화상을 건다(초당 최대 체력의 ratio). 보스는 화상 피해도 다른 피해처럼 피해 저항(SO_MonsterTrait.DamageResist)으로 줄여 받는다.</summary>
+    /// <summary>화상을 건다(초당 최대 체력의 ratio). 보스는 화상 피해도 주사위 공격처럼 피해 저항(SO_MonsterTrait.DamageResist)으로 줄여 받는다.</summary>
     public void Burn(int slot, float ratio, float duration, float regenReduction) =>
         MonsterStatus.Burn(ref _states[slot], ratio, duration, regenReduction);
 
@@ -299,7 +299,7 @@ public sealed class MonsterField : IDisposable
     /// slot에 damage를 맞히면 깎일 체력(Hit과 같은 공식, 상태는 바꾸지 않는다). 스킬 미리보기가 놓기 전에 결과를 보여 줄 때 쓴다(포켓 처치 예상).
     /// </summary>
     public double EstimateHit(int slot, float damage, float penetration = 0f) =>
-        Math.Max(1d, Math.Round((double)RawDamage(slot, damage, penetration, DamageKind.Normal, false, out _))); // 스킬은 보호막을 지나친다(BlockedByShield)
+        Math.Max(1d, Math.Round((double)RawDamage(slot, damage, penetration, DamageKind.Normal, DamageSource.Skill, false, out _))); // 스킬은 보호막을 지나친다(BlockedByShield)
 
     // 보호막이 이 피해를 막는지. 화상(지속 피해)은 잘게 자주 들어와 횟수를 순식간에 비우므로, 스킬은 카드 한 장이 보호막 한 칸만 벗기면
     // 손해가 너무 커서(적 전체 스킬이 보호막 웨이브에 1씩만 들어갔다, 2026-11-01 사용자) 보호막을 지나친다.
@@ -307,7 +307,7 @@ public sealed class MonsterField : IDisposable
         state.Shield > 0 && kind != DamageKind.Burn && source.Index != DamageSource.Skill.Index;
 
     // 방어력·취약·피해 저항을 지난 피해(반올림 전). damage는 취약을 곱한 값으로 돌려준다(작아진 피해 표시 판단용).
-    private float RawDamage(int slot, float damage, float penetration, DamageKind kind, bool shielded, out float boosted)
+    private float RawDamage(int slot, float damage, float penetration, DamageKind kind, DamageSource source, bool shielded, out float boosted)
     {
         ref MonsterState state = ref _states[slot];
         // 방깍(취약)은 받는 피해 배율이라 치명타처럼 방어력보다 먼저 곱한다(MonsterDamage). 화상에도 붙는다 — "모든 공격".
@@ -315,9 +315,11 @@ public sealed class MonsterField : IDisposable
         boosted = damage;
         MonsterKind target = _kinds[state.TypeIndex];
         float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, target.GetArmor(state.MaxHealth), penetration, _config.MinDamageRatio);
-        // 피해 저항(거대)은 출처를 가리지 않는다 — 주사위·영웅·스킬·화상이 몬스터 특성을 몰라도 되게 받는 쪽에서 줄인다.
+        // 피해 저항(거대)은 주사위 쪽 피해(주사위 공격·화상)만 받는다(2026-11-01 사용자). 영웅·스킬은 퍼뎀이 없는 고정 피해라
+        // 방어력 뒤에 저항까지 받으면 잘 키운 영웅 빌드도 30웨이브 보스의 재생(초당 4%)을 못 넘었다.
+        // 받는 쪽에서 줄인다 — 주사위·화상이 몬스터 특성을 몰라도 되게.
         // 방어력을 뺀 뒤에 줄인다: 먼저 줄이면 작아진 피해에서 방어력을 빼 단단한 보스(5웨이브 거대+단단함)가 의도(체력 1/10과 맞바꿈)보다 몇 배 단단해졌다.
-        raw *= target.DamageScale;
+        if (source.IsDiceSide) raw *= target.DamageScale;
         // 보호막은 맞는 횟수를 센다(BlockedByShield). 횟수는 ApplyDamage가 깎는다.
         if (shielded) raw *= target.ShieldDamageRatio;
         return raw;
@@ -327,7 +329,7 @@ public sealed class MonsterField : IDisposable
     {
         ref MonsterState state = ref _states[slot];
         bool shielded = BlockedByShield(state, kind, source);
-        float raw = RawDamage(slot, damage, penetration, kind, shielded, out damage);
+        float raw = RawDamage(slot, damage, penetration, kind, source, shielded, out damage);
         if (shielded) state.Shield--;
 
         // 피해는 정수로 들어간다 — 화면 숫자와 실제로 깎인 체력이 같게. 맞힌 피해는 반올림하고 최소 1(맞혔는데 0이면 안 맞은 것처럼 보인다).
