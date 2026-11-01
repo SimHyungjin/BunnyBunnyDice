@@ -16,27 +16,25 @@
 고르면 바로 적용된다.,Applies as soon as you pick it.,SO_CardHandConfig.HeroKindText
 공격 속도,Attack Speed,SO_ChipCard_AttackSpeed.DisplayName | HeroStatText.cs:14
 이 칩 위 주사위의 공격 속도가 {Ratio%} 늘어난다.,The die on this chip attacks {Ratio%} faster.,SO_ChipCard_AttackSpeed.Description
-화상,Burn,SO_ChipCard_Burn.DisplayName | HeroStatText.cs:46
+화상,Burn,SO_ChipCard_Burn.DisplayName
 맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입는다. 방어력을 무시한다.,Hit enemies take {MaxHealthRatio%} of their max HP as damage every second for {Duration}s. Ignores armor.,SO_ChipCard_Burn.Description
-보스,Boss,SO_ChipCard_Burn.StrongAgainst
 공격력,Attack,SO_ChipCard_Damage.DisplayName | SO_HeroCard_Attack.DisplayName | CardView/Detail/DiceContent/StatLabel0
 이 칩 위 주사위의 공격력이 {Ratio%} 늘어난다.,The die on this chip deals {Ratio%} more damage.,SO_ChipCard_Damage.Description
-얼림,Freeze,SO_ChipCard_Freeze.DisplayName | HeroStatText.cs:45
+얼림,Freeze,SO_ChipCard_Freeze.DisplayName
 맞은 적을 {Duration}초 동안 얼린다. 풀린 뒤 {Immunity}초 동안은 다시 얼지 않는다.,Freezes hit enemies for {Duration}s. They can't be frozen again for {Immunity}s after thawing.,SO_ChipCard_Freeze.Description
 사거리,Range,SO_ChipCard_Range.DisplayName | CardView/Detail/DiceContent/StatLabel2 | HeroStatText.cs:16
 이 칩 위 주사위의 사거리가 {Ratio%} 늘어난다.,The die on this chip gets {Ratio%} more range.,SO_ChipCard_Range.Description
-둔화,Slow,SO_ChipCard_Slow.DisplayName | HeroStatText.cs:44
+둔화,Slow,SO_ChipCard_Slow.DisplayName
 맞은 적이 {Duration}초 동안 {Ratio%} 느려진다.,Hit enemies are slowed by {Ratio%} for {Duration}s.,SO_ChipCard_Slow.Description
-빠름,Fast,SO_ChipCard_Slow.StrongAgainst | SO_Dice_Blue.StrongAgainst | SO_Dice_White.StrongAgainst
-취약,Vulnerable,SO_ChipCard_Vulnerable.DisplayName | HeroStatText.cs:43
+취약,Vulnerable,SO_ChipCard_Vulnerable.DisplayName
 맞은 적이 {Duration}초 동안 받는 피해가 {Ratio%} 늘어난다.,Hit enemies take {Ratio%} more damage for {Duration}s.,SO_ChipCard_Vulnerable.Description
 육면체,D6,SO_DiceConfig.Models[0].DisplayName
 십이면체,D12,SO_DiceConfig.Models[1].DisplayName
 이십면체,D20,SO_DiceConfig.Models[2].DisplayName
 파랑,Blue,SO_Dice_Blue.DisplayName
 저격,Snipe,SO_Dice_Blue.AttackName
-멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%}).,Hits harder the farther the enemy is (+{FarDamagePerCell%} per tile).,SO_Dice_Blue.Description
-사거리 {1+AwakenRangeBonus}배,Range x{1+AwakenRangeBonus},SO_Dice_Blue.AwakenDescription
+가장 멀리 닿는 공격.,The longest-reaching attack.,SO_Dice_Blue.Description
+멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%}).,Hits harder the farther the enemy is (+{FarDamagePerCell%} per tile).,SO_Dice_Blue.AwakenDescription
 검정,Black,SO_Dice_Clear.DisplayName
 기본 공격,Basic Attack,SO_Dice_Clear.AttackName
 색 주사위를 얹으면 그 색이 된다.,Takes the color of a colored die stacked on it.,SO_Dice_Clear.Description
@@ -44,55 +42,46 @@
 하늘,Cyan,SO_Dice_Cyan.DisplayName
 체인,Chain,SO_Dice_Cyan.AttackName
 가까운 적에게 튕긴다. 튕길 때마다 피해가 {Falloff%}로 줄어든다.,Bounces to nearby enemies. Each bounce deals {Falloff%} of the previous damage.,SO_Dice_Cyan.Description
-단단함,Armored,SO_Dice_Cyan.WeakAgainst | SO_Dice_Green.WeakAgainst | SO_Dice_Yellow.WeakAgainst
 튕길 때마다 {1-AwakenFalloff%}만 줄어든다,Each bounce only loses {1-AwakenFalloff%},SO_Dice_Cyan.AwakenDescription
 초록,Green,SO_Dice_Green.DisplayName
 속사,Rapid Fire,SO_Dice_Green.AttackName
-같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다.,Each consecutive hit on the same enemy deals {FocusBonusPerHit%} more damage.,SO_Dice_Green.Description
-"빠름, 재생","Fast, Regen",SO_Dice_Green.StrongAgainst
-공격 속도 {1+AwakenAttackSpeedBonus}배,Attack speed x{1+AwakenAttackSpeedBonus},SO_Dice_Green.AwakenDescription
+빠르게 쏘는 약한 공격.,"Fast, weak shots.",SO_Dice_Green.Description
+같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다.,Each consecutive hit on the same enemy deals {FocusBonusPerHit%} more damage.,SO_Dice_Green.AwakenDescription
 자홍,Magenta,SO_Dice_Magenta.DisplayName
 관통,Pierce,SO_Dice_Magenta.AttackName
 일직선으로 꿰뚫는다.,Pierces in a straight line.,SO_Dice_Magenta.Description
-"단단함, 보스","Armored, Boss",SO_Dice_Magenta.StrongAgainst
 관통선이 {AwakenWidthScale}배 굵어진다,Piercing line becomes {AwakenWidthScale}x wider,SO_Dice_Magenta.AwakenDescription
 빨강,Red,SO_Dice_Red.DisplayName
 강타,Smash,SO_Dice_Red.AttackName
 느리지만 강한 한 방.,A slow but powerful strike.,SO_Dice_Red.Description
-"단단함, 보스, 재생","Armored, Boss, Regen",SO_Dice_Red.StrongAgainst
-분열,Split,SO_Dice_Red.WeakAgainst | SO_Dice_Yellow.StrongAgainst
 모든 공격이 치명타가 된다,Every attack is a critical hit,SO_Dice_Red.AwakenDescription
 하양,White,SO_Dice_White.DisplayName
 파동,Pulse,SO_Dice_White.AttackName
 주변의 모든 적에게 피해를 준다.,Damages all nearby enemies.,SO_Dice_White.Description
-거대,Giant,SO_Dice_White.WeakAgainst
 파동이 두 겹으로 퍼진다,The pulse spreads in two waves,SO_Dice_White.AwakenDescription
 노랑,Yellow,SO_Dice_Yellow.DisplayName
 범위 폭발,Explosion,SO_Dice_Yellow.AttackName
 맞은 자리에서 폭발해 주변 적에게도 피해를 준다.,"Explodes on hit, damaging nearby enemies too.",SO_Dice_Yellow.Description
 폭발 반경 {1+AwakenExplosionRadiusBonus}배,Explosion radius x{1+AwakenExplosionRadiusBonus},SO_Dice_Yellow.AwakenDescription
 토끼공듀,Bunny Princess,SO_HeroCharacter_Break.DisplayName
+카드 카운터,Card Counter,SO_HeroCharacter_CardCounter.DisplayName | SO_HeroTrait_CardCounter.DisplayName
+칩 리더,Chip Leader,SO_HeroCharacter_ChipLeader.DisplayName | SO_HeroTrait_ChipLeader.DisplayName
 도박사,Gambler,SO_HeroCharacter_Double.DisplayName
-카드 카운터,Card Counter,SO_HeroCharacter_CardCounter.DisplayName
-하이 스테이크,High Stakes,SO_HeroCharacter_HighStakes.DisplayName
-칩 리더,Chip Leader,SO_HeroCharacter_ChipLeader.DisplayName
 쾌락주의자,Hedonist,SO_HeroCharacter_DoubleOrNothing.DisplayName
 건설가,Builder,SO_HeroCharacter_HighRoller.DisplayName
+하이 스테이크,High Stakes,SO_HeroCharacter_HighStakes.DisplayName | SO_HeroTrait_HighStakes.DisplayName
 바니걸,Bunny Girl,SO_HeroCharacter_Rainbow.DisplayName
 브레이크,Break,SO_HeroTrait_Break.DisplayName
 기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
+스킬 카드를 고르면 {Copies}장 얻는다.,Picking a skill card gives x{Copies}.,SO_HeroTrait_CardCounter.Description
+칩이 있는 칸에 칩을 놓아 바꿀 수 있다. 바뀐 칩은 사라진다.,"Place a chip on a chipped tile to swap it. The old chip is lost.",SO_HeroTrait_ChipLeader.Description
 더블,Double,SO_HeroTrait_Double.DisplayName
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
-카드 카운터,Card Counter,SO_HeroTrait_CardCounter.DisplayName
-스킬 카드를 고르면 {Copies}장 얻는다.,Picking a skill card gives x{Copies}.,SO_HeroTrait_CardCounter.Description
-하이 스테이크,High Stakes,SO_HeroTrait_HighStakes.DisplayName
-"레이즈가 공격력 x{DamageScale}, 공격 속도 x{SpeedScale}가 된다.","Raise becomes x{DamageScale} attack, x{SpeedScale} attack speed.",SO_HeroTrait_HighStakes.Description
-칩 리더,Chip Leader,SO_HeroTrait_ChipLeader.DisplayName
-모든 칩 효과가 {Strength}배가 된다.,All chip effects are x{Strength}.,SO_HeroTrait_ChipLeader.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
-주사위를 굴리면 가장 낮은 눈 아니면 가장 높은 눈만 나온다.,Dice only roll their lowest or highest pip.,SO_HeroTrait_DoubleOrNothing.Description
+주사위를 굴리면 가장 높은 눈 아니면 부서진다.,Dice roll their highest pip or break.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
 주사위에서 높은 눈이 더 자주 나온다.,Dice roll high pips more often.,SO_HeroTrait_HighRoller.Description
+"레이즈가 공격력 x{DamageScale}, 공격 속도 x{SpeedScale}가 된다.","Raise becomes x{DamageScale} attack, x{SpeedScale} attack speed.",SO_HeroTrait_HighStakes.Description
 레인보우,Rainbow,SO_HeroTrait_Rainbow.DisplayName
 레벨업 후보 카드가 항상 다른 종류로 나온다.,Level-up choices are always different types.,SO_HeroTrait_Rainbow.Description
 영웅의 공격력이 오른다.,Raises the hero's attack.,SO_HeroCard_Attack.Description
@@ -101,11 +90,13 @@
 치명타 피해,Crit Damage,SO_HeroCard_CritDamage.DisplayName | HeroStatText.cs:18
 영웅의 치명타 피해가 오른다.,Raises the hero's crit damage.,SO_HeroCard_CritDamage.Description
 투사체,Projectile,SO_HeroCard_Projectile.DisplayName | HeroStatText.cs:19
-영웅이 한 번에 던지는 카드가 늘어난다. 같은 적에게 겹칠 때마다 피해가 {RepeatHitScale%}로 줄어든다.,"The hero throws more cards at once. Each extra card on the same enemy deals {RepeatHitScale%} of the one before.",SO_HeroCard_Projectile.Description
+영웅이 한 번에 던지는 카드가 늘어난다. 같은 적에게 겹칠 때마다 피해가 {RepeatHitScale%}로 줄어든다.,The hero throws more cards at once. Each extra card on the same enemy deals {RepeatHitScale%} of the one before.,SO_HeroCard_Projectile.Description
 올인,All In,SO_SkillCard_AllIn.DisplayName
 "목표물 체력을 최대치로 채우고, 모든 주사위의 눈을 다시 굴린다.",Fully restores the goal and rerolls the pips of every die.,SO_SkillCard_AllIn.Description
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 오던 길로 벽까지 밀어낸다.","Deals {HeroDamage} damage to all enemies and knocks them back the way they came, up to a wall.",SO_SkillCard_Backspin.Description
+빅 스택,Big Stack,SO_SkillCard_BigStack_AttackSpeed.DisplayName | SO_SkillCard_BigStack_Burn.DisplayName | SO_SkillCard_BigStack_Damage.DisplayName
+효과가 {Strength}배인 {Chip} 칩을 놓는다.,Place a {Chip} chip with x{Strength} effect.,SO_SkillCard_BigStack_AttackSpeed.Description | SO_SkillCard_BigStack_Burn.Description | SO_SkillCard_BigStack_Damage.Description
 브레이크 샷,Break Shot,SO_SkillCard_BreakShot.DisplayName
 "{Duration}초간 영웅의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the hero's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_BreakShot.Description
 캐시 아웃,Cash Out,SO_SkillCard_CashOut.DisplayName
@@ -113,11 +104,15 @@
 체크,Check,SO_SkillCard_Check.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, {Duration}초간 멈춘다.",Deals {HeroDamage} damage to all enemies and stops them for {Duration}s.,SO_SkillCard_Check.Description
 체크메이트,Checkmate,SO_SkillCard_Checkmate.DisplayName
-"모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적에게는 최대 체력의 {KingMaxHealth}배 피해를 입힌다. 방어력을 무시한다.","Deals {HeroDamage} damage to all enemies, and x{KingMaxHealth} its max HP to the enemy with the most HP. Ignores armor.",SO_SkillCard_Checkmate.Description
+"모든 적에게 {HeroDamage} 피해를 입히고, 체력이 가장 높은 적은 쓰러뜨린다. 보스는 최대 체력의 {BossKingLoss%}를 잃는다.",Deals {HeroDamage} damage to all enemies and takes down the one with the most health. A boss loses {BossKingLoss%} of its max health instead.,SO_SkillCard_Checkmate.Description
+코인 플립,Coin Flip,SO_SkillCard_CoinFlip.DisplayName
+{Chance%} 확률로 무작위 카드 {Count}장을 얻는다.,{Chance%} chance: gain random cards x{Count}.,SO_SkillCard_CoinFlip.Description
 더블 업,Double Up,SO_SkillCard_DoubleUp.DisplayName
-"바로 {LevelUps}번 레벨업하고, {Duration}초간 처치 경험치가 {ExpScale}배가 된다.","Level up x{LevelUps} now, and kill EXP is x{ExpScale} for {Duration}s.",SO_SkillCard_DoubleUp.Description
+바로 {LevelUps}번 레벨업한다.,Level up x{LevelUps} now.,SO_SkillCard_DoubleUp.Description
 풀 하우스,Full House,SO_SkillCard_FullHouse.DisplayName
-{Duration}초간 해당 주사위가 레이즈 상태로 7가지 공격 방식을 모두 동시에 쓴다.,"For {Duration}s, the die is raised and uses all 7 attack types at once.",SO_SkillCard_FullHouse.Description
+{Duration}초간 해당 주사위가 각성하고 레이즈 상태로 7가지 공격 방식을 모두 동시에 쓴다.,"For {Duration}s, the die is awakened and raised, and uses all 7 attack types at once.",SO_SkillCard_FullHouse.Description
+핫 스트릭,Hot Streak,SO_SkillCard_HotStreak.DisplayName
+{Duration}초간 영웅이 밟은 주사위마다 {RaiseDuration}초 레이즈가 걸린다. 눈은 깎이지 않는다.,"For {Duration}s, every die the hero steps on gets Raise for {RaiseDuration}s. No pip loss.",SO_SkillCard_HotStreak.Description
 잭팟,Jackpot,SO_SkillCard_Jackpot.DisplayName
 해당 주사위의 눈을 최대치로 올린다.,Raises the die's pips to max.,SO_SkillCard_Jackpot.Description
 파랑 페인트,Blue Paint,SO_SkillCard_Paint_Blue.DisplayName
@@ -141,15 +136,9 @@
 레이즈,Raise,SO_SkillCard_Raise.DisplayName
 "{Duration}초간 해당 주사위의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the die's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_Raise.Description
 리롤,Reroll,SO_SkillCard_Reroll.DisplayName
-해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다. 이십면체는 눈만 다시 굴린다.,"Upgrades the die to the next size and rerolls its pips. A D20 only rerolls its pips.",SO_SkillCard_Reroll.Description
-코인 플립,Coin Flip,SO_SkillCard_CoinFlip.DisplayName
-{Chance%} 확률로 무작위 카드 {Count}장을 얻는다.,"{Chance%} chance: gain random cards x{Count}.",SO_SkillCard_CoinFlip.Description
+해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다. 이십면체는 눈만 다시 굴린다.,Upgrades the die to the next size and rerolls its pips. A D20 only rerolls its pips.,SO_SkillCard_Reroll.Description
 스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName
 손패의 스킬 카드가 {StackScale}배로 늘어난다.,Skill cards in hand are multiplied x{StackScale}.,SO_SkillCard_StackedDeck.Description
-핫 스트릭,Hot Streak,SO_SkillCard_HotStreak.DisplayName
-{Duration}초간 영웅이 밟은 주사위마다 {RaiseDuration}초 레이즈가 걸린다. 눈은 깎이지 않는다.,"For {Duration}s, every die the hero steps on gets Raise for {RaiseDuration}s. No pip loss.",SO_SkillCard_HotStreak.Description
-사이드 팟,Side Pot,SO_SkillCard_SidePot_Damage.DisplayName | SO_SkillCard_SidePot_AttackSpeed.DisplayName | SO_SkillCard_SidePot_Range.DisplayName | SO_SkillCard_SidePot_Vulnerable.DisplayName | SO_SkillCard_SidePot_Slow.DisplayName | SO_SkillCard_SidePot_Freeze.DisplayName | SO_SkillCard_SidePot_Burn.DisplayName
-칩이 한 장 있는 칸에 {Chip} 칩을 한 장 더 얹는다.,Stacks one more {Chip} chip on a tile with a single chip.,SO_SkillCard_SidePot_Damage.Description | SO_SkillCard_SidePot_AttackSpeed.Description | SO_SkillCard_SidePot_Range.Description | SO_SkillCard_SidePot_Vulnerable.Description | SO_SkillCard_SidePot_Slow.Description | SO_SkillCard_SidePot_Freeze.Description | SO_SkillCard_SidePot_Burn.Description
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title
@@ -175,16 +164,14 @@
 배경음,Music,UI_SettingsPopup/SafeRoot/Area/Window/Label_music
 효과음,Sound Effects,UI_SettingsPopup/SafeRoot/Area/Window/Label_sound
 포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
-"{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:156
-최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:171
-강함: {0},Strong: {0},CardView.cs:298
-약함: {0},Weak: {0},CardView.cs:299
-특성 없음,No Trait,UI_CharacterSelectPopup.cs:133 | UI_LobbyPopup.cs:82
-눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:134
+"{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:150
+최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:163
+특성 없음,No Trait,UI_CharacterSelectPopup.cs:130 | UI_LobbyPopup.cs:82
+눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:131
 이동 속도,Move Speed,HeroStatText.cs:15
-잭팟 보스 {0}/{1},Jackpot Boss {0}/{1},UI_GameHud.cs:113
-보스 {0}/{1},Boss {0}/{1},UI_GameHud.cs:114
-웨이브 {0},Wave {0},UI_GameHud.cs:130
+잭팟 보스 {0}/{1},Jackpot Boss {0}/{1},UI_GameHud.cs:121
+보스 {0}/{1},Boss {0}/{1},UI_GameHud.cs:122
+웨이브 {0},Wave {0},UI_GameHud.cs:138
 {0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:93
 웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:99 | UnlockText.cs:8
 주사위 각성 {0}회,Dice awakenings: {0},UnlockText.cs:9
