@@ -20,9 +20,9 @@ MonoBehaviour:
     \uB41C\uB2E4."
   AwakenDescription: "\uB208\uC774 20\uC774 \uB418\uBA74 \uBB34\uC791\uC704 \uC0C9\uC774
     \uB41C\uB2E4."
-  Damage: 90
+  Damage: 40
   DamageGrowth: 0.5
-  AttackSpeed: 3.4
+  AttackSpeed: 1.5
   AttackSpeedGrowth: 0
-  Range: 5.5
+  Range: 3.5
   MaxHealthDamage: 0
