@@ -22,7 +22,7 @@ MonoBehaviour:
   BurstStartScale: 0.3
   BurstSegments: 48
   BurstLift: 0.03
-  AuraAlpha: 0.2
+  AuraAlpha: 0.1
   AuraFlashDuration: 0.2
   AuraWidth: 0.05
   InitialCapacity: 32
