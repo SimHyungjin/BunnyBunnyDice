@@ -6,14 +6,21 @@ using UnityEngine;
 /// </summary>
 public static class MonsterStatus
 {
-    /// <summary>화상(기획서 7): 초당 최대 체력의 ratio만큼. 체력 비율이라 후반 체력에도 묻히지 않는다.</summary>
-    public static void Burn(ref MonsterState state, float ratio, float duration)
+    /// <summary>
+    /// 화상(기획서 7): 초당 최대 체력의 ratio만큼. 체력 비율이라 후반 체력에도 묻히지 않는다.
+    /// 걸려 있는 동안 재생을 regenReduction만큼 줄인다(피해 비율과 따로 센 쪽을 남긴다).
+    /// </summary>
+    public static void Burn(ref MonsterState state, float ratio, float duration, float regenReduction)
     {
         if (ratio <= 0f || duration <= 0f) return;
         if (!state.IsBurning) state.BurnTick = 0f;
         if (ratio >= state.BurnRatio || !state.IsBurning) state.BurnRatio = ratio;
+        if (regenReduction >= state.BurnRegenReduction || !state.IsBurning) state.BurnRegenReduction = regenReduction;
         state.BurnTime = Mathf.Max(state.BurnTime, duration);
     }
+
+    /// <summary>재생에 곱할 배율(화상이 걸려 있으면 줄어든다).</summary>
+    public static float GetRegenScale(in MonsterState state) => state.IsBurning ? 1f - state.BurnRegenReduction : 1f;
 
     /// <summary>취약(방깍, 기획서 7): 받는 피해를 ratio만큼 늘린다. 몬스터에 거는 상태라 누가 때려도 적용된다. 겹치지 않고 센 쪽이 남는다.</summary>
     public static void Vulnerable(ref MonsterState state, float ratio, float duration)
@@ -77,6 +84,7 @@ public static class MonsterStatus
             {
                 state.BurnTime = 0f;
                 state.BurnRatio = 0f;
+                state.BurnRegenReduction = 0f;
                 state.BurnTick = 0f;
             }
         }

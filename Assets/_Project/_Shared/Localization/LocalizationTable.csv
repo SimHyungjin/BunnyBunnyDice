@@ -17,7 +17,7 @@
 공격 속도,Attack Speed,SO_ChipCard_AttackSpeed.DisplayName | HeroStatText.cs:14
 이 칩 위 주사위의 공격 속도가 {Ratio%} 늘어난다.,The die on this chip attacks {Ratio%} faster.,SO_ChipCard_AttackSpeed.Description
 화상,Burn,SO_ChipCard_Burn.DisplayName
-맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입는다. 방어력을 무시한다.,Hit enemies take {MaxHealthRatio%} of their max HP as damage every second for {Duration}s. Ignores armor.,SO_ChipCard_Burn.Description
+"맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입고, 재생이 {RegenReduction%} 줄어든다. 방어력을 무시한다.","Hit enemies take {MaxHealthRatio%} of their max HP as damage every second for {Duration}s, and their regeneration is reduced by {RegenReduction%}. Ignores armor.",SO_ChipCard_Burn.Description
 공격력,Attack,SO_ChipCard_Damage.DisplayName | SO_HeroCard_Attack.DisplayName | CardView/Detail/DiceContent/StatLabel0
 이 칩 위 주사위의 공격력이 {Ratio%} 늘어난다.,The die on this chip deals {Ratio%} more damage.,SO_ChipCard_Damage.Description
 얼림,Freeze,SO_ChipCard_Freeze.DisplayName

@@ -32,7 +32,7 @@ public sealed class SO_MonsterTrait : ScriptableObject
              "고정값만 두면 체력·피해가 웨이브마다 크는데 방어력만 멈춰 중반부터 아무것도 막지 못했다(2026-10-30). " +
              "보스도 자기 체력 기준이다(2026-11-01) — 웨이브 기본 체력 기준이면 보스에게 방어력이 장식이었다.")]
     [Min(0f)] public float ArmorHealthRatio;
-    [Tooltip("초당 회복량(최대 체력에 대한 비율, 재생). 막는 상태는 없다 — 큰 한 방(빨강 강타)으로 회복 전에 끊는다.")]
+    [Tooltip("초당 회복량(최대 체력에 대한 비율, 재생). 화상이 걸려 있으면 줄어든다(화상 칩). 큰 한 방(빨강 강타)으로 회복 전에 끊는 것도 맞선다.")]
     [Min(0f)] public float RegenRatio;
     [Tooltip("보호막 — 나올 때 (ShieldHits + 웨이브 × ShieldPerWave)대만큼 맞는 동안은 피해를 ShieldDamageRatio만 받는다(지속 피해인 화상은 횟수를 깎지 않는다). " +
              "단단함(작은 한 방을 막는다)과 반대로 느리고 큰 한 방이 손해다 — 빠르게 여러 번·여러 마리를 때리는 색이 보호막을 금방 벗긴다. " +

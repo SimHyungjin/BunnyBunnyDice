@@ -144,8 +144,8 @@ public sealed class MonsterField : IDisposable
     }
 
     /// <summary>화상을 건다(초당 최대 체력의 ratio). 보스는 화상 피해도 다른 피해처럼 피해 저항(SO_MonsterTrait.DamageResist)으로 줄여 받는다.</summary>
-    public void Burn(int slot, float ratio, float duration) =>
-        MonsterStatus.Burn(ref _states[slot], ratio, duration);
+    public void Burn(int slot, float ratio, float duration, float regenReduction) =>
+        MonsterStatus.Burn(ref _states[slot], ratio, duration, regenReduction);
 
     public void Vulnerable(int slot, float ratio, float duration) =>
         MonsterStatus.Vulnerable(ref _states[slot], ratio, duration);
@@ -273,7 +273,8 @@ public sealed class MonsterField : IDisposable
             }
 
             MonsterKind kind = _kinds[state.TypeIndex];
-            float regen = kind.RegenRatio;
+            // 화상이 걸려 있으면 재생이 줄어든다(화상 칩).
+            float regen = kind.RegenRatio * MonsterStatus.GetRegenScale(state);
             if (regen > 0f)
                 state.Health = Math.Min(state.Health + state.MaxHealth * regen * deltaTime, state.MaxHealth);
 
