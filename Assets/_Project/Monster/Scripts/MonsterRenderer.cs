@@ -17,7 +17,7 @@ public sealed class MonsterRenderer
     private readonly List<Stack<GameObject>> _idle = new List<Stack<GameObject>>();
     private GameObject[] _active;
     private int[] _activeType;
-    // 포켓에서 나오는 연출(표시만): 슬롯마다 나온 뒤 지난 시간·출발점·원래 크기. 출발점이 없으면(분열 조각) 연출하지 않는다.
+    // 포켓에서 나오는 연출(표시만): 슬롯마다 나온 뒤 지난 시간·출발점·원래 크기. 출발점이 없으면 연출하지 않는다.
     private float[] _age;
     private Vector3[] _origin;
     private bool[] _emerging;

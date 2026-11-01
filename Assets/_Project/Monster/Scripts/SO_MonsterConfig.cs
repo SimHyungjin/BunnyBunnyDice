@@ -60,8 +60,6 @@ public sealed class SO_MonsterConfig : SO_Config
     public Color BurnColor = new Color(0.9f, 0.25f, 0.75f);
     [Tooltip("처음 잡아 두는 몬스터 칸 수. 넘으면 두 배로 늘린다 — 한 웨이브 최대 마릿수 정도로 두면 판 중에 늘리지 않는다.")]
     [Min(1)] public int InitialCapacity = 128;
-    [Tooltip("분열한 조각들이 죽은 자리에서 걷던 방향으로 벌어지는 거리(칸). 완전히 겹치면 한 마리로 보인다.")]
-    [Min(0f)] public float SplitOffset = 0.15f;
 
     [Header("공 무늬 (띠 공)")]
     [Tooltip("띠가 가운데에서 위아래로 덮는 각도(도). 30이면 띠와 양끝이 겉넓이를 반씩 나눈다 — 특성 둘 중 어느 쪽도 작아 보이지 않게. "

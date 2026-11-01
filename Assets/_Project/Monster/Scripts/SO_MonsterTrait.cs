@@ -46,16 +46,6 @@ public sealed class SO_MonsterTrait : ScriptableObject
     [Tooltip("경험치에 더하는 값.")]
     [Min(0)] public int ExpBonus;
 
-    [Header("분열")]
-    [Tooltip("죽으면 나뉘는 수. 0이면 나뉘지 않는다. 나뉜 몹은 이 특성이 빠져 다시 나뉘지 않는다.")]
-    [Min(0)] public int SplitCount;
-    [Tooltip("나뉜 몹 한 마리의 체력(본체 최대 체력에 대한 비율).")]
-    [Range(0.05f, 1f)] public float SplitHealthRatio = 0.5f;
-    [Tooltip("나뉜 몹의 목표물 피해.")]
-    [Min(0)] public int PieceGoalDamage = 1;
-    [Tooltip("나뉜 몹의 경험치. 주면 분열이 이득이 되어 일부러 반기게 되므로 0(경험치는 본체만).")]
-    [Min(0)] public int PieceExp;
-
     [Header("보호막 비율 (겹치면 곱한다)")]
     [Tooltip("보호막이 남은 동안 받는 피해 비율. 0.5면 절반.")]
     [Range(0f, 1f)] public float ShieldDamageRatio = 1f;

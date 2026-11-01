@@ -32,7 +32,7 @@ public sealed class BossHealthBar : IDisposable
         {
             if (!states[i].IsAlive) continue;
             MonsterKind kind = _monsters.KindOf(i);
-            if (!kind.IsBoss || kind.IsPiece) continue;
+            if (!kind.IsBoss) continue;
             Show(ToLong(states[i].Health), ToLong(states[i].MaxHealth), kind.IsJackpot);
             return;
         }

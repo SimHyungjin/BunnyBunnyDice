@@ -7,7 +7,7 @@ using UnityEngine;
 /// 몬스터는 객체가 아니라 상태 배열(MonsterState)의 한 칸이다. 지울 때는 마지막 칸을 그 자리로 옮겨 배열을 빈틈없이 유지한다
 /// — 수가 많아져도 할당 없이 한 번에 훑을 수 있고, 나중에 ECS·GPU로 넘길 때 배열을 그대로 넘길 수 있게.
 /// 걷는 길은 밖(GameScene)에서 만들어 넣는다 — 경로 표시(MapPathView)와 같은 길을 써서 표시가 실제 움직임과 어긋나지 않게.
-/// 특성(기획서 9.1)도 여기서 적용한다: 방어력·이동 방해 저항은 맞을 때, 재생은 매 갱신, 분열은 치울 때.
+/// 특성(기획서 9.1)도 여기서 적용한다: 방어력·이동 방해 저항은 맞을 때, 재생은 매 갱신.
 /// </summary>
 public sealed class MonsterField : IDisposable
 {
@@ -352,7 +352,6 @@ public sealed class MonsterField : IDisposable
     }
 
     // 걷기 전에 치워야 지난 프레임에 죽은 몬스터가 목표물에 들어가 피해를 주지 않는다.
-    // 분열 조각은 배열 끝에 붙으므로, 뒤에서부터 도는 이 루프가 이번에 다시 보지 않는다.
     private void RemoveDead()
     {
         for (int i = _count - 1; i >= 0; i--)
@@ -367,26 +366,7 @@ public sealed class MonsterField : IDisposable
                 else _renderer.Pop(i, _config.DeathPopDuration, _config.DeathPopHop);
             }
             RemoveAt(i);
-            Split(kind, dead);
             Killed?.Invoke(kind, dead.Position);
-        }
-    }
-
-    // 죽은 자리에서 걷던 방향 앞뒤로 벌려 세운다. 조각은 나뉘는 특성이 빠진 모양이라 다시 나뉘지 않는다.
-    private void Split(MonsterKind kind, in MonsterState dead)
-    {
-        SO_MonsterTrait split = kind.SplitTrait;
-        // 갇혀 죽었으면 나뉘지 않는다 — 조각도 같은 자리에 갇혀 곧바로 죽는다.
-        if (split == null || dead.Trapped) return;
-
-        MonsterKind piece = kind.GetPiece();
-        double health = Math.Max(1d, Math.Round(dead.MaxHealth * split.SplitHealthRatio));
-        Vector2 direction = dead.Heading.sqrMagnitude > 0f ? dead.Heading.normalized : Vector2.zero;
-        for (int i = 0; i < split.SplitCount; i++)
-        {
-            // 가운데를 0으로 두고 고르게 벌린다(2마리면 −0.5, +0.5).
-            float offset = split.SplitCount > 1 ? i / (split.SplitCount - 1f) - 0.5f : 0f;
-            Add(piece, dead.Position + direction * (offset * 2f * _config.SplitOffset), health);
         }
     }
 

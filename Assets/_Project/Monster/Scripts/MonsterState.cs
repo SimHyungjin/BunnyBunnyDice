@@ -22,7 +22,7 @@ public struct MonsterState
     /// — 공격하는 쪽이 같은 프레임에 슬롯 번호를 들고 있어도 번호가 바뀌지 않게.
     /// 체력은 double이다 — 후반 보스는 수십억이라 float(유효 7자리)면 끝자리가 뭉개지고 작은 피해가 아예 깎이지 않는다.</summary>
     public double Health;
-    /// <summary>나온 때의 체력(웨이브 배율 포함). 재생은 이 비율로 회복하고, 분열한 조각의 체력도 이것을 나눈다.</summary>
+    /// <summary>나온 때의 체력(웨이브 배율 포함). 재생은 이 비율로 회복한다.</summary>
     public double MaxHealth;
     /// <summary>남은 보호막 횟수(MonsterKind.ShieldHits에서 시작해 맞을 때마다 하나씩 준다).</summary>
     public int Shield;

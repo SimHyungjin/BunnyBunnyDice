@@ -26,7 +26,6 @@ MonoBehaviour:
   FreezeColor: {r: 0.4, g: 0.8, b: 0.96, a: 1}
   VulnerableColor: {r: 1, g: 1, b: 1, a: 1}
   InitialCapacity: 128
-  SplitOffset: 0.15
   HealthBarMaterial: {fileID: 2100000, guid: b70259bca3f14d8093f061d8611eccfd, type: 2}
   HealthBarHeight: 0.75
   HealthBarWidth: 0.55

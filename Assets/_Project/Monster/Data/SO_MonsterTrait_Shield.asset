@@ -25,9 +25,5 @@ MonoBehaviour:
   ShieldHits: 0
   GoalDamageBonus: 0
   ExpBonus: 0
-  SplitCount: 0
-  SplitHealthRatio: 0.5
-  PieceGoalDamage: 1
-  PieceExp: 0
   ShieldDamageRatio: 0
   ShieldPerWave: 0.25

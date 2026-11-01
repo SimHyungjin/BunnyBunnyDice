@@ -23,8 +23,4 @@ MonoBehaviour:
   RegenRatio: 0
   GoalDamageBonus: 0
   ExpBonus: 0
-  SplitCount: 0
-  SplitHealthRatio: 0.5
-  PieceGoalDamage: 1
-  PieceExp: 0
   EnrageSpeedBonus: 1.5

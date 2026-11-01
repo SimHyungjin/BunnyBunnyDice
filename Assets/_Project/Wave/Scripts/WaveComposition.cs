@@ -37,7 +37,7 @@ public static class WaveComposition
         }
         if (wave % config.BossInterval != 0) return false;
         AddNonNull(boss, config.BossTraits);
-        AddRandom(boss, config.RandomTraits, config.BossRandomTraits, random, true);
+        AddRandom(boss, config.RandomTraits, config.BossRandomTraits, random);
         return true;
     }
 
@@ -64,7 +64,7 @@ public static class WaveComposition
         }
         if (!bossWave) return false;
         AddNonNull(boss, config.BossTraits);
-        AddRandom(boss, config.RandomTraits, config.BossRandomTraits, random, true);
+        AddRandom(boss, config.RandomTraits, config.BossRandomTraits, random);
         return true;
     }
 
@@ -83,12 +83,11 @@ public static class WaveComposition
     }
 
     // 후보에서 이미 붙은 것을 빼고 count개를 겹치지 않게 고른다. 후보가 모자라면 있는 만큼만.
-    // 보스는 분열을 받지 않는다 — 보스 체력은 웨이브 몫이라 조각이 그만한 체력을 또 나눠 가져 보스가 두 배가 된다.
-    private static void AddRandom(List<SO_MonsterTrait> target, List<SO_MonsterTrait> pool, int count, RandomStream random, bool boss = false)
+    private static void AddRandom(List<SO_MonsterTrait> target, List<SO_MonsterTrait> pool, int count, RandomStream random)
     {
         List<SO_MonsterTrait> candidates = new List<SO_MonsterTrait>();
         for (int i = 0; i < pool.Count; i++)
-            if (pool[i] != null && !target.Contains(pool[i]) && !(boss && pool[i].SplitCount > 0)) candidates.Add(pool[i]);
+            if (pool[i] != null && !target.Contains(pool[i])) candidates.Add(pool[i]);
         for (int i = 0; i < count && candidates.Count > 0; i++)
         {
             int pick = random.Next(candidates.Count);

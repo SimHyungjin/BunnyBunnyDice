@@ -295,9 +295,9 @@ public sealed partial class GameScene : SceneBase
         {
             _run.CountKill(type.IsJackpot);
             _waveLog.CountKill();
-            // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 9.4). 분열 조각은 보스가 아니다.
+            // 보스: 카드 고르기 한 번, 잭팟 보스는 두 번(레벨은 오르지 않는다, 기획서 9.4).
             // 경험치 막기는 보상 고르기도 막는다 — 고르기 창 없이 웨이브를 시험하려는 것이라.
-            if (type.IsBoss && !type.IsPiece && !_debug.ExpBlocked)
+            if (type.IsBoss && !_debug.ExpBlocked)
             {
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();

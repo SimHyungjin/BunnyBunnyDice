@@ -23,7 +23,3 @@ MonoBehaviour:
   RegenRatio: 0
   GoalDamageBonus: 9
   ExpBonus: 2
-  SplitCount: 0
-  SplitHealthRatio: 0.5
-  PieceGoalDamage: 1
-  PieceExp: 0

@@ -316,7 +316,7 @@ public sealed class ColorPowerTest : IDisposable
         {
             if (!states[i].IsAlive || _bossIds.Contains(states[i].Id)) continue;
             MonsterKind kind = _monsters.KindOf(i);
-            if (!kind.IsBoss || kind.IsPiece) continue;
+            if (!kind.IsBoss) continue;
             _bossIds.Add(states[i].Id);
             _bossHealth += states[i].MaxHealth;
         }
@@ -332,7 +332,7 @@ public sealed class ColorPowerTest : IDisposable
         if (!Running) return;
         _leakedHealth += (float)health;
         _leaks++;
-        if (kind.IsBoss && !kind.IsPiece) _bossLeaked += health;
+        if (kind.IsBoss) _bossLeaked += health;
     }
 
     private void OnWaveStarted(int wave)

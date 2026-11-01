@@ -19,7 +19,7 @@ public sealed partial class GameBot
         {
             if (!states[i].IsAlive) continue;
             MonsterKind kind = _monsters.KindOf(i);
-            if (kind.IsBoss && !kind.IsPiece && IsPastKillZone(states[i].Position, _config.KillZoneMargin)) bossBreaching = true;
+            if (kind.IsBoss && IsPastKillZone(states[i].Position, _config.KillZoneMargin)) bossBreaching = true;
             if (IsPastKillZone(states[i].Position, 0) && states[i].Health >= states[i].MaxHealth * _config.BreachHealthRatio) strong++;
         }
         return bossBreaching || strong >= _config.BreachCount || CountNearGoal(_config.DangerRadius) > 0;
