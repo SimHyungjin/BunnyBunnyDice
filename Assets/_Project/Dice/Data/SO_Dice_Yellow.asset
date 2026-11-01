@@ -25,8 +25,8 @@ MonoBehaviour:
   AttackSpeedGrowth: 0
   Range: 2.85
   MaxHealthDamage: 0.0015
-  ExplosionRadius: 0.9
-  ExplosionRadiusGrowth: 0.1
+  ExplosionRadius: 0.5
+  ExplosionRadiusGrowth: 0
   MaxExplosionRadius: 2
   ExplosionDamageRatio: 0.7
   AwakenExplosionRadiusBonus: 1
