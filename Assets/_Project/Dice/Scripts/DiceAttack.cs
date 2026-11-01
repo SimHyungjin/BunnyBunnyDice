@@ -50,9 +50,6 @@ public sealed class DiceAttack : IDisposable
         public DamageSource Source;
     }
 
-    /// <summary>파동을 쐈다(맞은 적이 있었다) — 그 칸의 주사위가 맥박 친다(DiceField.Beat). 표시만.</summary>
-    public event Action<Vector2Int> Pulsed;
-
     private readonly SO_DiceStatsConfig _statsConfig;
     private readonly SO_MonsterConfig _monsterConfig;
     private readonly SO_MapViewConfig _viewConfig;
@@ -322,13 +319,12 @@ public sealed class DiceAttack : IDisposable
 
     // 범위 안에 아무도 없으면 터지지 않는다(첫 파동은 쏘지 않은 것으로 본다).
     // 범위는 그리지 않는다 — 사거리까지 퍼지는 고리는 공속이 빨라(1.5) 여러 개가 겹쳐 화면을 덮었고, 늘 떠 있는 고리·원판도 어색했다(2026-11-01 사용자).
-    // 대신 쏜 주사위가 맥박 치고(Pulsed) 맞은 적 발밑에 작은 불꽃이 터진다 — 범위는 맞은 적들로 드러난다. 불꽃 수는 한 번에 몇 개까지(떼에 화면이 덮이지 않게).
+    // 대신 맞은 적 발밑마다 작은 고리가 터진다 — 범위는 맞은 적들로 드러난다. 상한·주사위 맥박은 두지 않는다(2026-11-01 사용자).
     private bool Pulse(Vector2 center, float range, float damage, float maxHealthRatio, float critChance, Color color, SO_DiceType_Pulse type)
     {
         MonsterState[] states = _monsters.States;
         float rangeSqr = range * range;
         float ground = _viewConfig.GetTileTop(TileType.Ground);
-        int sparks = 0;
         bool any = false;
         for (int i = 0; i < _monsters.Count; i++)
         {
@@ -336,11 +332,8 @@ public sealed class DiceAttack : IDisposable
             Vector2 at = states[i].Position;
             HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio), critChance);
             any = true;
-            if (sparks >= type.MaxHitSparks) continue;
             _effects.ShowBurst(new Vector3(at.x, ground, at.y), type.HitSparkRadius, color);
-            sparks++;
         }
-        if (any) Pulsed?.Invoke(Vector2Int.RoundToInt(center));
         return any;
     }
 

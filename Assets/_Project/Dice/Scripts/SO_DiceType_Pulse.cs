@@ -7,8 +7,6 @@ public sealed class SO_DiceType_Pulse : SO_DiceType
     [Header("표시 (범위는 그리지 않는다 — DiceAttack.Pulse)")]
     [Tooltip("맞은 적 발밑에 터지는 작은 불꽃 고리의 반지름(칸).")]
     [Min(0f)] public float HitSparkRadius = 0.35f;
-    [Tooltip("한 번 쏠 때 불꽃을 띄우는 적 수의 상한 — 떼에 화면이 덮이지 않게. 피해는 상한과 상관없이 모두에게 들어간다.")]
-    [Min(0)] public int MaxHitSparks = 6;
 
     [Header("각성 (눈 20)")]
     [Tooltip("두 번째 파동이 첫 파동 뒤 나가는 시간.")]

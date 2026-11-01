@@ -55,9 +55,6 @@ MonoBehaviour:
   PopOvershoot: 1.7
   PopTurns: 1
   StackPopStart: 0.7
-  BeatScale: 1.12
-  BeatDuration: 0.15
-  BeatGlow: 1.6
   BustBurstRadius: 0.7
   BustColor: {r: 0.45, g: 0.4, b: 0.5, a: 1}
   PipFont: {fileID: 11400000, guid: 743e12e08f2c09549b7a59ee5599b03e, type: 2}
