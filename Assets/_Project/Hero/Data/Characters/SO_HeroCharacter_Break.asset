@@ -26,7 +26,7 @@ MonoBehaviour:
   PortraitZoom: 0.8
   Attack: 80
   AttackSpeed: 3
-  MoveSpeed: 3.5
+  MoveSpeed: 3.4
   Range: 4
   CritChance: 0.2
   CritDamage: 3.5

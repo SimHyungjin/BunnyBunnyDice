@@ -30,9 +30,9 @@ MonoBehaviour:
   PortraitFocusY: 0.6
   PortraitFocusX: 0.5
   PortraitZoom: 0.8
-  Attack: 60
-  AttackSpeed: 2
-  MoveSpeed: 3
-  Range: 2
+  Attack: 55
+  AttackSpeed: 1.8
+  MoveSpeed: 2.6
+  Range: 2.8
   CritChance: 0.1
   CritDamage: 2.5
