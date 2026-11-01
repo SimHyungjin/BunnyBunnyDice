@@ -32,6 +32,9 @@ public sealed class DiceView
     private bool _awakened;
     // 새로 각성했는데 아직 보여 주지 않았다. 굴리는 중에 각성이 드러나면 눈보다 먼저 결과를 알려 주므로 멈춘 뒤에 켠다(SyncAwakened).
     private bool _revealPending;
+    // 맥박(하양 파동을 쏠 때 — Beat) 중이면 0 이상. 몸 색은 맥박 동안 밝혔다가 되돌린다.
+    private float _beatTime = -1f;
+    private Color _bodyColor;
 
     public bool IsRolling => _rollTime >= 0f || _popTime >= 0f;
 
@@ -68,7 +71,10 @@ public sealed class DiceView
         SO_DiceConfig.FaceModel model = config.GetModel(dice.Faces);
         if (_body != null) Object.Destroy(_body);
         _body = DiceBody.Build(_parent, model, _name, out _halfHeight, _outline);
-        RendererTint.Apply(_body, config.GetColor(dice.Colors));
+        // 몸체를 새로 만들었으니 맥박도 끝낸다(새 몸체는 제 크기·제 색이다).
+        _beatTime = -1f;
+        _bodyColor = config.GetColor(dice.Colors);
+        RendererTint.Apply(_body, _bodyColor);
 
         _pips.fontSize = config.PipFontSize * model.PipScale;
         SetAwakened(awakened, config);
@@ -106,6 +112,7 @@ public sealed class DiceView
     /// <summary>제자리 위 dropHeight에서 굴러 떨어진다(스킬로 다시 굴릴 때 — 놓기·얹기는 Pop).</summary>
     public void Roll(float dropHeight)
     {
+        EndBeat(null);
         _rollTime = 0f;
         _dropHeight = dropHeight;
         // 옆으로 넘어지듯 구르게 수평에 가까운 축을 무작위로 고른다.
@@ -120,6 +127,7 @@ public sealed class DiceView
     /// </summary>
     public void Pop(float fromScale)
     {
+        EndBeat(null);
         _rollTime = -1f;
         _popTime = 0f;
         _popFrom = fromScale;
@@ -140,6 +148,7 @@ public sealed class DiceView
             TickPop(deltaTime, config);
             return;
         }
+        if (_beatTime >= 0f) TickBeat(deltaTime, config);
         if (!IsRolling) return;
         _rollTime += deltaTime;
         float t = Mathf.Clamp01(_rollTime / config.RollDuration);
@@ -193,6 +202,46 @@ public sealed class DiceView
         body.localPosition = new Vector3(_cell.x, _top + _halfHeight, _cell.y);
         body.localRotation = Quaternion.identity;
         _pips.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// 맥박: 살짝 커졌다 돌아오며 몸이 번쩍인다(하양 파동을 쏠 때 — 범위를 그리지 않고 쏜 주사위가 일하는 것을 보인다, 2026-11-01 사용자).
+    /// 굴리거나 솟아나는 중이면 건너뛴다. 맥박 중에 다시 쏘면 처음부터.
+    /// </summary>
+    public void Beat(SO_DiceConfig config)
+    {
+        if (IsRolling || _body == null) return;
+        if (_beatTime < 0f && config.BeatGlow > 1f) SetBodyColor(_bodyColor * config.BeatGlow, config);
+        _beatTime = 0f;
+    }
+
+    // 바닥에 붙은 채 커졌다 돌아온다(사인 반 바퀴).
+    private void TickBeat(float deltaTime, SO_DiceConfig config)
+    {
+        _beatTime += deltaTime;
+        float t = Mathf.Clamp01(_beatTime / config.BeatDuration);
+        float scale = 1f + (config.BeatScale - 1f) * Mathf.Sin(t * Mathf.PI);
+        Transform body = _body.transform;
+        body.localScale = Vector3.one * scale;
+        body.localPosition = new Vector3(_cell.x, _top + _halfHeight * scale, _cell.y);
+        if (t >= 1f) EndBeat(config);
+    }
+
+    // config가 null이면 색은 그대로 둔다(뒤이어 몸체를 다시 만들거나 굴려서 Apply가 색을 다시 입힌다).
+    private void EndBeat(SO_DiceConfig config)
+    {
+        if (_beatTime < 0f) return;
+        _beatTime = -1f;
+        if (_body == null) return;
+        _body.transform.localScale = Vector3.one;
+        if (config != null) SetBodyColor(_bodyColor, config);
+    }
+
+    // 몸 색을 입히면 외곽선 색까지 덮이므로(RendererTint는 자식 렌더러 전부) 외곽선을 지금 상태로 다시 입힌다.
+    private void SetBodyColor(Color color, SO_DiceConfig config)
+    {
+        RendererTint.Apply(_body, color);
+        TintOutline(_awakened && !_revealPending, config);
     }
 
     /// <summary>각성으로 보일지 정한다. 꺼지는 것은 바로, 켜지는 것은 굴림이 끝난 뒤(SyncAwakened)에 외곽선에 드러난다.</summary>

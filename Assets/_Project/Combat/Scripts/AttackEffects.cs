@@ -36,17 +36,6 @@ public sealed class AttackEffects : IDisposable
         public bool Expand;
     }
 
-    // 오라(하양 파동 주사위가 놓인 동안 사거리를 덮는 아주 옅은 원판). 칸마다 하나이고, 파동을 쏠 때 잠깐 밝아진다.
-    private sealed class Aura
-    {
-        public Ring Ring;
-        public float Flash;
-        // 이번 프레임에 ShowAura로 불렸는지 — 안 불린 오라(주사위가 사라짐)는 EndAuras가 거둔다.
-        public bool Seen;
-    }
-
-    private readonly Dictionary<Vector2Int, Aura> _auras = new Dictionary<Vector2Int, Aura>();
-    private readonly List<Vector2Int> _auraGone = new List<Vector2Int>();
     private readonly List<Shot> _active = new List<Shot>();
     private readonly Stack<LineRenderer> _idle = new Stack<LineRenderer>();
     private readonly List<Burst> _bursts = new List<Burst>();
@@ -118,51 +107,6 @@ public sealed class AttackEffects : IDisposable
         if (_heldRing != null) _heldRing.Object.SetActive(false);
     }
 
-    /// <summary>cell에 오라를 띄운다(없으면 만든다). 매 프레임 띄울 오라를 모두 부른 뒤 EndAuras를 부른다.</summary>
-    public void ShowAura(Vector2Int cell, Vector3 center, float radius, Color color)
-    {
-        if (!_auras.TryGetValue(cell, out Aura aura))
-        {
-            aura = new Aura { Ring = _idleBursts.Count > 0 ? _idleBursts.Pop() : CreateRing() };
-            aura.Ring.Object.SetActive(true);
-            _auras.Add(cell, aura);
-        }
-        aura.Seen = true;
-        aura.Ring.Object.transform.localPosition = center + Vector3.up * _config.BurstLift;
-        aura.Ring.Renderer.sharedMaterial = _config.Material;
-        // 밝기(Intensity)를 곱하지 않는다 — 넓은 원판에 블룸이 걸리면 투명도 0.01에도 판이 뿌옇게 떴다.
-        Color plain = color;
-        plain.a = 1f;
-        RendererTint.Apply(aura.Ring.Object, plain);
-        float alpha = Mathf.Lerp(_config.AuraAlpha, _config.AuraFlashAlpha, aura.Flash / _config.AuraFlashDuration);
-        // 굵기 = 지름인 고리 = 안쪽 반지름 0인 원판.
-        RingMesh.Fill(aura.Ring.Mesh, radius * 0.5f, radius, _config.BurstSegments, new Color(1f, 1f, 1f, alpha));
-    }
-
-    /// <summary>이번 프레임에 ShowAura로 부르지 않은 오라를 거둔다.</summary>
-    public void EndAuras()
-    {
-        _auraGone.Clear();
-        foreach (KeyValuePair<Vector2Int, Aura> pair in _auras)
-        {
-            if (pair.Value.Seen) pair.Value.Seen = false;
-            else _auraGone.Add(pair.Key);
-        }
-        for (int i = 0; i < _auraGone.Count; i++)
-        {
-            ReleaseBurst(_auras[_auraGone[i]].Ring);
-            _auras.Remove(_auraGone[i]);
-        }
-    }
-
-    /// <summary>cell의 오라를 잠깐 밝힌다(파동을 쐈다). 그 칸에 오라가 없으면 false — 부르는 쪽이 퍼지는 고리로 대신 보인다(풀 하우스의 하양 등).</summary>
-    public bool FlashAura(Vector2Int cell)
-    {
-        if (!_auras.TryGetValue(cell, out Aura aura)) return false;
-        aura.Flash = _config.AuraFlashDuration;
-        return true;
-    }
-
     private void AddRing(Vector3 center, float radius, Color color, float duration, bool expand)
     {
         if (duration <= 0f) return;
@@ -182,8 +126,6 @@ public sealed class AttackEffects : IDisposable
         _active.Clear();
         for (int i = 0; i < _bursts.Count; i++) ReleaseBurst(_bursts[i].Ring);
         _bursts.Clear();
-        foreach (KeyValuePair<Vector2Int, Aura> pair in _auras) ReleaseBurst(pair.Value.Ring);
-        _auras.Clear();
         HideHeldRing();
     }
 
@@ -221,9 +163,6 @@ public sealed class AttackEffects : IDisposable
             PlaceBurst(burst);
             _bursts[i] = burst;
         }
-
-        foreach (KeyValuePair<Vector2Int, Aura> pair in _auras)
-            pair.Value.Flash = Mathf.Max(pair.Value.Flash - deltaTime, 0f);
     }
 
     // 폭발은 반경의 일부에서 시작해 반경까지 퍼지며 흐려진다. 머무는 고리는 크기 그대로 흐려지기만 한다.

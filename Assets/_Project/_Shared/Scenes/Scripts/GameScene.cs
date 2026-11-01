@@ -60,7 +60,6 @@ public sealed partial class GameScene : SceneBase
     private HeroRaise _heroRaise;
     private HeroRaiseView _heroRaiseView;
     private DiceAwakenEffect _diceAwakenEffect;
-    private PulseAura _pulseAura;
     private HeroBreakShotView _breakShotView;
     private SkillCutIn _cutIn;
     private MonsterField _monsters;
@@ -237,7 +236,8 @@ public sealed partial class GameScene : SceneBase
         _diceAttack = new DiceAttack(diceStatsConfig, _monsterConfig, _viewConfig, _monsters, _attackEffects);
         _diceCombat = new DiceCombat(_viewConfig, diceStatsConfig, diceConfig, _diceField, _chips, _monsters, _diceAttack);
         _diceAwakenEffect = new DiceAwakenEffect(diceConfig, _diceField, _attackEffects);
-        _pulseAura = new PulseAura(diceConfig, _viewConfig, _diceField, _diceCombat, _attackEffects);
+        // 하양 파동은 범위를 그리지 않고 쏜 주사위가 맥박 친다(맞은 적은 DiceAttack이 작은 불꽃으로).
+        _diceAttack.Pulsed += _diceField.Beat;
         _heroRaise = new HeroRaise(heroConfig, _hero, _diceField, _diceCombat, _monsters, _traits);
         _heroRaiseView = new HeroRaiseView(heroConfig, _viewConfig, _heroRaise, _attackEffects);
         _hotStreak = new HotStreak(heroConfig, _viewConfig, _hero, _diceField, _diceCombat, _attackEffects, _traits);
@@ -442,7 +442,6 @@ public sealed partial class GameScene : SceneBase
         _skillPreview?.Dispose();
         _heroRaiseView?.Dispose();
         _diceAwakenEffect?.Dispose();
-        _pulseAura?.Dispose();
         _heroRaise?.Dispose();
         _diceCombat?.Dispose();
         _diceAttack?.Dispose();

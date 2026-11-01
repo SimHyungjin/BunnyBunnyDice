@@ -44,10 +44,14 @@ public sealed class DiceAttack : IDisposable
         public float MaxHealthRatio;
         public float CritChance;
         public Color Color;
+        public SO_DiceType_Pulse Type;
         public float Delay;
         public ChipSet Attachment;
         public DamageSource Source;
     }
+
+    /// <summary>파동을 쐈다(맞은 적이 있었다) — 그 칸의 주사위가 맥박 친다(DiceField.Beat). 표시만.</summary>
+    public event Action<Vector2Int> Pulsed;
 
     private readonly SO_DiceStatsConfig _statsConfig;
     private readonly SO_MonsterConfig _monsterConfig;
@@ -295,7 +299,7 @@ public sealed class DiceAttack : IDisposable
     // (반경을 늘리면 짧은 사거리라는 약점을 메우게 되므로 같은 자리에서 두 겹으로 친다.)
     private bool FirePulse(in Shot shot, SO_DiceType_Pulse type, bool awaken, Color color)
     {
-        if (!Pulse(shot.Origin, shot.Range, shot.Stats.Damage, shot.Stats.MaxHealthRatio, shot.Stats.CritChance, color))
+        if (!Pulse(shot.Origin, shot.Range, shot.Stats.Damage, shot.Stats.MaxHealthRatio, shot.Stats.CritChance, color, type))
             return false;
         if (awaken)
         {
@@ -307,6 +311,7 @@ public sealed class DiceAttack : IDisposable
                 MaxHealthRatio = shot.Stats.MaxHealthRatio * type.AwakenPulseRatio,
                 CritChance = shot.Stats.CritChance,
                 Color = color,
+                Type = type,
                 Delay = type.AwakenPulseDelay,
                 Attachment = _attachment,
                 Source = _source,
@@ -316,21 +321,26 @@ public sealed class DiceAttack : IDisposable
     }
 
     // 범위 안에 아무도 없으면 터지지 않는다(첫 파동은 쏘지 않은 것으로 본다).
-    private bool Pulse(Vector2 center, float range, float damage, float maxHealthRatio, float critChance, Color color)
+    // 범위는 그리지 않는다 — 사거리까지 퍼지는 고리는 공속이 빨라(1.5) 여러 개가 겹쳐 화면을 덮었고, 늘 떠 있는 고리·원판도 어색했다(2026-11-01 사용자).
+    // 대신 쏜 주사위가 맥박 치고(Pulsed) 맞은 적 발밑에 작은 불꽃이 터진다 — 범위는 맞은 적들로 드러난다. 불꽃 수는 한 번에 몇 개까지(떼에 화면이 덮이지 않게).
+    private bool Pulse(Vector2 center, float range, float damage, float maxHealthRatio, float critChance, Color color, SO_DiceType_Pulse type)
     {
         MonsterState[] states = _monsters.States;
         float rangeSqr = range * range;
+        float ground = _viewConfig.GetTileTop(TileType.Ground);
+        int sparks = 0;
         bool any = false;
         for (int i = 0; i < _monsters.Count; i++)
         {
             if (!states[i].IsAlive || (states[i].Position - center).sqrMagnitude > rangeSqr) continue;
+            Vector2 at = states[i].Position;
             HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio), critChance);
             any = true;
+            if (sparks >= type.MaxHitSparks) continue;
+            _effects.ShowBurst(new Vector3(at.x, ground, at.y), type.HitSparkRadius, color);
+            sparks++;
         }
-        // 파동 주사위는 늘 떠 있는 오라(PulseAura)를 밝히기만 한다 — 쏠 때마다 퍼지는 고리는 공속이 빨라 화면을 덮었다(2026-11-01 사용자).
-        // 오라가 없는 칸(풀 하우스가 다른 색 자리에서 쏘는 하양)은 퍼지는 고리로 보인다.
-        if (any && !_effects.FlashAura(Vector2Int.RoundToInt(center)))
-            _effects.ShowBurst(new Vector3(center.x, _viewConfig.GetTileTop(TileType.Ground), center.y), range, color);
+        if (any) Pulsed?.Invoke(Vector2Int.RoundToInt(center));
         return any;
     }
 
@@ -349,7 +359,7 @@ public sealed class DiceAttack : IDisposable
             }
             _attachment = pulse.Attachment;
             _source = pulse.Source;
-            Pulse(pulse.Center, pulse.Range, pulse.Damage, pulse.MaxHealthRatio, pulse.CritChance, pulse.Color);
+            Pulse(pulse.Center, pulse.Range, pulse.Damage, pulse.MaxHealthRatio, pulse.CritChance, pulse.Color, pulse.Type);
             _pulses[i] = _pulses[_pulses.Count - 1];
             _pulses.RemoveAt(_pulses.Count - 1);
         }

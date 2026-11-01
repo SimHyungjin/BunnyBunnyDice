@@ -352,6 +352,13 @@ public sealed class DiceField : IDisposable
     // 굴리는 연출을 진행하고, 카메라가 돌았을 때만(화면 회전) 눈 글자를 다시 돌린다.
     // 놓는 연출(솟아나기·굴러 떨어지기)은 실제 시간이다 — 멈춘 동안 놓아도 주사위가 나타나고 눈 숫자까지 보이게.
     // 판정은 연출을 기다리지 않으므로(DiceView) 게임 결과는 바뀌지 않는다. 카메라를 마주 보는 것은 카메라가 움직인 뒤(LateUpdate)에 한다.
+    /// <summary>cell의 주사위가 맥박 친다(하양 파동을 쐈다 — DiceAttack.Pulsed). 표시만.</summary>
+    public void Beat(Vector2Int cell)
+    {
+        int index = IndexOf(cell);
+        if (index >= 0) _views[index].Beat(_config);
+    }
+
     private void Tick(float deltaTime)
     {
         for (int i = 0; i < _views.Count; i++)

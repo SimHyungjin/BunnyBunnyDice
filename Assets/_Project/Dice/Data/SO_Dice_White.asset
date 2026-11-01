@@ -24,5 +24,7 @@ MonoBehaviour:
   AttackSpeedGrowth: 0
   Range: 3.5
   MaxHealthDamage: 0
+  HitSparkRadius: 0.35
+  MaxHitSparks: 6
   AwakenPulseDelay: 0.2
   AwakenPulseRatio: 0.5

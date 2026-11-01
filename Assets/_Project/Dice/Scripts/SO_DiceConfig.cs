@@ -65,6 +65,14 @@ public sealed class SO_DiceConfig : SO_Config
     [Tooltip("얹을 때 몸체가 이 크기에서 제 크기로 톡 튀며 커진다(새로 놓을 때는 0에서).")]
     [Range(0f, 1f)] public float StackPopStart = 0.7f;
 
+    [Header("맥박 (하양 파동을 쏠 때)")]
+    [Tooltip("파동을 쏠 때 주사위가 커졌다 돌아오는 크기. 범위를 그리는 대신 쏜 주사위가 맥박 친다(2026-11-01 사용자).")]
+    [Min(1f)] public float BeatScale = 1.12f;
+    [Tooltip("맥박 한 번의 시간(실제 시간).")]
+    [Min(0.01f)] public float BeatDuration = 0.15f;
+    [Tooltip("맥박 동안 몸 색에 곱하는 밝기. 1을 넘으면 블룸으로 번쩍인다.")]
+    [Min(1f)] public float BeatGlow = 1.6f;
+
     [Header("부서짐 (더블 오어 낫싱)")]
     [Tooltip("주사위가 부서진 칸에 퍼지는 고리 반지름(칸 단위). 사라진 자리를 보이게.")]
     [Min(0f)] public float BustBurstRadius = 0.7f;
