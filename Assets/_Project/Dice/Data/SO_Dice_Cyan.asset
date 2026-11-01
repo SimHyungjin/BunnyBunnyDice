@@ -26,6 +26,6 @@ MonoBehaviour:
   Range: 4.4
   MaxHealthDamage: 0.0015
   JumpRange: 1.6
-  Falloff: 0.8
+  Falloff: 0.9
   MinJumpDamage: 2
-  AwakenFalloff: 0.9
+  AwakenFalloff: 0.95
