@@ -54,15 +54,6 @@ public sealed class SO_CardHandConfig : SO_Config
     [Localized, TextArea] public string HeroKindText = "고르면 바로 이번 판 동안 영웅에게 적용된다. 손패에 들어가지 않는다.";
     [Tooltip("제목 뒤 띠의 불투명도(종류 색 위에).")]
     [Range(0f, 1f)] public float TitleBackAlpha = 0.25f;
-    public Color StrongTagColor = new Color(0.247f, 0.878f, 1f);
-    public Color StrongTagTextColor = Color.black;
-    public Color WeakTagColor = new Color(0.353f, 0.227f, 0.416f);
-    [Tooltip("약함 태그 등 어두운 띠 위의 글자 색.")]
-    public Color TextColor = new Color(0.984f, 0.933f, 0.988f);
-    [Tooltip("태그 글자 양옆 여백(카드 프리팹 단위).")]
-    [Min(0f)] public float TagPadding = 8f;
-    [Tooltip("태그 사이 간격.")]
-    [Min(0f)] public float TagGap = 8f;
 
     [Header("누르고 있을 때(설명 보기)")]
     [Tooltip("끌기 전까지 누르고 있으면 이 크기로 커져 설명을 읽을 수 있다.")]

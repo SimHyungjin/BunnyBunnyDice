@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_StackedDeck
   DisplayName: "\uC2A4\uD0DD \uB371"
   Description: "\uC190\uD328\uC758 \uC2A4\uD0AC \uCE74\uB4DC\uAC00 {StackScale}\uBC30\uB85C \uB298\uC5B4\uB09C\uB2E4."
-  StrongAgainst: 
   Icon: {fileID: 0}
   TintIcon: 0
   IconColor: {r: 0.85, g: 0.55, b: 1, a: 1}

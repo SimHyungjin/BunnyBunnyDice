@@ -13,8 +13,6 @@ public abstract class SO_Card : SO_Config
     [Localized] public string DisplayName;
     [Tooltip("한두 줄 설명. 카드를 누르고 있으면 읽힌다.")]
     [Localized, TextArea] public string Description;
-    [Tooltip("강한 상대(몬스터 특성, 기획서 9.1). 비우면 표시하지 않는다.")]
-    [Localized] public string StrongAgainst;
     [Tooltip("카드 아이콘. 흰 그림이면 IconColor를 곱해 쓰고(TintIcon), 색칠된 그림이면 그대로 쓴다.")]
     public Sprite Icon;
     [Tooltip("아이콘에 IconColor를 곱할지. 흰 그림 하나를 색만 바꿔 돌려 쓰는 카드(칩)는 켜고, 색칠된 그림은 끈다 — 끄면 그림이 물들지 않는다.")]

@@ -16,7 +16,6 @@ MonoBehaviour:
   Description: "{Duration}\uCD08\uAC04 \uC601\uC6C5\uC758 \uACF5\uACA9\uB825\uC774
     {DamageScale}\uBC30, \uACF5\uACA9 \uC18D\uB3C4\uAC00 {SpeedScale}\uBC30\uAC00
     \uB41C\uB2E4."
-  StrongAgainst: 
   Icon: {fileID: 21300000, guid: d39ce07a7562ecd40bf2c384110d717e, type: 3}
   TintIcon: 0
   IconColor: {r: 1, g: 0.55, b: 0.2, a: 1}

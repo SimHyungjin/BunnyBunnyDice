@@ -29,15 +29,9 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     [SerializeField] private TMP_Text _speedText;
     [SerializeField] private TMP_Text _rangeText;
     [SerializeField] private TMP_Text _descriptionText;
-    [SerializeField] private Image _strongTagBack;
-    [SerializeField] private TMP_Text _strongTagText;
-    [SerializeField] private Image _weakTagBack;
-    [SerializeField] private TMP_Text _weakTagText;
     [SerializeField] private TMP_Text _awakenText;
     [Header("칩·스킬·영웅 강화 카드 내용 — 수치 칸 자리까지 설명이 넓고, 각성 칸 자리에 놓는 곳")]
     [SerializeField] private TMP_Text _upgradeDescriptionText;
-    [SerializeField] private Image _upgradeStrongTagBack;
-    [SerializeField] private TMP_Text _upgradeStrongTagText;
     [SerializeField] private TMP_Text _upgradeKindLabel;
     [SerializeField] private TMP_Text _upgradeKindText;
     [Tooltip("칩·스킬 카드의 넓은 설명 묶음. 영웅 강화 카드는 수치 칸이 들어가므로 끄고 HeroContent의 설명을 쓴다.")]
@@ -121,10 +115,10 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     private void ShowContent()
     {
         HandCard card = Card;
-        if (card.IsChip) ShowCardAsset(card.Chip, _config.ChipSubText, _config.ChipKindLabel, _config.ChipKindText, _config);
+        if (card.IsChip) ShowCardAsset(card.Chip, _config.ChipSubText, _config.ChipKindLabel, _config.ChipKindText);
         else if (card.IsSkill) ShowSkill(card.Skill, _config);
         else if (card.IsHero) ShowHero(card.Hero, _config);
-        else ShowDice(card.Dice, _config, _diceConfig, _statsConfig);
+        else ShowDice(card.Dice, _diceConfig, _statsConfig);
         _compactTitle.text = _titleText.text;
     }
 
@@ -146,7 +140,7 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
         if (_config != null) ShowContent();
     }
 
-    private void ShowDice(DiceCard card, SO_CardHandConfig config, SO_DiceConfig diceConfig, SO_DiceStatsConfig statsConfig)
+    private void ShowDice(DiceCard card, SO_DiceConfig diceConfig, SO_DiceStatsConfig statsConfig)
     {
         SO_DiceConfig.FaceModel face = diceConfig.GetModel(card.Faces);
         SO_DiceType type = diceConfig.GetDiceType(card.Colors);
@@ -157,8 +151,6 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
             App.Localize(face.DisplayName), card.Faces);
         ShowStats(card, type, statsConfig);
         _descriptionText.text = type != null ? DiceDescription(type) : string.Empty;
-        ShowTags(config, _strongTagBack, _strongTagText, type != null ? type.StrongAgainst : null,
-            _weakTagBack, _weakTagText, type != null ? type.WeakAgainst : null);
         // 각성 공통 배율(SO_DiceStatsConfig.AwakenDamageScale)은 적지 않는다 — 모든 색에 걸리는 시스템 규칙이라 색의 개성이 아니다(2026-10-29 사용자).
         _awakenText.text = type != null ? CardText.Fill(type.AwakenDescription, type) : string.Empty;
     }
@@ -179,16 +171,16 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
         switch (card.Target)
         {
             case SkillTarget.Enemies:
-                ShowCardAsset(card, sub, config.SkillEnemiesLabel, config.SkillEnemiesText, config);
+                ShowCardAsset(card, sub, config.SkillEnemiesLabel, config.SkillEnemiesText);
                 break;
             case SkillTarget.Board:
-                ShowCardAsset(card, sub, config.SkillBoardLabel, config.SkillBoardText, config);
+                ShowCardAsset(card, sub, config.SkillBoardLabel, config.SkillBoardText);
                 break;
             case SkillTarget.Cell:
-                ShowCardAsset(card, sub, config.SkillCellLabel, config.SkillCellText, config);
+                ShowCardAsset(card, sub, config.SkillCellLabel, config.SkillCellText);
                 break;
             default:
-                ShowCardAsset(card, sub, config.SkillDiceLabel, config.SkillDiceText, config);
+                ShowCardAsset(card, sub, config.SkillDiceLabel, config.SkillDiceText);
                 break;
         }
     }
@@ -197,7 +189,7 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     private void ShowHero(SO_HeroCard card, SO_CardHandConfig config)
     {
         HeroStats heroStats = _heroStats;
-        ShowCardAsset(card, config.HeroSubText, config.HeroKindLabel, config.HeroKindText, config);
+        ShowCardAsset(card, config.HeroSubText, config.HeroKindLabel, config.HeroKindText);
         // 오르는 %는 제목에 코드로 붙인다 — 설명에 숫자를 적어 두면 SO 값을 고칠 때 글과 실제가 어긋난다.
         string percent = HeroStatText.FormatAmount(card);
         _titleText.text = percent.Length > 0 ? $"{App.Localize(card.DisplayName)} {percent}" : App.Localize(card.DisplayName);
@@ -216,14 +208,13 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
         $"{HeroStatText.Format(stat, heroStats.Get(stat))} → {HeroStatText.Format(stat, heroStats.GetAfter(card, stat))}";
 
     // 칩·스킬·영웅 강화 카드는 수치·각성 칸 대신 넓은 설명과 종류 칸(어디에 놓는지)이다 — 놓을 곳이 고르는 기준이라 각성 칸 자리에 크게 보인다.
-    private void ShowCardAsset(SO_Card card, string subText, string kindLabel, string kindText, SO_CardHandConfig config)
+    private void ShowCardAsset(SO_Card card, string subText, string kindLabel, string kindText)
     {
         _icon.sprite = card.Icon;
         _icon.color = card.TintIcon ? card.IconColor : Color.white;
         _titleText.text = App.Localize(card.DisplayName);
         _subText.text = App.Localize(subText);
         _upgradeDescriptionText.text = CardText.Fill(card.Description, card, _heroStats);
-        ShowTags(config, _upgradeStrongTagBack, _upgradeStrongTagText, card.StrongAgainst);
         _upgradeKindLabel.text = App.Localize(kindLabel);
         _upgradeKindText.text = App.Localize(kindText);
     }
@@ -266,71 +257,6 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
         if (_heroStats == null) return;
         if (Card.IsSkill) _upgradeDescriptionText.text = CardText.Fill(Card.Skill.Description, Card.Skill, _heroStats);
         else if (Card.IsHero) ShowHero(Card.Hero, _config);
-    }
-
-    // 태그는 띠(Image) + 글자 한 쌍이고, 띠 폭을 글자 길이에 맞춘다. 약함 태그는 강함 태그 바로 뒤에 붙인다.
-    // 글자 길이로 폭이 정해지므로 가로(위치·폭)만 여기서 정하고, 세로는 프리팹 앵커가 정한다(sizeDelta.y·anchoredPosition.y는 0 그대로 둔다).
-    // (TMP의 mark는 띠를 글자 위에 덮어 그려 불투명한 띠로는 글자가 가려진다.) 값이 없으면 숨긴다.
-    // 한 줄이 카드 폭을 넘으면(긴 번역 등) 두 태그의 글자를 같은 비율로 줄인다 — 띠가 카드 밖으로 삐져나가지 않게.
-    // 오른쪽 한계는 왼쪽 시작 여백과 같은 거리다(좌우 대칭). 글자 기본 크기는 프리팹의 Font Size Max.
-    private static void ShowTags(SO_CardHandConfig config, Image strongBack, TMP_Text strongLabel, string strong,
-        Image weakBack = null, TMP_Text weakLabel = null, string weak = null)
-    {
-        bool hasStrong = !string.IsNullOrEmpty(strong);
-        bool hasWeak = weakBack != null && !string.IsNullOrEmpty(weak);
-        strongBack.gameObject.SetActive(hasStrong);
-        strongLabel.gameObject.SetActive(hasStrong);
-        if (weakBack != null)
-        {
-            weakBack.gameObject.SetActive(hasWeak);
-            weakLabel.gameObject.SetActive(hasWeak);
-        }
-        if (!hasStrong && !hasWeak) return;
-
-        string strongText = hasStrong ? App.Localize("강함: {0}", App.Localize(strong)) : null;
-        string weakText = hasWeak ? App.Localize("약함: {0}", App.Localize(weak)) : null;
-
-        // 글자 폭만 글자 크기에 비례하고 여백·간격은 그대로이므로, 남는 폭을 글자 폭에만 나눠 맞춘다.
-        float start = strongBack.rectTransform.anchoredPosition.x;
-        float available = ((RectTransform)strongBack.rectTransform.parent).rect.width - start * 2f;
-        float textWidth = 0f;
-        int count = 0;
-        if (hasStrong)
-        {
-            strongLabel.fontSize = strongLabel.fontSizeMax;
-            textWidth += strongLabel.GetPreferredValues(strongText).x;
-            count++;
-        }
-        if (hasWeak)
-        {
-            weakLabel.fontSize = weakLabel.fontSizeMax;
-            textWidth += weakLabel.GetPreferredValues(weakText).x;
-            count++;
-        }
-        float fixedWidth = config.TagPadding * 2f * count + config.TagGap * (count - 1);
-        float scale = textWidth > 0f ? Mathf.Clamp01((available - fixedWidth) / textWidth) : 1f;
-
-        float x = start;
-        if (hasStrong) x = LayoutTag(strongBack, strongLabel, strongText, config.StrongTagColor, config.StrongTagTextColor, scale, x, config);
-        if (hasWeak) LayoutTag(weakBack, weakLabel, weakText, config.WeakTagColor, config.TextColor, scale, x, config);
-    }
-
-    /// <returns>다음 태그가 놓일 x.</returns>
-    private static float LayoutTag(Image back, TMP_Text label, string text, Color backColor, Color textColor,
-        float scale, float x, SO_CardHandConfig config)
-    {
-        label.text = text;
-        label.color = textColor;
-        label.fontSize = label.fontSizeMax * scale;
-        back.color = backColor;
-        float width = label.GetPreferredValues(text).x + config.TagPadding * 2f;
-        RectTransform backRect = back.rectTransform;
-        RectTransform labelRect = label.rectTransform;
-        backRect.anchoredPosition = new Vector2(x, backRect.anchoredPosition.y);
-        backRect.sizeDelta = new Vector2(width, backRect.sizeDelta.y);
-        labelRect.anchoredPosition = backRect.anchoredPosition;
-        labelRect.sizeDelta = backRect.sizeDelta;
-        return x + width + config.TagGap;
     }
 
     public void SetStack(int stack)

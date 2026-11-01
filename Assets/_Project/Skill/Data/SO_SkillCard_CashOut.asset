@@ -15,7 +15,6 @@ MonoBehaviour:
   DisplayName: "\uCE90\uC2DC \uC544\uC6C3"
   Description: "\uD574\uB2F9 \uCE78\uC758 \uC8FC\uC0AC\uC704\uC640 \uCE69\uC744 \uAC70\uB46C
     {Copies}\uC7A5\uC529 \uB3CC\uB824\uBC1B\uB294\uB2E4."
-  StrongAgainst: 
   Icon: {fileID: 21300000, guid: 4c05b94494d77c949ba106da2de3cb94, type: 3}
   TintIcon: 0
   IconColor: {r: 0.75, g: 0.75, b: 0.8, a: 1}

@@ -18,8 +18,6 @@ MonoBehaviour:
   AttackName: "\uAE30\uBCF8 \uACF5\uACA9"
   Description: "\uC0C9 \uC8FC\uC0AC\uC704\uB97C \uC5B9\uC73C\uBA74 \uADF8 \uC0C9\uC774
     \uB41C\uB2E4."
-  StrongAgainst: 
-  WeakAgainst: 
   AwakenDescription: "\uB208\uC774 20\uC774 \uB418\uBA74 \uBB34\uC791\uC704 \uC0C9\uC774
     \uB41C\uB2E4."
   Damage: 32

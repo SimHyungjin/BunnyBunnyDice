@@ -47,12 +47,6 @@ MonoBehaviour:
   HeroKindLabel: "\uC601\uC6C5"
   HeroKindText: "\uACE0\uB974\uBA74 \uBC14\uB85C \uC801\uC6A9\uB41C\uB2E4."
   TitleBackAlpha: 0.25
-  StrongTagColor: {r: 0.247, g: 0.878, b: 1, a: 1}
-  StrongTagTextColor: {r: 0, g: 0, b: 0, a: 1}
-  WeakTagColor: {r: 0.353, g: 0.227, b: 0.416, a: 1}
-  TextColor: {r: 0.984, g: 0.933, b: 0.988, a: 1}
-  TagPadding: 8
-  TagGap: 8
   InspectScale: 2.2
   InspectOffset: {x: 0, y: 1.5}
   FanRadius: 6.67

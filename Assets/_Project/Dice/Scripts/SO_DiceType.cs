@@ -22,10 +22,6 @@ public abstract class SO_DiceType : SO_Config
     [Localized] public string AttackName;
     [Tooltip("한두 줄 설명. 카드를 누르고 있으면 읽힌다.")]
     [Localized, TextArea] public string Description;
-    [Tooltip("강한 상대(몬스터 특성, 기획서 9.1). 비우면 표시하지 않는다.")]
-    [Localized] public string StrongAgainst;
-    [Tooltip("약한 상대. 비우면 표시하지 않는다.")]
-    [Localized] public string WeakAgainst;
     [Tooltip("각성 효과 한 줄. 조건(눈이 상한)과 세기(눈에 비례)는 모든 주사위가 같아 적지 않는다 — 얹으면 면체가 바뀌어 숫자는 금방 틀린다.")]
     [Localized, TextArea] public string AwakenDescription;
 
