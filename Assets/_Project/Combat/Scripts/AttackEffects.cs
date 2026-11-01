@@ -36,7 +36,7 @@ public sealed class AttackEffects : IDisposable
         public bool Expand;
     }
 
-    // 오라(하양 파동 주사위가 놓인 동안 사거리에 떠 있는 연한 고리). 칸마다 하나이고, 파동을 쏠 때 잠깐 밝아진다.
+    // 오라(하양 파동 주사위가 놓인 동안 사거리를 덮는 아주 옅은 원판). 칸마다 하나이고, 파동을 쏠 때 잠깐 밝아진다.
     private sealed class Aura
     {
         public Ring Ring;
@@ -130,9 +130,13 @@ public sealed class AttackEffects : IDisposable
         aura.Seen = true;
         aura.Ring.Object.transform.localPosition = center + Vector3.up * _config.BurstLift;
         aura.Ring.Renderer.sharedMaterial = _config.Material;
-        Tint(aura.Ring.Object, color);
-        float alpha = Mathf.Lerp(_config.AuraAlpha, 1f, aura.Flash / _config.AuraFlashDuration);
-        RingMesh.Fill(aura.Ring.Mesh, radius, _config.AuraWidth, _config.BurstSegments, new Color(1f, 1f, 1f, alpha));
+        // 밝기(Intensity)를 곱하지 않는다 — 넓은 원판에 블룸이 걸리면 투명도 0.01에도 판이 뿌옇게 떴다.
+        Color plain = color;
+        plain.a = 1f;
+        RendererTint.Apply(aura.Ring.Object, plain);
+        float alpha = Mathf.Lerp(_config.AuraAlpha, _config.AuraFlashAlpha, aura.Flash / _config.AuraFlashDuration);
+        // 굵기 = 지름인 고리 = 안쪽 반지름 0인 원판.
+        RingMesh.Fill(aura.Ring.Mesh, radius * 0.5f, radius, _config.BurstSegments, new Color(1f, 1f, 1f, alpha));
     }
 
     /// <summary>이번 프레임에 ShowAura로 부르지 않은 오라를 거둔다.</summary>
