@@ -99,5 +99,5 @@ PC·모바일, 가로·세로를 함께 지원한다. Canvas Scaler는 해상도
 ## 주의 사항
 
 - `Debug.Log`는 `_Core/Debug.cs` 래퍼에 잡혀 `DEBUG_ENABLE` 심볼이 없으면 호출째 제거된다. 현재 `DEBUG_ENABLE`은 Standalone에만 정의되어 있다(다른 플랫폼은 Custom Symbols 툴로 추가).
-- `EditorBuildSettings`의 씬 경로가 `Assets/Scenes/SampleScene.unity`로 남아 있으나 실제 씬은 `Assets/_Project/_Shared/Scenes/SampleScene.unity`로 이동되어 있다(GUID로 추적되긴 함).
+- 빌드 씬은 `Assets/_Project/_Shared/Scenes/Scenes/GameScene.unity` 하나다(로비도 GameScene 안의 상태 — 2026-11-01 정리). 같은 폴더의 `LobbyScene.unity`는 쓰지 않는다.
 - 에셋을 이동/이름 변경할 때는 `.meta` 파일을 함께 옮겨야 GUID 참조가 유지된다. `Library/`, `Temp/`, `Logs/`, `UserSettings/`, `*.csproj`, `*.sln`은 Unity 생성물이다.
