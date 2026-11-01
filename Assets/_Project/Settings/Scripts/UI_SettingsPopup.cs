@@ -48,6 +48,10 @@ public sealed class UI_SettingsPopup : UI_Popup
     [SerializeField] private float _arrowAspect = 1.2f;
     [Tooltip("해상도 칸의 가로 비율 — \"2560 x 1440\"이 들어가게.")]
     [SerializeField] private float _resolutionAspect = 4f;
+    [Tooltip("이보다 가로가 작은 해상도는 목록에서 뺀다 — 카드 글이 읽히지 않는다.")]
+    [SerializeField] private int _minResolutionWidth = 1280;
+    [Tooltip("모니터 화면비와 이만큼 넘게 다른 해상도는 뺀다 — 늘어나거나 검은 띠가 생겨 고를 이유가 없다.")]
+    [SerializeField] private float _aspectTolerance = 0.02f;
     [Header("판 중")]
     [Tooltip("판을 포기하고 결과 화면으로(판 중에 열 때만 보인다).")]
     [SerializeField] private Button _giveUpButton;
@@ -123,8 +127,19 @@ public sealed class UI_SettingsPopup : UI_Popup
 
         _fullScreen = Screen.fullScreenMode == FullScreenMode.FullScreenWindow || Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen;
         _resolutions.Clear();
+        // 모니터가 주는 해상도는 640x480부터 수십 개라 화살표로 넘기기 어렵다(2026-11-01 사용자) — 모니터와 같은 화면비, 일정 폭 이상만 남긴다.
+        // 모니터 화면비는 바탕 화면 해상도로 본다(Display.systemWidth는 에디터에서 게임 창 크기를 준다). 전체 화면이 테두리 없는 창이라 바탕 해상도는 그대로다.
+        Resolution desktop = Screen.currentResolution;
+        float monitorAspect = desktop.height > 0 ? (float)desktop.width / desktop.height : 0f;
         Resolution[] available = Core.Display.AvailableResolutions;
-        for (int i = 0; i < available.Length; i++) AddResolution(new Vector2Int(available[i].width, available[i].height));
+        for (int i = 0; i < available.Length; i++)
+        {
+            int width = available[i].width;
+            int height = available[i].height;
+            if (width < _minResolutionWidth || height <= 0) continue;
+            if (monitorAspect > 0f && Mathf.Abs((float)width / height - monitorAspect) > _aspectTolerance) continue;
+            AddResolution(new Vector2Int(width, height));
+        }
         Vector2Int current = new Vector2Int(Screen.width, Screen.height);
         // 창 크기를 손으로 바꿨으면 목록에 없는 크기일 수 있다 — 지금 크기도 넣어 둔다.
         AddResolution(current);

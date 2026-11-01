@@ -156,6 +156,8 @@ MonoBehaviour:
   - {fileID: 9200000000000000026}
   _arrowAspect: 1.2
   _resolutionAspect: 4
+  _minResolutionWidth: 1280
+  _aspectTolerance: 0.02
   _giveUpButton: {fileID: 9100000000000000115}
 --- !u!1 &7367904753396688766
 GameObject:
