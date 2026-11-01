@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 몬스터 특성 하나(기획서 9.1 — 단단함·빠름·분열·재생·거대, 특성마다 에셋 하나). 몬스터 = 기본 종류(SO_MonsterType) + 특성 몇 개이고,
+/// 몬스터 특성 하나(기획서 9.1 — 분노·재생·보호막·단단함·거대, 특성마다 에셋 하나). 몬스터 = 기본 종류(SO_MonsterType) + 특성 몇 개이고,
 /// 조합은 웨이브 설정(SO_WaveConfig)이 정한다 — "보스 = 거대 + 특성 하나" 같은 조합마다 몬스터 에셋을 따로 만들지 않게.
 /// 겹치면 배율(체력·속도·크기·이동 방해)은 곱하고 고정값(방어력·재생·목표물 피해·경험치)은 더한다(MonsterKind).
 /// 웨이브 설정이 참조하므로 의존성으로 함께 로드된다.
@@ -28,12 +28,19 @@ public sealed class SO_MonsterTrait : ScriptableObject
     [Header("고정값 (겹치면 더한다)")]
     [Tooltip("받는 피해에서 빼는 값의 고정 몫(단단함). 최소 피해 비율은 SO_MonsterConfig.MinDamageRatio.")]
     [Min(0f)] public float Armor;
-    [Tooltip("방어력의 체력 비례 몫 — 그 웨이브 일반 몬스터의 기본 체력 × 이 값을 Armor에 더한다(기획서 9.3). " +
+    [Tooltip("방어력의 체력 비례 몫 — 자기 최대 체력 × 이 값을 Armor에 더한다(기획서 9.3). " +
              "고정값만 두면 체력·피해가 웨이브마다 크는데 방어력만 멈춰 중반부터 아무것도 막지 못했다(2026-10-30). " +
-             "웨이브 체력 기준이라 보스·분열 조각도 같은 웨이브면 같은 방어력이다(보스 자기 체력에 비례하면 거대 저항과 겹쳐 연사형이 보스에 아무것도 못 넣는다).")]
+             "보스도 자기 체력 기준이다(2026-11-01) — 웨이브 기본 체력 기준이면 보스에게 방어력이 장식이었다.")]
     [Min(0f)] public float ArmorHealthRatio;
     [Tooltip("초당 회복량(최대 체력에 대한 비율, 재생). 막는 상태는 없다 — 큰 한 방(빨강 강타)으로 회복 전에 끊는다.")]
     [Min(0f)] public float RegenRatio;
+    [Tooltip("보호막 — 나올 때 (ShieldHits + 웨이브 × ShieldPerWave)대만큼 맞는 동안은 피해를 ShieldDamageRatio만 받는다(지속 피해인 화상은 횟수를 깎지 않는다). " +
+             "단단함(작은 한 방을 막는다)과 반대로 느리고 큰 한 방이 손해다 — 빠르게 여러 번·여러 마리를 때리는 색이 보호막을 금방 벗긴다. " +
+             "고정 6대·50%는 색 시험에서 거의 아무것도 막지 못해 웨이브에 비례해 다 막게 바꿨다(2026-11-01).")]
+    [Min(0)] public int ShieldHits;
+    [Min(0f)] public float ShieldPerWave;
+    [Tooltip("분노 — 잃은 체력 비율 × 이 값만큼 이동 속도가 늘어난다(1이면 체력이 바닥일 때 2배). 깎다 만 몹이 빨라져 도망친다 — 한 번에 끝내는 큰 한 방이나 둔화·얼음이 답이다(2026-11-01 — 그냥 빠르기만 하던 빠름을 바꿨다. 에셋 이름은 SO_MonsterTrait_Fast 그대로).")]
+    [Min(0f)] public float EnrageSpeedBonus;
     [Tooltip("목표물 피해에 더하는 값(거대).")]
     [Min(0)] public int GoalDamageBonus;
     [Tooltip("경험치에 더하는 값.")]
@@ -48,4 +55,8 @@ public sealed class SO_MonsterTrait : ScriptableObject
     [Min(0)] public int PieceGoalDamage = 1;
     [Tooltip("나뉜 몹의 경험치. 주면 분열이 이득이 되어 일부러 반기게 되므로 0(경험치는 본체만).")]
     [Min(0)] public int PieceExp;
+
+    [Header("보호막 비율 (겹치면 곱한다)")]
+    [Tooltip("보호막이 남은 동안 받는 피해 비율. 0.5면 절반.")]
+    [Range(0f, 1f)] public float ShieldDamageRatio = 1f;
 }

@@ -90,7 +90,7 @@ public sealed class MonsterKind
         }
     }
 
-    /// <summary>방어력의 고정 몫. 실제 방어력은 GetArmor(웨이브 기본 체력)로 읽는다.</summary>
+    /// <summary>방어력의 고정 몫. 실제 방어력은 GetArmor(자기 최대 체력)로 읽는다.</summary>
     public float Armor
     {
         get
@@ -112,8 +112,8 @@ public sealed class MonsterKind
         }
     }
 
-    /// <summary>방어력 = 고정 몫 + 체력 비례 몫 × waveHealth(나온 웨이브의 일반 몬스터 기본 체력, MonsterState.WaveHealth).</summary>
-    public float GetArmor(float waveHealth) => Armor + ArmorHealthRatio * waveHealth;
+    /// <summary>방어력 = 고정 몫 + 체력 비례 몫 × 자기 최대 체력. 보스도 자기 체력이라 큰 한 방(최대 체력 피해가 비율보다 큰 색)만 그대로 들어간다.</summary>
+    public float GetArmor(double maxHealth) => Armor + ArmorHealthRatio * (float)maxHealth;
 
     public float RegenRatio
     {
@@ -144,6 +144,36 @@ public sealed class MonsterKind
             int exp = Base.Exp;
             for (int i = 0; i < _traits.Count; i++) exp += _traits[i].ExpBonus;
             return exp;
+        }
+    }
+
+    /// <summary>wave 웨이브에 나올 때의 보호막 횟수(고정 몫 + 웨이브 비례 몫, 겹치면 더한다). 나올 때 MonsterState.Shield에 넣는다.</summary>
+    public int GetShieldHits(int wave)
+    {
+        float hits = 0f;
+        for (int i = 0; i < _traits.Count; i++) hits += _traits[i].ShieldHits + _traits[i].ShieldPerWave * wave;
+        return Mathf.RoundToInt(hits);
+    }
+
+    /// <summary>분노: 잃은 체력 비율에 곱해 이동 속도에 더하는 값(겹치면 더한다).</summary>
+    public float EnrageSpeedBonus
+    {
+        get
+        {
+            float bonus = 0f;
+            for (int i = 0; i < _traits.Count; i++) bonus += _traits[i].EnrageSpeedBonus;
+            return bonus;
+        }
+    }
+
+    /// <summary>보호막이 남은 동안 받는 피해 비율(겹치면 곱한다).</summary>
+    public float ShieldDamageRatio
+    {
+        get
+        {
+            float ratio = 1f;
+            for (int i = 0; i < _traits.Count; i++) ratio *= _traits[i].ShieldDamageRatio;
+            return ratio;
         }
     }
 

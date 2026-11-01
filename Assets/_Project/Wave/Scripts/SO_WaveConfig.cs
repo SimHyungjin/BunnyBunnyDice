@@ -4,8 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// 웨이브 설정(잠정). 원본의 웨이브 공식(기획서 6.2)을 정하기 전까지 쓰는 단순한 형태다 — 수는 웨이브마다 일정하게 늘고,
-/// 몬스터는 기본 종류 하나에 특성(기획서 9.1)을 붙여 만든다. 앞쪽 웨이브는 목록대로(특성을 하나씩 소개),
-/// 목록이 끝나면 특성을 무작위로 조합한다(WaveComposition). 시간은 초다.
+/// 몬스터는 기본 종류 하나에 특성(기획서 9.1)을 붙여 만든다. 앞쪽 웨이브는 목록대로, 목록이 끝나면 주기(CycleTraits)를 되풀이하고
+/// 주기가 비어 있으면 특성을 무작위로 조합한다(WaveComposition). 시간은 초다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Wave/Wave Config", fileName = nameof(SO_WaveConfig))]
 public sealed class SO_WaveConfig : SO_Config
@@ -63,8 +63,17 @@ public sealed class SO_WaveConfig : SO_Config
     [Tooltip("웨이브 순서대로 쓴다(1웨이브 = 첫 번째). 특성을 하나씩 소개하는 구간이다.")]
     public List<WaveEntry> Waves = new List<WaveEntry>();
 
+    [Header("목록 뒤 (주기)")]
+    [Tooltip("보스 사이 웨이브마다 차례로 붙는 특성(분노 → 재생 → 보호막 → 단단함 → 보스). 비우면 아래 무작위 규칙을 쓴다. " +
+             "웨이브마다 특성 하나가 뚜렷하게 나와야 다음 웨이브를 보고 색을 준비할 이유가 생긴다(2026-10-31).")]
+    public List<SO_MonsterTrait> CycleTraits = new List<SO_MonsterTrait>();
+    [Tooltip("이 웨이브부터 주기 특성에 무작위 특성(RandomTraits)을 더 붙인다.")]
+    [Min(1)] public int CycleExtraFromWave = 6;
+    [Tooltip("더 붙는 무작위 특성 수(일반 몬스터 가지마다 따로 뽑는다).")]
+    [Min(0)] public int CycleExtraTraits = 1;
+
     [Header("목록 뒤 (무작위)")]
-    [Tooltip("일반 몬스터에 무작위로 붙는 특성 후보.")]
+    [Tooltip("일반 몬스터에 무작위로 붙는 특성 후보(주기의 더 붙는 특성도 여기서 뽑는다).")]
     public List<SO_MonsterTrait> RandomTraits = new List<SO_MonsterTrait>();
     [Tooltip("한 웨이브에 섞여 나오는 일반 몬스터 가짓수.")]
     [Min(1)] public int RandomVariants = 2;
@@ -79,7 +88,7 @@ public sealed class SO_WaveConfig : SO_Config
 
     [Header("보스 (기획서 9.4)")]
     [Tooltip("보스 체력 = 그 웨이브 일반 몬스터 체력 합 × 이 값. 특성의 체력 배율은 보스에 쓰지 않는다 — 몬스터 수가 늘어도 보스가 무리에 묻히지 않게. " +
-             "보스(거대)는 받는 피해가 1/10(SO_MonsterTrait.DamageResist 0.9)이라 실제 버티는 양은 이 값의 10배다. 0.05면 고정 피해로는 예전(0.5)과 같고 최대 체력 피해만 1/10 — 그래도 영웅에게 녹아 0.2로 올렸다(2026-10-29).")]
+             "보스(거대)는 받는 피해가 1/10(SO_MonsterTrait.DamageResist 0.9)이라 실제 버티는 양은 이 값의 10배다. 영웅에게 녹아 0.05에서 0.2로 올렸다(2026-10-29).")]
     [Range(0f, 2f)] public float BossHealthShare = 0.2f;
     [Tooltip("보스를 잡으면 받는 카드 고르기 횟수(레벨은 오르지 않는다).")]
     [Min(0)] public int BossRewardChoices = 1;

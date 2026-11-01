@@ -43,6 +43,9 @@ public sealed class MonsterField : IDisposable
     /// <summary>모든 몬스터의 이동 속도 배율(테스트 — 색 시험이 "모든 적에게 늘 디버프"를 이 값 하나로 건다, ColorPowerTest). 평소 1.</summary>
     public float SpeedScale { get; set; } = 1f;
 
+    /// <summary>지금 웨이브(웨이브가 시작될 때 GameScene이 넣는다). 보호막처럼 웨이브에 비례하는 특성이 나올 때 읽는다.</summary>
+    public int Wave { get; set; }
+
     public int Count => _count;
 
     /// <summary>앞에서부터 Count개만 유효하다. 공격하는 쪽(DiceCombat·HeroAttack)이 그대로 훑어 대상을 고른다.</summary>
@@ -84,19 +87,16 @@ public sealed class MonsterField : IDisposable
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.SpawnGates[gate % _map.SpawnGates.Count];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, SpawnHealth(kind, healthScale), kind.Base.Health * healthScale, origin);
+        Add(kind, cell, SpawnHealth(kind, healthScale), origin);
     }
 
-    /// <summary>
-    /// 보스를 보스 포켓(MapData.BossPocket)에 세운다. 보스 포켓이 없으면(옛 맵) 첫 출현 차례.
-    /// waveHealthScale은 그 웨이브 일반 몬스터의 체력 배율 — 방어력은 보스 자기 체력이 아니라 이것을 따른다(MonsterState.WaveHealth).
-    /// </summary>
-    public void SpawnBoss(MonsterKind kind, float healthScale, float waveHealthScale)
+    /// <summary>보스를 보스 포켓(MapData.BossPocket)에 세운다. 보스 포켓이 없으면(옛 맵) 첫 출현 차례.</summary>
+    public void SpawnBoss(MonsterKind kind, float healthScale)
     {
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.InBounds(_map.BossPocket.x, _map.BossPocket.y) ? _map.BossPocket : _map.SpawnGates[0];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, SpawnHealth(kind, healthScale), kind.Base.Health * waveHealthScale, origin);
+        Add(kind, cell, SpawnHealth(kind, healthScale), origin);
     }
 
     // 체력은 double로 곱한다 — 후반 보스는 수십억이라 float(유효 7자리)로 곱하면 끝자리가 뭉개진 채 나온다.
@@ -109,7 +109,7 @@ public sealed class MonsterField : IDisposable
     /// </summary>
     public Func<Vector2Int, Vector3> SpawnOrigin { get; set; }
 
-    private void Add(MonsterKind kind, Vector2 position, double health, float waveHealth, Vector3? origin = null)
+    private void Add(MonsterKind kind, Vector2 position, double health, Vector3? origin = null)
     {
         int kindIndex = _kinds.IndexOf(kind);
         if (kindIndex < 0)
@@ -126,7 +126,7 @@ public sealed class MonsterField : IDisposable
             Position = position,
             Health = health,
             MaxHealth = health,
-            WaveHealth = waveHealth,
+            Shield = kind.GetShieldHits(Wave),
         };
         MonsterMovement.Retarget(ref state, _route);
         _states[_count] = state;
@@ -173,6 +173,21 @@ public sealed class MonsterField : IDisposable
         DamageDealt?.Invoke(DamageSource.Skill, state.Health);
         state.Health = 0d;
         SinkBySkill(slot);
+        Damaged?.Invoke(state.Position, dealt, DamageKind.Critical);
+    }
+
+    /// <summary>
+    /// 최대 체력의 ratio만큼 잃게 한다(체크메이트의 왕). 방어력·피해 저항·보호막을 모두 지나치지 않는다 — 결과가 늘 "최대 체력의 몇 %"로 읽히게.
+    /// 저항을 받게 두면 보스 저항 값을 바꿀 때마다 스킬 결과가 같이 흔들렸다(저항 0.9 → 0.8에 왕 ×5가 보스를 한 번에 지웠다, 2026-11-01).
+    /// 죽어도 치우기·포켓 연출은 부르는 쪽(SkillCaster)과 다음 갱신이 한다.
+    /// </summary>
+    public void LoseMaxHealth(int slot, float ratio, DamageSource source)
+    {
+        ref MonsterState state = ref _states[slot];
+        if (!state.IsAlive || ratio <= 0f) return;
+        double dealt = Math.Min(Math.Ceiling(state.MaxHealth * ratio), Math.Ceiling(state.Health));
+        DamageDealt?.Invoke(source, dealt);
+        state.Health -= dealt;
         Damaged?.Invoke(state.Position, dealt, DamageKind.Critical);
     }
 
@@ -263,6 +278,8 @@ public sealed class MonsterField : IDisposable
                 state.Health = Math.Min(state.Health + state.MaxHealth * regen * deltaTime, state.MaxHealth);
 
             float speed = kind.MoveSpeed * MonsterStatus.GetSpeedScale(state) * SpeedScale;
+            float enrage = kind.EnrageSpeedBonus;
+            if (enrage > 0f && state.MaxHealth > 0d) speed *= 1f + enrage * (1f - (float)(state.Health / state.MaxHealth));
             MonsterMovement.Advance(ref state, speed * deltaTime, _route);
             // 목표물 영역에 발을 들이면 닿은 것으로 본다(길 끝인 목표물 칸 중심까지 걸어 들어가지 않는다).
             if (!goal.Contains(GridCircle.CellOf(state.Position))) continue;
@@ -281,26 +298,36 @@ public sealed class MonsterField : IDisposable
     /// slot에 damage를 맞히면 깎일 체력(Hit과 같은 공식, 상태는 바꾸지 않는다). 스킬 미리보기가 놓기 전에 결과를 보여 줄 때 쓴다(포켓 처치 예상).
     /// </summary>
     public double EstimateHit(int slot, float damage, float penetration = 0f) =>
-        Math.Max(1d, Math.Round((double)RawDamage(slot, damage, penetration, DamageKind.Normal, out _)));
+        Math.Max(1d, Math.Round((double)RawDamage(slot, damage, penetration, DamageKind.Normal, false, out _))); // 스킬은 보호막을 지나친다(BlockedByShield)
+
+    // 보호막이 이 피해를 막는지. 화상(지속 피해)은 잘게 자주 들어와 횟수를 순식간에 비우므로, 스킬은 카드 한 장이 보호막 한 칸만 벗기면
+    // 손해가 너무 커서(적 전체 스킬이 보호막 웨이브에 1씩만 들어갔다, 2026-11-01 사용자) 보호막을 지나친다.
+    private bool BlockedByShield(in MonsterState state, DamageKind kind, DamageSource source) =>
+        state.Shield > 0 && kind != DamageKind.Burn && source.Index != DamageSource.Skill.Index;
 
     // 방어력·취약·피해 저항을 지난 피해(반올림 전). damage는 취약을 곱한 값으로 돌려준다(작아진 피해 표시 판단용).
-    private float RawDamage(int slot, float damage, float penetration, DamageKind kind, out float boosted)
+    private float RawDamage(int slot, float damage, float penetration, DamageKind kind, bool shielded, out float boosted)
     {
         ref MonsterState state = ref _states[slot];
         // 방깍(취약)은 받는 피해 배율이라 치명타처럼 방어력보다 먼저 곱한다(MonsterDamage). 화상에도 붙는다 — "모든 공격".
         if (state.IsVulnerable) damage *= 1f + state.VulnerableRatio;
         boosted = damage;
         MonsterKind target = _kinds[state.TypeIndex];
-        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, target.GetArmor(state.WaveHealth), penetration, _config.MinDamageRatio);
+        float raw = kind == DamageKind.Burn ? damage : MonsterDamage.Apply(damage, target.GetArmor(state.MaxHealth), penetration, _config.MinDamageRatio);
         // 피해 저항(거대)은 출처를 가리지 않는다 — 주사위·영웅·스킬·화상이 몬스터 특성을 몰라도 되게 받는 쪽에서 줄인다.
         // 방어력을 뺀 뒤에 줄인다: 먼저 줄이면 작아진 피해에서 방어력을 빼 단단한 보스(5웨이브 거대+단단함)가 의도(체력 1/10과 맞바꿈)보다 몇 배 단단해졌다.
-        return raw * target.DamageScale;
+        raw *= target.DamageScale;
+        // 보호막은 맞는 횟수를 센다(BlockedByShield). 횟수는 ApplyDamage가 깎는다.
+        if (shielded) raw *= target.ShieldDamageRatio;
+        return raw;
     }
 
     private void ApplyDamage(int slot, float damage, float penetration, DamageKind kind, DamageSource source)
     {
         ref MonsterState state = ref _states[slot];
-        float raw = RawDamage(slot, damage, penetration, kind, out damage);
+        bool shielded = BlockedByShield(state, kind, source);
+        float raw = RawDamage(slot, damage, penetration, kind, shielded, out damage);
+        if (shielded) state.Shield--;
 
         // 피해는 정수로 들어간다 — 화면 숫자와 실제로 깎인 체력이 같게. 맞힌 피해는 반올림하고 최소 1(맞혔는데 0이면 안 맞은 것처럼 보인다).
         // 화상은 한 번에 1이 안 될 만큼 작게 자주 들어오므로 나머지를 모아 1이 넘을 때 준다.
@@ -358,7 +385,7 @@ public sealed class MonsterField : IDisposable
         {
             // 가운데를 0으로 두고 고르게 벌린다(2마리면 −0.5, +0.5).
             float offset = split.SplitCount > 1 ? i / (split.SplitCount - 1f) - 0.5f : 0f;
-            Add(piece, dead.Position + direction * (offset * 2f * _config.SplitOffset), health, dead.WaveHealth);
+            Add(piece, dead.Position + direction * (offset * 2f * _config.SplitOffset), health);
         }
     }
 

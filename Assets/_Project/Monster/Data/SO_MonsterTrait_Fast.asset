@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: accd0aa5c06c4916b6b34cdb148da423, type: 3}
   m_Name: SO_MonsterTrait_Fast
   m_EditorClassIdentifier: Assembly-CSharp::SO_MonsterTrait
-  DisplayName: 빠름
+  DisplayName: 분노
   Tint: {r: 0.6, g: 0.3, b: 0.9, a: 0.75}
   VisualScale: 1
-  HealthScale: 0.8
-  SpeedScale: 1.7
+  HealthScale: 1
+  SpeedScale: 1
   ImpairResist: 0
   DamageResist: 0
   Armor: 0
@@ -27,3 +27,4 @@ MonoBehaviour:
   SplitHealthRatio: 0.5
   PieceGoalDamage: 1
   PieceExp: 0
+  EnrageSpeedBonus: 1.5
