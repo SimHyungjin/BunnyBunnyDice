@@ -16,6 +16,8 @@ public sealed class SkillCaster
     private readonly MonsterField _monsters;
     private readonly DiceField _diceField;
     private readonly ChipField _chips;
+    // 빅 스택이 칩 카드와 같은 판정·놓기(칩 교체 포함)를 쓴다.
+    private readonly CardPlacement _placement;
     private readonly DiceCombat _diceCombat;
     private readonly AttackEffects _effects;
     private readonly HeroStats _heroStats;
@@ -23,7 +25,6 @@ public sealed class SkillCaster
     private readonly Func<MapData> _getMap;
     private readonly Func<GoalHealth> _getGoal;
     private readonly Func<HeroAttack> _getHeroAttack;
-    private readonly ExpBoost _expBoost;
     private readonly Func<CardHand> _getHand;
     // 무작위 공용 카드 한 장(레벨업과 같은 몫). 뽑을 것이 없으면 false.
     private readonly TryRollCard _rollCard;
@@ -46,11 +47,12 @@ public sealed class SkillCaster
     public delegate bool TryRollCard(out HandCard card);
 
     public SkillCaster(MonsterField monsters, DiceField diceField, ChipField chips, DiceCombat diceCombat, AttackEffects effects, HeroStats heroStats,
-        SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack, ExpBoost expBoost,
+        SO_MapViewConfig viewConfig, Func<MapData> getMap, Func<GoalHealth> getGoal, Func<HeroAttack> getHeroAttack,
         Func<CardHand> getHand, TryRollCard rollCard, Action<int> levelUp, TraitHooks traits, HotStreak hotStreak)
     {
         _traits = traits;
         _hotStreak = hotStreak;
+        _placement = new CardPlacement(diceField, chips);
         _rollCard = rollCard;
         _levelUp = levelUp;
         _monsters = monsters;
@@ -63,16 +65,18 @@ public sealed class SkillCaster
         _getMap = getMap;
         _getGoal = getGoal;
         _getHeroAttack = getHeroAttack;
-        _expBoost = expBoost;
         _getHand = getHand;
     }
 
     /// <summary>칸 대상 스킬을 cell에 쓸 수 있는지. 끄는 동안의 표시와 봇이 같은 판정을 쓴다.</summary>
     public PlacementResult CheckCell(Vector2Int cell, SO_SkillCard card)
     {
-        // 사이드 팟은 칩이 한 장 있고 그 칩과 종류가 다른 칸에만.
-        if (card is SO_SkillCard_SidePot sidePot)
-            return _chips.CanAddExtra(cell, sidePot.Chip) ? PlacementResult.Upgrade : PlacementResult.NoEffect;
+        // 빅 스택은 칩 카드와 같은 곳에 놓는다(칩이 있으면 특성으로 바꿔 끼울 때만).
+        if (card is SO_SkillCard_BigStack bigStack)
+        {
+            MapData map = _getMap();
+            return map != null ? _placement.CheckChip(map, cell, bigStack.Chip, bigStack.Strength) : PlacementResult.NotBuildable;
+        }
         return SkillRules.CheckCell(_diceField.IndexOf(cell) >= 0, !_chips.GetSet(cell).IsEmpty);
     }
 
@@ -85,9 +89,9 @@ public sealed class SkillCaster
             CashOut(cell, cashOut);
             return;
         }
-        if (card is SO_SkillCard_SidePot sidePot)
+        if (card is SO_SkillCard_BigStack bigStack)
         {
-            _chips.AddExtra(cell, sidePot.Chip);
+            _placement.PlaceChip(cell, bigStack.Chip, bigStack.Strength);
             _effects.ShowBurst(Ground(cell), CashOutBurstRadius, card.IconColor);
             return;
         }
@@ -116,13 +120,27 @@ public sealed class SkillCaster
             _effects.ShowRing(Ground(cell), raise.RingRadius, card.IconColor, raise.Duration);
             return;
         }
-        // 상태를 바꾸는 스킬(페인트·리롤·잭팟). 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 온다.
-        // 리롤은 면체를 한 단계 올린다. 눈은 늘 한 번 굴린다 — 눈을 쓰지 않는 스킬(페인트·잭팟)도 굴려 판 난수의 차례가 스킬 종류에 따라 갈리지 않게.
-        _diceField.Change(cell, (ref DiceState dice) =>
+        // 리롤은 굴림에 실패하면(더블 오어 낫싱) 주사위가 부서지므로 바꾸기 전에 굴린다.
+        if (card is SO_SkillCard_Reroll && _diceField.TryGetPlaced(cell, out PlacedDice target))
         {
-            if (card is SO_SkillCard_Reroll) dice.Faces = _diceField.NextFaces(dice.Faces);
-            SkillRules.ApplyDice(ref dice, card, _diceField.RollPips(dice.Faces));
-        }, SkillRules.Rolls(card));
+            int faces = _diceField.NextFaces(target.Dice.Faces);
+            int roll = _diceField.RollPips(faces);
+            if (roll <= 0)
+            {
+                _diceField.Bust(cell);
+                return;
+            }
+            _diceField.Change(cell, (ref DiceState dice) =>
+            {
+                dice.Faces = faces;
+                SkillRules.ApplyDice(ref dice, card, roll);
+            }, true);
+            return;
+        }
+        // 상태를 바꾸는 스킬(페인트·잭팟). 판정(SkillRules.CheckDice)이 Upgrade인 칸에만 온다.
+        // 눈은 늘 한 번 굴린다 — 눈을 쓰지 않는 스킬도 굴려 판 난수의 차례가 스킬 종류에 따라 갈리지 않게(페인트·잭팟은 실패해도 부서지지 않는다 — 굴린 눈을 쓰지 않는다).
+        _diceField.Change(cell, (ref DiceState dice) => SkillRules.ApplyDice(ref dice, card, _diceField.RollPips(dice.Faces)),
+            SkillRules.Rolls(card));
     }
 
     /// <summary>쓰면 영향을 받을 몬스터 슬롯을 result에 채운다(판 위의 산 적 모두). 미리보기와 실제 사용이 같은 함수를 지난다.</summary>
@@ -196,7 +214,7 @@ public sealed class SkillCaster
     }
 
     // 모든 적에게 영웅 공격력 비례 피해. 적마다 영웅 치명타를 따로 굴린다. 죽은 적은 포켓으로 날려 보내고 대상에서 뺀다(특징은 산 적에게만).
-    // 체크메이트의 왕은 영웅 공격력 대신 자기 최대 체력의 배수를 받는다(방어력 무시, 치명타 없음 — 피해 저항은 받아 보스는 절반쯤).
+    // 체크메이트의 왕은 영웅 공격력 대신 자기 최대 체력을 잃는다 — 보통 적은 전부(쓰러짐), 보스는 BossKingLoss만큼(방어력·저항 무시).
     private void DamageTargets(SO_EnemySkillCard card)
     {
         int king = FindKing(card, _targets);
@@ -208,8 +226,7 @@ public sealed class SkillCaster
             double before = state.Health;
             if (slot == king && checkmate != null)
             {
-                if (checkmate.KingMaxHealth <= 0f) continue;
-                _monsters.Hit(slot, (float)(state.MaxHealth * checkmate.KingMaxHealth), DamageSource.Skill, float.MaxValue);
+                _monsters.LoseMaxHealth(slot, _monsters.KindOf(slot).IsBoss ? checkmate.BossKingLoss : 1f, DamageSource.Skill);
             }
             else
             {
@@ -306,7 +323,6 @@ public sealed class SkillCaster
                 _hotStreak.Start(hotStreak);
                 break;
             case SO_SkillCard_DoubleUp doubleUp:
-                _expBoost.Activate(doubleUp.ExpScale, doubleUp.Duration);
                 _levelUp(doubleUp.LevelUps);
                 break;
         }
@@ -358,14 +374,14 @@ public sealed class SkillCaster
         {
             for (int i = 0; i < card.Copies; i++)
             {
-                if (chips.First != null) hand?.Add(HandCard.Of(chips.First));
-                if (chips.Second != null) hand?.Add(HandCard.Of(chips.Second));
+                // 빅 스택 칩도 보통 칩 카드로 돌아온다(세기는 카드가 아니라 놓인 칩에 있다).
+                hand?.Add(HandCard.Of(chips.Card));
             }
         }
         _effects.ShowBurst(Ground(cell), CashOutBurstRadius, card.IconColor);
     }
 
-    // 캐시 아웃·사이드 팟 고리는 칸 하나를 덮는 크기(칸 = 1) — 조정 값이 아니라 대상 칸의 크기다.
+    // 캐시 아웃·빅 스택 고리는 칸 하나를 덮는 크기(칸 = 1) — 조정 값이 아니라 대상 칸의 크기다.
     private const float CashOutBurstRadius = 0.5f;
 
     private Vector3 Ground(Vector2 position) => new Vector3(position.x, _viewConfig.GetTileTop(TileType.Ground), position.y);

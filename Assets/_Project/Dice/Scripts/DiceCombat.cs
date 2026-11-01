@@ -75,7 +75,7 @@ public sealed class DiceCombat : IDisposable
     }
 
     /// <summary>
-    /// 풀 하우스: index번째 주사위 자리에 duration초 동안 7색 주사위가 같이 있는 것처럼 쏜다(색마다 자기 사거리·공격 간격). 다시 걸면 시간이 새로 시작한다.
+    /// 풀 하우스: index번째 주사위 자리에 duration초 동안 각성한 7색 주사위가 같이 있는 것처럼 쏜다(색마다 자기 사거리·공격 간격). 다시 걸면 시간이 새로 시작한다.
     /// 다른 색은 대기 없이 바로 쏜다 — 쓰자마자 7색이 보이게.
     /// </summary>
     public void FullHouse(int index, float duration)
@@ -84,6 +84,8 @@ public sealed class DiceCombat : IDisposable
         if (index < 0 || index >= _fullHouseTimes.Count) return;
         _fullHouseTimes[index] = duration;
         Array.Clear(_fullHouseCooldowns[index], 0, AllColors.Length);
+        // 그동안 각성으로 쏘므로 겉모습도 각성으로(금색 외곽선·눈 글자 + 켜지는 고리). 끝나면 Tick이 끈다.
+        _diceField.SetForcedAwake(_diceField.Placed[index].Cell, true);
     }
 
     /// <summary>
@@ -166,15 +168,19 @@ public sealed class DiceCombat : IDisposable
         for (int i = 0; i < placed.Count; i++)
         {
             _raiseTimes[i] = Mathf.Max(_raiseTimes[i] - deltaTime, 0f);
+            bool hadFullHouse = _fullHouseTimes[i] > 0f;
             _fullHouseTimes[i] = Mathf.Max(_fullHouseTimes[i] - deltaTime, 0f);
+            if (hadFullHouse && _fullHouseTimes[i] <= 0f) _diceField.SetForcedAwake(placed[i].Cell, false);
             // 적이 없으면 준비된 채로 기다릴 뿐 쌓아 두지 않는다 — 적이 들어오자마자 몰아 쏘지 않게.
             _cooldowns[i] = Mathf.Max(_cooldowns[i] - deltaTime, 0f);
 
             PlacedDice dice = placed[i];
             // 눈을 다 태운 주사위는 쏘지 않는다(벽으로만 남는다).
             if (dice.Dice.IsSpent) continue;
-            bool awakened = _statsConfig.IsAwakened(dice.Dice);
-            if (_fullHouseTimes[i] > 0f) FireFullHouse(i, dice, awakened, deltaTime);
+            // 풀 하우스 동안은 눈과 상관없이 각성한 것으로 쏜다(7색 모두) — 눈이 낮은 판은 5웨이브 보스도 못 잡았다(2026-11-01 사용자).
+            bool fullHouse = _fullHouseTimes[i] > 0f;
+            bool awakened = fullHouse || _statsConfig.IsAwakened(dice.Dice);
+            if (fullHouse) FireFullHouse(i, dice, awakened, deltaTime);
             if (_cooldowns[i] > 0f) continue;
             if (!TryFire(i, dice, dice.Dice.Colors, awakened, out float interval)) continue;
             _cooldowns[i] = interval;
@@ -231,7 +237,7 @@ public sealed class DiceCombat : IDisposable
         stats.Damage *= 1f + chip.DamageBonus;
         stats.MaxHealthRatio *= 1f + chip.DamageBonus;
         stats.AttackInterval /= 1f + chip.AttackSpeedBonus;
-        float top = !chip.IsEmpty ? _viewConfig.ChipHeight * chip.Layers : _viewConfig.GetTileTop(TileType.Ground);
+        float top = !chip.IsEmpty ? _viewConfig.ChipHeight : _viewConfig.GetTileTop(TileType.Ground);
         DiceAttack.Shot shot = new DiceAttack.Shot
         {
             Dice = state,

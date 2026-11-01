@@ -14,7 +14,7 @@ using UnityEngine.Rendering;
 /// 모든 숫자를 메시 하나에 담아 매 프레임 다시 채운다(MonsterHealthBars와 같은 방식). 숫자마다 TextMeshPro를 두면
 /// 뜰 때마다 글자 메시를 새로 만들고 숫자마다 그리기가 하나씩 붙어, 후반(1초에 수백 번 맞음)에 50웨이브 25fps까지 떨어졌다
 /// (끄면 100fps — 2026-10-28). 개수를 막으면 숫자가 계속 갈려 읽히지 않으므로 개수는 막지 않는다(사용자).
-/// 글자 모양은 TMP 폰트 아틀라스에서 숫자·"+" 글자 자리만 읽어 쓰고, 머티리얼은 TMP SDF 그대로다 — 외곽선·모양이 TMP와 같다.
+/// 글자 모양은 TMP 폰트 아틀라스에서 숫자·"," 글자 자리만 읽어 쓰고, 머티리얼은 TMP SDF 그대로다 — 외곽선·모양이 TMP와 같다.
 /// 그래서 TMP가 SDF 셰이더에 넘기는 정점 값(아틀라스 UV, uv.w = SDF 배율, 카메라 쪽 법선)을 같은 식으로 채운다.
 /// 정점은 배열 하나(Vertex)에 바로 쓰고, 삼각형 번호는 사각형 순서가 늘 같으므로 미리 만들어 두고 쓸 만큼만 그린다
 /// — 목록 다섯 개에 하나씩 더해 올리던 방식은 숫자를 모은 시험에서 프레임당 6ms였다(2026-10-28 프로파일).
@@ -24,8 +24,6 @@ public sealed class DamageNumbers : IDisposable
     private struct Number
     {
         public long Value;
-        /// <summary>앞에 "+"를 붙이는지(더 받은 경험치).</summary>
-        public bool Plus;
         public Color Color;
         /// <summary>뜬 자리(맵 로컬). 아래 Side·Height는 여기서 화면 좌우·위로 벗어난 양이다.</summary>
         public Vector3 Origin;
@@ -74,12 +72,11 @@ public sealed class DamageNumbers : IDisposable
     // 숫자는 판 위에서만 뜨므로 판보다 넉넉한 경계면 화면 밖으로 잘리지 않는다(맵 로컬, 칸 단위).
     private static readonly Bounds MeshBounds = new Bounds(Vector3.zero, Vector3.one * 1000f);
 
-    // 쓰는 글자: 0~9와 "+", 세 자리마다 끊는 ",". 후반 피해는 수십억이라 쉼표가 없으면 자릿수를 세야 읽힌다.
-    private const string Characters = "0123456789+,";
-    private const int PlusIndex = 10;
-    private const int CommaIndex = 11;
-    // long 최대 19자리 + 쉼표 6개 + "+".
-    private const int MaxDigits = 26;
+    // 쓰는 글자: 0~9와 세 자리마다 끊는 ",". 후반 피해는 수십억이라 쉼표가 없으면 자릿수를 세야 읽힌다.
+    private const string Characters = "0123456789,";
+    private const int CommaIndex = 10;
+    // long 최대 19자리 + 쉼표 6개.
+    private const int MaxDigits = 25;
 
     private readonly SO_DamageNumberConfig _config;
     private readonly Func<Camera> _getCamera;
@@ -135,8 +132,7 @@ public sealed class DamageNumbers : IDisposable
     {
         if (!_config.Enabled) return;
 
-        Color color = kind == DamageKind.BonusExp ? _config.BonusExpColor
-            : kind == DamageKind.Critical ? _config.CriticalColor
+        Color color = kind == DamageKind.Critical ? _config.CriticalColor
             : kind == DamageKind.Reduced ? _config.ReducedColor
             : kind == DamageKind.Burn ? _config.BurnColor : _config.NormalColor;
 
@@ -145,13 +141,12 @@ public sealed class DamageNumbers : IDisposable
         {
             // 피해는 정수 값으로 들어온다(MonsterField.ApplyDamage). long을 넘는 피해는 끝 값에 묶는다.
             Value = amount >= long.MaxValue ? long.MaxValue : (long)Math.Max(Math.Round(amount), 0d),
-            Plus = kind == DamageKind.BonusExp,
             Color = color,
             Origin = new Vector3(position.x, ground + _config.StartHeight, position.y),
             SideVelocity = UnityEngine.Random.Range(-_config.SideSpeed, _config.SideSpeed),
             UpVelocity = launch,
             LaunchSpeed = launch,
-            BaseScale = kind == DamageKind.Critical || kind == DamageKind.BonusExp ? _config.CriticalScale : 1f,
+            BaseScale = kind == DamageKind.Critical ? _config.CriticalScale : 1f,
         });
     }
 
@@ -236,7 +231,7 @@ public sealed class DamageNumbers : IDisposable
         int digits = 1;
         for (long value = number.Value; value >= 10; value /= 10) digits++;
         int count = digits + (digits - 1) / 3;
-        return number.Plus ? count + 1 : count;
+        return count;
     }
 
     // 사각형 quads개를 담을 자리. 삼각형 번호는 사각형마다 (0,1,2)(2,3,0)으로 늘 같아 늘릴 때 한 번만 만든다.
@@ -282,7 +277,6 @@ public sealed class DamageNumbers : IDisposable
             value /= 10;
         }
         while (value > 0);
-        if (number.Plus) _digits[count++] = PlusIndex;
 
         // 가로는 글자 진행 폭의 가운데, 세로는 줄의 위아래 가운데(TMP 가운데 맞춤과 같다).
         float width = 0f;

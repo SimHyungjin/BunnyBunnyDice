@@ -41,7 +41,6 @@ public sealed partial class GameScene : SceneBase
     private ChipField _chips;
     private SO_LevelUpConfig _levelUpConfig;
     private CardHand _hand;
-    private ExpBoost _expBoost;
     private HotStreak _hotStreak;
     private HandFraming _handFraming;
     private CardDragController _drag;
@@ -239,10 +238,9 @@ public sealed partial class GameScene : SceneBase
         _diceAwakenEffect = new DiceAwakenEffect(diceConfig, _diceField, _attackEffects);
         _heroRaise = new HeroRaise(heroConfig, _hero, _diceField, _diceCombat, _monsters, _traits);
         _heroRaiseView = new HeroRaiseView(heroConfig, _viewConfig, _heroRaise, _attackEffects);
-        _expBoost = new ExpBoost();
         _hotStreak = new HotStreak(heroConfig, _viewConfig, _hero, _diceField, _diceCombat, _attackEffects, _traits);
         _skills = new SkillCaster(_monsters, _diceField, _chips, _diceCombat, _attackEffects, _heroStats, _viewConfig, () => _map, () => _goal,
-            () => _heroAttack, _expBoost, () => _hand,
+            () => _heroAttack, () => _hand,
             (out HandCard card) => CardRoll.RollOne(levelUpConfig, _traits, IsUsefulCard, out card), count => _level.LevelUp(count), _traits, _hotStreak);
         _skillPreview = new SkillPreview(_mapRoot, previewConfig, _viewConfig, _skills, _monsters, () => _map, _hero);
         _heroCards = new HeroCardShots(_mapRoot, heroConfig.CardShot, _monsters, _monsterConfig, _viewConfig);
@@ -250,6 +248,7 @@ public sealed partial class GameScene : SceneBase
             _diceCombat.GetRange);
         _breakShotView = new HeroBreakShotView(_hero, _heroAttack, _skills, _attackEffects);
         _waves = new WaveSpawner(waveConfig, _monsters.Spawn, _monsters.SpawnBoss, () => _monsters.Count);
+        _waves.WaveStarted += wave => _monsters.Wave = wave;
         // 잭팟 보스 예고: 보스 웨이브 동안 보스 포켓의 빛이 보스 색에서 금색으로 바뀐다.
         _waves.JackpotWarned += () => _environment.SetPocketJackpot(true);
         _waves.JackpotWarningEnded += () => _environment.SetPocketJackpot(false);
@@ -273,6 +272,9 @@ public sealed partial class GameScene : SceneBase
         // 빈 칸의 칩은 새 벽이고, 주사위 칸의 칩은 주사위를 올려 앉힌다(길은 그대로지만 같이 다시 계산해도 싸다).
         // 캐시 아웃으로 주사위·칩이 없어지면 칸이 열려 길이 바뀐다.
         _diceField.DiceRemoved += (_, _) => RebuildRoute();
+        // 부서진 주사위(더블 오어 낫싱)는 아무것도 남기지 않아 고리로 그 자리를 보인다. 길 갱신은 DiceRemoved가 한다.
+        _diceField.DiceBusted += cell => _attackEffects.ShowBurst(
+            new Vector3(cell.x, _viewConfig.GetTileTop(TileType.Ground), cell.y), diceConfig.BustBurstRadius, diceConfig.BustColor);
         _diceField.DiceAwakened += _ => _run.CountAwakening();
         _chips.ChipRemoved += _ => RebuildRoute();
         _chips.ChipPlaced += cell =>
@@ -280,8 +282,6 @@ public sealed partial class GameScene : SceneBase
             _diceField.RefreshAt(cell);
             RebuildRoute();
         };
-        // 한 장 더 얹히면 그 위 주사위가 올라앉는다(길은 그대로).
-        _chips.ChipStacked += _diceField.RefreshAt;
         _monsters.ReachedGoal += (type, _) =>
         {
             // 무적이어도 받았을 피해를 센다 — 무적으로 버티며 높은 웨이브를 잴 때도 얼마나 뚫렸는지 보이게.
@@ -302,12 +302,8 @@ public sealed partial class GameScene : SceneBase
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();
             }
-            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로. 더블 업(ExpBoost)이 걸려 있으면 그 위에 곱하고,
-            // 더 들어간 만큼 금색 "+N"을 띄운다.
-            int baseExp = type.Exp * waveConfig.GetExpScale(_waves.Wave);
-            int exp = Mathf.RoundToInt(baseExp * _expBoost.Scale);
-            GainExp(exp);
-            if (exp > baseExp) _damageNumbers.Show(position, _viewConfig.GetTileTop(TileType.Ground), exp - baseExp, DamageKind.BonusExp);
+            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로.
+            GainExp(type.Exp * waveConfig.GetExpScale(_waves.Wave));
         };
         _result = new GameResult(Retry, EnterLobby, _metaDiceConfig);
         _handConfig = handConfig;
@@ -412,7 +408,7 @@ public sealed partial class GameScene : SceneBase
 
         _lobbyScreen.Show();
 
-        SetUpDebugTools(levelUpConfig, diceConfig, heroConfig);
+        SetUpDebugTools(levelUpConfig, diceConfig, heroConfig, waveConfig);
     }
 
     public override void ExitScene()
@@ -440,7 +436,6 @@ public sealed partial class GameScene : SceneBase
         _breakShotView?.Dispose();
         _cutIn?.Dispose();
         _heroAttack?.Dispose();
-        _expBoost?.Dispose();
         _hotStreak?.Dispose();
         _skillPreview?.Dispose();
         _heroRaiseView?.Dispose();
@@ -486,7 +481,6 @@ public sealed partial class GameScene : SceneBase
         _damageNumbers.Clear();
         _diceAttack.Clear();
         _heroAttack.Clear();
-        _expBoost.Clear();
         _hotStreak.Clear();
 
         // 검사는 판마다 새로 만든다 — 요청이 겹치면(R 키 연타·설정 변경) 두 생성이 버퍼를 함께 쓰지 않게.
