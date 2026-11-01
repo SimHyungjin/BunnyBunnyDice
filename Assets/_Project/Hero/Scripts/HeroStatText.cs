@@ -35,7 +35,11 @@ public static class HeroStatText
         }
     }
 
-    /// <summary>카드 제목에 붙이는 오르는 양 — 기본값의 %면 "+100%", 그대로 더하면 확률 "+20%p" · 배율 "+1".</summary>
+    /// <summary>
+    /// 카드 제목에 붙이는 오르는 양 — 기본값의 %면 "+100%", 그대로 더하면 확률 "+20%p" · 배율 "+1".
+    /// 기본값의 %는 모든 능력치가 같은 "+N%"로 보인다(2026-11-01 사용자 — 실제로 오르는 양은 아래 "지금 → 고른 뒤" 칸이 보여 주고,
+    /// 치명만 "+10%p"로 적으면 공격력과 읽는 법이 달라 직관적이지 않다).
+    /// </summary>
     public static string FormatAmount(SO_HeroCard card)
     {
         if (!card.Flat) return $"+{card.Amount * 100f:0.#}%";
