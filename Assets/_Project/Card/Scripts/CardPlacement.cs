@@ -20,7 +20,7 @@ public sealed class CardPlacement
     public PlacementResult Check(MapData map, Vector2Int cell, HandCard card)
     {
         if (map == null || !(card.IsDice || card.IsChip)) return PlacementResult.NotBuildable;
-        if (card.IsChip) return DicePlacement.CheckChip(map, cell);
+        if (card.IsChip) return CheckChip(map, cell, card.Chip, 1f);
         PlacementResult result = DicePlacement.Check(map, cell);
         if (result == PlacementResult.Occupied && _diceField.TryGetPlaced(cell, out PlacedDice placed))
             result = DicePlacement.CheckStack(placed.Dice, card.Dice);
@@ -32,9 +32,27 @@ public sealed class CardPlacement
     {
         PlacementResult result = Check(map, cell, card);
         if (!DicePlacement.IsAccepted(result)) return false;
-        if (card.IsChip) _chips.Place(cell, card.Chip);
+        if (card.IsChip) PlaceChip(cell, card.Chip, 1f);
         else if (result == PlacementResult.Stack) _diceField.Stack(cell, card.Dice);
         else _diceField.Place(map, cell, card.Dice);
         return true;
+    }
+
+    /// <summary>
+    /// 칩(세기 strength)을 cell에 놓을 수 있는지. 칩이 이미 있으면 특성(칩 리더)이 있을 때만 바꿔 끼운다(ChipField.CanReplace).
+    /// 빅 스택(2배 칩 스킬)도 같은 판정을 쓴다.
+    /// </summary>
+    public PlacementResult CheckChip(MapData map, Vector2Int cell, SO_ChipCard chip, float strength)
+    {
+        PlacementResult result = DicePlacement.CheckChip(map, cell);
+        if (result == PlacementResult.SlotFull && _chips.CanReplace(cell, chip, strength)) return PlacementResult.Upgrade;
+        return result;
+    }
+
+    /// <summary>판정(CheckChip)을 통과한 칸에만 부른다. 칩이 있으면 바꿔 끼운다(원래 칩은 사라진다).</summary>
+    public void PlaceChip(Vector2Int cell, SO_ChipCard chip, float strength)
+    {
+        if (_chips.Has(cell)) _chips.Replace(cell, chip, strength);
+        else _chips.Place(cell, chip, strength);
     }
 }

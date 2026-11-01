@@ -240,11 +240,11 @@ public sealed class CardDragController : IDisposable
         }
 
         HandCard held = _hand.Held.Card;
-        if (held.IsSkill && held.Skill is SO_SkillCard_SidePot sidePot)
+        if (held.IsSkill && held.Skill is SO_SkillCard_BigStack bigStack)
         {
-            // 칩 카드처럼 얹힐 칩과 그 위 주사위의 사거리를 보인다. 주사위는 그대로 둔다.
+            // 칩 카드처럼 놓일 칩과 그 위 주사위의 사거리를 보인다. 주사위는 그대로 둔다.
             DiceState? under = _diceField.TryGetPlaced(cell, out PlacedDice onChip) ? onChip.Dice : (DiceState?)null;
-            _preview.ShowSidePot(cell, DicePlacement.IsAccepted(_cellResult), sidePot.Chip, under);
+            _preview.ShowChip(cell, DicePlacement.IsAccepted(_cellResult), bigStack.Chip, under, bigStack.Strength);
             SetGhostCell(InvalidCell, float.NaN);
             return;
         }

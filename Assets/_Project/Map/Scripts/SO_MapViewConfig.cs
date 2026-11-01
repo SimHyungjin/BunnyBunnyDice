@@ -49,6 +49,10 @@ public sealed class SO_MapViewConfig : SO_Config
     [Min(8)] public int ChipSegments = 32;
     [Tooltip("칩 윗면에 인쇄하는 링 색. 거의 검정 — 밝은 칩(둔화 흰색)에서도 어두운 칩에서도 링이 보여 칩으로 읽힌다(크림색은 흰 칩 위에서 사라졌다).")]
     public Color ChipRingColor = new Color(0.06f, 0.04f, 0.08f);
+    [Tooltip("세기가 1보다 큰 칩(빅 스택)의 윗면 링 색. 보통 칩과 한눈에 갈리게.")]
+    public Color StrongChipRingColor = new Color(1f, 0.88f, 0.29f);
+    [Tooltip("세기가 1보다 큰 칩(빅 스택)의 외곽선 색. 위에 주사위가 앉아 링이 가려져도 옆면 테두리로 보이게.")]
+    public Color StrongChipOutlineColor = new Color(1f, 0.88f, 0.29f);
     [Tooltip("링 바깥·안쪽 지름(칩 지름 비율).")]
     [Range(0f, 1f)] public float ChipRingOuter = 0.64f;
     [Range(0f, 1f)] public float ChipRingInner = 0.56f;
@@ -71,10 +75,10 @@ public sealed class SO_MapViewConfig : SO_Config
     [Min(0f)] public float PrintLift = 0.002f;
 
     /// <summary>가장 높은 칸 윗면. 카메라가 맵 전체를 담을 때 위쪽 경계로 쓴다.</summary>
-    public float MaxTileTop => Mathf.Max(ChipHeight * ChipField.MaxLayers, WallHeight);
+    public float MaxTileTop => Mathf.Max(ChipHeight, WallHeight);
 
     public float GetTileTop(TileType type) => type == TileType.Wall ? WallHeight : 0f;
 
     /// <summary>칸 윗면 높이. 칩이 놓인 칸은 칩 윗면이다(주사위가 그 위에 앉는다).</summary>
-    public float GetCellTop(MapData map, int x, int y) => map.HasChip(x, y) ? ChipHeight * map.ChipLayers(x, y) : GetTileTop(map.Get(x, y));
+    public float GetCellTop(MapData map, int x, int y) => map.HasChip(x, y) ? ChipHeight : GetTileTop(map.Get(x, y));
 }

@@ -1,11 +1,11 @@
 /// <summary>
 /// 칩의 효과(기획서 7). 디버프 4장(방깍·슬로우·얼음·화상)은 칩 위 주사위가 맞히는 모든 적에게 건다 — 폭발 파편·체인 튕김도 포함.
 /// 강화 3장(공격력·공격 속도·사거리)은 쏘기 전에 능력치를 바꾸므로 DiceCombat·미리보기가 아래 배율을 읽는다.
-/// 칸 하나의 칩(두 장까지)과 세기는 ChipSet이 묶어 이것을 부른다.
+/// 칸 하나의 칩과 세기는 ChipSet이 묶어 이것을 부른다.
 /// </summary>
 public static class ChipEffects
 {
-    /// <param name="strength">세기 배율(IChipScale). 지속 시간은 그대로 두고 세기에만 곱한다 — 얼림은 어는 시간이 곧 세기다.</param>
+    /// <param name="strength">세기 배율(칩마다 — 빅 스택 칩은 2). 지속 시간은 그대로 두고 세기에만 곱한다 — 얼림은 어는 시간이 곧 세기다.</param>
     public static void OnHit(MonsterField monsters, int slot, SO_ChipCard chip, float strength)
     {
         switch (chip)

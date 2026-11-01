@@ -41,7 +41,7 @@ public sealed class MapData
     private readonly TileType[] _tiles;
     // 지형(TileType)과 따로 둔다 — 주사위·칩은 판 중에 놓이지만 지형은 생성 후 고정이다.
     private readonly bool[] _dice;
-    // 칩(칩 카드, 기획서 3.4)이 쌓인 장수(0 = 없음, 사이드 팟이면 2). 칩 종류는 ChipField가 든다 — 맵은 길을 막는지와 높이만 안다.
+    // 칩(칩 카드, 기획서 3.4)이 쌓인 장수(0 = 없음, 1 = 있음). 칩 종류는 ChipField가 든다 — 맵은 길을 막는지와 높이만 안다.
     private readonly byte[] _chips;
 
     public MapData(int width, int height)
@@ -85,11 +85,6 @@ public sealed class MapData
     public bool HasChip(int x, int y) => _chips[ToIndex(x, y)] > 0;
 
     public void SetChip(int x, int y, bool value) => _chips[ToIndex(x, y)] = (byte)(value ? 1 : 0);
-
-    /// <summary>칸에 쌓인 칩 장수(0 = 없음). 칩 위 주사위가 앉는 높이가 이만큼 오른다.</summary>
-    public int ChipLayers(int x, int y) => _chips[ToIndex(x, y)];
-
-    public void SetChipLayers(int x, int y, int layers) => _chips[ToIndex(x, y)] = (byte)layers;
 
     /// <summary>주사위·칩을 놓을 수 있는 지형인지(점유 여부는 따로 본다).</summary>
     public bool IsBuildable(int x, int y) => Get(x, y) == TileType.Ground;

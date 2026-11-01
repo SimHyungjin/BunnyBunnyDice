@@ -29,6 +29,8 @@ MonoBehaviour:
   ChipBevelRatio: 0.4
   ChipSegments: 32
   ChipRingColor: {r: 0.06, g: 0.04, b: 0.08, a: 1}
+  StrongChipRingColor: {r: 1, g: 0.88, b: 0.29, a: 1}
+  StrongChipOutlineColor: {r: 1, g: 0.88, b: 0.29, a: 1}
   ChipRingOuter: 0.64
   ChipRingInner: 0.56
   ChipSmoothness: 0.55

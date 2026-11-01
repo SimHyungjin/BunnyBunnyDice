@@ -12,6 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 327b825697354a49ab406563a7a676fd, type: 3}
   m_Name: SO_BotConfig
   m_EditorClassIdentifier: Assembly-CSharp::SO_BotConfig
+  Choice:
+    HeroStat: 200
+    MazeDiceRed: 300
+    MazeDiceBlueMagenta: 260
+    MazeDiceOther: 220
+    MazeBurnChip: 280
+    EarlyD20: 150
+    EarlyChip: 120
+    D20Area: 400
+    D20Single: 350
+    MissingDebuffChip: 330
+    AttackChip: 300
+    BurnChip: 250
+    LateDice: 150
+    DuplicateDebuffChip: 120
+    RangeChip: 120
+    Jackpot: 200
+    EnemySkill: 120
+    Check: 100
+    Raise: 150
+    Reroll: 80
+    Paint: 100
+    AllIn: 50
+    CashOut: 250
+    Exclusive: 300
+  MazeEnoughDice: 14
+  MazeOutsideZoneFirst: 1
   KillZoneRadius: 2.5
   KillZoneStackWeight: 2
   KillZoneChipWeight: 3
@@ -19,16 +46,28 @@ MonoBehaviour:
   ActInterval: 0.4
   MazeThinkTime: 0.5
   HeroInterval: 1
-  PaintMinTargets: 3
+  KiteFront: 3
+  KiteBack: 2
+  RaiseMargin: 1
+  EscapeLookAhead: 2
   BreachHealthRatio: 0.4
   BreachCount: 3
   KillZoneMargin: 2
   DangerRadius: 2
   BreachEnemyMinTargets: 2
   CheckBreachCount: 5
+  AnytimeEnemyMinTargets: 8
   AllInBelow: 0.35
+  StackedDeckMinSkills: 4
   BatchRuns: 5
   RotateCharacters: 0
   RunsPerCharacter: 1
+  RotationStages: 
+  RotationOnly: []
+  RunSets: []
+  RunsPerSet: 5
+  Seeds: 
   RetryDelay: 1.5
   FastForward: 3
+  SimStepsPerFrame: 200
+  SimSpeed: 1000

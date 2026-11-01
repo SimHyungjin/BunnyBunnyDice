@@ -11,7 +11,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c218230421d642feb5f81ee4bd2fc6a0, type: 3}
   m_Name: SO_HeroTrait_ChipLeader
-  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_ChipScale
+  m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_ChipSwap
   DisplayName: "\uCE69 \uB9AC\uB354"
-  Description: "\uBAA8\uB4E0 \uCE69 \uD6A8\uACFC\uAC00 {Strength}\uBC30\uAC00 \uB41C\uB2E4."
-  Strength: 1.5
+  Description: "칩이 있는 칸에 칩을 놓아 바꿀 수 있다. 바뀐 칩은 사라진다."

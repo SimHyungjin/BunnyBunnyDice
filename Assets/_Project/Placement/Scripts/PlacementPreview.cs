@@ -74,7 +74,8 @@ public sealed class PlacementPreview
     /// 주사위는 그대로 두고, 그 주사위가 이 칩을 받았을 때의 사거리를 보인다(사거리 칩이면 늘어난 고리).
     /// </summary>
     /// <param name="dice">칸에 놓인 주사위. 없으면 null.</param>
-    public void ShowChip(Vector2Int cell, bool valid, SO_ChipCard card, DiceState? dice)
+    /// <param name="strength">칩 효과 세기(빅 스택 칩은 2) — 사거리 칩이면 고리가 그만큼 늘어난다.</param>
+    public void ShowChip(Vector2Int cell, bool valid, SO_ChipCard card, DiceState? dice, float strength = 1f)
     {
         float ground = _viewConfig.GetTileTop(TileType.Ground);
         ShowHighlight(cell, ground, valid);
@@ -92,34 +93,7 @@ public sealed class PlacementPreview
         _ghostChip.transform.localPosition = new Vector3(cell.x, ground + _config.GhostHover, cell.y);
         _ghostChip.gameObject.SetActive(true);
 
-        if (dice.HasValue) ShowRange(cell, ground + _viewConfig.ChipHeight, _chips.Preview(card).RangeBonus, dice.Value);
-        else if (_ring != null) _ring.gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// 사이드 팟을 끄는 동안 — 고스트 칩은 지금 칩 위에 얹힐 모양 그대로(카드 칩 색)이고, 칸에 주사위가 있으면
-    /// 그 주사위가 두 장을 받았을 때의 사거리를 보인다(칩 카드와 같은 이유 — 파랑 칩 효과가 보이게).
-    /// </summary>
-    /// <param name="dice">칸에 놓인 주사위. 없으면 null.</param>
-    public void ShowSidePot(Vector2Int cell, bool valid, SO_ChipCard card, DiceState? dice)
-    {
-        float ground = _viewConfig.GetTileTop(TileType.Ground);
-        ShowHighlight(cell, ground, valid);
-        if (_ghost != null) _ghost.SetActive(false);
-        if (!valid || card == null)
-        {
-            if (_ghostChip != null) _ghostChip.gameObject.SetActive(false);
-            if (_ring != null) _ring.gameObject.SetActive(false);
-            return;
-        }
-
-        if (_ghostChip == null) CreateGhostChip();
-        RendererTint.Apply(_ghostChip.gameObject, card.IconColor);
-        float top = _viewConfig.ChipHeight * ChipField.MaxLayers;
-        _ghostChip.transform.localPosition = new Vector3(cell.x, ground + _viewConfig.ChipHeight + _config.GhostHover, cell.y);
-        _ghostChip.gameObject.SetActive(true);
-
-        if (dice.HasValue) ShowRange(cell, ground + top, _chips.PreviewExtra(cell, card).RangeBonus, dice.Value);
+        if (dice.HasValue) ShowRange(cell, ground + _viewConfig.ChipHeight, _chips.Preview(card, strength).RangeBonus, dice.Value);
         else if (_ring != null) _ring.gameObject.SetActive(false);
     }
 

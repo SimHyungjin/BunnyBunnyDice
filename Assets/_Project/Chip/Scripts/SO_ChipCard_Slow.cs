@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// 둔화(칩, 노랑): 맞힌 적의 이동 속도를 낮춘다. 디버프 2순위 — 거의 쉬지 않고 걸려 맞은 적 모두가 길에 오래 머문다.
-/// 노랑(폭발)이 0.5초마다 뭉친 곳에 다시 걸어 끊기지 않는다. 빠름에 맞선다. 거대의 이동 방해 저항은 몬스터 쪽이 줄인다.
+/// 노랑(폭발)이 0.5초마다 뭉친 곳에 다시 걸어 끊기지 않는다. 분노(깎일수록 빨라짐)에 맞선다. 거대의 이동 방해 저항은 몬스터 쪽이 줄인다.
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Chip/Slow", fileName = "SO_ChipCard_Slow")]
 public sealed class SO_ChipCard_Slow : SO_ChipCard

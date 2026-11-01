@@ -21,7 +21,7 @@ public enum HeroStat
 /// 조작·충돌처럼 모든 캐릭터가 같이 쓰는 값은 SO_HeroConfig에 둔다(캐릭터를 바꿔도 조작감이 달라지지 않게).
 /// 여기 적는 값은 6단계(한계값)이고, 실제 값은 얻을 때 굴린 단계에 따라 깎인다(HeroStats). 특성은 SO_HeroTrait 하나를 참조한다.
 /// 전용 카드도 캐릭터가 든다(ExclusiveCards) — 레벨업마다 확률로 후보 한 자리에 그중 한 장이 나온다(CardRoll, 10.3).
-/// 대개 한 장이고, 칩 리더의 사이드 팟처럼 종류만 다른 여러 장이면 그중 무작위 한 장이다(색이 보여 고를지 판단한다).
+/// 대개 한 장이고, 칩 리더의 빅 스택처럼 종류만 다른 여러 장이면 그중 무작위 한 장이다(색이 보여 고를지 판단한다).
 /// </summary>
 [CreateAssetMenu(menuName = "Def/Hero/Hero Character", fileName = "SO_HeroCharacter_")]
 public sealed class SO_HeroCharacter : SO_Config

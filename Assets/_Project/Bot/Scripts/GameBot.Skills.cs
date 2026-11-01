@@ -11,9 +11,9 @@ public sealed partial class GameBot
     {
         if (skill is SO_SkillCard_AllIn) return TryCastAllIn(skill);
         if (skill is SO_SkillCard_CashOut) return TryCastCashOut(skill);
-        if (skill is SO_SkillCard_SidePot) return TryCastSidePot(skill);
-        // 더블 업은 일찍 쓸수록 이득이다 — 적이 있으면 바로. 코인 플립은 기다려 얻는 것이 없어 바로 던진다.
-        if (skill is SO_SkillCard_DoubleUp) return _monsters.Count > 0 && CastBoard(skill);
+        if (skill is SO_SkillCard_BigStack) return TryCastBigStack(skill);
+        // 더블 업·코인 플립은 기다려 얻는 것이 없어 바로 쓴다(일찍 받은 카드가 오래 일한다).
+        if (skill is SO_SkillCard_DoubleUp) return CastBoard(skill);
         if (skill is SO_SkillCard_CoinFlip) return CastBoard(skill);
         if (skill is SO_SkillCard_StackedDeck) return CountHandSkills() >= _config.StackedDeckMinSkills && CastBoard(skill);
         // 화력 카드(풀 하우스·브레이크 샷·핫 스트릭)는 다른 스킬처럼 뚫릴 때.
@@ -52,8 +52,9 @@ public sealed partial class GameBot
 
     // 캐시 아웃(하이 롤러): 메인 딜 구간을 막는 칸을 치워 딜링 주사위 자리를 넓힌다(사용자: 칩·실수로 못 쓰게 된 딜 구간을 넓힌다).
     // 손에 그 자리를 채울 d20·범위 주사위가 있을 때만 — 치우기만 하고 못 채우면 미로만 허문다.
-    // 사이드 팟: 칩 위 주사위 중 덮는 몰림이 가장 큰 곳(메인 딜 구간이면 더) — 칩 효과는 그 위 주사위가 받는다.
-    private bool TryCastSidePot(SO_SkillCard card)
+    // 빅 스택: 주사위 칸 중 덮는 몰림이 가장 큰 곳(메인 딜 구간이면 더) — 칩 효과는 그 위 주사위가 받는다.
+    // 이미 센 칩이 깔린 칸은 건너뛴다(센 칩끼리 바꿔 끼우며 낭비하지 않게). 보통 칩 칸은 특성으로 바꿔 끼운다.
+    private bool TryCastBigStack(SO_SkillCard card)
     {
         IReadOnlyList<PlacedDice> placed = _diceField.Placed;
         float best = -1f;
@@ -61,7 +62,7 @@ public sealed partial class GameBot
         for (int i = 0; i < placed.Count; i++)
         {
             Vector2Int at = placed[i].Cell;
-            if (_skills.CheckCell(at, card) != PlacementResult.Upgrade) continue;
+            if (_chips.GetSet(at).Strength > 1f || _skills.CheckCell(at, card) != PlacementResult.Upgrade) continue;
             float range = RangeAt(at, placed[i].Dice.Colors, _chips.GetSet(at));
             float score = _board.Traffic(at, range) * (1f + placed[i].Dice.Pips) * (CoversKillZone(at, range) ? _config.KillZoneChipWeight : 1f);
             if (score <= best) continue;
