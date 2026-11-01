@@ -26,6 +26,13 @@ public sealed class SO_AttackEffectConfig : SO_Config
     [Tooltip("바닥 위로 띄우는 높이. 고리는 바닥에 눕힌 메시라 바닥과 같은 높이면 깜빡인다.")]
     [Min(0f)] public float BurstLift = 0.03f;
 
+    [Header("오라 (하양 파동)")]
+    [Tooltip("파동 주사위가 놓인 동안 사거리에 떠 있는 고리의 투명도. 파동은 공속이 빨라 쏠 때마다 퍼지는 고리가 화면을 덮었다(2026-11-01 사용자) — 늘 떠 있는 연한 고리로 바꿨다.")]
+    [Range(0f, 1f)] public float AuraAlpha = 0.2f;
+    [Tooltip("파동을 쏠 때 오라가 밝아졌다(투명도 1) 돌아오는 시간 — 공격하는 것이 보이게.")]
+    [Min(0.01f)] public float AuraFlashDuration = 0.2f;
+    public float AuraWidth = 0.05f;
+
     [Tooltip("처음 잡아 두는 선 수. 모자라면 더 만든다.")]
     [Min(1)] public int InitialCapacity = 32;
 }

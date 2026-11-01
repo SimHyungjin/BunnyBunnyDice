@@ -327,7 +327,10 @@ public sealed class DiceAttack : IDisposable
             HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio), critChance);
             any = true;
         }
-        if (any) _effects.ShowBurst(new Vector3(center.x, _viewConfig.GetTileTop(TileType.Ground), center.y), range, color);
+        // 파동 주사위는 늘 떠 있는 오라(PulseAura)를 밝히기만 한다 — 쏠 때마다 퍼지는 고리는 공속이 빨라 화면을 덮었다(2026-11-01 사용자).
+        // 오라가 없는 칸(풀 하우스가 다른 색 자리에서 쏘는 하양)은 퍼지는 고리로 보인다.
+        if (any && !_effects.FlashAura(Vector2Int.RoundToInt(center)))
+            _effects.ShowBurst(new Vector3(center.x, _viewConfig.GetTileTop(TileType.Ground), center.y), range, color);
         return any;
     }
 
