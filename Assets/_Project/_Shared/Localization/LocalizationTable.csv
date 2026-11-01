@@ -164,6 +164,13 @@
 배경음,Music,UI_SettingsPopup/SafeRoot/Area/Window/Label_music
 효과음,Sound Effects,UI_SettingsPopup/SafeRoot/Area/Window/Label_sound
 포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
+화면,Display,UI_SettingsPopup/SafeRoot/Area/Window/Label_screen
+해상도,Resolution,UI_SettingsPopup/SafeRoot/Area/Window/Label_resolution
+수직 동기화,VSync,UI_SettingsPopup/SafeRoot/Area/Window/Label_vsync
+전체 화면,Fullscreen,UI_SettingsPopup.cs
+창,Windowed,UI_SettingsPopup.cs
+켬,On,UI_SettingsPopup.cs
+끔,Off,UI_SettingsPopup.cs
 "{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:150
 최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:163
 특성 없음,No Trait,UI_CharacterSelectPopup.cs:130 | UI_LobbyPopup.cs:82
