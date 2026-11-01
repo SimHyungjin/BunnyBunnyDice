@@ -169,8 +169,6 @@
 특성 없음,No Trait,UI_CharacterSelectPopup.cs:130 | UI_LobbyPopup.cs:82
 눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:131
 이동 속도,Move Speed,HeroStatText.cs:15
-잭팟 보스 {0}/{1},Jackpot Boss {0}/{1},UI_GameHud.cs:121
-보스 {0}/{1},Boss {0}/{1},UI_GameHud.cs:122
 웨이브 {0},Wave {0},UI_GameHud.cs:138
 {0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:93
 웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:99 | UnlockText.cs:8

@@ -49,12 +49,8 @@ public sealed class UI_GameHud : UI_Hud
 
     public UI_SkillCutIn CutIn => _cutIn;
 
-    // 언어가 바뀌면 웨이브·보스 글을 다시 쓴다(나머지는 숫자). 다음 갱신까지 기다리지 않게 마지막 값을 들고 있는다.
+    // 언어가 바뀌면 웨이브 글을 다시 쓴다(나머지는 숫자). 다음 갱신까지 기다리지 않게 마지막 값을 들고 있는다.
     private int _wave;
-    // 보스 바 글도 언어가 바뀌면 다시 쓴다.
-    private long _bossHealth;
-    private long _bossMax;
-    private bool _bossJackpot;
 
     public RectTransform HandRoot => _handRoot;
 
@@ -98,36 +94,22 @@ public sealed class UI_GameHud : UI_Hud
         _expText.text = $"{exp}/{expToNext}";
     }
 
-    /// <summary>보스 체력 바를 띄운다(기획서 9.4). 잭팟 보스면 노랑 채움과 "잭팟 보스".</summary>
+    /// <summary>보스 체력 바를 띄운다(기획서 9.4). 잭팟 보스면 노랑 채움.</summary>
     public void ShowBoss(long health, long maxHealth, bool jackpot)
     {
         _bossBar.SetActive(true);
         _bossFill.gameObject.SetActive(!jackpot);
         _jackpotFill.gameObject.SetActive(jackpot);
         SetFill(jackpot ? _jackpotFill : _bossFill, maxHealth > 0 ? (float)((double)health / maxHealth) : 0f);
-        _bossHealth = health;
-        _bossMax = maxHealth;
-        _bossJackpot = jackpot;
-        ShowBossText();
+        // 숫자만 적는다 — "보스"·"잭팟 보스" 글은 상단 바 밑에서 어색했다(2026-11-01 사용자). 잭팟은 노랑 채움으로 갈린다.
+        // 세 자리마다 쉼표(언어와 상관없이 같은 모양) — 후반 보스는 수십억이라 끊지 않으면 읽히지 않는다.
+        _bossText.text = health.ToString("N0", CultureInfo.InvariantCulture) + "/" + maxHealth.ToString("N0", CultureInfo.InvariantCulture);
     }
 
     public void HideBoss() => _bossBar.SetActive(false);
 
-    private void ShowBossText()
-    {
-        // 세 자리마다 쉼표(언어와 상관없이 같은 모양) — 후반 보스는 수십억이라 끊지 않으면 읽히지 않는다.
-        string health = _bossHealth.ToString("N0", CultureInfo.InvariantCulture);
-        string max = _bossMax.ToString("N0", CultureInfo.InvariantCulture);
-        if (_bossJackpot) _bossText.text = App.Localize("잭팟 보스 {0}/{1}", health, max);
-        else _bossText.text = App.Localize("보스 {0}/{1}", health, max);
-    }
-
-    // 언어가 바뀌면 숫자가 아닌 글(웨이브·보스)만 다시 쓴다.
-    private void OnLanguageChanged()
-    {
-        ShowWave();
-        if (_bossBar.activeSelf) ShowBossText();
-    }
+    // 언어가 바뀌면 숫자가 아닌 글(웨이브)만 다시 쓴다.
+    private void OnLanguageChanged() => ShowWave();
 
     /// <summary>배속 버튼 글. 숫자뿐이라 번역하지 않는다.</summary>
     public void ShowSpeed(float speed) => _speedText.text = $"x{speed:0.#}";

@@ -22,7 +22,7 @@ MonoBehaviour:
   MarginBottom: 0.25
   EmptyHandMarginBottom: 0.25
   MarginSide: 0.025
-  PortraitMarginTop: 0.08
+  PortraitMarginTop: 0.2
   PortraitMarginBottom: 0.16
   PortraitEmptyHandMarginBottom: 0.16
   PortraitMarginSide: 0.05
