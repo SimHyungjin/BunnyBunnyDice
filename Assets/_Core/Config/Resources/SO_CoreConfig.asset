@@ -28,8 +28,9 @@ MonoBehaviour:
   PopupGuardFadeDuration: 0.2
   PopupGuardAlpha: 0.6
   PopupCloseTimeout: 3
-  SfxPoolSize: 8
+  SfxPoolSize: 24
   BgmCrossfadeDuration: 1
   BgmStopFadeDuration: 0.5
   AudioLoopEndMargin: 0.05
   PoolDefaultMaxSize: 1024
+  UIClickSound: {fileID: 11400000, guid: 43798adde80e4418a2413259a99e54f8, type: 2}

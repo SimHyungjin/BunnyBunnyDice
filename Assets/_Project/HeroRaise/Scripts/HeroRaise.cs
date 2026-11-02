@@ -29,6 +29,11 @@ public sealed class HeroRaise : IDisposable
     /// <summary>눈이 하나 깎였다. 측정용(어느 주사위를 얼마나 태웠는지).</summary>
     public event Action<Vector2Int> PipDrained;
 
+    /// <summary>
+    /// 영웅이 주사위에 올라타 레이즈가 켜졌다(다른 주사위로 옮겨 타도 다시 불린다). 지나가며 깡총 밟은 주사위는 아니다 — 착지 = 레이즈라 연출(소리)이 이것 하나를 쓴다.
+    /// </summary>
+    public event Action<Vector2Int> Mounted;
+
     public HeroRaise(SO_HeroConfig config, Hero hero, DiceField diceField, DiceCombat diceCombat, MonsterField monsters, TraitHooks traits)
     {
         _traits = traits;
@@ -70,8 +75,10 @@ public sealed class HeroRaise : IDisposable
             return;
         }
 
+        bool mounted = !Active || Cell != cell;
         Active = true;
         Cell = cell;
+        if (mounted) Mounted?.Invoke(cell);
         raise.GetScales(_traits, out float damageScale, out float speedScale);
         _diceCombat.SetBoost(cell, damageScale, speedScale);
 

@@ -50,6 +50,9 @@ public sealed class DiceAttack : IDisposable
         public DamageSource Source;
     }
 
+    /// <summary>주사위 하나가 쐈다(맞힐 대상이 있어 실제로 쏜 때만). 연출(소리)용.</summary>
+    public event Action Fired;
+
     private readonly SO_DiceStatsConfig _statsConfig;
     private readonly SO_MonsterConfig _monsterConfig;
     private readonly SO_MapViewConfig _viewConfig;
@@ -81,6 +84,13 @@ public sealed class DiceAttack : IDisposable
 
     /// <summary>쏜다. 사거리 안에 맞힐 몬스터가 없어 쏘지 않았으면 false — 쏘는 쪽은 재사용 대기를 걸지 않고 다음에 다시 본다.</summary>
     public bool Fire(in Shot shot)
+    {
+        bool fired = FireShot(shot);
+        if (fired) Fired?.Invoke();
+        return fired;
+    }
+
+    private bool FireShot(in Shot shot)
     {
         if (shot.Type == null) return false;
         _attachment = shot.Attachment;

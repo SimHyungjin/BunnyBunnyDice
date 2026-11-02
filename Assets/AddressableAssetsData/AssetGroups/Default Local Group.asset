@@ -110,6 +110,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aeeb9593b3ed459ca745dd2989be8b92
+    m_Address: SO_GameSounds
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 94549ec224084015be0dba8d4f214a97
     m_Address: SO_MapGenConfig
     m_ReadOnly: 0

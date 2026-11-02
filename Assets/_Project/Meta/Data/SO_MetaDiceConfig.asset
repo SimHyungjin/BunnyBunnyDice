@@ -31,3 +31,5 @@ MonoBehaviour:
   GatherDelay: 0.35
   RevealDuration: 0.5
   RevealPopScale: 1.08
+  LandSound: {fileID: 11400000, guid: 1dfc9295f4b8401195fc7dfcd6036ce7, type: 2}
+  SuccessSound: {fileID: 11400000, guid: 4091f7916a9e4e079f697ff4e6658833, type: 2}

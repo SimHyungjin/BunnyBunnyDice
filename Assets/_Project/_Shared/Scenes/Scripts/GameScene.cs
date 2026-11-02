@@ -62,6 +62,8 @@ public sealed partial class GameScene : SceneBase
     private DiceAwakenEffect _diceAwakenEffect;
     private HeroBreakShotView _breakShotView;
     private SkillCutIn _cutIn;
+    // 판 사건마다 효과음(표시만 — 판 시스템의 이벤트를 구독한다).
+    private GameSounds _sounds;
     private MonsterField _monsters;
     private AttackEffects _attackEffects;
     private HeroCardShots _heroCards;
@@ -111,12 +113,13 @@ public sealed partial class GameScene : SceneBase
     public override async UniTask EnterScene(CancellationToken token)
     {
         // 서로 의존이 없어 한꺼번에 불러온다.
-        var (genAsset, viewAsset, cameraAsset, handAsset, cutInAsset) = await UniTask.WhenAll(
+        var (genAsset, viewAsset, cameraAsset, handAsset, cutInAsset, soundsAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapGenConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MapViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MapCameraConfig>(ct: token),
             Core.Resource.LoadAsync<SO_CardHandConfig>(ct: token),
-            Core.Resource.LoadAsync<SO_SkillCutInConfig>(ct: token));
+            Core.Resource.LoadAsync<SO_SkillCutInConfig>(ct: token),
+            Core.Resource.LoadAsync<SO_GameSounds>(ct: token));
         var (pathAsset, previewAsset, dragAsset, environmentAsset, lightingAsset, heroAsset, boardRollAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapPathViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_PlacementPreviewConfig>(ct: token),
@@ -151,6 +154,7 @@ public sealed partial class GameScene : SceneBase
         SO_MapPathViewConfig pathConfig = _tuning.Copy(pathAsset);
         SO_PlacementPreviewConfig previewConfig = _tuning.Copy(previewAsset);
         SO_SkillCutInConfig cutInConfig = _tuning.Copy(cutInAsset);
+        SO_GameSounds soundsConfig = _tuning.Copy(soundsAsset);
         SO_CardDragConfig dragConfig = _tuning.Copy(dragAsset);
         SO_EnvironmentConfig environmentConfig = _tuning.Copy(environmentAsset);
         SO_LightingConfig lightingConfig = _tuning.Copy(lightingAsset);
@@ -343,6 +347,12 @@ public sealed partial class GameScene : SceneBase
         _levelUp.Offered += _waveLog.CountOffers;
         _levelUp.Opened += _drag.Cancel;
         CreateBot(botConfig, heroConfig, diceConfig, diceStatsConfig);
+        // 로비에서는 판 소리를 내지 않는다 — 로비 뒤 판에서 시작 손패를 미리 깔아 두는 것 등이 들리지 않게.
+        _sounds = new GameSounds(soundsConfig, () => IsSim || _lobbyStage.IsActive, _diceField, _chips, _hand, _levelUp, _skills, _monsters, _goal, _boardRoll,
+            _diceAttack, _heroCards, _waves, _heroRaise);
+        // 첫 화면은 로비다. 판 곡은 뛰어들기가 끝나 판이 시작될 때, 로비 곡은 결과 화면에서 로비로 갈 때 바꾼다.
+        _sounds.PlayLobbyMusic();
+        _lobbyStage.Entered += _sounds.PlayGameMusic;
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
         DealStartHand();
         // 손패를 다 쓰면 판을 아래로 넓히고, 카드가 들어오면 되돌린다(아래 여백만 섞는다).
@@ -435,6 +445,7 @@ public sealed partial class GameScene : SceneBase
         _waveLog?.Dispose();
         _breakShotView?.Dispose();
         _cutIn?.Dispose();
+        _sounds?.Dispose();
         _heroAttack?.Dispose();
         _hotStreak?.Dispose();
         _skillPreview?.Dispose();
@@ -587,6 +598,7 @@ public sealed partial class GameScene : SceneBase
     {
         SweepBoard();
         _lobbyStage.Exit();
+        _sounds?.PlayLobbyMusic();
         GenerateMap(System.Environment.TickCount);
         _hud?.SetShown(false);
     }

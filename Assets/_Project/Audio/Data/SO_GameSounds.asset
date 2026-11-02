@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802a4dfde4434fc59e097e23086eb336, type: 3}
+  m_Name: SO_GameSounds
+  m_EditorClassIdentifier: 
+  LobbyMusic: {fileID: 11400000, guid: 1c2d4d6e7d4c4631bc5a88c67211ff9c, type: 2}
+  GameMusic: {fileID: 11400000, guid: c1db3000e0c0435c89c84924d7b93bea, type: 2}
+  DiceLand: {fileID: 11400000, guid: 1dfc9295f4b8401195fc7dfcd6036ce7, type: 2}
+  DiceBust: {fileID: 11400000, guid: 9d4a07e9e6cd470fb8fb5c4c3e4cc9c3, type: 2}
+  DiceAwaken: {fileID: 11400000, guid: d26d782f63fc452bbc8f854e14e7a426, type: 2}
+  ChipLand: {fileID: 11400000, guid: 4091f7916a9e4e079f697ff4e6658833, type: 2}
+  CardGet: {fileID: 11400000, guid: 823cffd502b346d3803ae81366accfcc, type: 2}
+  LevelUpOpen: {fileID: 11400000, guid: 333d8a9cb4fd4563be05901426a519b2, type: 2}
+  SkillUse: {fileID: 11400000, guid: 89c5a8fbf0bf9bd4e8adfd6574044d34, type: 2}
+  SkillUseCutIn: {fileID: 11400000, guid: e88c12fa2f503a54aa54a85c7c1dd046, type: 2}
+  BoardShake: {fileID: 11400000, guid: 037c7919b34540638b817aa40e01010b, type: 2}
+  BoardPocket: {fileID: 11400000, guid: 4091f7916a9e4e079f697ff4e6658833, type: 2}
+  HeroLand: {fileID: 11400000, guid: 61b42f118499eba48b4a927e26046bec, type: 2}
+  DiceShot: {fileID: 11400000, guid: 05e7193c8d5e4987ae359a56ee16f0bf, type: 2}
+  HeroThrow: {fileID: 11400000, guid: d51446a56f0347f08620450855324889, type: 2}
+  MonsterKill: {fileID: 11400000, guid: 362008575d91436b912e791ae12005f6, type: 2}
+  BossKill: {fileID: 11400000, guid: b7f6171dd9b3420ca7e696cad3a7cda7, type: 2}
+  GoalHit: {fileID: 11400000, guid: 9d4a07e9e6cd470fb8fb5c4c3e4cc9c3, type: 2}
+  WaveStart: {fileID: 11400000, guid: 4091f7916a9e4e079f697ff4e6658833, type: 2}
+  GameOver: {fileID: 11400000, guid: f1fb58d871264a568aaff6dda3e3a7ec, type: 2}

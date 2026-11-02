@@ -35,6 +35,8 @@ public sealed class BoardRollPresenter : IDisposable
     private bool _scheduled;
     private float _confirmStart;
     private float _chipsStart;
+    // 칩 닿음(ChipLanded)을 지난번 본 시각부터 지금까지 넘은 칩만 알리려고 둔다 — 같은 시각에 다시 그려도(RefreshChips) 두 번 알리지 않게.
+    private float _chipsCheckedAt;
     // 연출을 끈 설정에서 맵 계산만 기다리는 중.
     private bool _waitingOnly;
 
@@ -79,6 +81,16 @@ public sealed class BoardRollPresenter : IDisposable
 
     public bool IsPlaying => _time >= 0f;
 
+    // 박자마다 알린다 — 연출(소리)용. 연출을 끈 설정이면 아무것도 불리지 않는다.
+    /// <summary>주사위가 판 가운데에서 솟아 흩어지기 시작했다.</summary>
+    public event Action Started;
+    /// <summary>흩어진 주사위 하나가 판에 떨어졌다.</summary>
+    public event Action DieLanded;
+    /// <summary>주사위 하나가 포켓에 빠졌다.</summary>
+    public event Action DiePocketed;
+    /// <summary>시작 칩 하나가 떨어져 닿았다.</summary>
+    public event Action ChipLanded;
+
     public void Dispose()
     {
         Core.Loop.OnUpdate -= Tick;
@@ -96,6 +108,7 @@ public sealed class BoardRollPresenter : IDisposable
         _waitingOnly = false;
         _scheduled = false;
         _chipsStart = float.MaxValue;
+        _chipsCheckedAt = 0f;
         if (!_config.Enabled || map.Roll.Count == 0)
         {
             // 연출이 없어도 칩 자리가 정해질 때까지는 판을 시작하지 않는다.
@@ -149,6 +162,7 @@ public sealed class BoardRollPresenter : IDisposable
 
         _time = 0f;
         _environment.SetPocketGlowVisible(false);
+        Started?.Invoke();
         Apply();
     }
 
@@ -268,6 +282,7 @@ public sealed class BoardRollPresenter : IDisposable
     {
         if (die.TurnIndex < 0)
         {
+            DieLanded?.Invoke();
             die.TurnIndex = 0;
             die.TurnFrom = die.Touchdown;
             die.TurnStart = die.Landed;
@@ -365,6 +380,7 @@ public sealed class BoardRollPresenter : IDisposable
             // 빠진 순간 그 포켓이 빛난다 — "이 주사위 때문에 이 포켓이 열렸다"가 이어지게.
             die.Arrived = true;
             _environment.SetPocketGlowVisible(die.PocketCell, true);
+            DiePocketed?.Invoke();
         }
 
         die.Body.SetActive(visible);
@@ -387,6 +403,7 @@ public sealed class BoardRollPresenter : IDisposable
             Transform stack = stacks[i];
             float start = _chipsStart + i * interval;
             float landed = start + _config.ChipFallDuration;
+            if (_chipsCheckedAt < landed && _time >= landed) ChipLanded?.Invoke();
             stack.gameObject.SetActive(_time >= start);
             Vector3 position = stack.localPosition;
             float y = 0f, sy = 1f;
@@ -406,6 +423,7 @@ public sealed class BoardRollPresenter : IDisposable
             float sxz = 1f + (1f - sy) * 0.5f;
             stack.localScale = new Vector3(sxz, sy, sxz);
         }
+        _chipsCheckedAt = _time;
         return count > 0 ? _chipsStart + (count - 1) * interval + _config.ChipFallDuration + _config.ChipSquashDuration : _chipsStart;
     }
 

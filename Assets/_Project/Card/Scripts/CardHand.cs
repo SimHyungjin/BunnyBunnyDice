@@ -29,6 +29,9 @@ public sealed class CardHand
     private float _baseScale = 1f;
 
     public event Action<CardView, PointerEventData> CardPressed;
+
+    /// <summary>카드가 들어왔다(Add·AddFrom — 같은 카드에 겹쳐진 것도). 연출(소리)용.</summary>
+    public event Action CardAdded;
     public event Action<CardView, PointerEventData> CardDragged;
     public event Action<CardView, PointerEventData> CardReleased;
 
@@ -53,6 +56,7 @@ public sealed class CardHand
 
     public void Add(HandCard card)
     {
+        CardAdded?.Invoke();
         for (int i = 0; i < _cards.Count; i++)
         {
             if (_cards[i].Card == card)
@@ -76,6 +80,7 @@ public sealed class CardHand
     /// </summary>
     public void AddFrom(HandCard card, Vector2 screenPosition, float scale)
     {
+        CardAdded?.Invoke();
         Camera cam = _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screenPosition, cam, out Vector2 from);
 

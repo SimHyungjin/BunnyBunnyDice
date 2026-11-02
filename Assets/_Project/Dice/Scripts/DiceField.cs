@@ -35,6 +35,12 @@ public sealed class DiceField : IDisposable
     /// <summary>빈 칸에 새로 놓였다. 칸이 막혀 길이 바뀌었을 수 있으므로 경로 표시 등이 구독해 갱신한다.</summary>
     public event Action<Vector2Int> DicePlaced;
 
+    /// <summary>놓인 주사위에 얹었다(부서지면 DiceBusted만). 칸이 이미 막혀 있어 길은 그대로다 — 연출용.</summary>
+    public event Action<Vector2Int> DiceStacked;
+
+    /// <summary>놓인 주사위를 스킬이 다시 굴렸다(리롤·잭팟·올인 — 굴리는 연출이 나올 때). 부서졌으면 DiceBusted만. 연출(소리)용.</summary>
+    public event Action<Vector2Int> DiceRerolled;
+
     /// <summary>
     /// 거둬졌다(캐시 아웃). index는 지우기 전의 번호 — 같은 번호로 상태를 붙여 둔 쪽(DiceCombat)이 같은 자리를 지운다.
     /// 칸이 열려 길이 바뀌므로 경로 표시 등도 구독한다.
@@ -146,6 +152,7 @@ public sealed class DiceField : IDisposable
         Refresh(index);
         // 얹으면 새로 굴리므로 제자리에서 톡 튀며 커진다(영웅이 위에 올라서 있어 위로 튀면 겹친다).
         _views[index].Pop(_config.StackPopStart);
+        DiceStacked?.Invoke(cell);
         NotifyAwakened(wasAwakened, placed.Dice, cell);
     }
 
@@ -167,7 +174,11 @@ public sealed class DiceField : IDisposable
         DiceRules.ResolveBlack(ref placed.Dice, _statsConfig.AwakenPips);
         _placed[index] = placed;
         Refresh(index);
-        if (rolled) _views[index].Roll(_config.StackDropHeight);
+        if (rolled)
+        {
+            _views[index].Roll(_config.StackDropHeight);
+            DiceRerolled?.Invoke(cell);
+        }
         NotifyAwakened(wasAwakened, placed.Dice, cell);
     }
 
@@ -191,6 +202,7 @@ public sealed class DiceField : IDisposable
             _placed[i] = placed;
             Refresh(i);
             _views[i].Roll(_config.StackDropHeight);
+            DiceRerolled?.Invoke(placed.Cell);
             NotifyAwakened(wasAwakened, placed.Dice, placed.Cell);
         }
         for (int i = 0; i < _busted.Count; i++) Bust(_busted[i]);

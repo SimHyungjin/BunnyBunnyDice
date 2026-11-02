@@ -22,6 +22,12 @@ public sealed class SO_MetaDiceConfig : SO_Config
     [Range(1f, 2f)] public float LandPopScale = 1.3f;
     [Min(0.01f)] public float LandDuration = 0.18f;
 
+    [Header("소리")]
+    [Tooltip("착지 순간(올랐든 그대로든). 비우면 조용하다.")]
+    public SO_SoundCue LandSound;
+    [Tooltip("올랐을 때 착지 소리에 더해 낸다. 비우면 착지 소리만.")]
+    public SO_SoundCue SuccessSound;
+
     [Header("올랐을 때")]
     [Tooltip("주사위 몸이 이 색으로 반짝였다가 원래 색으로 돌아온다.")]
     public Color SuccessColor = new Color(1f, 0.88f, 0.29f);

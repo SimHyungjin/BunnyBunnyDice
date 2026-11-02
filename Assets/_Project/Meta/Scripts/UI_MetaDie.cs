@@ -209,6 +209,9 @@ public sealed class UI_MetaDie : MonoBehaviour
         Draw(_landFace, _success ? 1f : _config.FailAlpha);
         _phase = Phase.Land;
         _phaseStart = now;
+        // 실제로 굴러 떨어졌을 때만 낸다 — 건너뛰기(Finish)·창 닫힘(OnDisable)은 착지 알림만 부르고 소리는 내지 않는다.
+        App.PlaySfx(_config.LandSound);
+        if (_success) App.PlaySfx(_config.SuccessSound);
         InvokeLanded();
     }
 

@@ -29,9 +29,12 @@ public sealed class SkillCutIn : IDisposable
         _skills.Used -= OnUsed;
     }
 
+    /// <summary>card를 쓰면 컷인이 나오는지. 소리(GameSounds)도 같은 기준으로 나눈다.</summary>
+    public static bool HasCutIn(SO_SkillCard card) => card != null && (card.Exclusive || card is SO_EnemySkillCard);
+
     private void OnUsed(SO_SkillCard card)
     {
-        if (_view == null || !(card.Exclusive || card is SO_EnemySkillCard)) return;
+        if (_view == null || !HasCutIn(card)) return;
         Color kind = card.Exclusive ? _handConfig.ExclusiveCardColor : _handConfig.SkillCardColor;
         _view.Show(_stats.Character != null ? _stats.Character.Portrait : null, App.Localize(card.DisplayName), kind, _config);
     }

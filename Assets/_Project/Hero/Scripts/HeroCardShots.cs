@@ -54,12 +54,17 @@ public sealed class HeroCardShots : IDisposable
         UnityEngine.Object.Destroy(_mesh);
     }
 
+    /// <summary>영웅이 카드를 던졌다(한 번에 여러 장이어도 한 번). 인자 = 치명타. 연출(소리)용.</summary>
+    public event Action<bool> Thrown;
+
     /// <summary>
     /// 맵 로컬 from(손)에서 targetId 몬스터까지 카드를 날린다. launch는 처음 튀어 나가는 쪽(바닥과 나란한 방향, 길이 상관없음 — 0이면 곧게).
     /// 한 번에 여러 장(count)이면 index마다 SpreadAngle만큼 벌려 부채꼴로 튀어 나간다. 치명타면 금색으로 크게.
     /// </summary>
     public void Throw(Vector3 from, Vector3 launch, int targetId, bool critical, int index, int count)
     {
+        // 부채꼴로 여러 장을 던져도 한 번 던진 것이다.
+        if (index == 0) Thrown?.Invoke(critical);
         if (count > 1) launch = Quaternion.AngleAxis((index - (count - 1) * 0.5f) * _config.SpreadAngle, Vector3.up) * launch;
         Card card = _idle.Count > 0 ? _idle.Pop() : CreateCard();
         card.From = from;
