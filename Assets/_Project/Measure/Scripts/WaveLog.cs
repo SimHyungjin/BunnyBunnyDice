@@ -102,6 +102,9 @@ public sealed class WaveLog : IDisposable
             if (i > 0) _builder.Append('+');
             string name = traits[i].name;
             _builder.Append(name.StartsWith(prefix, StringComparison.Ordinal) ? name.Substring(prefix.Length) : name);
+            // 보조 특성(세기 < 1)은 세기를 붙여 주인공 특성과 구분한다(Regen+Hard x0.5).
+            float strength = kind.GetStrength(i);
+            if (strength != 1f) _builder.Append(" x").Append(strength.ToString("0.##", CultureInfo.InvariantCulture));
         }
     }
 

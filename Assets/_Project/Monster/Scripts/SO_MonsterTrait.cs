@@ -11,7 +11,7 @@ public sealed class SO_MonsterTrait : ScriptableObject
 {
     public string DisplayName;
     [Tooltip("띠 공에 칠하는 색(기본 색에 섞은 값). 알파가 섞는 정도이고 0이면 색이 없는 특성(거대 — 크기로 보인다). "
-        + "색 있는 특성이 둘이면 에셋 이름 순서로 앞이 띠, 뒤가 양끝(MonsterKind.GetBallColors).")]
+        + "색 있는 특성이 둘이면 센 특성(웨이브의 주인공)이 띠, 보조 특성이 양끝 — 세기가 같으면 에셋 이름 순서(MonsterKind.GetBallColors).")]
     public Color Tint = new Color(1f, 1f, 1f, 0f);
     [Tooltip("겉모습 크기 배율. 걷는 길 계산의 반지름은 바꾸지 않는다(SO_MonsterConfig.Radius를 모두 같이 쓴다).")]
     [Min(0.1f)] public float VisualScale = 1f;

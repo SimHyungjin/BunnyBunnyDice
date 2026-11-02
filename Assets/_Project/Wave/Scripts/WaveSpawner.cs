@@ -19,10 +19,10 @@ public sealed class WaveSpawner : IDisposable
     private readonly Func<int> _getAliveCount;
     // 같은 조합은 같은 모양을 쓴다 — 표시가 모양별로 오브젝트를 재사용한다. 판 내내 가짓수가 수십을 넘지 않아 목록을 훑는다.
     private readonly List<MonsterKind> _kinds = new List<MonsterKind>();
-    private readonly List<List<SO_MonsterTrait>> _regular = new List<List<SO_MonsterTrait>>();
-    private readonly List<SO_MonsterTrait> _boss = new List<SO_MonsterTrait>();
+    private readonly List<List<TraitSlot>> _regular = new List<List<TraitSlot>>();
+    private readonly List<TraitSlot> _boss = new List<TraitSlot>();
     private readonly List<MonsterKind> _waveKinds = new List<MonsterKind>();
-    private readonly List<SO_MonsterTrait> _bossTraits = new List<SO_MonsterTrait>();
+    private readonly List<TraitSlot> _bossTraits = new List<TraitSlot>();
     // 앞 웨이브가 다 나오기 전에 다음 웨이브가 시작되면(테스트 키) 뒤에 이어 붙인다.
     // 체력은 나오는 시점이 아니라 속한 웨이브로 정하므로 줄 세울 때 체력 배율을 같이 든다.
     private readonly Queue<(MonsterKind kind, float healthScale)> _pending = new Queue<(MonsterKind, float)>();
@@ -160,16 +160,16 @@ public sealed class WaveSpawner : IDisposable
         SO_MonsterType type = _config.Monster;
         if (type != null)
         {
-            bool hasBoss = WaveComposition.Compose(_config, Wave, GameRandom.Wave, _regular, _boss);
+            bool hasBoss = WaveComposition.Compose(_config, Wave, GameRandom.Wave, _regular, _boss, out bool mixed);
             _waveKinds.Clear();
             for (int i = 0; i < _regular.Count; i++) _waveKinds.Add(GetKind(type, _regular[i], false));
-            // 여러 가지면 번갈아 내보낸다 — 한 가지가 몰려 나오면 그 특성에 맞는 주사위 하나로 다 막힌다.
+            // 여러 가지면 번갈아 내보낸다(무작위 규칙). 보스 웨이브의 섞어 쏟아지기는 마리마다 무작위로 고른다 — 판 운이라 웨이브 줄(GameRandom.Wave)로.
             int count = _config.GetCount(Wave);
             float healthScale = _config.GetHealthScale(Wave);
             float total = 0f;
             for (int i = 0; i < count; i++)
             {
-                MonsterKind kind = _waveKinds[i % _waveKinds.Count];
+                MonsterKind kind = _waveKinds[mixed ? GameRandom.Wave.Next(_waveKinds.Count) : i % _waveKinds.Count];
                 _pending.Enqueue((kind, healthScale));
                 total += type.Health * kind.HealthScale * healthScale;
             }
@@ -191,7 +191,7 @@ public sealed class WaveSpawner : IDisposable
         if (jackpot)
         {
             for (int i = 0; i < _config.JackpotTraits.Count; i++)
-                if (_config.JackpotTraits[i] != null && !_bossTraits.Contains(_config.JackpotTraits[i])) _bossTraits.Add(_config.JackpotTraits[i]);
+                if (_config.JackpotTraits[i] != null && !HasTrait(_bossTraits, _config.JackpotTraits[i])) _bossTraits.Add(new TraitSlot(_config.JackpotTraits[i]));
         }
         MonsterKind boss = GetKind(type, _bossTraits, true, jackpot);
         WaveBoss = boss;
@@ -209,12 +209,19 @@ public sealed class WaveSpawner : IDisposable
         _jackpotWarned = false;
     }
 
-    private MonsterKind GetKind(SO_MonsterType type, List<SO_MonsterTrait> traits, bool isBoss, bool isJackpot = false)
+    private static bool HasTrait(List<TraitSlot> slots, SO_MonsterTrait trait)
+    {
+        for (int i = 0; i < slots.Count; i++)
+            if (slots[i].Trait == trait) return true;
+        return false;
+    }
+
+    private MonsterKind GetKind(SO_MonsterType type, List<TraitSlot> traits, bool isBoss, bool isJackpot = false)
     {
         for (int i = 0; i < _kinds.Count; i++)
             if (_kinds[i].Matches(type, traits, isBoss, isJackpot)) return _kinds[i];
         // Compose가 돌려준 목록은 다음 웨이브에 다시 채워지므로 복사해 둔다.
-        MonsterKind kind = new MonsterKind(type, new List<SO_MonsterTrait>(traits), isBoss, isJackpot);
+        MonsterKind kind = new MonsterKind(type, traits, isBoss, isJackpot);
         _kinds.Add(kind);
         return kind;
     }

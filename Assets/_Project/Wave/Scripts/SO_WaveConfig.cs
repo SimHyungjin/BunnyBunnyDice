@@ -65,19 +65,23 @@ public sealed class SO_WaveConfig : SO_Config
 
     [Header("목록 뒤 (주기)")]
     [Tooltip("보스 사이 웨이브마다 차례로 붙는 특성(분노 → 재생 → 보호막 → 단단함 → 보스). 비우면 아래 무작위 규칙을 쓴다. " +
-             "웨이브마다 특성 하나가 뚜렷하게 나와야 다음 웨이브를 보고 색을 준비할 이유가 생긴다(2026-10-31).")]
+             "웨이브마다 특성 하나가 뚜렷하게 나와야 다음 웨이브를 보고 색을 준비할 이유가 생긴다(2026-10-31). 주기 웨이브는 한 종류만 나온다(2026-11-02). " +
+             "보스 웨이브의 일반 몬스터는 이 특성들을 하나씩 단 몬스터가 마리마다 무작위로 섞여 나온다.")]
     public List<SO_MonsterTrait> CycleTraits = new List<SO_MonsterTrait>();
     [Tooltip("이 웨이브부터 주기 특성에 무작위 특성(RandomTraits)을 더 붙인다.")]
     [Min(1)] public int CycleExtraFromWave = 6;
-    [Tooltip("더 붙는 무작위 특성 수(일반 몬스터 가지마다 따로 뽑는다).")]
+    [Tooltip("더 붙는 무작위 특성(보조 특성) 수. 웨이브 하나에 한 번 뽑아 그 웨이브 몬스터 모두가 같은 조합이다.")]
     [Min(0)] public int CycleExtraTraits = 1;
+    [Tooltip("보조 특성의 세기(1 = 특성 SO 값 그대로). 0.5면 재생·방어력·보호막 대수·분노를 절반만 받는다 — 웨이브의 주인공 특성이 뚜렷하게(2026-11-02 사용자). " +
+             "목표물 피해·경험치는 줄이지 않는다(MonsterKind).")]
+    [Range(0f, 1f)] public float CycleExtraStrength = 0.5f;
 
     [Header("목록 뒤 (무작위)")]
     [Tooltip("일반 몬스터에 무작위로 붙는 특성 후보(주기의 더 붙는 특성도 여기서 뽑는다).")]
     public List<SO_MonsterTrait> RandomTraits = new List<SO_MonsterTrait>();
-    [Tooltip("한 웨이브에 섞여 나오는 일반 몬스터 가짓수.")]
+    [Tooltip("한 웨이브에 섞여 나오는 일반 몬스터 가짓수(주기가 비었을 때만).")]
     [Min(1)] public int RandomVariants = 2;
-    [Tooltip("일반 몬스터 한 가지에 붙는 특성 수의 범위.")]
+    [Tooltip("일반 몬스터 한 가지에 붙는 특성 수의 범위(주기가 비었을 때만).")]
     [Min(0)] public int RandomTraitMin = 1;
     [Min(0)] public int RandomTraitMax = 2;
     [Tooltip("이 웨이브마다 보스가 나온다(5면 5·10·15…). 목록 안 웨이브는 목록의 HasBoss를 따른다.")]
