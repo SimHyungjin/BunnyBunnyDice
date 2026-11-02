@@ -13,6 +13,8 @@ public struct BotChoiceContext
     public bool HasCashOutTarget;
     /// <summary>화상 칩을 깔 자리가 있다 — 칩 없는 범위 주사위 중 아직 화상이 안 닿는 길을 새로 덮는 것.</summary>
     public bool HasBurnSpot;
+    /// <summary>지금 손패(증발형 전용 카드를 몇 장 쥐었는지 센다). 없으면 null.</summary>
+    public CardHand Hand;
 }
 
 /// <summary>
@@ -43,14 +45,15 @@ public static class BotCardChoice
 
     private static float Score(SO_BotConfig.ChoiceScores scores, HandCard card, in BotChoiceContext context)
     {
-        if (card.IsDice) return DiceScore(scores, card.Dice, context.MazeEnough);
+        if (card.IsDice) return DiceScore(scores, card.Dice, context.MazeEnough) * (card.Dice.Colors == DiceColor.Blue ? scores.BlueScale : 1f);
         if (card.IsHero) return scores.HeroStat;
         if (card.IsChip) return ChipScore(scores, card.Chip, context);
 
         SO_SkillCard skill = card.Skill;
         if (skill is SO_SkillCard_CashOut) return context.HasCashOutTarget ? scores.CashOut : 0f;
-        if (skill is SO_SkillCard_FullHouse || skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_CoinFlip
-            || skill is SO_SkillCard_DoubleUp || skill is SO_SkillCard_StackedDeck || skill is SO_SkillCard_HotStreak || skill is SO_SkillCard_BigStack) return scores.Exclusive;
+        if (IsTimedExclusive(skill))
+            return HeldCount(context.Hand, skill) >= scores.ExclusiveTimedMaxHeld ? scores.ExclusiveTimedExtra : scores.Exclusive;
+        if (skill is SO_SkillCard_CoinFlip || skill is SO_SkillCard_DoubleUp || skill is SO_SkillCard_StackedDeck || skill is SO_SkillCard_BigStack) return scores.Exclusive;
         if (skill is SO_EnemySkillCard) return scores.EnemySkill;
         if (skill is SO_SkillCard_Check) return scores.Check;
         if (skill is SO_SkillCard_Raise) return scores.Raise;
@@ -66,11 +69,12 @@ public static class BotCardChoice
     {
         if (dice.Faces >= 20)
         {
-            if (!mazeEnough) return scores.EarlyD20;
+            if (!mazeEnough) return BotDice.IsCoreAwaken(dice.Colors) ? scores.EarlyCoreD20 : scores.EarlyD20;
             return BotDice.IsArea(dice.Colors) ? scores.D20Area : scores.D20Single;
         }
         if (mazeEnough) return scores.LateDice;
         if (dice.Colors == DiceColor.Red) return scores.MazeDiceRed;
+        if (dice.Colors == DiceColors.All) return scores.MazeDiceWhite;
         if (dice.Colors == DiceColor.Blue || dice.Colors == (DiceColor.Red | DiceColor.Blue)) return scores.MazeDiceBlueMagenta;
         return scores.MazeDiceOther;
     }
@@ -86,6 +90,23 @@ public static class BotCardChoice
         if (chip is SO_ChipCard_Vulnerable) return context.HasVulnerable ? scores.DuplicateDebuffChip : scores.MissingDebuffChip;
         if (chip is SO_ChipCard_Damage || chip is SO_ChipCard_AttackSpeed) return scores.AttackChip;
         return scores.RangeChip;
+    }
+
+    // 증발형: 켜 둔 시간 동안만 세고 사라진다 — 여러 장 쥐어도 한 번에 하나씩이라 손에서 썩는다.
+    private static bool IsTimedExclusive(SO_SkillCard skill) =>
+        skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_HotStreak || skill is SO_SkillCard_FullHouse;
+
+    private static int HeldCount(CardHand hand, SO_SkillCard skill)
+    {
+        if (hand == null) return 0;
+        int count = 0;
+        for (int i = 0; i < hand.Count; i++)
+        {
+            HandCard card = hand.GetCard(i);
+            // 같은 카드는 한 뭉치로 겹쳐 있다(x2·x3).
+            if (card.IsSkill && card.Skill == skill) count += hand.GetStack(i);
+        }
+        return count;
     }
 
     private static float KindScale(SO_BotConfig.RunSet set, HandCard card)

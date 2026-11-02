@@ -31,6 +31,9 @@ public sealed class BotBatchReport
         public string Maze;
         public int WaveCleared;
         public int FirstLeak;
+        // 처음 각성한 웨이브(아무 색 / 빨강·초록·하양). 없으면 -1.
+        public int FirstAwaken = -1;
+        public int FirstCoreAwaken = -1;
         public float Minutes;
         public float Hero, Skill, Single, Area, Basic;
         public float RaiseHero, RaiseCard, Ride;
@@ -60,6 +63,8 @@ public sealed class BotBatchReport
             string name = DamageSource.NameOf(i).ToLowerInvariant();
             builder.Append(',').Append(name).Append("_pct,").Append(name).Append("_dice,").Append(name).Append("_pips");
         }
+        // 예전 요약과 열 위치가 어긋나지 않게 맨 끝에 붙인다. 각성하지 못한 판은 빈칸(평균에서 빠진다).
+        builder.Append(",first_awaken,first_core_awaken");
         return builder.ToString();
     }
 
@@ -70,9 +75,12 @@ public sealed class BotBatchReport
     public void Clear() => _runs.Clear();
 
     /// <summary>한 판을 더한다. records는 그 판의 웨이브 기록(WaveLog.Records), stages는 능력치 단계("5-6-3-5-1-2").</summary>
-    public void Add(IReadOnlyList<WaveRecord> records, string character, string set, string stages, int seed, int waveCleared, string maze)
+    /// <param name="firstAwaken">처음 각성한 웨이브(없으면 -1). firstCoreAwaken은 빨강·초록·하양만(BotDice.IsCoreAwaken).</param>
+    public void Add(IReadOnlyList<WaveRecord> records, string character, string set, string stages, int seed, int waveCleared, string maze,
+        int firstAwaken, int firstCoreAwaken)
     {
-        Run run = new Run { Set = set, Character = character, Stages = stages, Seed = seed, Maze = maze, WaveCleared = waveCleared, FirstLeak = -1 };
+        Run run = new Run { Set = set, Character = character, Stages = stages, Seed = seed, Maze = maze, WaveCleared = waveCleared, FirstLeak = -1,
+            FirstAwaken = firstAwaken, FirstCoreAwaken = firstCoreAwaken };
         float total = 0f;
         float seconds = 0f;
         for (int r = 0; r < records.Count; r++)
@@ -152,6 +160,8 @@ public sealed class BotBatchReport
         Run sum = new Run();
         float leakSum = 0f;
         int leakRuns = 0;
+        float awakenSum = 0f, coreSum = 0f;
+        int awakenRuns = 0, coreRuns = 0;
         for (int i = 0; i < _runs.Count; i++)
         {
             Run run = _runs[i];
@@ -186,6 +196,8 @@ public sealed class BotBatchReport
             sum.PickSkill += run.PickSkill;
             sum.PickChip += run.PickChip;
             sum.PickHero += run.PickHero;
+            if (run.FirstAwaken >= 0) { awakenSum += run.FirstAwaken; awakenRuns++; }
+            if (run.FirstCoreAwaken >= 0) { coreSum += run.FirstCoreAwaken; coreRuns++; }
             if (run.FirstLeak < 0) continue;
             leakSum += run.FirstLeak;
             leakRuns++;
@@ -212,6 +224,8 @@ public sealed class BotBatchReport
         AppendOffers(builder, sum, n, invariant);
         AppendEnemySkills(builder, sum, n, invariant);
         AppendColors(builder, sum, n, invariant);
+        builder.Append(',').Append(awakenRuns > 0 ? (awakenSum / awakenRuns).ToString("0.0", invariant) : "")
+            .Append(',').Append(coreRuns > 0 ? (coreSum / coreRuns).ToString("0.0", invariant) : "");
         builder.Append('\n');
 
         string path = Path.Combine(Application.persistentDataPath, "RunLogs", $"bot_summary_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
@@ -256,6 +270,8 @@ public sealed class BotBatchReport
         AppendOffers(builder, run, 1f, invariant);
         AppendEnemySkills(builder, run, 1f, invariant);
         AppendColors(builder, run, 1f, invariant);
+        builder.Append(',').Append(run.FirstAwaken >= 0 ? run.FirstAwaken.ToString(invariant) : "")
+            .Append(',').Append(run.FirstCoreAwaken >= 0 ? run.FirstCoreAwaken.ToString(invariant) : "");
         builder.Append('\n');
     }
 

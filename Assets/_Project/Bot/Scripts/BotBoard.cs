@@ -25,6 +25,9 @@ public sealed class BotBoard
 
     /// <summary>메인 딜 구간의 중심 칸(길 위). 길이 없으면 HasKillZone이 false.</summary>
     public Vector2Int KillZone { get; private set; }
+
+    /// <summary>정해 둔 딜 구역 중심(BotKillBox — 판 시작 때 정해 끝까지 유지). 있으면 몰림으로 찾지 않고 이 칸을 쓴다.</summary>
+    public Vector2Int? FixedKillZone { get; set; }
     public bool HasKillZone { get; private set; }
     /// <summary>메인 딜 구간 중심에서 목표물까지의 칸 수 — 이보다 가까운 적은 구간을 넘어왔다.</summary>
     public int KillZoneDistance { get; private set; }
@@ -75,7 +78,13 @@ public sealed class BotBoard
                 distance--;
             }
         }
-        FindKillZone(killZoneRadius);
+        if (FixedKillZone.HasValue && DistanceAt(FixedKillZone.Value) >= 0)
+        {
+            KillZone = FixedKillZone.Value;
+            HasKillZone = true;
+            KillZoneDistance = DistanceAt(KillZone);
+        }
+        else FindKillZone(killZoneRadius);
         return true;
     }
 

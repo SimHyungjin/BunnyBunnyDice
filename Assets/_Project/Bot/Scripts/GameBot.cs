@@ -45,6 +45,7 @@ public sealed partial class GameBot : IDisposable
     private readonly Action _retry;
     private readonly MazePlanner _planner;
     private readonly BotBoard _board = new BotBoard();
+    private readonly BotKillBox _killBox = new BotKillBox();
     private readonly BotEscape _escape = new BotEscape();
     private readonly BotBatchReport _report = new BotBatchReport();
     private readonly List<int> _targets = new List<int>();
@@ -57,6 +58,9 @@ public sealed partial class GameBot : IDisposable
 
     private float _actTimer;
     private float _heroTimer;
+    // 이번 판에 처음 각성한 웨이브(아무 색·빨강/초록/하양) — 요약에 남겨 각성이 얼마나 빨리 오는지 본다(사용자: 초반 빨강·초록·하양 각성이 판을 가른다). 없으면 -1.
+    private int _firstAwaken = -1;
+    private int _firstRgwAwaken = -1;
     private float _retryTimer = -1f;
     private bool _hasHeroCell;
     private Vector2Int _heroCell;
@@ -257,6 +261,26 @@ public sealed partial class GameBot : IDisposable
         _actTimer = 0f;
         _heroTimer = 0f;
         _hasHeroCell = false;
+        _firstAwaken = -1;
+        _firstRgwAwaken = -1;
+    }
+
+    // 판 위 각성 주사위를 보고 첫 각성 웨이브를 적는다(손을 쓸 때마다 — 각성은 놓기·얹기로만 생긴다).
+    private void NoteAwakenings()
+    {
+        if (_firstRgwAwaken >= 0) return;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            DiceState dice = placed[i].Dice;
+            if (!_statsConfig.IsAwakened(dice)) continue;
+            if (_firstAwaken < 0) _firstAwaken = _getWave();
+            if (BotDice.IsCoreAwaken(dice.Colors))
+            {
+                _firstRgwAwaken = _getWave();
+                return;
+            }
+        }
     }
 
     /// <summary>판이 끝났다. 켜져 있으면 요약에 더하고, 정한 판 수를 채웠으면 요약을 남기고 멈추고, 아니면 잠시 뒤 다시 한다.</summary>
@@ -268,7 +292,7 @@ public sealed partial class GameBot : IDisposable
         SO_BotConfig.RunSet played = CurrentSet(_report.Count);
         _report.Add(records, _heroStats.Character != null ? _heroStats.Character.name : "", played != null ? played.Label : "", StagesText(), seed, waveCleared,
             // 요약 열(maze)은 예전 기록과 나란히 보려고 남긴다 — 지금은 늘 내다본 최선이다.
-            "Planned");
+            "Planned", _firstAwaken, _firstRgwAwaken);
         bool runSets = _savedStages != null;
         bool done = runSets ? CurrentSet(_report.Count) == null
             : _config.RotateCharacters ? RotationCharacter(_report.Count) == null
@@ -300,9 +324,9 @@ public sealed partial class GameBot : IDisposable
 
     private int ChooseLevelUp(IReadOnlyList<HandCard> candidates, IReadOnlyList<int> copies)
     {
-        BotChoiceContext context = new BotChoiceContext { MazeEnough = MazeEnough() };
+        BotChoiceContext context = new BotChoiceContext { MazeEnough = MazeEnough(), Hand = _hand };
         MapData map = _getMap();
-        if (map != null && _board.Read(map, _config.KillZoneRadius))
+        if (map != null && ReadBoard(map))
         {
             context.HasSlow = HasZoneChip<SO_ChipCard_Slow>();
             context.HasFreeze = HasZoneChip<SO_ChipCard_Freeze>();
@@ -331,8 +355,22 @@ public sealed partial class GameBot : IDisposable
         return false;
     }
 
-    // 미로를 다 지었는지 — 목표 배치에 놓을 칸이 남지 않았으면 다 지은 것이다.
-    private bool MazeBuilt() => !_planner.HasPlannedCell();
+    // 미로를 다 지었는지 — 딜 구역 모드면 막을 칸을 다 막았는지, 아니면 목표 배치에 놓을 칸이 남지 않았는지.
+    private bool MazeBuilt() => UsesKillBox() ? KillBoxCutDone() : !_planner.HasPlannedCell();
+
+    private bool UsesKillBox() => _config.KillBoxMode && _killBox.Planned && _killBox.Map == _getMap();
+
+    // 판을 읽기 전에 딜 구역을 정해 둔다(판마다 한 번). 정하지 못하면 몰림으로 찾는다(원래 방식).
+    private bool ReadBoard(MapData map)
+    {
+        if (_config.KillBoxMode && _killBox.Map != map)
+        {
+            _killBox.Plan(map, _config.KillBoxRadius, _config.KillBoxCutCost, _config.KillBoxDwellWeight);
+            _board.FixedKillZone = _killBox.Planned ? _killBox.Center : (Vector2Int?)null;
+        }
+        else if (!_config.KillBoxMode) _board.FixedKillZone = null;
+        return _board.Read(map, _config.KillZoneRadius);
+    }
 
     // 다시 하기는 실제 시간으로 기다린다 — 판이 끝난 뒤라 게임 시간이 멈춰 있어도 넘어가게.
     private void Tick(float deltaTime)
@@ -361,11 +399,12 @@ public sealed partial class GameBot : IDisposable
         {
             _actTimer = _config.ActInterval;
             PlayOneCard(map);
+            NoteAwakenings();
         }
         _heroTimer -= deltaTime;
         if (_heroTimer <= 0f)
         {
-            _heroTimer = _config.HeroInterval;
+            _heroTimer = _config.HotStreakHop && _skills.HotStreakActive ? _config.HotStreakHeroInterval : _config.HeroInterval;
             MoveHero(map);
         }
     }
@@ -373,7 +412,7 @@ public sealed partial class GameBot : IDisposable
     // 손패에서 쓸 수 있는 카드 한 장을 쓴다. 주사위가 먼저(미로), 그다음 칩·스킬.
     private void PlayOneCard(MapData map)
     {
-        if (!_board.Read(map, _config.KillZoneRadius)) return;
+        if (!ReadBoard(map)) return;
         // 캐시 아웃는 채울 주사위보다 먼저 쓴다 — 주사위를 먼저 놓으면 손에 채울 것이 남지 않아 캐시 아웃를 쓸 때가 오지 않았다.
         for (int i = 0; i < _hand.Count; i++)
         {

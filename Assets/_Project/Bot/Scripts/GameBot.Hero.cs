@@ -12,10 +12,42 @@ public sealed partial class GameBot
     //    없으면 구역 안에서 가장 앞선 적, 적이 없으면 구역 앞에서 기다린다. 영웅이 주 딜이라 취약(+30%)이 묻는 곳에서 때려야 한다.
     private void MoveHero(MapData map)
     {
-        if (_hero.Held || !_board.Read(map, _config.KillZoneRadius)) return;
+        if (_hero.Held || !ReadBoard(map)) return;
+        // 핫 스트릭: 켜진 동안 밟은 주사위마다 레이즈가 걸린다 — 아직 안 걸린 센 주사위를 가까운 순으로 밟고 다닌다.
+        if (_config.HotStreakHop && _skills.HotStreakActive)
+        {
+            if (FindHotStreakStep(out Vector2Int step) && _hero.MoveTo(step))
+            {
+                _hasHeroCell = true;
+                _heroCell = step;
+            }
+            return;
+        }
         SO_SkillCard_Raise raise = _heroRaise();
         float damageScale = 1f, speedScale = 1f;
         raise?.GetScales(_traits, out damageScale, out speedScale);
+        // 각성한 빨강·초록 사거리 안에 적이 오면 바로 올라탄다(사용자) — 보스가 들어온 주사위가 먼저.
+        if (raise != null && _config.RideAwakenedInRange && FindAwakenedRide(out Vector2Int awakenedRide))
+        {
+            if (_hasHeroCell && awakenedRide == _heroCell) return;
+            if (_hero.MoveTo(awakenedRide))
+            {
+                _hasHeroCell = true;
+                _heroCell = awakenedRide;
+            }
+            return;
+        }
+        // 보스 정리: 보스를 사거리에 넣는 가장 센 주사위(각성한 빨강·초록 먼저)에 올라타 레이즈를 건다(사용자).
+        if (raise != null && _config.BossFocus && TryFindBossInReach(out Vector2 bossAt) && FindBossDice(bossAt, false, out Vector2Int bossRide))
+        {
+            if (_hasHeroCell && bossRide == _heroCell) return;
+            if (_hero.MoveTo(bossRide))
+            {
+                _hasHeroCell = true;
+                _heroCell = bossRide;
+            }
+            return;
+        }
         if (raise != null && FindRaiseTarget(damageScale, speedScale, float.MaxValue, false, out Vector2Int ride))
         {
             if (_hasHeroCell && ride == _heroCell) return;
@@ -80,5 +112,56 @@ public sealed partial class GameBot
             best = route[i];
         }
         return best;
+    }
+
+    // 핫 스트릭으로 다음에 밟을 주사위: 레이즈가 안 걸린 주사위 중 (눈 × 색 × 각성 × 몰림) ÷ (1 + 거리 × 몫)이 가장 큰 곳.
+    private bool FindHotStreakStep(out Vector2Int cell)
+    {
+        cell = default;
+        float best = 0f;
+        Vector2 from = _hero.Position;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            DiceState dice = placed[i].Dice;
+            Vector2Int at = placed[i].Cell;
+            if (dice.IsSpent || _skills.IsDiceRaised(at)) continue;
+            float range = RangeAt(at, dice.Colors, _chips.GetSet(at));
+            float value = (1f + dice.Pips) * ColorWeight(dice.Colors) * (_statsConfig.IsAwakened(dice) ? _config.AwakenStackWeight : 1f)
+                * (1f + _board.Traffic(at, range));
+            float score = value / (1f + Vector2.Distance(from, at) * _config.HotStreakDistanceCost);
+            if (score <= best) continue;
+            best = score;
+            cell = at;
+        }
+        return best > 0f;
+    }
+
+    // 각성한 빨강·초록 중 사거리 안 적이 가장 많은 주사위(보스 하나는 20마리로 친다 — 보스가 들어온 주사위가 먼저). 사거리 안에 적이 없으면 false.
+    private bool FindAwakenedRide(out Vector2Int cell)
+    {
+        const float bossWeight = 20f;
+        cell = default;
+        float best = 0f;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        MonsterState[] states = _monsters.States;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            DiceState dice = placed[i].Dice;
+            if (dice.IsSpent || !_statsConfig.IsAwakened(dice) || (dice.Colors != DiceColor.Red && dice.Colors != DiceColor.Green)) continue;
+            Vector2Int at = placed[i].Cell;
+            float range = RangeAt(at, dice.Colors, _chips.GetSet(at));
+            float sqr = range * range;
+            float score = 0f;
+            for (int m = 0; m < _monsters.Count; m++)
+            {
+                if (!states[m].IsAlive || (states[m].Position - (Vector2)at).sqrMagnitude > sqr) continue;
+                score += _monsters.KindOf(m).IsBoss ? bossWeight : 1f;
+            }
+            if (score <= best) continue;
+            best = score;
+            cell = at;
+        }
+        return best > 0f;
     }
 }

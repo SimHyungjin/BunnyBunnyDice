@@ -123,6 +123,29 @@ public sealed class MazePlanner : IDisposable
         return best > float.MinValue;
     }
 
+    /// <summary>
+    /// 다음에 놓을 새 칸을 cost가 가장 작은 칸으로 고른다(목표 배치 중 지금 놓을 수 있는 칸만). 봇이 목표물 가까운 칸부터 지을 때 쓴다 —
+    /// 점수 순(TryGetNext)은 길을 가장 늘리는 먼 칸부터라, 미로가 덜 지어진 초반엔 목표물 앞 뚫린 길이 그대로 남았다(2026-11-02 사용자).
+    /// </summary>
+    public bool TryGetNextBy(Func<Vector2Int, bool> allow, Func<Vector2Int, float> cost, out Vector2Int cell)
+    {
+        cell = default;
+        MapData map = _getMap();
+        if (map == null) return false;
+        float best = float.MaxValue;
+        for (int i = 0; i < _best.Count; i++)
+        {
+            Vector2Int candidate = _best[i];
+            if (allow != null && !allow(candidate)) continue;
+            if (DicePlacement.Check(map, candidate) != PlacementResult.Ok) continue;
+            float value = cost(candidate);
+            if (value >= best) continue;
+            best = value;
+            cell = candidate;
+        }
+        return best < float.MaxValue;
+    }
+
     /// <summary>목표 배치 중 아직 놓을 수 있는 칸이 남았는지(내다보는 봇이 새 칸 대신 얹기로 넘어가는 기준).</summary>
     public bool HasPlannedCell()
     {

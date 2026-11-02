@@ -31,6 +31,12 @@ public sealed class SO_BotConfig : SO_Config
         public float MazeBurnChip = 280f;
         [Tooltip("미로를 짓는 동안의 d20(미로가 먼저라 낮다).")]
         public float EarlyD20 = 150f;
+        [Tooltip("미로를 짓는 동안의 빨강·초록·하양 d20 — 초반 각성(빨강 = 모든 공격 치명, 초록 = 이어 맞힐수록 세짐, 하양 = 파동 두 겹)이 판을 가른다(2026-11-02 사용자). 미로 주사위만큼 친다.")]
+        public float EarlyCoreD20 = 300f;
+        [Tooltip("하양 d6·d12 — 큰 고정 피해 범위라 초반에 매우 중요하다(2026-11-02 사용자: 보스는 흘려도 하양이 초반을 막는다).")]
+        public float MazeDiceWhite = 300f;
+        [Tooltip("파랑 주사위(단색) 점수에 곱한다 — 보스를 거의 못 잡는다(2026-11-02 사용자).")]
+        [Range(0f, 1f)] public float BlueScale = 0.7f;
         [Tooltip("미로를 짓는 동안의 화상 말고 다른 칩(디버프·빨강·초록·사거리) — 메인 딜 구간 칩이라 미로가 먼저다.")]
         public float EarlyChip = 120f;
         [Header("미로를 어느 정도 지은 뒤")]
@@ -60,6 +66,10 @@ public sealed class SO_BotConfig : SO_Config
         public float CashOut = 250f;
         [Tooltip("그 밖의 캐릭터 전용 카드(풀 하우스·브레이크 샷·스네이크 아이즈·더블 업) — 판을 뒤집는 카드라 높게.")]
         public float Exclusive = 300f;
+        [Tooltip("증발형 전용 카드(잠깐 켜졌다 사라지는 것 — 브레이크 샷·핫 스트릭·풀 하우스)는 손에 이만큼 있으면 더 고르지 않는다(ExclusiveTimedExtra 점수). "
+            + "누적형(빅 스택·더블 업·코인 플립·스택 덱 — 남거나 쌓이는 것)은 늘 Exclusive(2026-11-02 사용자: 증발형은 1~2장, 누적형은 웬만하면 계속).")]
+        [Min(0)] public int ExclusiveTimedMaxHeld = 2;
+        public float ExclusiveTimedExtra = 50f;
     }
 
     /// <summary>
@@ -105,6 +115,61 @@ public sealed class SO_BotConfig : SO_Config
     [Header("미로·얹기")]
     [Tooltip("얹은 뒤 범위 주사위(섞인 색·하양)가 되는 자리면 점수에 곱한다 — 몰리는 곳의 범위 주사위를 키운다(사용자 플레이).")]
     [Min(0f)] public float AreaStackWeight = 1.5f;
+    [Tooltip("켜면 미로 계획 칸을 목표물에 가까운 칸부터 놓는다(메인 딜 구간 칸을 남기는 규칙보다 먼저) — 멀리서부터 막으면 초반에 목표물 앞 길이 뚫린 채 남았다(2026-11-02 사용자). "
+        + "끄면 놓았을 때 길을 가장 늘리는 칸부터.")]
+    public bool MazeNearGoalFirst = true;
+    [Tooltip("켜면 미로용 주사위(d6·d12)는 목표물의 네 면 중 세 면을 먼저 막는다(열어 둘 면은 길이 가장 길어지는 쪽) — 거기서 뻗어 나간다(2026-11-02 사용자: 쓸모없는 배치가 많다).")]
+    public bool GoalWallFirst = true;
+
+    [Header("딜 몰빵 구역")]
+    [Tooltip("켜면 판 시작 때 딜 구역을 정한다 — 길을 가장 적은 주사위로 하나로 모을 수 있고 그 둘레에 주사위를 많이 놓을 수 있는 칸(BotKillBox). "
+        + "미로 계획 대신 막을 칸으로 길을 모으고 둘레에 몰빵한다(2026-11-03 사용자: 미로는 신경 쓰지 않는다).")]
+    public bool KillBoxMode = true;
+    [Tooltip("딜 구역 둘레 반경(칸) — 그 안의 지을 수 있는 칸을 센다.")]
+    [Min(1f)] public float KillBoxRadius = 2.5f;
+    [Tooltip("길을 모으는 데 드는 주사위 하나를 둘레 몇 칸으로 칠지 — 클수록 적게 막는 자리를 고른다.")]
+    [Min(0f)] public float KillBoxCutCost = 3f;
+    [Tooltip("모은 길이 딜 구역 안에서 걷는 칸 하나를 둘레 몇 칸으로 칠지 — 클수록 적이 구역에 오래 머무는 자리를 고른다(사용자: 모은 길이 딜할 시간은 줘야 한다).")]
+    [Min(0f)] public float KillBoxDwellWeight = 2f;
+    [Tooltip("켜면 길을 모은 뒤의 주사위·칩은 딜 점수(디버프 묻은 적이 딜 사거리 안에서 받는 피해 — GameBot.DamageScore)를 가장 많이 올리는 자리에 놓는다(2026-11-03 사용자).")]
+    public bool KillBoxScorePlace = true;
+    [Tooltip("딜 점수: 적이 초당 걷는 칸 수(디버프가 사거리를 벗어난 뒤 몇 칸 남는지, 한 칸에 머무는 시간).")]
+    [Min(0.1f)] public float ModelEnemySpeed = 1.2f;
+    [Tooltip("딜 점수: 최대 체력 피해를 고정 피해로 바꿀 때의 기준 체력 — 클수록 퍼뎀 주사위를 높게 친다.")]
+    [Min(0f)] public float ModelRefHealth = 1000f;
+    [Tooltip("딜 점수: 새 칸 후보를 딜 구역 반경보다 이만큼(칸) 더 넓게 본다.")]
+    [Min(0f)] public float ModelSearchMargin = 2f;
+
+    [Header("보스 정리")]
+    [Tooltip("켜면 보스가 메인 딜 구간 근처(구간 중심 + BossReach칸)에 오면 보스를 정리한다 — 영웅·레이즈 카드는 보스를 사거리에 넣는 주사위(각성한 빨강·초록 먼저)에, "
+        + "적 대상 스킬·화력 전용 카드는 뚫릴 때를 기다리지 않고 바로(2026-11-02 사용자: 보스 정리의 핵심은 빨강·초록 각성, 레이즈, 칩, 스킬).")]
+    public bool BossFocus = true;
+    [Min(0)] public int BossReach = 2;
+    [Tooltip("켜면 각성한 빨강·초록 주사위의 사거리 안에 적이 들어오면 영웅이 바로 그 주사위에 올라탄다(보스면 먼저) — 사용자 판 교본(2026-11-02). "
+        + "각성 주사위는 눈이 느리게 깎인다(SO_HeroConfig.RaiseAwakenPipInterval).")]
+    public bool RideAwakenedInRange = true;
+
+    [Header("핫 스트릭")]
+    [Tooltip("켜면 핫 스트릭이 켜진 동안 영웅이 레이즈가 안 걸린 주사위를 차례로 밟는다(밟은 주사위에 레이즈) — 센 주사위(각성한 빨강·초록·하양, 몰림 큰 곳)를 가까운 순으로(2026-11-02 사용자).")]
+    public bool HotStreakHop = true;
+    [Tooltip("다음 주사위를 고를 때 거리(칸)마다 점수를 나누는 몫 — 클수록 가까운 주사위부터 훑는다.")]
+    [Min(0f)] public float HotStreakDistanceCost = 0.5f;
+    [Tooltip("핫 스트릭 동안 영웅이 다음 주사위를 다시 고르는 간격(초, 게임 시간) — 평소(HeroInterval)보다 짧게.")]
+    [Min(0.05f)] public float HotStreakHeroInterval = 0.25f;
+    [Tooltip("얹은 뒤 빨강·초록·하양이 되는 자리면 점수에 곱한다(범위 배율 대신 — 하양은 이것만). 초반 각성의 주인공 색이다(2026-11-02 사용자).")]
+    [Min(0f)] public float CoreColorWeight = 2f;
+    [Tooltip("얹은 뒤 하양이 되는 자리의 배율(CoreColorWeight 대신). 하양은 초반을 막지만 최대 체력 피해가 없어 보스에 약하다 — 보스를 정리할 빨강·초록 각성보다 낮게(2026-11-02 사용자).")]
+    [Min(0f)] public float WhiteColorWeight = 1.5f;
+    [Tooltip("얹은 뒤 파랑(단색)이 되는 자리면 점수에 곱한다 — 보스를 거의 못 잡는다.")]
+    [Min(0f)] public float BlueColorWeight = 0.5f;
+    [Tooltip("얹어서 각성하는 자리면 점수에 곱한다.")]
+    [Min(1f)] public float AwakenStackWeight = 4f;
+    [Tooltip("켜면 d20은 빈 칸보다 각성 전인 빨강·초록·하양 d20에 먼저 얹는다(색이 그대로 남을 때만) — 눈을 한 주사위에 모아 일찍 각성시킨다. "
+        + "미로를 짓는 동안의 d6·d12도 그 주사위를 각성시키는 자리면 미로보다 먼저 얹는다.")]
+    public bool StackForAwaken = true;
+    [Tooltip("켜면 미로를 짓는 동안의 d6·d12도 바로 각성하지 않아도 그 d20에 모은다(색이 그대로 남을 때만) — 3~6웨이브 고비 전에 각성을 앞당긴다. "
+        + "끄면 이번에 얹어 바로 각성할 때만.")]
+    public bool FeedAwakenEarly = true;
 
     [Header("손")]
     [Tooltip("카드 한 장을 쓰는 간격(초, 게임 시간) — 손이 느린 사람 정도.")]

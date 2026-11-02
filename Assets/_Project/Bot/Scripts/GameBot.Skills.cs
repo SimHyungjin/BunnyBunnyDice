@@ -16,13 +16,18 @@ public sealed partial class GameBot
         if (skill is SO_SkillCard_DoubleUp) return CastBoard(skill);
         if (skill is SO_SkillCard_CoinFlip) return CastBoard(skill);
         if (skill is SO_SkillCard_StackedDeck) return CountHandSkills() >= _config.StackedDeckMinSkills && CastBoard(skill);
-        // 화력 카드(풀 하우스·브레이크 샷·핫 스트릭)는 다른 스킬처럼 뚫릴 때.
-        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_HotStreak) return Breached(out _) && CastBoard(skill);
-        if (skill is SO_SkillCard_FullHouse) return Breached(out _) && TryCastFullHouse(skill);
-        if (skill is SO_SkillCard_Raise raise) return TryCastRaise(raise);
+        // 보스 정리: 보스가 구간 근처면 화력·레이즈·적 대상 스킬을 보스에 쏟는다(사용자).
+        Vector2 bossAt = default;
+        bool boss = _config.BossFocus && TryFindBossInReach(out bossAt);
+        // 화력 카드(풀 하우스·브레이크 샷·핫 스트릭)는 다른 스킬처럼 뚫릴 때, 또는 보스를 정리할 때.
+        if (skill is SO_SkillCard_BreakShot || skill is SO_SkillCard_HotStreak) return (boss || Breached(out _)) && CastBoard(skill);
+        if (skill is SO_SkillCard_FullHouse) return (boss || Breached(out _)) && TryCastFullHouse(skill);
+        if (skill is SO_SkillCard_Raise raise) return boss ? TryCastRaiseOnBoss(raise, bossAt) || TryCastRaise(raise) : TryCastRaise(raise);
         if (skill.Target == SkillTarget.Dice) return TryCastOnDice(skill);
         SO_BotConfig.RunSet set = CurrentSet(_report.Count);
         if (set != null && set.DamageSkillAnytime && skill is SO_EnemySkillCard anytime) return TryCastAnytime(anytime);
+        // 보스가 딜 구역에 들어왔을 때 적 대상 스킬(체크메이트 포함)을 쏟는다 — 멀리서 깎으면 재생으로 돌아온다(사용자).
+        if (boss && skill is SO_EnemySkillCard bossSkill && !(skill is SO_SkillCard_Check)) return TryCastAt(bossSkill);
         if (!Breached(out bool bossBreaching)) return false;
         // 체크메이트: 보스가 뚫으려 하면 바로, 아니면 다른 적 대상 스킬처럼 떼가 넘어올 때.
         if (skill is SO_SkillCard_Checkmate && bossBreaching) return TryCastAt((SO_EnemySkillCard)skill);
@@ -38,6 +43,52 @@ public sealed partial class GameBot
         if (!FindRaiseTarget(damageScale, speedScale, card.Duration, true, out Vector2Int cell)) return false;
         _skills.CastOnCell(cell, card);
         return true;
+    }
+
+    // 보스 정리용 레이즈 카드: 보스를 사거리에 넣는 주사위 중 가장 센 곳(영웅이 올라탄 주사위는 빼고 — 겹쳐 세지지 않는다).
+    private bool TryCastRaiseOnBoss(SO_SkillCard_Raise card, Vector2 bossAt)
+    {
+        if (!FindBossDice(bossAt, true, out Vector2Int cell)) return false;
+        _skills.CastOnCell(cell, card);
+        return true;
+    }
+
+    // 보스가 메인 딜 구간 중심 + BossReach칸 안에 있으면 그 자리. 여럿이면 목표물에 가장 가까운 보스.
+    private bool TryFindBossInReach(out Vector2 position)
+    {
+        position = default;
+        int nearest = int.MaxValue;
+        MonsterState[] states = _monsters.States;
+        for (int i = 0; i < _monsters.Count; i++)
+        {
+            if (!states[i].IsAlive || !_monsters.KindOf(i).IsBoss) continue;
+            int distance = _board.DistanceAt(Vector2Int.RoundToInt(states[i].Position));
+            if (distance < 0 || distance > _board.KillZoneDistance + _config.BossReach || distance >= nearest) continue;
+            nearest = distance;
+            position = states[i].Position;
+        }
+        return nearest != int.MaxValue;
+    }
+
+    // 보스를 사거리에 넣는 주사위 중 보스를 가장 잘 깎을 곳: 각성한 빨강·초록·하양 > 눈 많은 주사위. 다 쓴(눈이 바닥난) 주사위는 뺀다.
+    private bool FindBossDice(Vector2 bossAt, bool excludeHero, out Vector2Int cell)
+    {
+        cell = default;
+        float best = 0f;
+        IReadOnlyList<PlacedDice> placed = _diceField.Placed;
+        for (int i = 0; i < placed.Count; i++)
+        {
+            DiceState dice = placed[i].Dice;
+            Vector2Int at = placed[i].Cell;
+            if (dice.IsSpent || (excludeHero && _hasHeroCell && at == _heroCell)) continue;
+            float range = RangeAt(at, dice.Colors, _chips.GetSet(at));
+            if ((bossAt - (Vector2)at).sqrMagnitude > range * range) continue;
+            float score = (1f + dice.Pips) * ColorWeight(dice.Colors) * (_statsConfig.IsAwakened(dice) ? _config.AwakenStackWeight : 1f);
+            if (score <= best) continue;
+            best = score;
+            cell = at;
+        }
+        return best > 0f;
     }
 
     // 빠져나갈 적을 잡을 레이즈 자리. excludeHero면 영웅이 올라탄 주사위는 뺀다(카드는 겹쳐 세지지 않는다).

@@ -13,6 +13,9 @@ public sealed partial class GameBot
     private bool TryPlaceChip(MapData map, HandCard card)
     {
         SO_ChipCard chip = card.Chip;
+        // 딜 구역 모드: 딜 점수를 가장 많이 올리는 주사위 밑(입구의 디버프, 센 주사위의 공격 칩 — 사용자). 화상은 지속 피해라 점수에 없어 원래대로.
+        if (UsesKillBox() && _config.KillBoxScorePlace && !(chip is SO_ChipCard_Burn) && TryPlaceByScore(map, card, out Vector2Int scored))
+            return _placement.TryPlace(map, scored, card);
         Vector2Int target;
         bool found;
         if (chip is SO_ChipCard_Burn) found = TryFindBurnCell(out target);
@@ -59,7 +62,9 @@ public sealed partial class GameBot
             if (chip is SO_ChipCard_Damage && dice.Colors == DiceColor.Red) continue;
             float range = RangeAt(at, dice.Colors, default);
             int tier = CoversKillZone(at, range) ? 1 : 0;
-            float score = _board.Traffic(at, range) * (1f + dice.Pips) * (BotDice.IsArea(dice.Colors) ? _config.AreaStackWeight : 1f);
+            // 빨강·초록·하양(각성했으면 더)이 먼저 — 보스 정리의 핵심이 각성한 빨강·초록 + 칩이다(2026-11-02 사용자).
+            float score = _board.Traffic(at, range) * (1f + dice.Pips) * ColorWeight(dice.Colors)
+                * (_statsConfig.IsAwakened(dice) ? _config.AwakenStackWeight : 1f);
             if (tier < bestTier || (tier == bestTier && score <= best)) continue;
             bestTier = tier;
             best = score;
