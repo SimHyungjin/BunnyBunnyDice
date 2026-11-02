@@ -24,4 +24,4 @@ MonoBehaviour:
   AttackSpeedGrowth: 0
   Range: 5.5
   MaxHealthDamage: 0.01
-  FarDamagePerCell: 0.3
+  FarDamagePerCell: 1

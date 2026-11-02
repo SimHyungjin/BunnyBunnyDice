@@ -23,5 +23,5 @@ MonoBehaviour:
   AttackSpeed: 3.4
   AttackSpeedGrowth: 0.25
   Range: 3.5
-  MaxHealthDamage: 0.002
+  MaxHealthDamage: 0.0015
   FocusBonusPerHit: 0.02
