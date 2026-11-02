@@ -59,6 +59,7 @@
 - `Show*`에 `AssetLifetime`을 넘긴다. 씬 전환(`UIManager.Clear`) 때 Scene 수명 UI는 즉시 닫히고 Persistent는 남는다(Transition 기본값은 Persistent).
 - `UI_Panel`의 `OnOpenEvent`/`OnCloseEvent`는 **표시 단위** 구독이라 반납 시 지워진다. 매번 해야 하는 처리는 `Open`/`Close` override나 `OnDespawned`에 둔다.
 - 연출(`UI_Animation`)은 프리팹에 저작된 위치·크기(`RestAnchoredPosition`/`RestScale`)를 기준으로 하며, `PlayIn`/`PlayOut`은 끝까지 재생됐는지(bool)를 돌려준다. 팝업은 닫기 연출이 끊기면 닫기 처리를 하지 않는다.
+- **클릭 소리**: `UI_Panel`이 열릴 때(그리고 한 프레임 뒤 — 연 직후 복제로 만든 버튼까지) 안의 `Button`에 `SO_CoreConfig.UIClickSound`를 한 번씩 붙인다. 프리팹마다 달 것이 없다. 비우면 조용하다.
 - **뒤로가기**: 코어 입력 모듈 `CoreBackInput`(ESC·Android 뒤로가기, 부팅 때 켜짐, `SO_CoreConfig.EnableBackInput`)이 `App.HandleBackPressed()`로 보낸다 → 맨 위 팝업(`CloseOnBack`이 꺼져 있으면 닫지 않고 소비) → 없으면 `AppState.OnBackPressed`. 팝업마다 등록할 것은 없다.
 
 ## Audio
@@ -67,8 +68,9 @@
   - 오브젝트는 큐를 `[SerializeField]`로 직접 참조한다.
   - 코드가 이름으로 부르는 소리(UI 클릭 등)는 게임 쪽에 큐를 필드로 모은 SO를 둔다(오타는 컴파일 에러, 순서 무관).
 - 볼륨은 `Resources/CoreAudioMixer`(그룹 `Music`/`SFX`, 노출 파라미터 `MasterVolume`/`MusicVolume`/`SfxVolume`)로 다룬다. 믹서가 없으면 소스 볼륨을 곱하는 방식으로 대신한다.
-- 효과음 소스 수는 고정(`SfxPoolSize`)이고 모자라면 덜 중요·오래된 소리를 빼앗는다. 재생 결과는 `SoundHandle`(루프 정지·재생 여부).
+- 효과음 소스 수는 고정(`SfxPoolSize`)이고 모자라면 덜 중요·오래된 소리를 빼앗는다. 빼앗기·동시 재생 상한은 재생 중인 소리를 끊어 '틱' 잡음이 나므로, 자주 겹치는 짧은 소리는 큐의 `SkipWhenFull`(상한이면 새 소리를 버림)을 켜고 소스 수는 넉넉히 둔다. 재생 결과는 `SoundHandle`(루프 정지·재생 여부).
 - 씬 전환 시 효과음만 멈추고 배경음은 유지된다. 배경음 페이드는 매 프레임 직접 진행한다(비동기 경합 없음).
+- **미리 듣기(에디터)**: `SO_SoundCue` 필드마다 ▶ 버튼(`PropertyDrawer_SoundCue`), 큐 인스펙터에 무작위 재생·클립별 ▶(`CustomEditor_SoundCue`). 숨긴 AudioSource 하나로 큐의 볼륨·피치를 따라 낸다(믹서는 거치지 않음, 플레이 중이 아니어도 들린다). `_Core/Editor/Audio/`.
 - 볼륨 **저장은 `SettingsManager`만** 한다(`App.SetVolume`이 Settings를 거침) — AudioManager는 값을 적용만 하고 Data를 모른다.
 
 ## Localization (번역)

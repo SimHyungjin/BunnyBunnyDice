@@ -101,6 +101,9 @@ public class SO_CoreConfig : ScriptableObject
     [Tooltip("효과음 소스 수(고정). 모자라면 덜 중요하고 오래된 소리를 빼앗아 쓴다. 늘리지 않는다.")]
     public int SfxPoolSize = 16;
 
+    [Tooltip("UI 버튼을 누를 때 내는 소리. 레이어에 뜨는 UI(UI_Panel) 안의 Button에 열릴 때 붙는다. 비우면 조용하다.")]
+    public SO_SoundCue UIClickSound;
+
     [Tooltip("배경음을 바꿀 때 겹쳐 트는 기본 시간(초).")]
     public float BgmCrossfadeDuration = 1f;
 

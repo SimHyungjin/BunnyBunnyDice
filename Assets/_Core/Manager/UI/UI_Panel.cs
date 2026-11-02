@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Reflection;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 /// <summary>
 /// 레이어에 뜨는 UI의 베이스. 인스턴스는 풀로 재사용된다.
@@ -42,8 +45,40 @@ public abstract class UI_Panel : UI, IPoolable
     {
         if (_isOpened) return;
         _isOpened = true;
+        HookClickSounds();
         OnOpenEvent?.Invoke();
+        // 띄운 쪽이 연 직후 템플릿을 복제해 버튼을 만드는 경우가 있어(목록 칸 등) 한 프레임 뒤에 한 번 더 찾는다.
+        HookClickSoundsNextFrame().Forget();
     }
+
+    #region 클릭 소리
+
+    // 버튼마다 프리팹에 소리를 달지 않고, 열릴 때 안의 Button을 찾아 한 번씩 붙인다(SO_CoreConfig.UIClickSound).
+    // 복제로 생긴 버튼은 런타임 리스너가 복사되지 않으므로 열릴 때마다 새 버튼만 더 붙인다.
+    private readonly HashSet<Button> _clickHooked = new();
+    private static readonly List<Button> _buttonBuffer = new();
+    private UnityAction _playClick;
+
+    private void HookClickSounds()
+    {
+        if (SO_CoreConfig.Instance.UIClickSound == null) return;
+        _playClick ??= () => App.PlaySfx(SO_CoreConfig.Instance.UIClickSound);
+        GetComponentsInChildren(true, _buttonBuffer);
+        for (int i = 0; i < _buttonBuffer.Count; i++)
+        {
+            Button button = _buttonBuffer[i];
+            if (_clickHooked.Add(button)) button.onClick.AddListener(_playClick);
+        }
+        _buttonBuffer.Clear();
+    }
+
+    private async UniTaskVoid HookClickSoundsNextFrame()
+    {
+        await UniTask.Yield(PlayerLoopTiming.Update, destroyCancellationToken).SuppressCancellationThrow();
+        if (this != null && _isOpened) HookClickSounds();
+    }
+
+    #endregion
 
     public virtual void Close()
     {

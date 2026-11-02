@@ -43,6 +43,10 @@ public sealed class SO_SoundCue : ScriptableObject
     [Tooltip("이 큐가 동시에 낼 수 있는 최대 개수. 넘으면 가장 오래된 것을 끊고 낸다. 0이면 제한 없음.")]
     [Min(0)] public int MaxInstances;
 
+    [Tooltip("MaxInstances에 닿으면 오래된 것을 끊지 않고 새 소리를 내지 않는다. 자주 겹치는 짧은 소리(처치·착지 등)는 켠다 "
+             + "— 재생 중인 소리를 끊으면 파형이 중간에 잘려 '틱' 잡음이 나고, 몰려 나는 소리는 하나쯤 빠져도 티가 안 난다.")]
+    public bool SkipWhenFull;
+
     [Tooltip("같은 큐를 다시 낼 수 있는 최소 간격(초, 실제 시간). 한 프레임에 코인 20개를 먹는 식의 겹침을 막는다. 0이면 제한 없음.")]
     [Min(0f)] public float MinInterval;
 

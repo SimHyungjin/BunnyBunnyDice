@@ -150,7 +150,11 @@ public sealed class AudioManager : Manager
             return default;
 
         if (cue.MaxInstances > 0 && CountActive(cue, out Voice oldestSame) >= cue.MaxInstances)
+        {
+            // 끊으면 잡음이 나므로 끊지 않기로 한 큐는 새 소리를 버린다.
+            if (cue.SkipWhenFull) return default;
             Release(oldestSame);
+        }
 
         int index = AcquireVoice(cue.Priority);
         if (index < 0) return default;
