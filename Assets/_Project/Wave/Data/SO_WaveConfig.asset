@@ -16,9 +16,9 @@ MonoBehaviour:
   SpawnInterval: 0.2
   BaseCount: 6
   CountPerWave: 6
-  MaxCount: 300
   BossCount: 1
-  HealthGrowth: 0
+  MaxCount: 300
+  HealthGrowth: 0.05
   HealthCompound: 0.1
   ExpBoostAfterWave: 50
   ExpBoostScale: 2
@@ -31,6 +31,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
   CycleExtraFromWave: 6
   CycleExtraTraits: 1
+  CycleExtraStrength: 0.5
   RandomTraits:
   - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
   - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
