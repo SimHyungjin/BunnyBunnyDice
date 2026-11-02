@@ -38,6 +38,9 @@ public sealed class SkillCaster
     /// <summary>스킬 카드를 썼다(어느 입구로든). 측정 기록(WaveLog)이 센다.</summary>
     public event Action<SO_SkillCard> Used;
 
+    /// <summary>스킬 카드를 썼다 + 쓴 자리(칸 대상은 칸, 적 대상은 모음점, 판 전체는 null). 플레이 기록(PlayLog)용.</summary>
+    public event Action<SO_SkillCard, Vector2?> UsedAt;
+
     /// <summary>적 대상 스킬 한 번의 결과(깎은 체력·넘친 피해·처치). 측정 기록(WaveLog)이 스킬별로 센다 — 배율이 남아도는지 보려고.</summary>
     public event Action<SO_EnemySkillCard, EnemyCastResult> EnemyCast;
 
@@ -68,6 +71,12 @@ public sealed class SkillCaster
         _getHand = getHand;
     }
 
+    /// <summary>핫 스트릭이 켜져 있는지 — 봇이 그동안 영웅을 주사위마다 옮겨 다니게 한다(밟은 주사위에 레이즈가 걸린다).</summary>
+    public bool HotStreakActive => _hotStreak != null && _hotStreak.Active;
+
+    /// <summary>cell의 주사위에 레이즈 시간이 남아 있는지(핫 스트릭으로 이미 밟은 주사위를 건너뛸 때).</summary>
+    public bool IsDiceRaised(Vector2Int cell) => _diceCombat.IsRaised(cell);
+
     /// <summary>칸 대상 스킬을 cell에 쓸 수 있는지. 끄는 동안의 표시와 봇이 같은 판정을 쓴다.</summary>
     public PlacementResult CheckCell(Vector2Int cell, SO_SkillCard card)
     {
@@ -84,6 +93,7 @@ public sealed class SkillCaster
     public void CastOnCell(Vector2Int cell, SO_SkillCard card)
     {
         Used?.Invoke(card);
+        UsedAt?.Invoke(card, cell);
         if (card is SO_SkillCard_CashOut cashOut)
         {
             CashOut(cell, cashOut);
@@ -192,6 +202,7 @@ public sealed class SkillCaster
     {
         if (_monsters.Route == null) return;
         Used?.Invoke(card);
+        UsedAt?.Invoke(card, center);
         _result = new EnemyCastResult { Targets = CollectTargets(card, _targets) };
         DamageTargets(card);
         switch (card)
@@ -304,6 +315,7 @@ public sealed class SkillCaster
     public void CastBoard(SO_SkillCard card)
     {
         Used?.Invoke(card);
+        UsedAt?.Invoke(card, null);
         switch (card)
         {
             case SO_SkillCard_AllIn _:

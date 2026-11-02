@@ -163,7 +163,7 @@ public static partial class App
     #region Audio
 
     // 음수는 "설정(SO_CoreConfig)의 기본 시간을 쓰라"는 뜻이다.
-    public static void PlayMusic(SO_MusicTrack track, float crossfade = -1f) => Core.Audio?.PlayMusic(track, crossfade);
+    public static void PlayMusic(SO_MusicTrack track, float crossfade = -1f, bool restart = false) => Core.Audio?.PlayMusic(track, crossfade, restart);
     public static void StopMusic(float fade = -1f)                           => Core.Audio?.StopMusic(fade);
     public static SO_MusicTrack CurrentMusic => Core.Audio?.CurrentMusic;
 

@@ -319,10 +319,11 @@ public sealed class AudioManager : Manager
     #region 배경음
 
     /// <summary>
-    /// 배경음을 바꾼다. 같은 곡이면 아무것도 하지 않는다. null이면 멈춘다.
+    /// 배경음을 바꾼다. 같은 곡이면 아무것도 하지 않는다(restart면 처음부터 다시 — 겹쳐 바꾸기로). null이면 멈춘다.
     /// </summary>
     /// <param name="crossfade">음수면 설정(SO_CoreConfig)의 기본 크로스페이드 시간을 쓴다.</param>
-    public void PlayMusic(SO_MusicTrack track, float crossfade = -1f)
+    /// <param name="restart">같은 곡이어도 처음부터 다시 튼다 — 새 판처럼 곡의 시작이 장면의 시작과 맞아야 할 때.</param>
+    public void PlayMusic(SO_MusicTrack track, float crossfade = -1f, bool restart = false)
     {
         // 기본 인자에는 컴파일 타임 상수만 올 수 있어 설정값을 직접 넣을 수 없다. 음수를 "설정을 따르라"는 표시로 쓴다.
         if (crossfade < 0f) crossfade = Config.BgmCrossfadeDuration;
@@ -333,7 +334,7 @@ public sealed class AudioManager : Manager
             return;
         }
 
-        if (_current != null && _current.Track == track) return;
+        if (!restart && _current != null && _current.Track == track) return;
 
         if (!track.HasClip)
         {

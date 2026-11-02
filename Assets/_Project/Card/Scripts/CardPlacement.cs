@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -27,6 +28,9 @@ public sealed class CardPlacement
         return result;
     }
 
+    /// <summary>카드를 놓았다(카드, 칸, 판정 — 새로 놓기·얹기·칩). 플레이 기록(PlayLog)이 사람의 배치를 남긴다.</summary>
+    public event Action<HandCard, Vector2Int, PlacementResult> Placed;
+
     /// <summary>판정을 통과하면 놓는다(빈 칸이면 새로, 주사위가 있으면 얹기, 칩은 빈 칸이나 주사위 밑). 카드를 손패에서 빼는 것은 부른 쪽이 한다.</summary>
     public bool TryPlace(MapData map, Vector2Int cell, HandCard card)
     {
@@ -35,6 +39,7 @@ public sealed class CardPlacement
         if (card.IsChip) PlaceChip(cell, card.Chip, 1f);
         else if (result == PlacementResult.Stack) _diceField.Stack(cell, card.Dice);
         else _diceField.Place(map, cell, card.Dice);
+        Placed?.Invoke(card, cell, result);
         return true;
     }
 

@@ -106,6 +106,9 @@ public sealed class Hero : IDisposable
         if (!Held) _view.Sync(_motor.Position, Vector2.zero, 0f, _getFloor(_motor.Position));
     }
 
+    /// <summary>이동 명령을 받았다(목적지 칸). 플레이 기록(PlayLog)이 사람의 영웅 조작을 남긴다.</summary>
+    public event Action<Vector2Int> MoveOrdered;
+
     /// <summary>목적지 칸으로 걸어간다. 판 밖이면 false이고 하던 이동을 그대로 한다.</summary>
     public bool MoveTo(Vector2Int cell)
     {
@@ -113,6 +116,7 @@ public sealed class Hero : IDisposable
         if (Held || map == null || !HeroTerrain.IsPassable(map, cell.x, cell.y)) return false;
         _hasDestination = true;
         _destination = cell;
+        MoveOrdered?.Invoke(cell);
         return true;
     }
 

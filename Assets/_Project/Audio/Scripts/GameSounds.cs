@@ -19,7 +19,6 @@ public sealed class GameSounds : IDisposable
     private readonly LevelUpChoice _levelUp;
     private readonly SkillCaster _skills;
     private readonly MonsterField _monsters;
-    private readonly GoalHealth _goal;
     private readonly BoardRollPresenter _boardRoll;
     private readonly DiceAttack _diceAttack;
     private readonly HeroCardShots _heroCards;
@@ -27,7 +26,7 @@ public sealed class GameSounds : IDisposable
     private readonly HeroRaise _heroRaise;
 
     public GameSounds(SO_GameSounds sounds, Func<bool> muted, DiceField dice, ChipField chips, CardHand hand,
-        LevelUpChoice levelUp, SkillCaster skills, MonsterField monsters, GoalHealth goal, BoardRollPresenter boardRoll,
+        LevelUpChoice levelUp, SkillCaster skills, MonsterField monsters, BoardRollPresenter boardRoll,
         DiceAttack diceAttack, HeroCardShots heroCards, WaveSpawner waves, HeroRaise heroRaise)
     {
         _sounds = sounds;
@@ -38,7 +37,6 @@ public sealed class GameSounds : IDisposable
         _levelUp = levelUp;
         _skills = skills;
         _monsters = monsters;
-        _goal = goal;
         _boardRoll = boardRoll;
         _diceAttack = diceAttack;
         _heroCards = heroCards;
@@ -57,7 +55,6 @@ public sealed class GameSounds : IDisposable
         _skills.Used += OnSkillUsed;
         _monsters.Killed += OnKilled;
         _monsters.ReachedGoal += OnReachedGoal;
-        _goal.Died += OnGoalDied;
         _boardRoll.Started += OnBoardStarted;
         _boardRoll.DieLanded += OnBoardDieLanded;
         _boardRoll.DiePocketed += OnBoardDiePocketed;
@@ -82,7 +79,6 @@ public sealed class GameSounds : IDisposable
         _skills.Used -= OnSkillUsed;
         _monsters.Killed -= OnKilled;
         _monsters.ReachedGoal -= OnReachedGoal;
-        _goal.Died -= OnGoalDied;
         _boardRoll.Started -= OnBoardStarted;
         _boardRoll.DieLanded -= OnBoardDieLanded;
         _boardRoll.DiePocketed -= OnBoardDiePocketed;
@@ -96,8 +92,16 @@ public sealed class GameSounds : IDisposable
     /// <summary>로비 곡으로 바꾼다(겹쳐 바꾸기). 이미 그 곡이면 이어서 흐른다.</summary>
     public void PlayLobbyMusic() => App.PlayMusic(_sounds.LobbyMusic);
 
-    /// <summary>판 곡으로 바꾼다.</summary>
+    /// <summary>판 곡으로 바꾼다. 이미 판 곡이면 이어서 흐른다.</summary>
     public void PlayGameMusic() => App.PlayMusic(_sounds.GameMusic);
+
+    /// <summary>판 곡을 처음부터 다시 튼다(다시 하기) — 새 판이 곡의 시작과 함께 열리게.</summary>
+    public void RestartGameMusic() => App.PlayMusic(_sounds.GameMusic, -1f, true);
+
+    /// <summary>
+    /// 판이 끝났다(목표물이 무너짐·포기). 목표물 Died가 아니라 게임 오버 처리가 부른다 — 포기는 목표물이 무너지지 않고 끝나서.
+    /// </summary>
+    public void PlayGameOver() => Play(_sounds.GameOver);
 
     private void Play(SO_SoundCue cue)
     {
@@ -134,7 +138,6 @@ public sealed class GameSounds : IDisposable
         if (kind.GoalDamage > 0) Play(_sounds.GoalHit);
     }
 
-    private void OnGoalDied() => Play(_sounds.GameOver);
     private void OnDiceFired() => Play(_sounds.DiceShot);
 
     private void OnHeroThrown(bool _) => Play(_sounds.HeroThrow);

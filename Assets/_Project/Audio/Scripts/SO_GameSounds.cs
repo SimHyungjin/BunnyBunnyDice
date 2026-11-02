@@ -11,7 +11,7 @@ public sealed class SO_GameSounds : SO_Config
     [Header("배경음")]
     [Tooltip("로비(첫 화면·판에서 돌아왔을 때).")]
     public SO_MusicTrack LobbyMusic;
-    [Tooltip("판(뛰어들기가 끝나 판이 시작될 때부터). 다시 하기로 새 판이 돼도 이어서 흐른다.")]
+    [Tooltip("판(뛰어들기가 끝나 판이 시작될 때부터). 다시 하기는 처음부터 다시 튼다.")]
     public SO_MusicTrack GameMusic;
 
     [Header("주사위")]
@@ -63,6 +63,6 @@ public sealed class SO_GameSounds : SO_Config
     [Header("웨이브")]
     [Tooltip("웨이브가 시작됐다.")]
     public SO_SoundCue WaveStart;
-    [Tooltip("목표물이 무너져 판이 끝났다.")]
+    [Tooltip("판이 끝났다(목표물이 무너짐·포기).")]
     public SO_SoundCue GameOver;
 }

@@ -78,7 +78,7 @@
 더블,Double,SO_HeroTrait_Double.DisplayName
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
-주사위를 굴리면 가장 높은 눈 아니면 부서진다.,Dice roll their highest pip or break.,SO_HeroTrait_DoubleOrNothing.Description
+주사위를 굴리면 가장 높은 눈 아니면 부서진다. 시작 손패가 두 배다.,Dice roll their highest pip or break. Start with a double hand.,SO_HeroTrait_DoubleOrNothing.Description
 하이 롤러,High Roller,SO_HeroTrait_HighRoller.DisplayName
 주사위에서 높은 눈이 더 자주 나온다.,Dice roll high pips more often.,SO_HeroTrait_HighRoller.Description
 "레이즈가 공격력 x{DamageScale}, 공격 속도 x{SpeedScale}가 된다.","Raise becomes x{DamageScale} attack, x{SpeedScale} attack speed.",SO_HeroTrait_HighStakes.Description

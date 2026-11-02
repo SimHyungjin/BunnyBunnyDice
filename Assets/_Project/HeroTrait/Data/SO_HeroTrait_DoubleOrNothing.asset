@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: SO_HeroTrait_DoubleOrNothing
   m_EditorClassIdentifier: Assembly-CSharp::SO_HeroTrait_NoMiddle
   DisplayName: "\uB354\uBE14 \uC624\uC5B4 \uB0AB\uC2F1"
-  Description: "주사위를 굴리면 가장 높은 눈 아니면 부서진다."
+  Description: "주사위를 굴리면 가장 높은 눈 아니면 부서진다. 시작 손패가 두 배다."
   HighChance: 0.5
+  StartHandCopies: 2

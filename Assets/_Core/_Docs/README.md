@@ -70,6 +70,7 @@
 - 볼륨은 `Resources/CoreAudioMixer`(그룹 `Music`/`SFX`, 노출 파라미터 `MasterVolume`/`MusicVolume`/`SfxVolume`)로 다룬다. 믹서가 없으면 소스 볼륨을 곱하는 방식으로 대신한다.
 - 효과음 소스 수는 고정(`SfxPoolSize`)이고 모자라면 덜 중요·오래된 소리를 빼앗는다. 빼앗기·동시 재생 상한은 재생 중인 소리를 끊어 '틱' 잡음이 나므로, 자주 겹치는 짧은 소리는 큐의 `SkipWhenFull`(상한이면 새 소리를 버림)을 켜고 소스 수는 넉넉히 둔다. 재생 결과는 `SoundHandle`(루프 정지·재생 여부).
 - 씬 전환 시 효과음만 멈추고 배경음은 유지된다. 배경음 페이드는 매 프레임 직접 진행한다(비동기 경합 없음).
+- `PlayMusic`은 같은 곡이면 그대로 이어 흐른다. `restart: true`면 같은 곡도 처음부터 다시 튼다(겹쳐 바꾸기) — 새 판처럼 곡의 시작을 장면에 맞출 때.
 - **미리 듣기(에디터)**: `SO_SoundCue` 필드마다 ▶ 버튼(`PropertyDrawer_SoundCue`), 큐 인스펙터에 무작위 재생·클립별 ▶(`CustomEditor_SoundCue`). 숨긴 AudioSource 하나로 큐의 볼륨·피치를 따라 낸다(믹서는 거치지 않음, 플레이 중이 아니어도 들린다). `_Core/Editor/Audio/`.
 - 볼륨 **저장은 `SettingsManager`만** 한다(`App.SetVolume`이 Settings를 거침) — AudioManager는 값을 적용만 하고 Data를 모른다.
 

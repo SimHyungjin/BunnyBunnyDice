@@ -76,6 +76,8 @@ public sealed partial class GameScene : SceneBase
     private HeroAttack _heroAttack;
     private WaveSpawner _waves;
     private WaveLog _waveLog;
+    // 사람이 한 판의 행동 기록(봇·색 시험 동안은 남기지 않는다) — 사용자 판을 읽고 봇에 옮기려고.
+    private PlayLog _playLog;
     private GoalHealth _goal;
     private GoalHitReaction _goalHit;
     private PlayerLevel _level;
@@ -348,11 +350,13 @@ public sealed partial class GameScene : SceneBase
         _levelUp.Opened += _drag.Cancel;
         CreateBot(botConfig, heroConfig, diceConfig, diceStatsConfig);
         // 로비에서는 판 소리를 내지 않는다 — 로비 뒤 판에서 시작 손패를 미리 깔아 두는 것 등이 들리지 않게.
-        _sounds = new GameSounds(soundsConfig, () => IsSim || _lobbyStage.IsActive, _diceField, _chips, _hand, _levelUp, _skills, _monsters, _goal, _boardRoll,
+        _sounds = new GameSounds(soundsConfig, () => IsSim || _lobbyStage.IsActive, _diceField, _chips, _hand, _levelUp, _skills, _monsters, _boardRoll,
             _diceAttack, _heroCards, _waves, _heroRaise);
         // 첫 화면은 로비다. 판 곡은 뛰어들기가 끝나 판이 시작될 때, 로비 곡은 결과 화면에서 로비로 갈 때 바꾼다.
         _sounds.PlayLobbyMusic();
         _lobbyStage.Entered += _sounds.PlayGameMusic;
+        _playLog = new PlayLog(() => !IsAutoPlaying, () => _waves.Wave, () => _level.Level, () => _goal.Current, _diceField, _chips, _placement,
+            _skills, _levelUp, _hero, _heroRaise, _monsters, _waves, diceStatsConfig);
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
         DealStartHand();
         // 손패를 다 쓰면 판을 아래로 넓히고, 카드가 들어오면 되돌린다(아래 여백만 섞는다).
@@ -443,6 +447,7 @@ public sealed partial class GameScene : SceneBase
         _hero?.Dispose();
         _waves?.Dispose();
         _waveLog?.Dispose();
+        _playLog?.Dispose();
         _breakShotView?.Dispose();
         _cutIn?.Dispose();
         _sounds?.Dispose();
@@ -588,6 +593,8 @@ public sealed partial class GameScene : SceneBase
     private void Retry()
     {
         SweepBoard();
+        // 곡도 새 판과 함께 처음부터 — 지난 판 끝자락에서 이어지면 새 판의 시작이 흐려진다(사용자).
+        _sounds?.RestartGameMusic();
         // 봇이 비교 묶음으로 돌 때는 정해 둔 맵으로(같은 맵끼리 짝지어 비교한다).
         GenerateMap(TakeSeed(out int seed) ? seed : System.Environment.TickCount);
     }
@@ -615,6 +622,7 @@ public sealed partial class GameScene : SceneBase
     {
         // 판 도중에 접으면(로비로·새 맵) 거기까지 남긴다.
         _waveLog?.End();
+        _playLog?.End();
         _monsters.Paused = false;
         _goal.Reset();
         _level.Reset();
@@ -655,6 +663,7 @@ public sealed partial class GameScene : SceneBase
         AutoPlayRunStarting();
         ResetRun();
         _waveLog.Begin(_heroStats.Character != null ? _heroStats.Character.name : "None", _seed);
+        _playLog?.Begin(_heroStats.Character != null ? _heroStats.Character.name : "None", _seed, _map);
         // 판 주사위 연출(굴림 결과를 보여 줌)이 끝나면 웨이브를 시작한다. 그동안 경로 표시를 숨기고(결과가 미리 드러나지 않게)
         // 카드 배치를 잠근다(아직 떨어지지 않은 칩 칸에 놓지 않게).
         // 판 치우기 중이면(다시 하기) 새 칩을 숨겨 둔 채 다 날아가기를 기다린다 — 날아가는 칩과 떨어지는 칩이 섞이지 않게.
@@ -702,12 +711,15 @@ public sealed partial class GameScene : SceneBase
     private void GameOver()
     {
         Debug.Log($"[GameScene] game over at wave {_waves.Wave}");
+        // 목표물이 무너진 때와 포기한 때 모두 여기를 지난다.
+        _sounds?.PlayGameOver();
         _waves.Stop();
         _monsters.Paused = true;
         _levelUp?.Cancel();
         // 판 기록의 웨이브는 클리어한 웨이브다(진 웨이브는 빼고) — 결과 화면·보상·최고 기록·해금이 모두 이 값을 쓴다.
         RunSummary run = _run.Finish(Mathf.Max(_waves.Wave - 1, 0), _level.Level);
         _waveLog.End();
+        _playLog?.End();
         // 보상은 판이 끝날 때(Finish → Ended → MetaProfile.Record) 정해졌다.
         _result.Show(run, _meta.LastReward);
         AutoPlayGameOver(run);
@@ -719,7 +731,11 @@ public sealed partial class GameScene : SceneBase
         if (_hand == null) return;
         _drag?.Cancel();
         _hand.Clear();
-        for (int i = 0; i < _handConfig.StartHand.Count; i++) _hand.Add(HandCard.Of(_handConfig.StartHand[i]));
+        // 특성이 시작 손패를 여러 벌 줄 수 있다(더블 오어 낫싱 — IStartHandCopies).
+        IStartHandCopies copies = _traits?.Find<IStartHandCopies>();
+        int sets = copies != null ? Mathf.Max(copies.StartHandCopies, 1) : 1;
+        for (int s = 0; s < sets; s++)
+            for (int i = 0; i < _handConfig.StartHand.Count; i++) _hand.Add(HandCard.Of(_handConfig.StartHand[i]));
     }
 
     private void RefreshHud()
