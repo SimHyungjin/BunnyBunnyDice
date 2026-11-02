@@ -24,15 +24,17 @@ MonoBehaviour:
     Colors: 0
   - Faces: 6
     Colors: 0
-  MaxStacks: 99
+  MaxStacks: 10
   CardHeightRatio: 0.222
   DiceCardColor: {r: 0.961, g: 0.02, b: 0.424, a: 1}
   SkillCardColor: {r: 0.25, g: 0.9, b: 0.7, a: 1}
   ChipCardColor: {r: 1, g: 0.729, b: 0.2, a: 1}
   HeroCardColor: {r: 0.35, g: 0.65, b: 1, a: 1}
+  ExclusiveCardColor: {r: 0.62, g: 0.36, b: 1, a: 1}
   SkillSubText: "\uC2A4\uD0AC \uCE74\uB4DC"
   ChipSubText: "\uCE69 \uCE74\uB4DC"
   HeroSubText: "\uC601\uC6C5 \uAC15\uD654"
+  ExclusiveSubText: "\uC804\uC6A9 \uCE74\uB4DC"
   ChipKindLabel: "\uCE69"
   ChipKindText: "\uBE48 \uCE78\uC774\uB098 \uC8FC\uC0AC\uC704 \uBC11\uC5D0 \uB193\uB294\uB2E4."
   SkillDiceLabel: "\uC8FC\uC0AC\uC704"

@@ -44,6 +44,6 @@ MonoBehaviour:
   PoolLift: 0.01
   PoolMaxStretch: 1.8
   BeamShader: {fileID: 4800000, guid: 2b38d14ebef78994f91d7a7ee1db349f, type: 3}
-  BeamTopRatio: 0.1
-  BeamEdgeSoftness: 1.5
+  BeamTopRatio: 0
+  BeamEdgeSoftness: 0.5
   BeamFloorFade: 0.8
