@@ -18,8 +18,8 @@ MonoBehaviour:
   CountPerWave: 6
   BossCount: 1
   MaxCount: 300
-  HealthGrowth: 0.05
-  HealthCompound: 0.1
+  HealthGrowth: 0.1
+  HealthCompound: 0.08
   ExpBoostAfterWave: 50
   ExpBoostScale: 2
   Monster: {fileID: 11400000, guid: 5146a3e9cb23695a2f38411fc7059de9, type: 2}
