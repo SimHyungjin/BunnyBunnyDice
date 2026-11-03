@@ -74,7 +74,7 @@ public sealed class PlacementPreview
     /// 주사위는 그대로 두고, 그 주사위가 이 칩을 받았을 때의 사거리를 보인다(사거리 칩이면 늘어난 고리).
     /// </summary>
     /// <param name="dice">칸에 놓인 주사위. 없으면 null.</param>
-    /// <param name="strength">칩 효과 세기(빅 스택 칩은 2) — 사거리 칩이면 고리가 그만큼 늘어난다.</param>
+    /// <param name="strength">칩 효과 세기(빅 스택 칩은 그 카드의 세기) — 사거리 칩이면 고리가 그만큼 늘어난다.</param>
     public void ShowChip(Vector2Int cell, bool valid, SO_ChipCard card, DiceState? dice, float strength = 1f)
     {
         float ground = _viewConfig.GetTileTop(TileType.Ground);

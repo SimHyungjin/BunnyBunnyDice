@@ -96,7 +96,7 @@
 백스핀,Backspin,SO_SkillCard_Backspin.DisplayName
 "모든 적에게 {HeroDamage} 피해를 입히고, 오던 길로 벽까지 밀어낸다.","Deals {HeroDamage} damage to all enemies and knocks them back the way they came, up to a wall.",SO_SkillCard_Backspin.Description
 빅 스택,Big Stack,SO_SkillCard_BigStack_AttackSpeed.DisplayName | SO_SkillCard_BigStack_Burn.DisplayName | SO_SkillCard_BigStack_Damage.DisplayName
-효과가 {Strength}배인 {Chip} 칩을 놓는다.,Place a {Chip} chip with x{Strength} effect.,SO_SkillCard_BigStack_AttackSpeed.Description | SO_SkillCard_BigStack_Burn.Description | SO_SkillCard_BigStack_Damage.Description
+강화 {Chip} 칩을 놓는다. {ChipText},Place an enhanced {Chip} chip. {ChipText},SO_SkillCard_BigStack_AttackSpeed.Description | SO_SkillCard_BigStack_Burn.Description | SO_SkillCard_BigStack_Damage.Description
 브레이크 샷,Break Shot,SO_SkillCard_BreakShot.DisplayName
 "{Duration}초간 영웅의 공격력이 {DamageScale}배, 공격 속도가 {SpeedScale}배가 된다.","For {Duration}s, the hero's attack is x{DamageScale} and attack speed x{SpeedScale}.",SO_SkillCard_BreakShot.Description
 캐시 아웃,Cash Out,SO_SkillCard_CashOut.DisplayName

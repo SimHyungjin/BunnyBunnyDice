@@ -19,20 +19,21 @@ public interface ICardTextTokens
 /// - {1+Bonus}        1 + 필드 값 — "n배"로 읽히는 증가 비율 (예: Bonus 1 → 2)
 /// - {1-Falloff%}     1 − 필드 값 — 줄어드는 몫 (예: Falloff 0.75 → 25%)
 /// - 그 밖의 이름은 ICardTextTokens가 먼저 받는다(영웅 능력치 비례 값 등).
+/// scale을 주면 필드 값을 읽은 뒤 거친다(필드 이름, 값 → 바뀐 값) — 빅 스택이 칩 글을 강화된 수치로 채울 때.
 /// 필드는 리플렉션으로 찾는다 — 카드마다 글 채우는 코드를 따로 두지 않게. 모르는 토큰은 그대로 남기고 경고한다(오타가 화면에 보이게).
 /// 글은 먼저 지금 언어로 바꾸고(App.Localize) 토큰을 채운다 — 번역도 같은 토큰을 쓰므로 숫자는 언어와 상관없이 SO에서 온다.
 /// </summary>
 public static class CardText
 {
     private static readonly Dictionary<(Type, string), FieldInfo> Fields = new Dictionary<(Type, string), FieldInfo>();
-    private static readonly StringBuilder Builder = new StringBuilder();
 
-    public static string Fill(string template, object source, HeroStats hero = null)
+    public static string Fill(string template, object source, HeroStats hero = null, Func<string, float, float> scale = null)
     {
         template = App.Localize(template);
         if (string.IsNullOrEmpty(template) || template.IndexOf('{') < 0 || source == null) return template;
 
-        Builder.Clear();
+        // 버퍼를 나눠 쓰지 않는다 — 토큰이 다른 글을 채우면(빅 스택 → 칩 글) 안쪽 Fill이 바깥 글을 지운다. 카드를 띄울 때만 불려 할당은 문제없다.
+        var builder = new StringBuilder(template.Length + 32);
         int i = 0;
         while (i < template.Length)
         {
@@ -40,23 +41,23 @@ public static class CardText
             int close = open < 0 ? -1 : template.IndexOf('}', open + 1);
             if (close < 0)
             {
-                Builder.Append(template, i, template.Length - i);
+                builder.Append(template, i, template.Length - i);
                 break;
             }
-            Builder.Append(template, i, open - i);
+            builder.Append(template, i, open - i);
             string token = template.Substring(open + 1, close - open - 1);
-            if (TryResolve(token, source, hero, out string text)) Builder.Append(text);
+            if (TryResolve(token, source, hero, scale, out string text)) builder.Append(text);
             else
             {
-                Builder.Append(template, open, close - open + 1);
+                builder.Append(template, open, close - open + 1);
                 Debug.LogWarning($"[CardText] {source}: 모르는 토큰 {{{token}}}");
             }
             i = close + 1;
         }
-        return Builder.ToString();
+        return builder.ToString();
     }
 
-    private static bool TryResolve(string token, object source, HeroStats hero, out string text)
+    private static bool TryResolve(string token, object source, HeroStats hero, Func<string, float, float> scale, out string text)
     {
         if (source is ICardTextTokens custom && custom.TryGetToken(token, hero, out text)) return true;
 
@@ -70,6 +71,7 @@ public static class CardText
         if (sign != 0f) name = name.Substring(2);
 
         if (!TryGetNumber(source, name, out float value)) return false;
+        if (scale != null) value = scale(name, value);
         if (sign != 0f) value = 1f + sign * value;
         text = percent ? FormatPercent(value) : value.ToString("0.##", CultureInfo.InvariantCulture);
         return true;

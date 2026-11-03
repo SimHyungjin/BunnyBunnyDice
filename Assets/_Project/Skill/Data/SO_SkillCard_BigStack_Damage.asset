@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SO_SkillCard_BigStack_Damage
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_BigStack
   DisplayName: "빅 스택"
-  Description: "효과가 {Strength}배인 {Chip} 칩을 놓는다."
+  Description: "강화 {Chip} 칩을 놓는다. {ChipText}"
   Icon: {fileID: 0}
   TintIcon: 1
   IconColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   Weight: 1
   Exclusive: 1
   Chip: {fileID: 11400000, guid: 48e1711dd4bc48c09a1ec28d285cfce8, type: 2}
-  Strength: 2
+  Strength: 1.8

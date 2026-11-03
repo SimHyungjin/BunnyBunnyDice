@@ -7,23 +7,45 @@ using UnityEngine;
 /// </summary>
 public static class ChipEffects
 {
-    /// <param name="strength">세기 배율(칩마다 — 빅 스택 칩은 2). 지속 시간은 그대로 두고 세기에만 곱한다 — 얼림은 어는 시간이 곧 세기다.</param>
+    /// <param name="strength">세기 배율(보통 칩은 1, 빅 스택 칩은 그 카드의 Strength). 어느 값에 곱하는지는 Scaled가 정한다.</param>
     public static void OnHit(MonsterField monsters, int slot, SO_ChipCard chip, float strength)
     {
         switch (chip)
         {
             case SO_ChipCard_Slow slow:
-                monsters.Slow(slot, slow.Ratio * strength, slow.Duration);
+                monsters.Slow(slot, Scaled(chip, nameof(slow.Ratio), slow.Ratio, strength), slow.Duration);
                 break;
             case SO_ChipCard_Burn burn:
-                monsters.Burn(slot, burn.MaxHealthRatio * strength, burn.Duration, Mathf.Min(1f, burn.RegenReduction * strength));
+                monsters.Burn(slot, Scaled(chip, nameof(burn.MaxHealthRatio), burn.MaxHealthRatio, strength), burn.Duration,
+                    Scaled(chip, nameof(burn.RegenReduction), burn.RegenReduction, strength));
                 break;
             case SO_ChipCard_Vulnerable vulnerable:
-                monsters.Vulnerable(slot, vulnerable.Ratio * strength, vulnerable.Duration);
+                monsters.Vulnerable(slot, Scaled(chip, nameof(vulnerable.Ratio), vulnerable.Ratio, strength), vulnerable.Duration);
                 break;
             case SO_ChipCard_Freeze freeze:
-                monsters.Freeze(slot, freeze.Duration * strength, freeze.Immunity);
+                monsters.Freeze(slot, Scaled(chip, nameof(freeze.Duration), freeze.Duration, strength), freeze.Immunity);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// 칩 필드 하나에 세기를 곱한 값. 효과(OnHit·능력치 배율)와 빅 스택 카드 글이 함께 읽는다 — 글이 보여 주는 강화 수치가 실제와 어긋나지 않게.
+    /// 세기는 효과의 크기에만 곱하고 지속 시간은 그대로 둔다. 얼림만은 어는 시간이 곧 크기라 시간에 곱한다(면역 시간은 그대로).
+    /// </summary>
+    public static float Scaled(SO_ChipCard chip, string field, float value, float strength)
+    {
+        switch (chip)
+        {
+            case SO_ChipCard_Burn:
+                if (field == nameof(SO_ChipCard_Burn.MaxHealthRatio)) return value * strength;
+                // 재생 감소는 1(완전히 막음)을 넘지 않는다.
+                if (field == nameof(SO_ChipCard_Burn.RegenReduction)) return Mathf.Min(1f, value * strength);
+                return value;
+            case SO_ChipCard_Freeze:
+                return field == nameof(SO_ChipCard_Freeze.Duration) ? value * strength : value;
+            default:
+                // 둔화·방깍과 강화 3장은 Ratio가 크기다.
+                return field == "Ratio" ? value * strength : value;
         }
     }
 

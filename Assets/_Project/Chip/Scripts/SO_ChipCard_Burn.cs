@@ -12,6 +12,6 @@ public sealed class SO_ChipCard_Burn : SO_ChipCard
     [Tooltip("초당 최대 체력에 대한 피해 비율. 0.02면 초당 2%. 다시 걸면 쌓이지 않고 시간만 새로 센다.")]
     [Range(0f, 0.2f)] public float MaxHealthRatio = 0.02f;
     [Min(0f)] public float Duration = 4f;
-    [Tooltip("걸려 있는 동안 재생을 줄이는 비율(0.5 = 절반). 빅 스택(세기 2)이면 세기를 곱해 1에서 멈춘다(완전히 막음).")]
+    [Tooltip("걸려 있는 동안 재생을 줄이는 비율(0.5 = 절반). 빅 스택이면 세기를 곱하되 1(완전히 막음)을 넘지 않는다.")]
     [Range(0f, 1f)] public float RegenReduction = 0.5f;
 }
