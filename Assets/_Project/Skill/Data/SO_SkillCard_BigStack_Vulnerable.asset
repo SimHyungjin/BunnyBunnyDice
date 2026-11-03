@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_SkillCard_BigStack
   DisplayName: "빅 스택"
   Description: "강화 {Chip} 칩을 놓는다. {ChipText}"
-  Icon: {fileID: 0}
-  TintIcon: 1
+  Icon: {fileID: 21300000, guid: 52d87d7cdf2543bea260d79807777a12, type: 3}
+  TintIcon: 0
   IconColor: {r: 1, g: 1, b: 1, a: 1}
   Weight: 1
   Exclusive: 1

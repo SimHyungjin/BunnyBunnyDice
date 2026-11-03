@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -24,6 +26,26 @@ public abstract class SO_DiceType : SO_Config
     [Localized, TextArea] public string Description;
     [Tooltip("각성 효과 한 줄. 조건(눈이 상한)과 세기(눈에 비례)는 모든 주사위가 같아 적지 않는다 — 얹으면 면체가 바뀌어 숫자는 금방 틀린다.")]
     [Localized, TextArea] public string AwakenDescription;
+    [Tooltip("카드 아이콘(면체마다). 이 색으로 칠해 둔 그림이라 물들이지 않는다 — 강조색 면과 흰 테·먹 판이 함께 있어 색을 곱하면 테와 판까지 물든다. " +
+             "없는 면체는 면체 그림(SO_DiceConfig.Models.Icon)에 Color를 곱해 쓴다.")]
+    public List<FaceIcon> CardIcons = new List<FaceIcon>();
+
+    [Serializable]
+    public struct FaceIcon
+    {
+        public int Faces;
+        public Sprite Icon;
+    }
+
+    /// <summary>그 면체의 카드 아이콘. 없으면 null.</summary>
+    public Sprite GetCardIcon(int faces)
+    {
+        for (int i = 0; i < CardIcons.Count; i++)
+        {
+            if (CardIcons[i].Faces == faces) return CardIcons[i].Icon;
+        }
+        return null;
+    }
 
     [Header("기본 능력치")]
     public float Damage = 30f;

@@ -26,3 +26,10 @@ MonoBehaviour:
   AttackSpeedGrowth: 0
   Range: 3.5
   MaxHealthDamage: 0
+  CardIcons:
+  - Faces: 6
+    Icon: {fileID: 21300000, guid: fb7aaff7a6724507882d31431e8b1f9d, type: 3}
+  - Faces: 12
+    Icon: {fileID: 21300000, guid: 8cafe50d5c664d458ab07fe8fdbb3928, type: 3}
+  - Faces: 20
+    Icon: {fileID: 21300000, guid: 4a36aa7c091d428aafd68a362a371620, type: 3}

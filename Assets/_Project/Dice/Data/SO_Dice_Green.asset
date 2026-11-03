@@ -26,3 +26,10 @@ MonoBehaviour:
   Range: 3.5
   MaxHealthDamage: 0
   FocusBonusPerHit: 0.05
+  CardIcons:
+  - Faces: 6
+    Icon: {fileID: 21300000, guid: f2f5811181a74b8492cb1b98d57b4695, type: 3}
+  - Faces: 12
+    Icon: {fileID: 21300000, guid: 8d3576b05cee443d82bd34d3afb232bd, type: 3}
+  - Faces: 20
+    Icon: {fileID: 21300000, guid: 0248e6e12fb848cea90153c36d4bd098, type: 3}

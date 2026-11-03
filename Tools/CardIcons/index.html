@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>카드 아이콘 시안 — P5 스타일</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#120a18; --card:#24152f; --magenta:#f5056c; --cyan:#3fe0ff; --text:#fbeefc; --muted:#a98fb5; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif; }
+  header { padding:24px 28px 8px; position:sticky; top:0; background:var(--bg); z-index:5; border-bottom:1px solid #2a1a35; }
+  h1 { font-family:'Black Han Sans',sans-serif; font-weight:400; font-size:26px; margin:0 0 6px; }
+  h2 { font-family:'Black Han Sans',sans-serif; font-weight:400; font-size:20px; margin:30px 0 4px; }
+  h2 small { font-family:'Noto Sans KR',sans-serif; font-size:13px; color:var(--muted); margin-left:8px; }
+  p.note { color:var(--muted); margin:0 0 10px; font-size:14px; line-height:1.6; }
+  main { padding:0 28px 48px; }
+  .controls { display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; font-size:14px; }
+  .controls label { display:flex; gap:6px; align-items:center; cursor:pointer; }
+  .seg { display:inline-flex; border:1px solid #4a3358; border-radius:6px; overflow:hidden; }
+  .seg button { background:transparent; color:var(--text); border:0; padding:6px 10px; font:inherit; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--magenta); color:#1a0a1f; font-weight:700; }
+  .row { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; margin-top:10px; }
+  .card { position:relative; width:var(--w); aspect-ratio:0.7; background:var(--card); border:calc(var(--w)*0.035) solid var(--kind); border-radius:calc(var(--w)*0.04); flex:none; }
+  .card .slot { position:absolute; left:12%; right:12%; top:7%; aspect-ratio:1; border:calc(var(--w)*0.012 + 0.5px) solid var(--cyan); }
+  .card .slot svg { position:absolute; inset:6%; width:88%; height:88%; overflow:visible; }
+  .card .title { position:absolute; left:4%; right:4%; bottom:9%; text-align:center; font-family:'Black Han Sans',sans-serif; font-size:calc(var(--w)*0.14); color:#fbeefc; white-space:nowrap; overflow:hidden; }
+  .hand { display:flex; padding:24px 0 40px 40px; }
+  .hand .card { margin-left:-18px; transform-origin:50% 120%; box-shadow:0 6px 16px #0008; }
+  .mid .card { --w:150px; }
+  .small .card { --w:96px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--muted); }
+  .legend i { display:inline-block; width:12px; height:12px; border-radius:2px; vertical-align:-1px; margin-right:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>카드 아이콘 시안 — 페르소나 5 앱 아이콘 스타일</h1>
+  <p class="note">먹색 판(기호 외곽을 따라감) + 흰 기호 + 강조색 한 곳. 강조색 = 카드의 IconColor(주사위·페인트·칩은 의미 색), 바깥 테두리 = 카드 종류 색.</p>
+  <div class="controls">
+    <span>테두리</span>
+    <span class="seg" id="outline">
+      <button data-v="kind">종류 색만</button>
+      <button data-v="white" aria-pressed="true">흰 줄 + 종류 색</button>
+    </span>
+    <label>판 두께 <input type="range" id="pad" min="4" max="20" value="8"> <span id="padv">8</span></label>
+    <label><input type="checkbox" id="shadow" checked> 어긋난 그림자</label>
+    <span class="legend">
+      <span><i style="background:#40e6b3"></i>스킬</span><span><i style="background:#9e5cff"></i>전용</span>
+      <span><i style="background:#59a6ff"></i>영웅 강화</span><span><i style="background:#ffba33"></i>칩</span><span><i style="background:#f5056c"></i>주사위</span>
+    </span>
+  </div>
+</header>
+<main>
+  <h2>손패 <small>실제 크기에 가깝게</small></h2>
+  <div class="hand small" id="hand"></div>
+
+  <h2>스킬</h2>
+  <div class="row mid" id="skill"></div>
+
+  <h2>전용 카드 <small>캐릭터마다 한 장</small></h2>
+  <div class="row mid" id="exclusive"></div>
+
+  <h2>빅 스택 <small>칩 리더 전용 — 칩 그림 + 금 테, 칩 색 7가지</small></h2>
+  <div class="row mid" id="bigstack"></div>
+
+  <h2>영웅 강화 <small>IconColor가 지금 모두 흰색이라 강조색은 시안용으로 골랐다</small></h2>
+  <div class="row mid" id="hero"></div>
+
+  <h2>칩 <small>그림 하나 + 칩 색</small></h2>
+  <div class="row mid" id="chip"></div>
+
+  <h2>주사위 8색 × d6 · d12 · d20</h2>
+  <div id="dice"></div>
+
+  <h2>페인트 8색</h2>
+  <div class="row mid" id="paint"></div>
+</main>
+<script src="icons.js"></script>
+<script>
+function card(kind, svg, title, style = '') {
+  return `<div class="card" style="--kind:${kind};${style}"><div class="slot"><svg viewBox="0 0 200 200">${icon(kind, svg)}</svg></div><div class="title">${title}</div></div>`;
+}
+
+function render() {
+  const hand = [
+    [KIND.dice, diceSvg('#e63333', 6), '강타'],
+    [KIND.dice, diceSvg('#336bf2', 12), '자유'],
+    [KIND.chip, ICONS.chip('#66ccf5'), '얼림'],
+    [KIND.skill, ICONS.paint('#66ccf5'), '하늘 페인트'],
+    [KIND.skill, ICONS.checkmate('#f24d59'), '체크메이트'],
+    [KIND.exclusive, ICONS.hotStreak('#ff7340'), '핫 스트릭'],
+    [KIND.hero, ICONS.critDamage('#ff8c26'), '치명타 피해'],
+    [KIND.dice, diceSvg('#33333b', 20), '기본 공격'],
+  ];
+  const n = hand.length;
+  document.getElementById('hand').innerHTML = hand.map((h, i) => {
+    const a = (i - (n - 1) / 2) * 5;
+    return card(h[0], h[1], h[2], `transform:rotate(${a}deg) translateY(${Math.abs(a) * 1.2}px)`);
+  }).join('');
+  document.getElementById('skill').innerHTML = SKILLS.map(([t, f, c]) => card(KIND.skill, ICONS[f](c), t)).join('')
+    + card(KIND.skill, ICONS.paint('#66ccf5'), '하늘 페인트');
+  document.getElementById('exclusive').innerHTML = EXCLUSIVE.map(([t, f, c]) => card(KIND.exclusive, ICONS[f](c), t)).join('')
+;
+  document.getElementById('bigstack').innerHTML = CHIPS.map(([t, c]) => card(KIND.exclusive, ICONS.chip(c, true), '빅 스택 ' + t)).join('');
+  document.getElementById('hero').innerHTML = HERO.map(([t, f, c]) => card(KIND.hero, ICONS[f](c), t)).join('');
+  document.getElementById('chip').innerHTML = CHIPS.map(([t, c]) => card(KIND.chip, ICONS.chip(c), t)).join('');
+  document.getElementById('dice').innerHTML = [6, 12, 20].map(f => `<div class="row mid">` +
+    COLORS.map(([t, c]) => card(KIND.dice, diceSvg(c, f), t + ' d' + f)).join('') + `</div>`).join('');
+  document.getElementById('paint').innerHTML = COLORS.map(([t, c]) => card(KIND.skill, ICONS.paint(c), t + ' 페인트')).join('');
+}
+
+document.getElementById('outline').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.outline = b.dataset.v;
+  for (const x of e.currentTarget.querySelectorAll('button')) x.setAttribute('aria-pressed', x === b);
+  render();
+});
+document.getElementById('pad').addEventListener('input', e => { state.pad = +e.target.value; document.getElementById('padv').textContent = state.pad; render(); });
+document.getElementById('shadow').addEventListener('change', e => { state.shadow = e.target.checked; render(); });
+render();
+</script>
+</body>
+</html>

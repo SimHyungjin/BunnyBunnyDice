@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<!-- export.py가 헤드리스 Edge로 찍는 페이지. #시작번호 부터 24장을 512px 칸 6열로 투명 배경에 그린다. -->
+<style>html,body{margin:0;background:transparent} body{display:flex;flex-wrap:wrap;width:3072px} svg{display:block;overflow:hidden}</style>
+</head><body>
+<script src="icons.js"></script>
+<script src="list.js"></script>
+<script>
+// 가시 모양 테두리가 잘리지 않게 칸을 넉넉히(280) 잡고, 여백은 export.py가 그림마다 잘라낸다.
+const start = +(location.hash.slice(1) || 0);
+document.body.innerHTML = iconList().slice(start, start + 24)
+  .map(([n, k, svg]) => `<svg width="512" height="512" viewBox="-40 -40 280 280">${icon(k, svg)}</svg>`).join('');
+</script>
+</body></html>

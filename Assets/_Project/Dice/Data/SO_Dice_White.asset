@@ -28,3 +28,10 @@ MonoBehaviour:
   HitSparkRadius: 0.35
   AwakenDelay: 0.2
   AwakenRatio: 0.5
+  CardIcons:
+  - Faces: 6
+    Icon: {fileID: 21300000, guid: 844361958de4488d9f444ac0361531c3, type: 3}
+  - Faces: 12
+    Icon: {fileID: 21300000, guid: 5fc44de8102b44e99c4524c699ffc4f0, type: 3}
+  - Faces: 20
+    Icon: {fileID: 21300000, guid: b71a7f99620d447eb644fe96f8b0af79, type: 3}

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_ChipCard_Burn
   DisplayName: "화상"
   Description: "맞은 적이 {Duration}초 동안 매초 최대 체력의 {MaxHealthRatio%} 피해를 입고, 재생이 {RegenReduction%} 줄어든다. 방어력을 무시한다."
-  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  Icon: {fileID: 21300000, guid: 1fe85a8ff43c49f5b8018724ee3aa5d0, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.9, g: 0.25, b: 0.75, a: 1}
   Weight: 1
   MaxHealthRatio: 0.01

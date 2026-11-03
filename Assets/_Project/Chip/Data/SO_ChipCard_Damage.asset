@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_ChipCard_Damage
   DisplayName: "공격력"
   Description: "이 칩 위 주사위의 공격력이 {Ratio%} 늘어난다."
-  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  Icon: {fileID: 21300000, guid: 11fb9036c09444dc9f7c08b38e54d217, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   Weight: 1
   Ratio: 0.5

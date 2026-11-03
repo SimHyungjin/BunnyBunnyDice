@@ -144,8 +144,10 @@ public sealed class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler,
     {
         SO_DiceConfig.FaceModel face = diceConfig.GetModel(card.Faces);
         SO_DiceType type = diceConfig.GetDiceType(card.Colors);
-        _icon.sprite = face.Icon;
-        _icon.color = diceConfig.GetColor(card.Colors);
+        // 색마다 칠해 둔 카드 그림이 있으면 그대로 쓰고, 없으면 면체 그림에 색을 곱한다.
+        Sprite colored = type != null ? type.GetCardIcon(card.Faces) : null;
+        _icon.sprite = colored != null ? colored : face.Icon;
+        _icon.color = colored != null ? Color.white : diceConfig.GetColor(card.Colors);
         _titleText.text = type != null ? App.Localize(type.AttackName) : "?";
         _subText.text = App.Localize("{0} {1}, 눈 1~{2}", type != null ? App.Localize(type.DisplayName) : "?",
             App.Localize(face.DisplayName), card.Faces);

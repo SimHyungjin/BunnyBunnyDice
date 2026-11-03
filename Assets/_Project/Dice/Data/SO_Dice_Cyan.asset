@@ -26,3 +26,10 @@ MonoBehaviour:
   MaxHealthDamage: 0
   HalfWidth: 0.35
   AwakenPenetration: 0.5
+  CardIcons:
+  - Faces: 6
+    Icon: {fileID: 21300000, guid: b289f0a14ce244e0a0a4ec6bc86481e6, type: 3}
+  - Faces: 12
+    Icon: {fileID: 21300000, guid: f94442dbcac74d6f8ec6ccdec86427ec, type: 3}
+  - Faces: 20
+    Icon: {fileID: 21300000, guid: 9abedc0e70ee4199ae3822784f7ccf2c, type: 3}

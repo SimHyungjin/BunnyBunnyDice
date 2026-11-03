@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: "코인 플립"
   Description: "{Chance%} 확률로 무작위 카드 {Count}장을
     얻는다."
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 1090529a8fdd41778802693f7b6a7eed, type: 3}
   TintIcon: 0
   IconColor: {r: 0.247, g: 0.878, b: 1, a: 1}
   Weight: 1

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_ChipCard_Slow
   DisplayName: "둔화"
   Description: "맞은 적이 {Duration}초 동안 {Ratio%} 느려진다."
-  Icon: {fileID: 21300000, guid: 585eaf4aa1624379a1ccffebf96914db, type: 3}
+  Icon: {fileID: 21300000, guid: 6bad5df75eee49208e74b5b98a1359bc, type: 3}
+  TintIcon: 0
   IconColor: {r: 0.96, g: 0.85, b: 0.2, a: 1}
   Weight: 1
   Ratio: 0.25

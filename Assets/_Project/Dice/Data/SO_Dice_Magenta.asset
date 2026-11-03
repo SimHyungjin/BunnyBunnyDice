@@ -29,3 +29,10 @@ MonoBehaviour:
   Falloff: 0.9
   MinJumpDamage: 2
   AwakenFalloff: 0.95
+  CardIcons:
+  - Faces: 6
+    Icon: {fileID: 21300000, guid: fd314602ea604fa29d1e69c799f1fd4a, type: 3}
+  - Faces: 12
+    Icon: {fileID: 21300000, guid: b7676c31a8bf4c239f209fa736d8fa35, type: 3}
+  - Faces: 20
+    Icon: {fileID: 21300000, guid: d24c5449d4e442ca8a2b2338ba9dcf4c, type: 3}
