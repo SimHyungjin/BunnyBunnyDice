@@ -18,8 +18,8 @@ MonoBehaviour:
   CountPerWave: 6
   BossCount: 1
   MaxCount: 300
-  HealthGrowth: 0.1
-  HealthCompound: 0.08
+  HealthGrowth: 0
+  HealthCompound: 0.1
   GrowthEndWave: 50
   ArmorPerWave: 1
   SpeedGrowthStartWave: 50
