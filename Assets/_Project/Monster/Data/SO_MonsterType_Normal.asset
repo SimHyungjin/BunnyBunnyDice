@@ -17,6 +17,6 @@ MonoBehaviour:
   Color: {r: 0.95, g: 0.92, b: 0.84, a: 1}
   MoveSpeed: 1.2
   Health: 150
-  Armor: 0
+  Armor: 20
   GoalDamage: 1
   Exp: 1

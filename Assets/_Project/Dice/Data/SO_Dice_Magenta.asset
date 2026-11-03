@@ -18,8 +18,8 @@ MonoBehaviour:
   AttackName: "\uAD00\uD1B5"
   Description: "\uC77C\uC9C1\uC120\uC73C\uB85C \uAFF0\uB6AB\uB294\uB2E4."
   AwakenDescription: "\uAD00\uD1B5\uC120\uC774 {AwakenWidthScale}\uBC30 \uAD75\uC5B4\uC9C4\uB2E4"
-  Damage: 30
-  DamageGrowth: 0.5
+  Damage: 60
+  DamageGrowth: 0.25
   AttackSpeed: 1
   AttackSpeedGrowth: 0
   Range: 3.5
