@@ -16,7 +16,7 @@ MonoBehaviour:
   Prefab: {fileID: 6620773300112233001, guid: 6b1e0d0c2a7f4e3d9c8b7a6f5e4d3c2b, type: 3}
   Color: {r: 0.95, g: 0.92, b: 0.84, a: 1}
   MoveSpeed: 1.2
-  Health: 150
-  Armor: 20
+  Health: 100
+  Armor: 10
   GoalDamage: 1
   Exp: 1

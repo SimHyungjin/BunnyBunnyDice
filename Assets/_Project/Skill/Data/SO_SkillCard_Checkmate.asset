@@ -19,5 +19,5 @@ MonoBehaviour:
   IconColor: {r: 0.95, g: 0.3, b: 0.35, a: 1}
   Weight: 1
   Exclusive: 0
-  DamageMultiplier: 1
+  DamageMultiplier: 10
   BossKingLoss: 0.5

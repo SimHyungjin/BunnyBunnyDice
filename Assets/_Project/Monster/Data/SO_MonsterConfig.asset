@@ -15,7 +15,7 @@ MonoBehaviour:
   Radius: 0.3
   TurnSpeed: 540
   HitHeight: 0.3
-  MinDamageRatio: 0.2
+  MinDamageRatio: 0.1
   EmergeDuration: 0.4
   EmergeStartScale: 0.25
   EmergeDepth: -0.35

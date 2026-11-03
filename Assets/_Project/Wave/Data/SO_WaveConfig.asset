@@ -18,10 +18,10 @@ MonoBehaviour:
   CountPerWave: 6
   BossCount: 1
   MaxCount: 300
-  HealthGrowth: 0
-  HealthCompound: 0.1
+  HealthGrowth: 0.3
+  HealthCompound: 0.06
   GrowthEndWave: 50
-  ArmorPerWave: 1
+  ArmorPerWave: 1.5
   SpeedGrowthStartWave: 50
   SpeedGrowth: 0.03
   ExpBoostAfterWave: 50
@@ -54,8 +54,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
   BossExtraStrength: 0.5
   BossRandomTraits: 0
-  BossHealthShare: 0.4
-  BossHealthMaxCount: 50
+  BossHealthShare: 0.5
+  BossHealthMaxCount: 0
   BossRewardChoices: 1
   JackpotChance: 0.25
   JackpotTraits:
