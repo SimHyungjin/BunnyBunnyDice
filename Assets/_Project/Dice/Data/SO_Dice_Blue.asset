@@ -19,7 +19,7 @@ MonoBehaviour:
   Description: "가장 멀리 닿는 공격."
   AwakenDescription: "멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%})."
   Damage: 40
-  DamageGrowth: 0.5
+  DamageGrowth: 0.6
   AttackSpeed: 0.67
   AttackSpeedGrowth: 0
   Range: 5.5

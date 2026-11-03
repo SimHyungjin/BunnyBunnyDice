@@ -20,7 +20,7 @@ MonoBehaviour:
     \uB54C\uB9C8\uB2E4 \uD53C\uD574\uAC00 {Falloff%}\uB85C \uC904\uC5B4\uB4E0\uB2E4."
   AwakenDescription: "\uD295\uAE38 \uB54C\uB9C8\uB2E4 {1-AwakenFalloff%}\uB9CC \uC904\uC5B4\uB4E0\uB2E4"
   Damage: 27
-  DamageGrowth: 0.25
+  DamageGrowth: 0.3
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0
   Range: 4.4

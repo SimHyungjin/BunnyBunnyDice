@@ -20,7 +20,7 @@ MonoBehaviour:
     \uC801\uC5D0\uAC8C\uB3C4 \uD53C\uD574\uB97C \uC900\uB2E4."
   AwakenDescription: "\uD3ED\uBC1C \uBC18\uACBD {1+AwakenExplosionRadiusBonus}\uBC30"
   Damage: 40
-  DamageGrowth: 0.25
+  DamageGrowth: 0.3
   AttackSpeed: 2.25
   AttackSpeedGrowth: 0
   Range: 2.85

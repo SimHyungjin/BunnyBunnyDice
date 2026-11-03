@@ -19,7 +19,7 @@ MonoBehaviour:
   Description: "빠르게 쏘는 약한 공격."
   AwakenDescription: "같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다."
   Damage: 18
-  DamageGrowth: 0.5
+  DamageGrowth: 0.6
   AttackSpeed: 3.4
   AttackSpeedGrowth: 0
   Range: 3.5
