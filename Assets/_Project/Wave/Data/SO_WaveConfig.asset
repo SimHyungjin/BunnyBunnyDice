@@ -55,6 +55,7 @@ MonoBehaviour:
   BossExtraStrength: 0.5
   BossRandomTraits: 0
   BossHealthShare: 0.4
+  BossHealthMaxCount: 50
   BossRewardChoices: 1
   JackpotChance: 0.25
   JackpotTraits:

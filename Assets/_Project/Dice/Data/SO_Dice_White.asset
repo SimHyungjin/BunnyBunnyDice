@@ -18,7 +18,7 @@ MonoBehaviour:
   AttackName: "\uD30C\uB3D9"
   Description: "주변의 모든 적에게 피해를 준다."
   AwakenDescription: "\uD30C\uB3D9\uC774 \uB450 \uACB9\uC73C\uB85C \uD37C\uC9C4\uB2E4"
-  Damage: 20
+  Damage: 10
   DamageGrowth: 0.5
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0

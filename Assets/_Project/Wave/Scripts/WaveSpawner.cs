@@ -196,7 +196,9 @@ public sealed class WaveSpawner : IDisposable
         }
         MonsterKind boss = GetKind(type, _bossTraits, true, jackpot);
         WaveBoss = boss;
-        float healthScale = total * _config.BossHealthShare / Mathf.Max(type.Health * boss.HealthScale, 1f);
+        float health = total * _config.BossHealthShare;
+        if (_config.BossHealthMaxCount > 0f) health = Mathf.Min(health, type.Health * wave.Health * _config.BossHealthMaxCount);
+        float healthScale = health / Mathf.Max(type.Health * boss.HealthScale, 1f);
         var scale = new MonsterSpawnScale(healthScale, wave.Speed, wave.Armor);
         for (int i = 0; i < _config.BossCount; i++) _pending.Enqueue((boss, scale));
         if (!jackpot) return;
