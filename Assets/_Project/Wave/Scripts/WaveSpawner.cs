@@ -109,6 +109,25 @@ public sealed class WaveSpawner : IDisposable
         _waveTimer = _config.WaveDelay;
     }
 
+    /// <summary>
+    /// wave로 바로 가서 시작한다(테스트용 — 배치 다시 돌리기). SkipWaves와 달리 건너뛰는 웨이브도 구성을 뽑았다 버린다
+    /// — 웨이브 난수 줄(GameRandom.Wave)을 실제 판과 같게 써서, 같은 시드면 그 웨이브의 특성·잭팟이 기록된 판과 같다.
+    /// 건너뛰는 웨이브는 알리지 않는다(기록·HUD에 남지 않게). 맵에 남은 적은 부르는 쪽이 치운다.
+    /// </summary>
+    public void JumpTo(int wave)
+    {
+        if (!_running || wave <= Wave) return;
+        _pending.Clear();
+        CancelJackpot();
+        while (Wave < wave - 1)
+        {
+            StartWave(false);
+            _pending.Clear();
+        }
+        StartWave();
+        _waveTimer = _config.WaveDelay;
+    }
+
     // 게임 시간을 따른다 — 카드를 집는 동안 몬스터가 느려지면 나오는 간격도 같이 늘어야 몰리지 않는다.
     private void Tick(float deltaTime)
     {
@@ -148,7 +167,8 @@ public sealed class WaveSpawner : IDisposable
         }
     }
 
-    private void StartWave()
+    // notify = 시작을 알린다(JumpTo가 건너뛰는 웨이브만 false).
+    private void StartWave(bool notify = true)
     {
         // 쉬던 중에 시작하면 첫 마리를 바로 내보낸다(앞 웨이브의 남은 간격을 기다리지 않게).
         if (_pending.Count == 0) _spawnTimer = 0f;
@@ -174,16 +194,16 @@ public sealed class WaveSpawner : IDisposable
                 _pending.Enqueue((kind, scale));
                 total += type.Health * kind.HealthScale * healthScale;
             }
-            if (hasBoss) EnqueueBoss(type, total, scale);
+            if (hasBoss) EnqueueBoss(type, total, scale, notify);
         }
-        WaveStarted?.Invoke(Wave);
+        if (notify) WaveStarted?.Invoke(Wave);
     }
 
     /// <summary>다음 보스를 잭팟 보스로 만든다(테스트 키).</summary>
     public void ForceJackpot() => _forceJackpot = true;
 
     // 보스를 일반 몬스터 뒤에 줄 세운다. 체력은 이번 웨이브 일반 몬스터 체력 합(total)의 몫 — 특성 체력 배율은 나눠 지운다.
-    private void EnqueueBoss(SO_MonsterType type, float total, MonsterSpawnScale wave)
+    private void EnqueueBoss(SO_MonsterType type, float total, MonsterSpawnScale wave, bool notify)
     {
         bool jackpot = _forceJackpot || GameRandom.Wave.NextDouble() < _config.JackpotChance;
         _forceJackpot = false;
@@ -201,7 +221,7 @@ public sealed class WaveSpawner : IDisposable
         float healthScale = health / Mathf.Max(type.Health * boss.HealthScale, 1f);
         var scale = new MonsterSpawnScale(healthScale, wave.Speed, wave.Armor);
         for (int i = 0; i < _config.BossCount; i++) _pending.Enqueue((boss, scale));
-        if (!jackpot) return;
+        if (!jackpot || !notify) return;
         _jackpotWarned = true;
         JackpotWarned?.Invoke();
     }

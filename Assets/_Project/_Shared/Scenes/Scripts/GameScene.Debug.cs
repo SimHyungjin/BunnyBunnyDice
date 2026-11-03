@@ -33,6 +33,11 @@ public sealed partial class GameScene
         _colorTest = new ColorPowerTest(_colorTestConfig, diceConfig, waveConfig, () => _map, _diceField, _monsters, _waves, TestRetry);
         _colorTest.RunningChanged += SetColorTestMode;
         keys.Add(Key.T, false, "색 시험(미로 전부를 한 색 d20 눈 20으로 — 영웅·칩 없이, 적은 늘 디버프)", ToggleColorTest, () => _colorTest.Running);
+        // 사람이 한 판의 웨이브별 판을 다시 세워 주사위 색만 바꿔 돈다(2026-11-03). RunLogs/board_replay_*.csv.
+        _boardReplay = new BoardReplayTest(_colorTestConfig, levelUpConfig, heroConfig, () => _map, _diceField, _chips, _monsters, _waves, _hero, _heroStats,
+            _heroAttack, TestRetry);
+        _boardReplay.RunningChanged += SetBoardReplayMode;
+        keys.Add(Key.T, true, "배치 다시 돌리기(최근 플레이 기록의 판으로 원래 색·색마다 — SO_ColorTestConfig 아래쪽)", ToggleBoardReplay, () => _boardReplay.Running);
         // 원하는 카드를 골라 넣는 테스트 창(F1).
         GameDebugPanel panel = _mapRoot.gameObject.AddComponent<GameDebugPanel>();
         panel.Init(levelUpConfig, diceConfig, keys.Bindings, _hand.Add, () =>

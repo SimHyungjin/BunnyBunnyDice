@@ -22,3 +22,9 @@ MonoBehaviour:
   SpeedScale: 0.556
   MaxWave: 100
   StopRatio: 0.1
+  ReplayLog: 
+  ReplaySegments:
+  - {x: 30, y: 40}
+  - {x: 50, y: 60}
+  ReplayColors: ffffffff
+  ReplayHero: 1

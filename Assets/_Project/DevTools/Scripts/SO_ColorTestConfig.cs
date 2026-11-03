@@ -33,4 +33,18 @@ public sealed class SO_ColorTestConfig : SO_Config
     [Min(1)] public int MaxWave = 100;
     [Tooltip("웨이브 처리 비율(깎은 체력 ÷ 들어온 체력)이 이보다 낮아지면 그 판을 끝낸다.")]
     [Range(0f, 1f)] public float StopRatio = 0.1f;
+
+    [Header("배치 다시 돌리기(BoardReplayTest, Shift+T)")]
+    [Tooltip("다시 돌릴 플레이 기록 파일 이름(RunLogs 안, 예: play_20261103_220459_..._seed35204828.csv). 비우면 가장 최근 play_*.csv.")]
+    public string ReplayLog = "";
+    [Tooltip("돌릴 웨이브 구간(x = 처음, y = 끝, 포함). 구간마다 그 웨이브가 시작될 때의 기록된 판으로 바꿔 놓고 돈다.")]
+    public List<Vector2Int> ReplaySegments = new List<Vector2Int> { new Vector2Int(30, 40), new Vector2Int(50, 60) };
+    [Tooltip("판의 모든 주사위를 바꿔 볼 색. 원래 색 한 판은 늘 먼저 돈다. 칸·면체·눈·칩은 그대로다.")]
+    public List<DiceColor> ReplayColors = new List<DiceColor>
+    {
+        DiceColor.Red, DiceColor.Green, DiceColor.Blue,
+        DiceColor.Red | DiceColor.Green, DiceColor.Red | DiceColor.Blue, DiceColor.Green | DiceColor.Blue, DiceColors.All,
+    };
+    [Tooltip("켜면 영웅이 기록된 자리(주사위 칸이면 가장 가까운 빈 바닥)에 서서 그때까지 고른 영웅 카드로 공격한다. 올라타기(레이즈)는 하지 않는다.")]
+    public bool ReplayHero = true;
 }

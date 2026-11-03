@@ -99,8 +99,17 @@ public sealed class Hero : IDisposable
     {
         MapData map = _getMap();
         Vector2 goalCenter = map.GoalRect.center - new Vector2(0.5f, 0.5f);
+        Teleport(HeroTerrain.FindNearest(map, goalCenter, HeroTerrain.Ground));
+    }
+
+    /// <summary>
+    /// 걷지 않고 그 자리에 세운다. 새 판(Respawn)과 테스트(배치 다시 돌리기 — 기록된 판의 영웅 자리)가 쓴다.
+    /// 걸어가게 하면 가는 길에 주사위를 밟아 레이즈가 켜질 수 있다.
+    /// </summary>
+    public void Teleport(Vector2 position)
+    {
         ClearDestination();
-        _motor.Teleport(HeroTerrain.FindNearest(map, goalCenter, HeroTerrain.Ground));
+        _motor.Teleport(position);
         _lastCell = GridCircle.CellOf(_motor.Position);
         // 붙잡혀 있으면 몸은 연출 자리에 둔다 — 여기서 시작 자리로 옮기면 연출이 다시 놓기 전 한 프레임 튄다.
         if (!Held) _view.Sync(_motor.Position, Vector2.zero, 0f, _getFloor(_motor.Position));

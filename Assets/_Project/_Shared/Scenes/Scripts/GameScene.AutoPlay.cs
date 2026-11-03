@@ -14,6 +14,8 @@ public sealed partial class GameScene
     // 색 시험(테스트 — 미로 전부를 한 색 d20 눈 20으로). 켜는 동안 무적·경험치 막기·영웅 공격 끔·적 이속 배율을 걸고, 끄면 켤 때 값으로 되돌린다.
     private ColorPowerTest _colorTest;
     private SO_ColorTestConfig _colorTestConfig;
+    // 배치 다시 돌리기(테스트 — 사람이 한 판의 웨이브별 판을 다시 세워 색만 바꿔 본다). 색 시험과 같은 설정 SO를 쓴다.
+    private BoardReplayTest _boardReplay;
     private bool _savedInvincible;
     private bool _savedExpBlocked;
     // 빠른 시뮬 동안 판 카메라가 그리던 층(되돌릴 값). 모든 층(Everything)이 -1이라 값으로 시뮬 여부를 가리지 않는다.
@@ -35,17 +37,25 @@ public sealed partial class GameScene
     {
         _bot?.Dispose();
         _colorTest?.Dispose();
+        _boardReplay?.Dispose();
         _mazePlanner?.Dispose();
     }
 
     // 봇·색 시험이 도는 동안은 첫 웨이브를 기다리지 않는다(WaveStartGate).
-    private bool IsAutoPlaying => (_bot != null && _bot.Enabled) || (_colorTest != null && _colorTest.Running);
+    private bool IsAutoPlaying => (_bot != null && _bot.Enabled) || IsTestRunning;
 
-    private bool IsSim => (_bot != null && _bot.Enabled && _bot.Fast) || (_colorTest != null && _colorTest.Running);
+    private bool IsSim => (_bot != null && _bot.Enabled && _bot.Fast) || IsTestRunning;
+
+    // 색 시험·배치 다시 돌리기 — 둘 다 빠른 시뮬로 판을 연달아 돈다.
+    private bool IsTestRunning => (_colorTest != null && _colorTest.Running) || (_boardReplay != null && _boardReplay.Running);
 
     private void AutoPlayRunStarting() => _bot?.BeginRun();
 
-    private void AutoPlayBattleReady() => _colorTest?.OnBattleReady();
+    private void AutoPlayBattleReady()
+    {
+        _colorTest?.OnBattleReady();
+        _boardReplay?.OnBattleReady();
+    }
 
     private void AutoPlayGameOver(RunSummary run) => _bot?.OnGameOver(_waveLog.Records, _seed, run.Wave);
 
@@ -99,16 +109,31 @@ public sealed partial class GameScene
     private bool TakeSeed(out int seed)
     {
         if (_colorTest != null && _colorTest.TryTakeSeed(out seed)) return true;
+        if (_boardReplay != null && _boardReplay.TryTakeSeed(out seed)) return true;
         if (_bot != null && _bot.TryTakeSeed(out seed)) return true;
         seed = 0;
         return false;
     }
 
-    // 색 시험 켜기·끄기. 봇과 함께 돌지 않는다(둘 다 판을 다시 시작한다).
+    // 색 시험 켜기·끄기. 봇·배치 다시 돌리기와 함께 돌지 않는다(모두 판을 다시 시작한다).
     private void ToggleColorTest()
     {
-        if (!_colorTest.Running && _bot.Enabled) _bot.SetEnabled(false);
+        if (!_colorTest.Running)
+        {
+            if (_bot.Enabled) _bot.SetEnabled(false);
+            if (_boardReplay != null && _boardReplay.Running) _boardReplay.Toggle();
+        }
         _colorTest.Toggle();
+    }
+
+    private void ToggleBoardReplay()
+    {
+        if (!_boardReplay.Running)
+        {
+            if (_bot.Enabled) _bot.SetEnabled(false);
+            if (_colorTest != null && _colorTest.Running) _colorTest.Toggle();
+        }
+        _boardReplay.Toggle();
     }
 
     // 색 시험의 다음 판: 봇과 같은 길이고, 로비면 테이블을 그 맵으로 바꾼 뒤 뛰어든다.
@@ -130,6 +155,23 @@ public sealed partial class GameScene
         _debug.ExpBlocked = on || _savedExpBlocked;
         _heroAttack.Enabled = !on;
         _monsters.SpeedScale = on ? _colorTestConfig.SpeedScale : 1f;
+        _speed.FastForward = on ? _botConfig.SimSpeed : 1f;
+        ApplySimMode();
+    }
+
+    // 배치 다시 돌리기 동안의 테스트 상태 — 색 시험과 같되 적 이속은 실제 판 그대로(칩 디버프가 판에 있다),
+    // 영웅 공격은 시험이 정한다(SO_ColorTestConfig.ReplayHero — BoardReplayTest.OnBattleReady). 끄면 켤 때 값으로 되돌린다.
+    private void SetBoardReplayMode(bool on)
+    {
+        if (on)
+        {
+            _savedInvincible = _debug.GoalInvincible;
+            _savedExpBlocked = _debug.ExpBlocked;
+        }
+        _debug.GoalInvincible = on || _savedInvincible;
+        _debug.ExpBlocked = on || _savedExpBlocked;
+        if (!on) _heroAttack.Enabled = true;
+        _monsters.SpeedScale = 1f;
         _speed.FastForward = on ? _botConfig.SimSpeed : 1f;
         ApplySimMode();
     }
