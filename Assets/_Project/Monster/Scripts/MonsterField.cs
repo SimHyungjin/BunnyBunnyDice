@@ -80,23 +80,23 @@ public sealed class MonsterField : IDisposable
     /// <summary>
     /// gate번째 출현 차례(MapData.SpawnGates)의 포켓에 세운다. 차례 수보다 크면 처음부터 다시 센다(웨이브가 돌아가며 쓴다).
     /// 차례는 주사위 하나당 한 칸이라, 같은 눈이 겹친 포켓에서 그만큼 더 나온다.
-    /// healthScale은 웨이브에 따라 기본 체력에 곱하는 값이다(특성의 체력 배율은 모양이 따로 곱한다).
+    /// healthScale은 웨이브에 따라 기본 체력에 곱하는 값이다(특성의 체력 배율은 모양이 따로 곱한다). speedScale은 웨이브 이동 속도 배율.
     /// </summary>
-    public void Spawn(MonsterKind kind, int gate, float healthScale)
+    public void Spawn(MonsterKind kind, int gate, float healthScale, float speedScale)
     {
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.SpawnGates[gate % _map.SpawnGates.Count];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, SpawnHealth(kind, healthScale), origin);
+        Add(kind, cell, SpawnHealth(kind, healthScale), speedScale, origin);
     }
 
     /// <summary>보스를 보스 포켓(MapData.BossPocket)에 세운다. 보스 포켓이 없으면(옛 맵) 첫 출현 차례.</summary>
-    public void SpawnBoss(MonsterKind kind, float healthScale)
+    public void SpawnBoss(MonsterKind kind, float healthScale, float speedScale)
     {
         if (_map == null || _route == null || _map.SpawnGates.Count == 0) return;
         Vector2Int cell = _map.InBounds(_map.BossPocket.x, _map.BossPocket.y) ? _map.BossPocket : _map.SpawnGates[0];
         Vector3? origin = SpawnOrigin != null ? SpawnOrigin(cell) : (Vector3?)null;
-        Add(kind, cell, SpawnHealth(kind, healthScale), origin);
+        Add(kind, cell, SpawnHealth(kind, healthScale), speedScale, origin);
     }
 
     // 체력은 double로 곱한다 — 후반 보스는 수십억이라 float(유효 7자리)로 곱하면 끝자리가 뭉개진 채 나온다.
@@ -109,7 +109,7 @@ public sealed class MonsterField : IDisposable
     /// </summary>
     public Func<Vector2Int, Vector3> SpawnOrigin { get; set; }
 
-    private void Add(MonsterKind kind, Vector2 position, double health, Vector3? origin = null)
+    private void Add(MonsterKind kind, Vector2 position, double health, float speedScale, Vector3? origin = null)
     {
         int kindIndex = _kinds.IndexOf(kind);
         if (kindIndex < 0)
@@ -127,6 +127,7 @@ public sealed class MonsterField : IDisposable
             Health = health,
             MaxHealth = health,
             Shield = kind.GetShieldHits(Wave),
+            WaveSpeedScale = speedScale,
         };
         MonsterMovement.Retarget(ref state, _route);
         _states[_count] = state;
@@ -278,7 +279,7 @@ public sealed class MonsterField : IDisposable
             if (regen > 0f)
                 state.Health = Math.Min(state.Health + state.MaxHealth * regen * deltaTime, state.MaxHealth);
 
-            float speed = kind.MoveSpeed * MonsterStatus.GetSpeedScale(state) * SpeedScale;
+            float speed = kind.MoveSpeed * state.WaveSpeedScale * MonsterStatus.GetSpeedScale(state) * SpeedScale;
             float enrage = kind.EnrageSpeedBonus;
             if (enrage > 0f && state.MaxHealth > 0d) speed *= 1f + enrage * (1f - (float)(state.Health / state.MaxHealth));
             MonsterMovement.Advance(ref state, speed * deltaTime, _route);

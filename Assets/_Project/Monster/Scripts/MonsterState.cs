@@ -24,6 +24,8 @@ public struct MonsterState
     public double Health;
     /// <summary>나온 때의 체력(웨이브 배율 포함). 재생은 이 비율로 회복한다.</summary>
     public double MaxHealth;
+    /// <summary>웨이브 이동 속도 배율(SO_WaveConfig.GetSpeedScale). 나온 때 정한다 — 앞 웨이브 몬스터가 다음 웨이브가 시작됐다고 빨라지지 않게.</summary>
+    public float WaveSpeedScale;
     /// <summary>남은 보호막 횟수(MonsterKind.ShieldHits에서 시작해 맞을 때마다 하나씩 준다).</summary>
     public int Shield;
 

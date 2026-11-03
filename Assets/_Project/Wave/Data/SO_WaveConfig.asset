@@ -20,6 +20,9 @@ MonoBehaviour:
   MaxCount: 300
   HealthGrowth: 0.1
   HealthCompound: 0.08
+  HealthGrowthEndWave: 50
+  SpeedGrowthStartWave: 50
+  SpeedGrowth: 0.03
   ExpBoostAfterWave: 50
   ExpBoostScale: 2
   Monster: {fileID: 11400000, guid: 5146a3e9cb23695a2f38411fc7059de9, type: 2}
