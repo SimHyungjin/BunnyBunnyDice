@@ -6,7 +6,7 @@ using UnityEngine;
 /// 주사위 한 번의 공격(기획서 6.5). 공격 방식(종류 SO의 하위 클래스)에 따라 누구를 어떻게 맞힐지 정하고, 피해·각성·표시까지 여기서 한다.
 /// DiceCombat은 언제 쏠지만 정한다 — 공격 방식이 늘어도 공격 주기 코드는 그대로 두려고.
 /// 노리는 대상은 선두 우선이다 — 강타(빨강)가 체력 높은 적을 노리면 오버딜이라는 약점이 사라진다.
-/// 관통·폭발만 예외로 가장 많이 휘말리는 곳을 노린다(범위가 쓸모 있으려면 뭉친 곳을 맞혀야 한다, 기획서 6.5).
+/// 관통만 예외로 가장 많이 꿰뚫는 쪽을 노린다(얇은 선은 길과 나란할 때만 줄 전체를 꿰뚫는다, 기획서 6.5).
 /// 치명타는 직접 맞힌 피해마다 굴리고, 폭발 파편은 효과라 치명타가 없다.
 /// 붙은 강화(둔화·화상·취약)는 이 주사위가 맞히는 모든 적에게 건다 — 폭발 파편 포함(기획서 7).
 /// </summary>
@@ -170,30 +170,18 @@ public sealed class DiceAttack : IDisposable
         return true;
     }
 
-    // 사거리 안 몬스터 중 그 자리에서 터지면 가장 많이 휘말리는 몬스터를 맞히고, 그 자리에서 터진다(관통과 같은 겨냥).
-    // 선두만 노리면 폭발이 쓸모 있는 때가 거의 없었다 — 관통은 길을 바꿔 줄을 세우면 되지만, 선두 둘레를 뭉치게 할 방법은 없다.
-    // 동점이면 선두를 남긴다. 각성하면 반경이 커진다.
+    // 선두를 맞히고 그 자리에서 터진다. 각성하면 반경이 커진다.
+    // 한때(2026-10-26) 가장 많이 휘말리는 몬스터를 골라 맞혔는데, 뭉쳐 다니는 판(길 하나로 모으기)에서 매번 가장 빽빽한 곳에 떨어져
+    // 2색 성장 절반을 맞히는 수로 넘어섰다 — 퍼뎀을 뺀 뒤 노랑이 판을 끌어 선두로 되돌렸다(2026-11-03 사용자).
     private bool FireExplosion(in Shot shot, SO_DiceType_Explosion type, bool awaken, Color color)
     {
-        int lead = FindFirst(shot);
-        if (lead < 0) return false;
+        int target = FindFirst(shot);
+        if (target < 0) return false;
         MonsterState[] states = _monsters.States;
         float growth = _statsConfig.GetGrowth(shot.Dice.Pips);
         float radius = Mathf.Min(type.ExplosionRadius * (1f + type.ExplosionRadiusGrowth * growth), type.MaxExplosionRadius)
             * (awaken ? 1f + type.AwakenExplosionRadiusBonus : 1f);
         float radiusSqr = radius * radius;
-
-        int target = lead;
-        int best = CountInCircle(states[lead].Position, radiusSqr);
-        float rangeSqr = shot.Range * shot.Range;
-        for (int i = 0; i < _monsters.Count; i++)
-        {
-            if (i == lead || !states[i].IsAlive || (states[i].Position - shot.Origin).sqrMagnitude > rangeSqr) continue;
-            int hits = CountInCircle(states[i].Position, radiusSqr);
-            if (hits <= best) continue;
-            best = hits;
-            target = i;
-        }
         Vector2 center = states[target].Position;
 
         bool critical = HitDirect(target, DamageOn(shot, target, 1f), shot.Stats.CritChance);
@@ -249,15 +237,6 @@ public sealed class DiceAttack : IDisposable
         Vector2 direction = target - shot.Origin;
         direction = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.up;
         return shot.Origin + direction * shot.Range;
-    }
-
-    private int CountInCircle(Vector2 center, float radiusSqr)
-    {
-        MonsterState[] states = _monsters.States;
-        int count = 0;
-        for (int i = 0; i < _monsters.Count; i++)
-            if (states[i].IsAlive && (states[i].Position - center).sqrMagnitude <= radiusSqr) count++;
-        return count;
     }
 
     private int CountOnLine(Vector2 from, Vector2 to, float halfWidthSqr)
