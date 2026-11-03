@@ -106,11 +106,16 @@ public sealed class SO_WaveConfig : SO_Config
     [Min(1)] public int BossInterval = 5;
     [Tooltip("보스에 늘 붙는 특성(거대). 여기에 무작위 후보에서 BossRandomTraits개를 더 붙인다.")]
     public List<SO_MonsterTrait> BossTraits = new List<SO_MonsterTrait>();
+    [Tooltip("보스에 BossExtraStrength 세기로 더 붙는 특성(주기 특성들). 거대처럼 보스다움을 만드는 특성은 BossTraits(세기 1)에 둔다.")]
+    public List<SO_MonsterTrait> BossExtraTraits = new List<SO_MonsterTrait>();
+    // 퍼뎀을 뺀 뒤(2026-11-03) 재생 4%·단단함 2배를 그대로 받으면 고정 피해로는 보스를 깎을 수 없다 — 웨이브 보조 특성과 같은 세기 체계로 낮춘다.
+    [Tooltip("BossExtraTraits의 세기(1 = 특성 SO 값 그대로). 0.5면 재생·방어력 배율·보호막·분노를 절반만 받는다.")]
+    [Range(0f, 1f)] public float BossExtraStrength = 0.5f;
     [Min(0)] public int BossRandomTraits = 1;
 
     [Header("보스 (기획서 9.4)")]
     [Tooltip("보스 체력 = 그 웨이브 일반 몬스터 체력 합 × 이 값. 특성의 체력 배율은 보스에 쓰지 않는다 — 몬스터 수가 늘어도 보스가 무리에 묻히지 않게. " +
-             "보스(거대)는 받는 피해가 1/10(SO_MonsterTrait.DamageResist 0.9)이라 실제 버티는 양은 이 값의 10배다. 영웅에게 녹아 0.05에서 0.2로 올렸다(2026-10-29).")]
+             "퍼뎀을 뺀 뒤(2026-11-03) 거대의 피해 저항(0.9)을 없애고 0.2 → 0.4로 올렸다 — 보스는 한 마리라 범위형이 맞힐 대상이 하나뿐이고 단단함 방어력이 작은 타격을 깎아, 저항 없이도 단일 고화력·영웅·스킬의 웨이브가 된다.")]
     [Range(0f, 2f)] public float BossHealthShare = 0.2f;
     [Tooltip("보스를 잡으면 받는 카드 고르기 횟수(레벨은 오르지 않는다).")]
     [Min(0)] public int BossRewardChoices = 1;

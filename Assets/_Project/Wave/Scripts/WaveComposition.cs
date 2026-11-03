@@ -40,8 +40,7 @@ public static class WaveComposition
             regular.Add(traits);
         }
         if (wave % config.BossInterval != 0) return false;
-        AddNonNull(boss, config.BossTraits);
-        AddRandom(boss, config.RandomTraits, config.BossRandomTraits, 1f, random);
+        AddBossTraits(config, boss, random);
         return true;
     }
 
@@ -61,8 +60,7 @@ public static class WaveComposition
                 if (!Contains(regular, config.CycleTraits[i])) regular.Add(single);
             }
             if (regular.Count == 0) regular.Add(new List<TraitSlot>());
-            AddNonNull(boss, config.BossTraits);
-            AddRandom(boss, config.RandomTraits, config.BossRandomTraits, 1f, random);
+            AddBossTraits(config, boss, random);
             return true;
         }
 
@@ -96,6 +94,18 @@ public static class WaveComposition
         List<TraitSlot> slots = new List<TraitSlot>();
         AddNonNull(slots, source);
         return slots;
+    }
+
+    // 보스 = 늘 붙는 특성(세기 1) + 주기 특성들(BossExtraStrength) + 무작위 몫.
+    private static void AddBossTraits(SO_WaveConfig config, List<TraitSlot> boss, RandomStream random)
+    {
+        AddNonNull(boss, config.BossTraits);
+        for (int i = 0; i < config.BossExtraTraits.Count; i++)
+        {
+            SO_MonsterTrait trait = config.BossExtraTraits[i];
+            if (trait != null && !Contains(boss, trait)) boss.Add(new TraitSlot(trait, config.BossExtraStrength));
+        }
+        AddRandom(boss, config.RandomTraits, config.BossRandomTraits, 1f, random);
     }
 
     // 인스펙터에서 빈 칸을 남겨도 무시한다.

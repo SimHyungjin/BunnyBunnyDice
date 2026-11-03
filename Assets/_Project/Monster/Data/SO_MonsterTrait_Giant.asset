@@ -18,7 +18,7 @@ MonoBehaviour:
   HealthScale: 1
   SpeedScale: 0.5
   ImpairResist: 0
-  DamageResist: 0.9
+  DamageResist: 0
   Armor: 0
   ArmorHealthRatio: 0
   RegenRatio: 0

@@ -47,12 +47,14 @@ MonoBehaviour:
   BossInterval: 5
   BossTraits:
   - {fileID: 11400000, guid: a0d0a8141c3049f58b1bf780cf3c2b23, type: 2}
+  BossExtraTraits:
   - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
   - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
   - {fileID: 11400000, guid: dbb2a790461e49d2a32405c17cffa7d3, type: 2}
   - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
+  BossExtraStrength: 0.5
   BossRandomTraits: 0
-  BossHealthShare: 0.2
+  BossHealthShare: 0.4
   BossRewardChoices: 1
   JackpotChance: 0.25
   JackpotTraits:
