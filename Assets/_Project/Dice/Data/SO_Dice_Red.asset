@@ -23,4 +23,4 @@ MonoBehaviour:
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0
   Range: 2.3
-  MaxHealthDamage: 0.01
+  MaxHealthDamage: 0

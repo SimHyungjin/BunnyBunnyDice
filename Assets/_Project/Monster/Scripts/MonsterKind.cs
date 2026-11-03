@@ -102,7 +102,18 @@ public sealed class MonsterKind
         }
     }
 
-    /// <summary>방어력의 고정 몫. 실제 방어력은 GetArmor(자기 최대 체력)로 읽는다.</summary>
+    /// <summary>웨이브 방어력에 곱하는 배율(배율이라 1에서 벗어난 몫만 세기를 받는다 — 보조 단단함은 1.5배).</summary>
+    public float ArmorScale
+    {
+        get
+        {
+            float scale = 1f;
+            for (int i = 0; i < _traits.Count; i++) scale *= Scaled(_traits[i].ArmorScale, i);
+            return scale;
+        }
+    }
+
+    /// <summary>방어력의 고정 몫. 실제 방어력은 GetArmor로 읽는다.</summary>
     public float Armor
     {
         get
@@ -124,8 +135,9 @@ public sealed class MonsterKind
         }
     }
 
-    /// <summary>방어력 = 고정 몫 + 체력 비례 몫 × 자기 최대 체력. 보스도 자기 체력이라 큰 한 방(최대 체력 피해가 비율보다 큰 색)만 그대로 들어간다.</summary>
-    public float GetArmor(double maxHealth) => Armor + ArmorHealthRatio * (float)maxHealth;
+    /// <summary>방어력 = 웨이브 방어력 × 배율 + 고정 몫 + 체력 비례 몫 × 자기 최대 체력.</summary>
+    /// <param name="waveArmor">나온 웨이브의 방어력(MonsterState.WaveArmor).</param>
+    public float GetArmor(double maxHealth, float waveArmor) => waveArmor * ArmorScale + Armor + ArmorHealthRatio * (float)maxHealth;
 
     public float RegenRatio
     {

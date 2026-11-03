@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// 웨이브 설정(잠정). 원본의 웨이브 공식(기획서 6.2)을 정하기 전까지 쓰는 단순한 형태다 — 수는 웨이브마다 일정하게 늘고,
@@ -50,8 +51,15 @@ public sealed class SO_WaveConfig : SO_Config
     // 무한 모드는 언젠가 반드시 져야 한다 — 플레이어 성장(카드·합성·각성)이 곱으로 커지므로 직선으로는 따라잡지 못한다(기획서 11.1).
     [Tooltip("웨이브마다 체력에 곱하는 비율(복리). 0.1이면 10웨이브 236%, 20웨이브 611%, 50웨이브 약 107배. 직선과 곱해진다.")]
     [Min(0f)] public float HealthCompound = 0.1f;
-    [Tooltip("체력이 이 웨이브에서 멈춘다(0 = 끝없이 는다). 뒤로는 이동 속도가 압박을 맡는다(SpeedGrowth). 몹 수 상한 보정도 여기서 멈춘다.")]
-    [Min(0)] public int HealthGrowthEndWave = 50;
+    [Tooltip("체력·방어력이 이 웨이브에서 멈춘다(0 = 끝없이 는다). 뒤로는 이동 속도가 압박을 맡는다(SpeedGrowth). 몹 수 상한 보정도 여기서 멈춘다.")]
+    [FormerlySerializedAs("HealthGrowthEndWave")]
+    [Min(0)] public int GrowthEndWave = 50;
+
+    // 최대 체력 피해를 뺀 뒤(2026-11-03) 후반을 고정 피해로 맞추는 두 번째 축. 방어력은 한 방마다 빠지므로
+    // 작은 타격을 많이 넣는 범위형(파편·체인·파동 — 맞히는 수로 곱해져 후반에 폭주하던 쪽)을 더 누르고, 큰 한 방(빨강·파랑)에 역할을 준다.
+    [Header("방어력")]
+    [Tooltip("모든 몬스터의 방어력이 웨이브마다 이만큼 는다(1웨이브 0, GrowthEndWave에서 멈춤). 특성의 방어력 배율(단단함 2배)이 곱해진다.")]
+    [Min(0f)] public float ArmorPerWave = 1f;
 
     // 50웨이브쯤이면 주사위 피해 대부분이 최대 체력 비례라 체력을 더 불려도 압박이 되지 않는다 — 비례 피해가 같이 커진다.
     // 이동 속도는 사거리 안에 머무는 시간을 줄여 고정·비례 피해를 똑같이 누르고, 칸·눈 상한으로 화력이 멈추면 언젠가 반드시 이긴다(2026-11-03 사용자).
@@ -124,13 +132,18 @@ public sealed class SO_WaveConfig : SO_Config
 
     /// <summary>
     /// 한 마리 체력 배율. 상한으로 줄어든 수만큼 키워 웨이브 체력 합(상한이 없을 때와 같은 값)을 지킨다.
-    /// HealthGrowthEndWave 뒤로는 그 웨이브 값에 멈춘다 — 직선·복리뿐 아니라 수 상한 보정(뒤로 갈수록 상한 없는 수가 늘어 한 마리가 커진다)도 같이 멈춰야 체력이 정말 멈춘다.
+    /// GrowthEndWave 뒤로는 그 웨이브 값에 멈춘다 — 직선·복리뿐 아니라 수 상한 보정(뒤로 갈수록 상한 없는 수가 늘어 한 마리가 커진다)도 같이 멈춰야 체력이 정말 멈춘다.
     /// </summary>
     public float GetHealthScale(int wave)
     {
-        if (HealthGrowthEndWave > 0) wave = Mathf.Min(wave, HealthGrowthEndWave);
+        wave = GrowthWave(wave);
         return (1f + HealthGrowth * (wave - 1)) * Mathf.Pow(1f + HealthCompound, wave - 1) * GetUncappedCount(wave) / Mathf.Max(GetCount(wave), 1);
     }
+
+    /// <summary>이 웨이브 몬스터의 기본 방어력(특성 배율 전).</summary>
+    public float GetArmor(int wave) => ArmorPerWave * (GrowthWave(wave) - 1);
+
+    private int GrowthWave(int wave) => GrowthEndWave > 0 ? Mathf.Min(wave, GrowthEndWave) : wave;
 
     /// <summary>이 웨이브 몬스터의 이동 속도 배율(1 = 그대로).</summary>
     public float GetSpeedScale(int wave) =>

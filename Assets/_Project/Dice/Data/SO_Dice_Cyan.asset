@@ -19,12 +19,12 @@ MonoBehaviour:
   Description: "\uAC00\uAE4C\uC6B4 \uC801\uC5D0\uAC8C \uD295\uAE34\uB2E4. \uD295\uAE38
     \uB54C\uB9C8\uB2E4 \uD53C\uD574\uAC00 {Falloff%}\uB85C \uC904\uC5B4\uB4E0\uB2E4."
   AwakenDescription: "\uD295\uAE38 \uB54C\uB9C8\uB2E4 {1-AwakenFalloff%}\uB9CC \uC904\uC5B4\uB4E0\uB2E4"
-  Damage: 10
+  Damage: 15
   DamageGrowth: 0.5
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0
   Range: 4.4
-  MaxHealthDamage: 0.0015
+  MaxHealthDamage: 0
   JumpRange: 1.6
   Falloff: 0.9
   MinJumpDamage: 2

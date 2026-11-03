@@ -19,6 +19,8 @@ public sealed class SO_MonsterTrait : ScriptableObject
     [Header("배율 (겹치면 곱한다)")]
     [Min(0.01f)] public float HealthScale = 1f;
     [Min(0.01f)] public float SpeedScale = 1f;
+    [Tooltip("웨이브 방어력(SO_WaveConfig.ArmorPerWave)에 곱하는 배율(단단함 2). 고정 몫(Armor)만 더하면 웨이브가 오를수록 묻혀 후반에 단단함이 흐려진다 — 배율이면 끝까지 뚜렷하다(2026-11-03).")]
+    [Min(0f)] public float ArmorScale = 1f;
     [Tooltip("둔화 비율·얼림·멈춤 시간·끌기·밀어내기 거리를 줄이는 비율. 0.5면 절반만 받는다 — 면역이 아니라 저항. " +
              "거대(보스)도 0이다(2026-11-01 사용자 — 90%면 칩 디버프가 보스에게 쓸모없고, 역할이 적은 스킬 카드가 보스에게서라도 세야 한다).")]
     [Range(0f, 1f)] public float ImpairResist;

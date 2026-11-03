@@ -20,7 +20,8 @@ MonoBehaviour:
   MaxCount: 300
   HealthGrowth: 0.1
   HealthCompound: 0.08
-  HealthGrowthEndWave: 50
+  GrowthEndWave: 50
+  ArmorPerWave: 1
   SpeedGrowthStartWave: 50
   SpeedGrowth: 0.03
   ExpBoostAfterWave: 50

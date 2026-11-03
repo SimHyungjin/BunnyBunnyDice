@@ -20,11 +20,11 @@ MonoBehaviour:
     \uC801\uC5D0\uAC8C\uB3C4 \uD53C\uD574\uB97C \uC900\uB2E4."
   AwakenDescription: "\uD3ED\uBC1C \uBC18\uACBD {1+AwakenExplosionRadiusBonus}\uBC30"
   Damage: 20
-  DamageGrowth: 0.27
+  DamageGrowth: 0.5
   AttackSpeed: 2.25
   AttackSpeedGrowth: 0
   Range: 2.85
-  MaxHealthDamage: 0.0015
+  MaxHealthDamage: 0
   ExplosionRadius: 1
   ExplosionRadiusGrowth: 0
   MaxExplosionRadius: 2
