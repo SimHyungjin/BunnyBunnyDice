@@ -1,6 +1,7 @@
 using UnityEngine;
 
-/// <summary>하늘 — 체인: 선두를 맞히고 가까운 몬스터로 차례로 튄다, 튈 때마다 약해진다(기획서 6.5).</summary>
+/// <summary>자홍 — 체인: 선두를 맞히고 가까운 몬스터로 차례로 튄다, 튈 때마다 약해진다(기획서 6.5).
+/// 방어력을 그대로 빼므로 첫 타가 세야 멀리 이어진다 — 그래서 센 한 방(빨강)이 섞인 자홍이 맡는다(2026-11-04 사용자, 전엔 하늘).</summary>
 [CreateAssetMenu(menuName = "Def/Dice/Type/Chain", fileName = "SO_Dice_")]
 public sealed class SO_DiceType_Chain : SO_DiceType
 {

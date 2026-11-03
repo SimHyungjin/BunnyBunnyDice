@@ -40,25 +40,25 @@
 색 주사위를 얹으면 그 색이 된다.,Takes the color of a colored die stacked on it.,SO_Dice_Clear.Description
 눈이 20이 되면 무작위 색이 된다.,Turns a random color at 20 pips.,SO_Dice_Clear.AwakenDescription
 하늘,Cyan,SO_Dice_Cyan.DisplayName
-체인,Chain,SO_Dice_Cyan.AttackName
-가까운 적에게 튕긴다. 튕길 때마다 피해가 {Falloff%}로 줄어든다.,Bounces to nearby enemies. Each bounce deals {Falloff%} of the previous damage.,SO_Dice_Cyan.Description
-튕길 때마다 {1-AwakenFalloff%}만 줄어든다,Each bounce only loses {1-AwakenFalloff%},SO_Dice_Cyan.AwakenDescription
+관통,Pierce,SO_Dice_Cyan.AttackName
+일직선으로 꿰뚫는다.,Pierces in a straight line.,SO_Dice_Cyan.Description
+방어력을 {AwakenPenetration%} 무시한다,Ignores {AwakenPenetration%} of armor,SO_Dice_Cyan.AwakenDescription
 초록,Green,SO_Dice_Green.DisplayName
 속사,Rapid Fire,SO_Dice_Green.AttackName
 빠르게 쏘는 약한 공격.,"Fast, weak shots.",SO_Dice_Green.Description
 같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다.,Each consecutive hit on the same enemy deals {FocusBonusPerHit%} more damage.,SO_Dice_Green.AwakenDescription
 자홍,Magenta,SO_Dice_Magenta.DisplayName
-관통,Pierce,SO_Dice_Magenta.AttackName
-일직선으로 꿰뚫는다.,Pierces in a straight line.,SO_Dice_Magenta.Description
-관통선이 {AwakenWidthScale}배 굵어진다,Piercing line becomes {AwakenWidthScale}x wider,SO_Dice_Magenta.AwakenDescription
+체인,Chain,SO_Dice_Magenta.AttackName
+가까운 적에게 튕긴다. 튕길 때마다 피해가 {Falloff%}로 줄어든다.,Bounces to nearby enemies. Each bounce deals {Falloff%} of the previous damage.,SO_Dice_Magenta.Description
+튕길 때마다 {1-AwakenFalloff%}만 줄어든다,Each bounce only loses {1-AwakenFalloff%},SO_Dice_Magenta.AwakenDescription
 빨강,Red,SO_Dice_Red.DisplayName
 강타,Smash,SO_Dice_Red.AttackName
 느리지만 강한 한 방.,A slow but powerful strike.,SO_Dice_Red.Description
 모든 공격이 치명타가 된다,Every attack is a critical hit,SO_Dice_Red.AwakenDescription
 하양,White,SO_Dice_White.DisplayName
-파동,Pulse,SO_Dice_White.AttackName
-주변의 모든 적에게 피해를 준다.,Damages all nearby enemies.,SO_Dice_White.Description
-파동이 두 겹으로 퍼진다,The pulse spreads in two waves,SO_Dice_White.AwakenDescription
+난사,Barrage,SO_Dice_White.AttackName
+주변의 가까운 적 {MaxTargets}마리까지 피해를 준다.,Damages the nearest enemies around it (max {MaxTargets}).,SO_Dice_White.Description
+한 번 더 난사한다(두 번째는 {AwakenRatio%}),"Fires one more barrage (the second at {AwakenRatio%})",SO_Dice_White.AwakenDescription
 노랑,Yellow,SO_Dice_Yellow.DisplayName
 범위 폭발,Explosion,SO_Dice_Yellow.AttackName
 맞은 자리에서 폭발해 주변 적에게도 피해를 준다.,"Explodes on hit, damaging nearby enemies too.",SO_Dice_Yellow.Description
@@ -74,7 +74,7 @@
 브레이크,Break,SO_HeroTrait_Break.DisplayName
 기본 능력치가 매우 높다.,Very high base stats.,SO_HeroTrait_Break.Description
 스킬 카드를 고르면 {Copies}장 얻는다.,Picking a skill card gives x{Copies}.,SO_HeroTrait_CardCounter.Description
-칩이 있는 칸에 칩을 놓아 바꿀 수 있다. 바뀐 칩은 사라진다.,"Place a chip on a chipped tile to swap it. The old chip is lost.",SO_HeroTrait_ChipLeader.Description
+칩이 있는 칸에 칩을 놓아 바꿀 수 있다. 바뀐 칩은 사라진다.,Place a chip on a chipped tile to swap it. The old chip is lost.,SO_HeroTrait_ChipLeader.Description
 더블,Double,SO_HeroTrait_Double.DisplayName
 레벨업마다 {Chance%} 확률로 후보 하나가 2장이 된다.,Each level up has a {Chance%} chance for one choice to be x2.,SO_HeroTrait_Double.Description
 더블 오어 낫싱,Double or Nothing,SO_HeroTrait_DoubleOrNothing.DisplayName
@@ -163,24 +163,24 @@
 전체 음량,Master Volume,UI_SettingsPopup/SafeRoot/Area/Window/Label_master
 배경음,Music,UI_SettingsPopup/SafeRoot/Area/Window/Label_music
 효과음,Sound Effects,UI_SettingsPopup/SafeRoot/Area/Window/Label_sound
-포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
 화면,Display,UI_SettingsPopup/SafeRoot/Area/Window/Label_screen
 해상도,Resolution,UI_SettingsPopup/SafeRoot/Area/Window/Label_resolution
 수직 동기화,VSync,UI_SettingsPopup/SafeRoot/Area/Window/Label_vsync
-전체 화면,Fullscreen,UI_SettingsPopup.cs
-창,Windowed,UI_SettingsPopup.cs
-켬,On,UI_SettingsPopup.cs
-끔,Off,UI_SettingsPopup.cs
+포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
 "{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:150
 최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:163
-특성 없음,No Trait,UI_CharacterSelectPopup.cs:130 | UI_LobbyPopup.cs:82
+특성 없음,No Trait,UI_CharacterSelectPopup.cs:130 | UI_LobbyPopup.cs:89
 눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:131
 이동 속도,Move Speed,HeroStatText.cs:15
-웨이브 {0},Wave {0},UI_GameHud.cs:138
-{0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:93
-웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:99 | UnlockText.cs:8
+웨이브 {0},Wave {0},UI_GameHud.cs:120
+{0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:100
+웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:106 | UnlockText.cs:8
 주사위 각성 {0}회,Dice awakenings: {0},UnlockText.cs:9
 잭팟 보스 {0}마리 처치,Jackpot bosses defeated: {0},UnlockText.cs:10
 {0}판 플레이,Runs played: {0},UnlockText.cs:11
 주사위 {0}개 배치,Dice placed: {0},UnlockText.cs:12
 {0} ({1}/{2}),{0} ({1}/{2}),UnlockText.cs:19
+전체 화면,Fullscreen,UI_SettingsPopup.cs:188
+창,Windowed,UI_SettingsPopup.cs:189
+켬,On,UI_SettingsPopup.cs:200
+끔,Off,UI_SettingsPopup.cs:201

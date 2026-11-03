@@ -15,7 +15,7 @@ MonoBehaviour:
   Choice:
     HeroStat: 200
     MazeDiceRed: 300
-    MazeDiceBlueMagenta: 260
+    MazeDiceBlueCyan: 260
     MazeDiceOther: 220
     MazeBurnChip: 280
     EarlyD20: 150

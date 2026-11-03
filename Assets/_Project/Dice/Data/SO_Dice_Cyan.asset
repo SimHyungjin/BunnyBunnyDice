@@ -9,23 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1b188aa8ca7af1ff8399fc770ac08d7, type: 3}
+  m_Script: {fileID: 11500000, guid: b9adda36713b09fea0ab598f3a8c88ed, type: 3}
   m_Name: SO_Dice_Cyan
-  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Chain
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Pierce
   Colors: 6
   DisplayName: "\uD558\uB298"
   Color: {r: 0.4, g: 0.8, b: 0.96, a: 1}
-  AttackName: "\uCCB4\uC778"
-  Description: "\uAC00\uAE4C\uC6B4 \uC801\uC5D0\uAC8C \uD295\uAE34\uB2E4. \uD295\uAE38
-    \uB54C\uB9C8\uB2E4 \uD53C\uD574\uAC00 {Falloff%}\uB85C \uC904\uC5B4\uB4E0\uB2E4."
-  AwakenDescription: "\uD295\uAE38 \uB54C\uB9C8\uB2E4 {1-AwakenFalloff%}\uB9CC \uC904\uC5B4\uB4E0\uB2E4"
+  AttackName: "\uAD00\uD1B5"
+  Description: "\uC77C\uC9C1\uC120\uC73C\uB85C \uAFF0\uB6AB\uB294\uB2E4."
+  AwakenDescription: "\uBC29\uC5B4\uB825\uC744 {AwakenPenetration%} \uBB34\uC2DC\uD55C\uB2E4"
   Damage: 27
   DamageGrowth: 0.3
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0
   Range: 4.4
   MaxHealthDamage: 0
-  JumpRange: 1.6
-  Falloff: 0.9
-  MinJumpDamage: 2
-  AwakenFalloff: 0.95
+  HalfWidth: 0.35
+  AwakenPenetration: 0.5

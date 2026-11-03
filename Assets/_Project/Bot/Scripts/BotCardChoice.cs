@@ -64,7 +64,7 @@ public static class BotCardChoice
         return 0f;
     }
 
-    // d20은 메인 딜 구간용, d6·d12는 미로용(사용자). 미로용 색은 빨강 > 파랑·자홍 > 나머지.
+    // d20은 메인 딜 구간용, d6·d12는 미로용(사용자). 미로용 색은 빨강 > 파랑·하늘 > 나머지.
     private static float DiceScore(SO_BotConfig.ChoiceScores scores, DiceCard dice, bool mazeEnough)
     {
         if (dice.Faces >= 20)
@@ -75,7 +75,7 @@ public static class BotCardChoice
         if (mazeEnough) return scores.LateDice;
         if (dice.Colors == DiceColor.Red) return scores.MazeDiceRed;
         if (dice.Colors == DiceColors.All) return scores.MazeDiceWhite;
-        if (dice.Colors == DiceColor.Blue || dice.Colors == (DiceColor.Red | DiceColor.Blue)) return scores.MazeDiceBlueMagenta;
+        if (dice.Colors == DiceColor.Blue || dice.Colors == (DiceColor.Green | DiceColor.Blue)) return scores.MazeDiceBlueCyan;
         return scores.MazeDiceOther;
     }
 

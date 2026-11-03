@@ -19,7 +19,7 @@ public sealed class DiceAttack : IDisposable
         /// <summary>색 상태의 종류. 공격 방식과 그 값을 정한다.</summary>
         public SO_DiceType Type;
         public DiceStats Stats;
-        /// <summary>주사위가 선 칸(맵 로컬 x, z). 관통선·파동의 중심.</summary>
+        /// <summary>주사위가 선 칸(맵 로컬 x, z). 관통선·난사의 중심.</summary>
         public Vector2 Origin;
         /// <summary>공격선이 나가는 점(맵 로컬).</summary>
         public Vector3 Muzzle;
@@ -35,8 +35,8 @@ public sealed class DiceAttack : IDisposable
         public bool Awakened;
     }
 
-    // 각성한 하양의 두 번째 파동. 첫 파동 뒤 잠시 있다가 그때 범위 안에 있는 몬스터를 맞힌다.
-    private struct PendingPulse
+    // 각성한 하양의 두 번째 난사. 첫 난사 뒤 잠시 있다가 그때 범위 안에 있는 몬스터를 맞힌다.
+    private struct PendingVolley
     {
         public Vector2 Center;
         public float Range;
@@ -44,7 +44,7 @@ public sealed class DiceAttack : IDisposable
         public float MaxHealthRatio;
         public float CritChance;
         public Color Color;
-        public SO_DiceType_Pulse Type;
+        public SO_DiceType_Barrage Type;
         public float Delay;
         public ChipSet Attachment;
         public DamageSource Source;
@@ -58,10 +58,13 @@ public sealed class DiceAttack : IDisposable
     private readonly SO_MapViewConfig _viewConfig;
     private readonly MonsterField _monsters;
     private readonly AttackEffects _effects;
-    private readonly List<PendingPulse> _pulses = new List<PendingPulse>();
+    private readonly List<PendingVolley> _volleys = new List<PendingVolley>();
     // 다중 타겟·체인이 고른 몬스터. 모자라면 늘린다.
     private int[] _targets = new int[8];
     private float[] _remaining = new float[8];
+    // 난사 범위 안 몬스터와 거리(제곱) — 맞히는 수 상한이 있어 가까운 순으로 고른다.
+    private readonly List<int> _barrageHits = new List<int>();
+    private readonly List<float> _barrageDistances = new List<float>();
     // 지금 쏘는 주사위의 붙은 강화. 맞히는 곳마다 넘기지 않으려고 Fire 동안 들고 있는다.
     private ChipSet _attachment;
     // 지금 쏘는 주사위의 색(측정 기록의 피해 출처). 붙은 강화와 같은 이유로 들고 있는다.
@@ -105,16 +108,16 @@ public sealed class DiceAttack : IDisposable
             case SO_DiceType_LongRange longRange: return FireLongRange(shot, longRange, awaken, color);
             case SO_DiceType_Pierce pierce: return FirePierce(shot, pierce, awaken, color);
             case SO_DiceType_Chain chain: return FireChain(shot, chain, awaken, color);
-            case SO_DiceType_Pulse pulse: return FirePulse(shot, pulse, awaken, color);
+            case SO_DiceType_Barrage barrage: return FireBarrage(shot, barrage, awaken, color);
             // 검정은 평범한 단일 공격이다. 속사의 빠르기는 능력치(DiceStats)에서 나온다.
             default: return FireSingle(shot, color);
         }
     }
 
-    /// <summary>판이 바뀌면 남은 두 번째 파동과 속사의 이어 맞히기를 버린다.</summary>
+    /// <summary>판이 바뀌면 남은 두 번째 난사와 속사의 이어 맞히기를 버린다.</summary>
     public void Clear()
     {
-        _pulses.Clear();
+        _volleys.Clear();
         _focus.Clear();
     }
 
@@ -199,13 +202,15 @@ public sealed class DiceAttack : IDisposable
 
     // 사거리 끝까지 얇은 곧은 선을 긋고 선 위 몬스터를 모두 맞힌다. 겨냥은 선두가 아니라 사거리 안 몬스터 중
     // 선 위에 가장 많이 걸리는 쪽이다 — 얇은 선은 길과 나란할 때만 줄 전체를 꿰뚫으므로, 선두만 노리면 나란한 방향이 있어도 놓친다.
-    // 동점이면 선두 쪽(먼저 본 후보)을 남긴다. 각성하면 선이 굵어진다.
+    // 동점이면 선두 쪽(먼저 본 후보)을 남긴다. 각성하면 맞은 적마다 방어력의 일정 비율을 무시한다.
+    // 관통 값은 고정량이라(MonsterDamage) 맞은 적의 방어력에 비율을 곱해 넘긴다 — 적마다 방어력이 달라도 같은 비율로 뚫게.
     private bool FirePierce(in Shot shot, SO_DiceType_Pierce type, bool awaken, Color color)
     {
         int lead = FindFirst(shot);
         if (lead < 0) return false;
         MonsterState[] states = _monsters.States;
-        float halfWidth = type.HalfWidth * (awaken ? type.AwakenWidthScale : 1f);
+        float halfWidth = type.HalfWidth;
+        float penetration = awaken ? type.AwakenPenetration : 0f;
         float halfWidthSqr = halfWidth * halfWidth;
         float rangeSqr = shot.Range * shot.Range;
 
@@ -225,9 +230,10 @@ public sealed class DiceAttack : IDisposable
         for (int i = 0; i < _monsters.Count; i++)
         {
             if (!states[i].IsAlive || DistanceToSegmentSqr(states[i].Position, shot.Origin, end) > halfWidthSqr) continue;
-            anyCritical |= HitDirect(i, DamageOn(shot, i, 1f), shot.Stats.CritChance);
+            float ignored = _monsters.KindOf(i).GetArmor(states[i].MaxHealth, states[i].WaveArmor) * penetration;
+            anyCritical |= HitDirect(i, DamageOn(shot, i, 1f), shot.Stats.CritChance, ignored);
         }
-        _effects.Show(shot.Muzzle, ToHitPoint(end), color, anyCritical, halfWidth / type.HalfWidth);
+        _effects.Show(shot.Muzzle, ToHitPoint(end), color, anyCritical, 1f);
         return true;
     }
 
@@ -281,24 +287,24 @@ public sealed class DiceAttack : IDisposable
         return true;
     }
 
-    // 자기 주변 사거리 안 모두를 맞힌다. 각성하면 잠시 뒤 두 번째 파동이 약하게 한 번 더 나간다.
+    // 자기 주변 사거리 안 모두를 맞힌다. 각성하면 잠시 뒤 두 번째 난사가 약하게 한 번 더 나간다.
     // (반경을 늘리면 짧은 사거리라는 약점을 메우게 되므로 같은 자리에서 두 겹으로 친다.)
-    private bool FirePulse(in Shot shot, SO_DiceType_Pulse type, bool awaken, Color color)
+    private bool FireBarrage(in Shot shot, SO_DiceType_Barrage type, bool awaken, Color color)
     {
-        if (!Pulse(shot.Origin, shot.Range, shot.Stats.Damage, shot.Stats.MaxHealthRatio, shot.Stats.CritChance, color, type))
+        if (!Barrage(shot.Origin, shot.Range, shot.Stats.Damage, shot.Stats.MaxHealthRatio, shot.Stats.CritChance, color, type))
             return false;
         if (awaken)
         {
-            _pulses.Add(new PendingPulse
+            _volleys.Add(new PendingVolley
             {
                 Center = shot.Origin,
                 Range = shot.Range,
-                Damage = shot.Stats.Damage * type.AwakenPulseRatio,
-                MaxHealthRatio = shot.Stats.MaxHealthRatio * type.AwakenPulseRatio,
+                Damage = shot.Stats.Damage * type.AwakenRatio,
+                MaxHealthRatio = shot.Stats.MaxHealthRatio * type.AwakenRatio,
                 CritChance = shot.Stats.CritChance,
                 Color = color,
                 Type = type,
-                Delay = type.AwakenPulseDelay,
+                Delay = type.AwakenDelay,
                 Attachment = _attachment,
                 Source = _source,
             });
@@ -306,44 +312,70 @@ public sealed class DiceAttack : IDisposable
         return true;
     }
 
-    // 범위 안에 아무도 없으면 터지지 않는다(첫 파동은 쏘지 않은 것으로 본다).
+    // 범위 안에 아무도 없으면 터지지 않는다(첫 난사는 쏘지 않은 것으로 본다).
     // 범위는 그리지 않는다 — 사거리까지 퍼지는 고리는 공속이 빨라(1.5) 여러 개가 겹쳐 화면을 덮었고, 늘 떠 있는 고리·원판도 어색했다(2026-11-01 사용자).
-    // 대신 맞은 적 발밑마다 작은 고리가 터진다 — 범위는 맞은 적들로 드러난다. 상한·주사위 맥박은 두지 않는다(2026-11-01 사용자).
-    private bool Pulse(Vector2 center, float range, float damage, float maxHealthRatio, float critChance, Color color, SO_DiceType_Pulse type)
+    // 대신 맞은 적 발밑마다 작은 고리가 터진다 — 범위는 맞은 적들로 드러난다. 주사위 맥박은 두지 않는다(2026-11-01 사용자).
+    // 맞히는 수는 SO_DiceType_Barrage.MaxTargets까지, 가까운 순이다.
+    private bool Barrage(Vector2 center, float range, float damage, float maxHealthRatio, float critChance, Color color, SO_DiceType_Barrage type)
     {
         MonsterState[] states = _monsters.States;
         float rangeSqr = range * range;
-        float ground = _viewConfig.GetTileTop(TileType.Ground);
-        bool any = false;
+        _barrageHits.Clear();
+        _barrageDistances.Clear();
         for (int i = 0; i < _monsters.Count; i++)
         {
-            if (!states[i].IsAlive || (states[i].Position - center).sqrMagnitude > rangeSqr) continue;
-            Vector2 at = states[i].Position;
-            HitDirect(i, damage + MaxHealthBonus(i, maxHealthRatio), critChance);
-            any = true;
+            if (!states[i].IsAlive) continue;
+            float distanceSqr = (states[i].Position - center).sqrMagnitude;
+            if (distanceSqr > rangeSqr) continue;
+            _barrageHits.Add(i);
+            _barrageDistances.Add(distanceSqr);
+        }
+        if (_barrageHits.Count == 0) return false;
+
+        // 상한을 넘으면 가까운 것부터 앞으로 모은다(상한만큼만 고르는 선택 정렬 — 상한이 작아 전체 정렬보다 싸다).
+        int count = Mathf.Min(_barrageHits.Count, Mathf.Max(type.MaxTargets, 1));
+        if (count < _barrageHits.Count)
+        {
+            for (int k = 0; k < count; k++)
+            {
+                int nearest = k;
+                for (int j = k + 1; j < _barrageHits.Count; j++)
+                    if (_barrageDistances[j] < _barrageDistances[nearest]) nearest = j;
+                if (nearest == k) continue;
+                (_barrageHits[k], _barrageHits[nearest]) = (_barrageHits[nearest], _barrageHits[k]);
+                (_barrageDistances[k], _barrageDistances[nearest]) = (_barrageDistances[nearest], _barrageDistances[k]);
+            }
+        }
+
+        float ground = _viewConfig.GetTileTop(TileType.Ground);
+        for (int k = 0; k < count; k++)
+        {
+            int slot = _barrageHits[k];
+            Vector2 at = states[slot].Position;
+            HitDirect(slot, damage + MaxHealthBonus(slot, maxHealthRatio), critChance);
             _effects.ShowSpark(new Vector3(at.x, ground, at.y), type.HitSparkRadius, color);
         }
-        return any;
+        return true;
     }
 
-    // 게임 시간을 따른다. 몬스터가 멈추면(게임 오버) 두 번째 파동도 멈춘다.
+    // 게임 시간을 따른다. 몬스터가 멈추면(게임 오버) 두 번째 난사도 멈춘다.
     private void Tick(float deltaTime)
     {
-        if (_pulses.Count == 0 || _monsters.Paused) return;
-        for (int i = _pulses.Count - 1; i >= 0; i--)
+        if (_volleys.Count == 0 || _monsters.Paused) return;
+        for (int i = _volleys.Count - 1; i >= 0; i--)
         {
-            PendingPulse pulse = _pulses[i];
-            pulse.Delay -= deltaTime;
-            if (pulse.Delay > 0f)
+            PendingVolley volley = _volleys[i];
+            volley.Delay -= deltaTime;
+            if (volley.Delay > 0f)
             {
-                _pulses[i] = pulse;
+                _volleys[i] = volley;
                 continue;
             }
-            _attachment = pulse.Attachment;
-            _source = pulse.Source;
-            Pulse(pulse.Center, pulse.Range, pulse.Damage, pulse.MaxHealthRatio, pulse.CritChance, pulse.Color, pulse.Type);
-            _pulses[i] = _pulses[_pulses.Count - 1];
-            _pulses.RemoveAt(_pulses.Count - 1);
+            _attachment = volley.Attachment;
+            _source = volley.Source;
+            Barrage(volley.Center, volley.Range, volley.Damage, volley.MaxHealthRatio, volley.CritChance, volley.Color, volley.Type);
+            _volleys[i] = _volleys[_volleys.Count - 1];
+            _volleys.RemoveAt(_volleys.Count - 1);
         }
     }
 
@@ -361,18 +393,19 @@ public sealed class DiceAttack : IDisposable
     }
 
     // 치명타 배율은 방어력보다 먼저 곱한다(MonsterDamage) — 큰 주사위가 단단한 적에게 강한 이유.
-    private bool HitDirect(int slot, float damage, float critChance)
+    // penetration = 방어력에서 빼는 양(관통 — 하늘).
+    private bool HitDirect(int slot, float damage, float critChance, float penetration = 0f)
     {
         bool critical = GameRandom.Crit.Value < critChance;
-        Hit(slot, damage * (critical ? _statsConfig.CritMultiplier : 1f), critical);
+        Hit(slot, damage * (critical ? _statsConfig.CritMultiplier : 1f), critical, penetration);
         return critical;
     }
 
     // 강화를 피해보다 먼저 건다 — 취약이 그 공격부터 적용되게(취약을 붙이고 처음 맞힐 때 손해 보지 않게).
-    private void Hit(int slot, float damage, bool critical)
+    private void Hit(int slot, float damage, bool critical, float penetration = 0f)
     {
         _attachment.OnHit(_monsters, slot);
-        _monsters.Hit(slot, damage, _source, 0f, critical);
+        _monsters.Hit(slot, damage, _source, penetration, critical);
     }
 
     // 몬스터는 바닥 칸만 걸으므로 맞는 점은 바닥 윗면 기준이다.

@@ -13,7 +13,7 @@ public sealed class SO_BotConfig : SO_Config
     /// <summary>
     /// 레벨업 카드 점수(높을수록 먼저). 사용자 판 교본 2차(2026-10-28):
     /// 능력치 카드는 어떤 상황이든 먼저(1웨이브부터 — 그래서 미로가 늦어 죽기도 한다, 사용자 감수).
-    /// 없으면 미로가 덜 지어졌을 때는 미로 주사위(빨강 > 파랑·자홍 > 나머지, d6·d12)와 화상 칩(미로의 일부 — 길 전체에 화상을 오래 묻힌다),
+    /// 없으면 미로가 덜 지어졌을 때는 미로 주사위(빨강 > 파랑·하늘 > 나머지, d6·d12)와 화상 칩(미로의 일부 — 길 전체에 화상을 오래 묻힌다),
     /// 어느 정도 지어졌으면 d20(메인 딜 구간에 모은다)과 메인 딜 구간 칩(빠진 디버프 → 빨강·초록).
     /// </summary>
     [Serializable]
@@ -24,14 +24,14 @@ public sealed class SO_BotConfig : SO_Config
         public float HeroStat = 200f;
         [Header("미로를 짓는 동안 (MazeEnoughDice 전)")]
         public float MazeDiceRed = 300f;
-        [Tooltip("파랑(저격)·자홍(관통) — 미로가 약할 때 넓게 덮어 준다.")]
-        public float MazeDiceBlueMagenta = 260f;
+        [Tooltip("파랑(저격)·하늘(관통) — 미로가 약할 때 넓게 덮어 준다.")]
+        public float MazeDiceBlueCyan = 260f;
         public float MazeDiceOther = 220f;
         [Tooltip("화상 칩 — 미로의 일부라 미로 주사위만큼 친다.")]
         public float MazeBurnChip = 280f;
         [Tooltip("미로를 짓는 동안의 d20(미로가 먼저라 낮다).")]
         public float EarlyD20 = 150f;
-        [Tooltip("미로를 짓는 동안의 빨강·초록·하양 d20 — 초반 각성(빨강 = 모든 공격 치명, 초록 = 이어 맞힐수록 세짐, 하양 = 파동 두 겹)이 판을 가른다(2026-11-02 사용자). 미로 주사위만큼 친다.")]
+        [Tooltip("미로를 짓는 동안의 빨강·초록·하양 d20 — 초반 각성(빨강 = 모든 공격 치명, 초록 = 이어 맞힐수록 세짐, 하양 = 난사 두 번)이 판을 가른다(2026-11-02 사용자). 미로 주사위만큼 친다.")]
         public float EarlyCoreD20 = 300f;
         [Tooltip("하양 d6·d12 — 큰 고정 피해 범위라 초반에 매우 중요하다(2026-11-02 사용자: 보스는 흘려도 하양이 초반을 막는다).")]
         public float MazeDiceWhite = 300f;

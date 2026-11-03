@@ -11,19 +11,20 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 477e0d9b78a6e27222460d9c22839b60, type: 3}
   m_Name: SO_Dice_White
-  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Pulse
+  m_EditorClassIdentifier: Assembly-CSharp::SO_DiceType_Barrage
   Colors: -1
   DisplayName: "\uD558\uC591"
   Color: {r: 1, g: 1, b: 1, a: 1}
-  AttackName: "\uD30C\uB3D9"
-  Description: "주변의 모든 적에게 피해를 준다."
-  AwakenDescription: "\uD30C\uB3D9\uC774 \uB450 \uACB9\uC73C\uB85C \uD37C\uC9C4\uB2E4"
+  AttackName: "난사"
+  Description: "\uC8FC\uBCC0\uC758 \uAC00\uAE4C\uC6B4 \uC801 {MaxTargets}\uB9C8\uB9AC\uAE4C\uC9C0 \uD53C\uD574\uB97C \uC900\uB2E4."
+  AwakenDescription: "한 번 더 난사한다(두 번째는 {AwakenRatio%})"
   Damage: 40
-  DamageGrowth: 0.2
+  DamageGrowth: 0.15
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0
   Range: 3.5
   MaxHealthDamage: 0
+  MaxTargets: 20
   HitSparkRadius: 0.35
-  AwakenPulseDelay: 0.2
-  AwakenPulseRatio: 0.5
+  AwakenDelay: 0.2
+  AwakenRatio: 0.5
