@@ -87,7 +87,7 @@ public sealed class WaveLog : IDisposable
         return _builder.ToString();
     }
 
-    // 에셋 이름에서 공통 앞머리를 떼어 짧게 쓴다(SO_MonsterTrait_Fast → Fast).
+    // 에셋 이름에서 공통 앞머리를 떼어 짧게 쓴다(SO_MonsterTrait_Enrage → Enrage).
     private void AppendTraits(MonsterKind kind)
     {
         const string prefix = "SO_MonsterTrait_";

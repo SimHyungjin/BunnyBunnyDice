@@ -10,17 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: accd0aa5c06c4916b6b34cdb148da423, type: 3}
-  m_Name: SO_MonsterTrait_Fast
+  m_Name: SO_MonsterTrait_Enrage
   m_EditorClassIdentifier: Assembly-CSharp::SO_MonsterTrait
-  DisplayName: 분노
+  DisplayName: "\uBD84\uB178"
   Tint: {r: 0.6, g: 0.3, b: 0.9, a: 0.75}
   VisualScale: 1
   HealthScale: 1
   SpeedScale: 1
+  ArmorScale: 1
   ImpairResist: 0
   DamageResist: 0
   Armor: 0
+  ArmorHealthRatio: 0
   RegenRatio: 0
+  ShieldHits: 0
+  ShieldPerWave: 0
+  EnrageSpeedBonus: 2
   GoalDamageBonus: 0
   ExpBonus: 0
-  EnrageSpeedBonus: 1.5
+  ShieldDamageRatio: 1

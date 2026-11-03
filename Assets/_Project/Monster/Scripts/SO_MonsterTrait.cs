@@ -42,7 +42,7 @@ public sealed class SO_MonsterTrait : ScriptableObject
              "고정 6대·50%는 색 시험에서 거의 아무것도 막지 못해 웨이브에 비례해 다 막게 바꿨다(2026-11-01).")]
     [Min(0)] public int ShieldHits;
     [Min(0f)] public float ShieldPerWave;
-    [Tooltip("분노 — 잃은 체력 비율 × 이 값만큼 이동 속도가 늘어난다(1이면 체력이 바닥일 때 2배). 깎다 만 몹이 빨라져 도망친다 — 한 번에 끝내는 큰 한 방이나 둔화·얼음이 답이다(2026-11-01 — 그냥 빠르기만 하던 빠름을 바꿨다. 에셋 이름은 SO_MonsterTrait_Fast 그대로).")]
+    [Tooltip("분노 — 잃은 체력 비율 × 이 값만큼 이동 속도가 늘어난다(1이면 체력이 바닥일 때 2배). 깎다 만 몹이 빨라져 도망친다 — 한 번에 끝내는 큰 한 방이나 둔화·얼음이 답이다(2026-11-01 — 그냥 빠르기만 하던 빠름을 바꿨다. 에셋 이름도 2026-11-04에 SO_MonsterTrait_Fast → Enrage — 로그에 Fast로 찍혀 헷갈렸다).")]
     [Min(0f)] public float EnrageSpeedBonus;
     [Tooltip("목표물 피해에 더하는 값(거대).")]
     [Min(0)] public int GoalDamageBonus;
