@@ -54,7 +54,7 @@ MonoBehaviour:
   FanRadius: 6.67
   AnglePerCard: 5
   MaxFanAngle: 20
-  HandHeight: 0.54
+  HandHeight: 0.5
   LowerOnHold: 0.375
   HoldScale: 1.15
   FollowSharpness: 14
