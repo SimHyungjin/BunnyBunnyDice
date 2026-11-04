@@ -23,6 +23,9 @@ public sealed partial class GameScene
         keys.Add(Key.J, false, "다음 보스를 잭팟 보스로(보스 웨이브가 시작될 때 정해진다)", () => _waves.ForceJackpot());
         keys.Add(Key.I, false, "무적(목표물이 피해를 받지 않는다)", () => _debug.GoalInvincible = !_debug.GoalInvincible, () => _debug.GoalInvincible);
         keys.Add(Key.L, false, "언어 바꾸기(한국어↔영어)", CycleLanguage);
+        // 튜토리얼: 처음 하는 사람처럼 다시 보거나, 테스트 키로 카드를 넣을 때 팁이 끼어들지 않게 끈다.
+        keys.Add(Key.Y, false, "튜토리얼 다시 보기(본 팁 기록 지우기)", () => _tutorial.ResetSeen());
+        keys.Add(Key.Y, true, "튜토리얼 끄기", () => _debug.TutorialOff = !_debug.TutorialOff, () => _debug.TutorialOff);
         // 로비·뛰어들기 연출을 되풀이해 보려고. 결과 화면의 "로비로"와 같은 길이다(판을 접고 새 테이블).
         keys.Add(Key.B, false, "로비로(판을 접는다)", EnterLobby);
         // 로비·판 어디서나 켠다. 지면 다시 하기를 눌러 계속 돌고, 판마다 측정 기록 CSV가 남는다(기획서 11.2).

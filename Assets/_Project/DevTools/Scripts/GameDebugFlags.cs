@@ -8,4 +8,6 @@ public sealed class GameDebugFlags
     public bool ExpBlocked;
     /// <summary>무적 — 목표물이 피해를 받지 않는다(받았을 피해는 측정 기록에 센다).</summary>
     public bool GoalInvincible;
+    /// <summary>튜토리얼 끄기 — 테스트 키로 카드를 넣을 때마다 팁이 끼어들지 않게.</summary>
+    public bool TutorialOff;
 }

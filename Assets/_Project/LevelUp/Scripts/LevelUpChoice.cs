@@ -46,7 +46,13 @@ public sealed class LevelUpChoice
 
     private int _pending;
     private bool _showing;
+
+    /// <summary>고르기 팝업을 띄웠거나 불러오는 중이다(튜토리얼이 그동안 판 팁을 띄우지 않는다 — 팝업을 불러오는 사이에 떠 겹치지 않게).</summary>
+    public bool Showing => _showing;
     private UI_LevelUpPopup _popup;
+
+    /// <summary>떠 있는 고르기 팝업(후보를 늘어놓은 뒤). 없으면 null — 튜토리얼이 후보 카드를 비춘다.</summary>
+    public UI_LevelUpPopup Popup => _popup != null && _popup.CardCount > 0 ? _popup : null;
     // 팝업을 불러오는 동안 새 판이 시작되면, 다 불러온 팝업을 띄우지 않고 닫기 위해 세대를 센다.
     private int _generation;
 

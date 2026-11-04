@@ -66,6 +66,9 @@ public sealed class UI_GameHud : UI_Hud
     public event Action Resized;
     public UI_TouchArea TouchArea => _touchArea;
 
+    /// <summary>시작·일시정지 버튼 영역(튜토리얼이 비춘다).</summary>
+    public RectTransform PauseButtonRect => (RectTransform)_pauseButton.transform;
+
     /// <summary>
     /// 로비 동안 숨긴다. 끄지(SetActive) 않고 투명하게 하고 터치를 막는 이유: 손패·터치 영역을 쥔 쪽(CardHand·HeroTapInput)이
     /// 로비를 지나도 같은 HUD를 그대로 이어 쓰게(HUD 층은 하나라 로비 화면을 HUD로 띄우면 이 HUD가 반납된다).

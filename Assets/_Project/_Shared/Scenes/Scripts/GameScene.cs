@@ -97,6 +97,8 @@ public sealed partial class GameScene : SceneBase
     // HUD 배속 버튼(1 → 2 → 3배).
     private GameSpeedToggle _speedToggle;
     private WaveStartGate _waveStart;
+    // 상황 팁(처음 그 상황이 오면 한 번 — 판을 멈추고 설명할 곳만 비춘다).
+    private TutorialFlow _tutorial;
     // 카드를 끌어 놓는 중인지(그리드를 켠다). 첫 웨이브를 기다리는 동안에도 켠다.
     private bool _placing;
     private bool _paused;
@@ -115,13 +117,14 @@ public sealed partial class GameScene : SceneBase
     public override async UniTask EnterScene(CancellationToken token)
     {
         // 서로 의존이 없어 한꺼번에 불러온다.
-        var (genAsset, viewAsset, cameraAsset, handAsset, cutInAsset, soundsAsset) = await UniTask.WhenAll(
+        var (genAsset, viewAsset, cameraAsset, handAsset, cutInAsset, soundsAsset, tutorialAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapGenConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MapViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_MapCameraConfig>(ct: token),
             Core.Resource.LoadAsync<SO_CardHandConfig>(ct: token),
             Core.Resource.LoadAsync<SO_SkillCutInConfig>(ct: token),
-            Core.Resource.LoadAsync<SO_GameSounds>(ct: token));
+            Core.Resource.LoadAsync<SO_GameSounds>(ct: token),
+            Core.Resource.LoadAsync<SO_TutorialConfig>(ct: token));
         var (pathAsset, previewAsset, dragAsset, environmentAsset, lightingAsset, heroAsset, boardRollAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapPathViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_PlacementPreviewConfig>(ct: token),
@@ -157,6 +160,7 @@ public sealed partial class GameScene : SceneBase
         SO_PlacementPreviewConfig previewConfig = _tuning.Copy(previewAsset);
         SO_SkillCutInConfig cutInConfig = _tuning.Copy(cutInAsset);
         SO_GameSounds soundsConfig = _tuning.Copy(soundsAsset);
+        SO_TutorialConfig tutorialConfig = _tuning.Copy(tutorialAsset);
         SO_CardDragConfig dragConfig = _tuning.Copy(dragAsset);
         SO_EnvironmentConfig environmentConfig = _tuning.Copy(environmentAsset);
         SO_LightingConfig lightingConfig = _tuning.Copy(lightingAsset);
@@ -393,10 +397,22 @@ public sealed partial class GameScene : SceneBase
         _hud.PauseClicked += () =>
         {
             if (_rolling) return;
+            // 팁 동안은 덮개가 버튼을 막지만 Space는 덮개를 거치지 않는다 — ▶을 기다리는 장에서만 받는다.
+            if (_tutorial != null && _tutorial.Showing && !_tutorial.WaitsFor(TutorialAction.StartWave)) return;
             if (_waveStart.Waiting) _waveStart.Start();
             else SetPaused(!_paused);
         };
         RefreshPlayPause();
+        // 판 상태는 이벤트로만 읽는다. 판 팁은 다른 창(레벨업·설정·결과)·판 주사위 연출·카드 끌기 중에는 띄우지 않고,
+        // 카드 팁은 레벨업 고르기 창 위에 띄운다(고르기 전에 알려 주려고).
+        TutorialTargets tutorialTargets = new TutorialTargets(tutorialConfig, _hand, _hud, _hero, _diceField, _mapRoot, () => _map,
+            () => Core.Camera.MainCamera, () => _levelUp.Popup);
+        _tutorial = new TutorialFlow(tutorialConfig, handConfig, tutorialTargets, _hand, _diceField, _hero, _heroRaise, _waveStart, _levelUp, _speed,
+            () => !_lobbyStage.IsActive && !_mapPending && !_levelUp.Showing && !Core.UI.HasOpenPopup && !_drag.Busy && _goal.Current > 0,
+            () => !_lobbyStage.IsActive && !_rolling && !_mapPending && !_levelUp.Showing && !Core.UI.HasOpenPopup && !_drag.Busy && _goal.Current > 0,
+            () => !_lobbyStage.IsActive && !_paused && _levelUp.Popup != null,
+            () => IsAutoPlaying || _debug.TutorialOff,
+            () => _drag.Busy);
         speedConfig.Changed += _speedToggle.Reset;
         _speedToggle.Reset();
         // 판 시스템(OnGameUpdate)은 고정 걸음으로 돈다 — 같은 시드·같은 선택이면 같은 판(시뮬레이션, 기획서 11.2).
@@ -438,6 +454,7 @@ public sealed partial class GameScene : SceneBase
         _meta?.Dispose();
         _screen?.Dispose();
         _handFraming?.Dispose();
+        _tutorial?.Dispose();
         DisposeAutoPlay();
         _bossBar?.Dispose();
         _drag?.Dispose();
@@ -629,6 +646,7 @@ public sealed partial class GameScene : SceneBase
         // 영웅 강화는 이번 판 동안만이다. 캐릭터·단계는 그대로 둔다.
         _heroStats.ResetBonuses();
         _levelUp?.Cancel();
+        _tutorial?.Cancel();
         _result?.Close();
         // 새 판은 1배속부터 — 판 주사위 연출·초반 배치를 지난 판 배속으로 시작하지 않게.
         _speedToggle?.Reset();
@@ -716,6 +734,7 @@ public sealed partial class GameScene : SceneBase
         _waves.Stop();
         _monsters.Paused = true;
         _levelUp?.Cancel();
+        _tutorial?.Cancel();
         // 판 기록의 웨이브는 클리어한 웨이브다(진 웨이브는 빼고) — 결과 화면·보상·최고 기록·해금이 모두 이 값을 쓴다.
         RunSummary run = _run.Finish(Mathf.Max(_waves.Wave - 1, 0), _level.Level);
         _waveLog.End();

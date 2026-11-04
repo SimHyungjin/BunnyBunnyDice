@@ -90,6 +90,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d76b3a39eaa47fa972b2e203c49edde
+    m_Address: SO_TutorialConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5d8d183866f4e13a6f1e01cd5c2422e
+    m_Address: UI_TutorialOverlay
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d0a4b8c3e6f4a1b0c9d5e4f3a2b1c0d
     m_Address: SO_GameSpeedConfig
     m_ReadOnly: 0

@@ -46,6 +46,15 @@ public sealed class UI_LevelUpPopup : UI_Popup
     /// <summary>실제로 쓴 카드 크기(손패 카드 = 1). 카드 영역에 맞춰 정해진다 — 고른 카드가 손패로 날아갈 때 같은 크기에서 출발하게.</summary>
     public float CardScale { get; private set; }
 
+    /// <summary>후보 카드 수와 그 카드(튜토리얼이 처음 보는 종류를 비춘다).</summary>
+    public int CardCount => _cards.Count;
+    public CardView GetCard(int index) => _cards[index];
+
+    /// <summary>
+    /// 참이면 카드를 고르지 않고 판 보기도 하지 않는다(튜토리얼 팁이 위에 떠 있는 동안 — 팁을 넘기려는 누름에 카드가 흐려지지 않게).
+    /// </summary>
+    public bool Locked { get; set; }
+
     /// <param name="chosen">고른 카드와 그 카드의 화면 좌표.</param>
     /// <param name="heroStats">영웅 강화 카드의 "지금 → 고른 뒤" 수치.</param>
     /// <param name="inputLock">뜬 뒤 카드 누름을 받지 않는 시간(초, 실제 시간).</param>
@@ -60,6 +69,7 @@ public sealed class UI_LevelUpPopup : UI_Popup
         _pressPointer = NoPointer;
         _peekFade = peekFade;
         _peeking = false;
+        Locked = false;
         _fadeGroup.alpha = 1f;
 
         // 슬롯은 카드 프리팹과 같은 가로세로 비율로 둔다 — FlexLayout이 영역 높이에 맞춰 폭을 정하고, 모자라면 같은 비율로 줄인다.
@@ -143,6 +153,7 @@ public sealed class UI_LevelUpPopup : UI_Popup
         base.OnDespawned();
         ClearCards();
         _peeking = false;
+        Locked = false;
         _fadeGroup.alpha = 1f;
     }
 
@@ -150,7 +161,8 @@ public sealed class UI_LevelUpPopup : UI_Popup
     private void Update()
     {
         Pointer pointer = Pointer.current;
-        if (pointer != null)
+        if (Locked) _peeking = false;
+        else if (pointer != null)
         {
             // 누른 순간 카드 위가 아니면 판 보기. 누른 채 카드 위로 지나가도 그대로 — 떼야 끝난다.
             if (pointer.press.wasPressedThisFrame) _peeking = !IsOverCard(pointer.position.ReadValue());
@@ -178,7 +190,7 @@ public sealed class UI_LevelUpPopup : UI_Popup
 
     private void OnCardDown(CardView card, PointerEventData eventData)
     {
-        if (Time.unscaledTime < _unlockTime) return;
+        if (Locked || Time.unscaledTime < _unlockTime) return;
         _pressPointer = eventData.pointerId;
     }
 
