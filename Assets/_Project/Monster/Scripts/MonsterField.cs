@@ -37,6 +37,9 @@ public sealed class MonsterField : IDisposable
     /// <summary>몬스터가 죽었다(이미 치운 뒤). 경험치 등은 받는 쪽이 모양을 보고 정한다.</summary>
     public event Action<MonsterKind, Vector2> Killed;
 
+    /// <summary>몬스터가 죽었다 — 막타의 출처(Killed 바로 뒤). 갇혀 죽으면 마지막으로 맞은 출처이고, 맞은 적 없으면 기본값(검정 주사위·레이즈 없음)이다.</summary>
+    public event Action<DamageSource> KillingBlow;
+
     /// <summary>멈추면(게임 오버) 걷지 않고 그 자리에 남는다.</summary>
     public bool Paused { get; set; }
 
@@ -174,6 +177,7 @@ public sealed class MonsterField : IDisposable
         if (!state.IsAlive) return;
         double dealt = Math.Ceiling(state.Health);
         DamageDealt?.Invoke(DamageSource.Skill, state.Health);
+        state.LastHit = DamageSource.Skill;
         state.Health = 0d;
         SinkBySkill(slot);
         Damaged?.Invoke(state.Position, dealt, DamageKind.Critical);
@@ -190,6 +194,7 @@ public sealed class MonsterField : IDisposable
         if (!state.IsAlive || ratio <= 0f) return;
         double dealt = Math.Min(Math.Ceiling(state.MaxHealth * ratio), Math.Ceiling(state.Health));
         DamageDealt?.Invoke(source, dealt);
+        state.LastHit = source;
         state.Health -= dealt;
         Damaged?.Invoke(state.Position, dealt, DamageKind.Critical);
     }
@@ -349,6 +354,8 @@ public sealed class MonsterField : IDisposable
         else dealt = Math.Max(1d, Math.Round((double)raw));
         // 이미 죽은 몬스터(치우기 전)를 더 때린 몫은 0이다.
         DamageDealt?.Invoke(source, Math.Min(dealt, Math.Max(state.Health, 0d)));
+        // 이미 죽은 몬스터를 더 때린 것은 막타가 아니다.
+        if (state.Health > 0d) state.LastHit = source;
         state.Health -= dealt;
 
         if (Damaged == null) return;
@@ -372,6 +379,7 @@ public sealed class MonsterField : IDisposable
             }
             RemoveAt(i);
             Killed?.Invoke(kind, dead.Position);
+            KillingBlow?.Invoke(dead.LastHit);
         }
     }
 

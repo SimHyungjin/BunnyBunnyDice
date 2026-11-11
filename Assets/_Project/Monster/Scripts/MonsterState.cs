@@ -30,6 +30,8 @@ public struct MonsterState
     public float WaveArmor;
     /// <summary>남은 보호막 횟수(MonsterKind.ShieldHits에서 시작해 맞을 때마다 하나씩 준다).</summary>
     public int Shield;
+    /// <summary>마지막으로 체력을 깎은 피해의 출처. 죽으면 막타 출처로 나간다(MonsterField.KillingBlow — 레이즈 처치 해금 등).</summary>
+    public DamageSource LastHit;
 
     // 상태 이상(MonsterStatus). 남은 시간이 0이면 걸려 있지 않은 것이다.
     /// <summary>화상: 초당 최대 체력에 대한 피해 비율, 남은 시간, 다음 피해까지 쌓인 시간.</summary>

@@ -109,7 +109,7 @@ public sealed class MetaProfile : IDisposable
             case UnlockKind.LevelUps: return _save.LevelUps;
             case UnlockKind.SkillsUsed: return _save.SkillsUsed;
             case UnlockKind.ChipsPlaced: return _save.ChipsPlaced;
-            case UnlockKind.Raises: return _save.Raises;
+            case UnlockKind.RaiseKills: return _save.RaiseKills;
             default: return 0;
         }
     }
@@ -159,7 +159,7 @@ public sealed class MetaProfile : IDisposable
         _save.LevelUps += Mathf.Max(run.Level, 0);
         _save.SkillsUsed += run.SkillsUsed;
         _save.ChipsPlaced += run.ChipsPlaced;
-        _save.Raises += run.Raises;
+        _save.RaiseKills += run.RaiseKills;
         if (character != null)
         {
             CharacterSave save = GetOrCreate(character);

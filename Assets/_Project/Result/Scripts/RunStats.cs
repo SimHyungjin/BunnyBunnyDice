@@ -16,8 +16,8 @@ public struct RunSummary
     public int SkillsUsed;
     /// <summary>놓은 칩 수(바꿔 끼우기·빅 스택 포함).</summary>
     public int ChipsPlaced;
-    /// <summary>영웅이 주사위에 올라탄 횟수 + 레이즈 카드 사용 수.</summary>
-    public int Raises;
+    /// <summary>레이즈 상태의 주사위(영웅 레이즈·레이즈 카드)가 막타를 친 처치 수.</summary>
+    public int RaiseKills;
 }
 
 /// <summary>
@@ -55,7 +55,7 @@ public sealed class RunStats
 
     public void CountChipPlaced() => _current.ChipsPlaced++;
 
-    public void CountRaise() => _current.Raises++;
+    public void CountRaiseKill() => _current.RaiseKills++;
 
     public RunSummary Finish(int wave, int level)
     {

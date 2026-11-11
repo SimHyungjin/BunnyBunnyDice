@@ -25,8 +25,8 @@ public enum UnlockKind
     SkillsUsed,
     /// <summary>칩 누적 놓기(바꿔 끼우기·빅 스택 포함, 맵에 처음 깔린 칩은 아님). 칩 리더.</summary>
     ChipsPlaced,
-    /// <summary>레이즈 누적 — 영웅이 주사위에 올라탄 횟수 + 레이즈 카드 사용. 하이 스테이크.</summary>
-    Raises,
+    /// <summary>레이즈 상태의 주사위(영웅 레이즈·레이즈 카드)로 누적 처치. 하이 스테이크. 올라탄 횟수로 세면 내렸다 올라타기만 반복해도 찬다.</summary>
+    RaiseKills,
 }
 
 /// <summary>캐릭터 하나의 해금 조건.</summary>

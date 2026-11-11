@@ -273,13 +273,13 @@ public sealed partial class GameScene : SceneBase
         _heroRaise.PipDrained += _waveLog.CountPipDrained;
         _skills.Used += _waveLog.CountSkillUse;
         _skills.EnemyCast += _waveLog.CountEnemyCast;
-        // 해금 진행도(기획서 12.4). 레이즈 = 영웅이 올라탄 횟수 + 레이즈 카드 — 하이 스테이크 특성이 둘 다 키운다.
-        _skills.Used += card =>
+        // 해금 진행도(기획서 12.4). 레이즈는 처치로 센다 — 올라탄 횟수는 내렸다 올라타기만 반복해도 찼다(2026-11-11 사용자).
+        // 영웅 레이즈·레이즈 카드 둘 다 — 하이 스테이크 특성이 둘 다 키운다.
+        _skills.Used += _ => _run.CountSkillUse();
+        _monsters.KillingBlow += source =>
         {
-            _run.CountSkillUse();
-            if (card is SO_SkillCard_Raise) _run.CountRaise();
+            if (source.Boost != DamageBoost.None) _run.CountRaiseKill();
         };
-        _heroRaise.Mounted += _ => _run.CountRaise();
         // 영웅은 주사위·칩을 밟고 넘어가므로(기획서 4) 길이 바뀌어도 몬스터 길만 다시 계산한다.
         _diceField.DicePlaced += _ =>
         {

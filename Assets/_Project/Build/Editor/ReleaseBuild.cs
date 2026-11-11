@@ -48,7 +48,13 @@ public static class ReleaseBuild
         finally
         {
             // 실패해도 심볼은 되돌린다 — 안 되돌리면 에디터 로그가 꺼진 채로 남는다.
-            if (stripDebug) PlayerSettings.SetScriptingDefineSymbols(target, saved);
+            if (stripDebug)
+            {
+                PlayerSettings.SetScriptingDefineSymbols(target, saved);
+                // 빌드는 심볼을 뺀 상태로 ProjectSettings.asset을 저장하고, 되돌린 값은 메모리에만 남는다 — 바로 저장하지 않으면
+                // 파일(=git)에는 DEBUG_ENABLE이 빠진 채로 남아 에디터를 다시 열 때 로그가 꺼진다(2026-11-11).
+                AssetDatabase.SaveAssets();
+            }
         }
     }
 
