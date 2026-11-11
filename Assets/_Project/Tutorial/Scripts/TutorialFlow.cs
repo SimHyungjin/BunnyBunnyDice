@@ -63,6 +63,8 @@ public sealed class TutorialFlow : IDisposable
     // 판 안에서 한 번이라도 있었던 일(그 팁의 때가 왔는지): 레벨업 카드를 골랐다(손패 넘침), 영웅이 주사위에 올라탔다(레이즈).
     private bool _cardChosen;
     private bool _mounted;
+    // 주사위 강조(TutorialPage.PulseDice) 다음 튐까지 쌓인 시간.
+    private float _pulseTimer;
 
     /// <param name="runReady">참일 때만 영웅 이동 팁을 띄운다(판 안, 다른 창이 없음 — 판 주사위 연출 중이어도 된다).</param>
     /// <param name="boardReady">참일 때만 나머지 판 팁을 띄운다(판 안, 판 주사위 연출·다른 창·카드 끌기 중이 아님).</param>
@@ -152,6 +154,7 @@ public sealed class TutorialFlow : IDisposable
                 return;
             }
             RefreshTargets();
+            TickPulse(deltaTime);
             return;
         }
         if (_loading) return;
@@ -271,6 +274,19 @@ public sealed class TutorialFlow : IDisposable
         _overlay.SetPage(page.Text, _args, PageNumber(), PageTotal(), page.Action == TutorialAction.Tap);
         _overlay.LockInput();
         RefreshTargets();
+        // 장이 뜨자마자 한 번 튀게.
+        _pulseTimer = _config.DicePulseInterval;
+    }
+
+    // 카드를 끄는 동안은 덮개를 걷어 두므로 쉰다.
+    private void TickPulse(float deltaTime)
+    {
+        TutorialPage page = CurrentPage;
+        if (page == null || !page.PulseDice || _dragging()) return;
+        _pulseTimer += deltaTime;
+        if (_pulseTimer < _config.DicePulseInterval) return;
+        _pulseTimer = 0f;
+        if (_targets.TryGetDiceCell(out Vector2Int cell)) _diceField.PlayStackPop(cell);
     }
 
     // 이어 보이는 팁 전체에서 지금 장이 몇 번째인지(0부터)와 모두 몇 장인지.

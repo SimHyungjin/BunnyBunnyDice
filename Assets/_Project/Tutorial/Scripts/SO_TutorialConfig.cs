@@ -30,6 +30,10 @@ public sealed class SO_TutorialConfig : SO_Config
     [Tooltip("영웅 구멍의 너비 = 키 × 이 값.")]
     [Min(0f)] public float HeroHoleAspect = 0.7f;
 
+    [Header("주사위 강조 (TutorialPage.PulseDice)")]
+    [Tooltip("비춘 주사위가 얹기 연출로 튀는 간격(초, 실제 시간). 장이 뜨면 바로 한 번 튄다.")]
+    [Min(0.1f)] public float DicePulseInterval = 1.2f;
+
     [Header("설명 상자")]
     [Tooltip("상자는 구멍 반대쪽(위·아래)에 붙는다. 한 장 안에서 구멍 가운데가 화면 가운데를 이만큼(화면 높이 비율) 넘어야 반대쪽으로 옮긴다.")]
     [Range(0f, 0.5f)] public float BoxSwitchMargin = 0.1f;

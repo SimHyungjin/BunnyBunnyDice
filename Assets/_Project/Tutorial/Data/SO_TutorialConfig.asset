@@ -25,21 +25,25 @@ MonoBehaviour:
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
     - Text: "\uC8FC\uC0AC\uC704 \uB208\uC774 \uD074\uC218\uB85D \uACF5\uACA9\uB825\uACFC \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uC62C\uB77C\uAC11\uB2C8\uB2E4."
       TargetA: 3
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
     - Text: "\uB193\uC778 \uC8FC\uC0AC\uC704 \uC704\uC5D0 \uAC19\uC740 \uBA74\uCCB4\uB098 \uB354 \uD070 \uBA74\uCCB4\uB97C \uC5B9\uC73C\uBA74 \uB208\uC774 \uB192\uC544\uC9C0\uACE0, \uC0C9\uC744 \uC11E\uC744 \uC218\uB3C4 \uC788\uC2B5\uB2C8\uB2E4. \uB208\uC774 \uAC00\uB4DD \uCC3C\uB2E4\uBA74 \uB354 \uD070 \uBA74\uCCB4\uB9CC \uC5B9\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
       TargetA: 3
       TargetB: 2
       Action: 0
       InputArea: 0
+      PulseDice: 1
     - Text: "\uC8FC\uC0AC\uC704\uC758 \uB208\uC774 <color=#FFE04A>20</color>\uC774 \uB418\uBA74 \uAC01\uC131\uD574 \uD06C\uAC8C \uAC15\uD574\uC9D1\uB2C8\uB2E4."
       TargetA: 3
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
   - Id: 1
     Pages:
     - Text: "\u25B6 \uBC84\uD2BC\uC744 \uB204\uB974\uBA74 \uCCAB \uC6E8\uC774\uBE0C\uAC00 \uC2DC\uC791\uB429\uB2C8\uB2E4."
@@ -47,6 +51,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 2
       InputArea: 0
+      PulseDice: 0
   - Id: 2
     Pages:
     - Text: "\uD310\uC744 \uB204\uB974\uBA74 \uC601\uC6C5\uC774 \uADF8\uACF3\uC73C\uB85C \uC774\uB3D9\uD569\uB2C8\uB2E4."
@@ -61,6 +66,7 @@ MonoBehaviour:
       TargetB: 3
       Action: 0
       InputArea: 0
+      PulseDice: 0
   - Id: 3
     Pages:
     - Text: "\uCE69 \uCE74\uB4DC\uB294 \uBE48 \uCE78\uC774\uB098 \uC8FC\uC0AC\uC704 \uBC11\uC5D0 \uAE54 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uCE69 \uC704\uC5D0 \uC788\uB294 \uC8FC\uC0AC\uC704\uB294 \uCE69 \uD6A8\uACFC\uB97C \uBC1B\uC2B5\uB2C8\uB2E4."
@@ -68,6 +74,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
   - Id: 4
     Pages:
     - Text: "\uC2A4\uD0AC \uCE74\uB4DC\uB294 \uD310 \uC704\uC5D0 \uB04C\uC5B4 \uB193\uC73C\uBA74 \uBC14\uB85C \uBC1C\uB3D9\uD558\uACE0, \uD55C \uBC88 \uC4F0\uBA74 \uC0AC\uB77C\uC9D1\uB2C8\uB2E4."
@@ -75,6 +82,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
   - Id: 5
     Pages:
     - Text: "\uC804\uC6A9 \uCE74\uB4DC\uB294 \uCE90\uB9AD\uD130\uBCC4\uB85C \uC0AC\uC6A9\uD560 \uC218 \uC788\uB294 \uACE0\uC720 \uC2A4\uD0AC \uCE74\uB4DC\uC785\uB2C8\uB2E4."
@@ -82,6 +90,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
   - Id: 6
     Pages:
     - Text: "\uC601\uC6C5 \uAC15\uD654\uB294 \uACE0\uB974\uB294 \uC989\uC2DC \uC801\uC6A9\uB418\uACE0, \uC774\uBC88 \uD310\uC774 \uB05D\uB0A0 \uB54C\uAE4C\uC9C0 \uC720\uC9C0\uB429\uB2C8\uB2E4."
@@ -89,6 +98,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
   - Id: 7
     Pages:
     - Text: "\uC190\uD328\uC5D0\uB294 \uCE74\uB4DC \uBB49\uCE58\uB97C {0}\uAC1C\uAE4C\uC9C0 \uB4E4 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uB118\uCE58\uBA74 \uADF8\uC911 \uD558\uB098\uAC00 \uBB34\uC791\uC704\uB85C \uC0AC\uB77C\uC9D1\uB2C8\uB2E4."
@@ -96,6 +106,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 0
       InputArea: 0
+      PulseDice: 0
   DimColor: {r: 0, g: 0, b: 0, a: 0.72}
   FadeDuration: 0.2
   HoleFollowSharpness: 14
@@ -104,5 +115,6 @@ MonoBehaviour:
   HoleCorner: 0.5
   HoleSoftness: 0.01
   HeroHoleAspect: 0.7
+  DicePulseInterval: 1.2
   BoxSwitchMargin: 0.1
   InputLockDuration: 0.4

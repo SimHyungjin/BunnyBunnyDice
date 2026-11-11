@@ -61,6 +61,8 @@ public sealed class TutorialPage
     // 비추지 않고 누름만 통과시키는 곳(행동형 장 — 카드를 놓을 판, 영웅을 보낼 판).
     // 판은 원근으로 사다리꼴이라 사각 구멍으로 비추면 판 밖까지 밝혀지고 화면 대부분이 구멍이 되어 어색했다 — 판은 어둡게 둔 채 누를 수만 있게 한다.
     public TutorialTarget InputArea;
+    // 비춘 주사위(PlacedDice)가 얹을 때처럼 주기적으로 톡 튄다 — 빛(구멍)만으로는 어느 주사위 얘기인지 눈이 안 갔다(2026-11-11 플레이테스트, 얹기 장).
+    public bool PulseDice;
 }
 
 /// <summary>팁 하나 — 한 번에 이어 보이는 여러 장. 다 넘기면 본 것으로 저장한다.</summary>

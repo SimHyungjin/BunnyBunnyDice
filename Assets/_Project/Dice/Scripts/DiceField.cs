@@ -156,6 +156,13 @@ public sealed class DiceField : IDisposable
         NotifyAwakened(wasAwakened, placed.Dice, cell);
     }
 
+    /// <summary>얹을 때의 톡 튀는 연출만 다시 보인다(상태는 그대로). 튜토리얼이 비춘 주사위에 눈이 가게 쓴다. 실제 시간이라 판이 멈춰도 움직인다.</summary>
+    public void PlayStackPop(Vector2Int cell)
+    {
+        int index = IndexOf(cell);
+        if (index >= 0) _views[index].Pop(_config.StackPopStart);
+    }
+
     /// <summary>주사위 하나의 상태를 바꾸는 일(주사위 대상 스킬). DiceField.Change에 넘긴다.</summary>
     public delegate void DiceChange(ref DiceState dice);
 

@@ -115,14 +115,21 @@ public sealed class TutorialTargets
         return true;
     }
 
-    private bool TryGetDice(out Rect rect)
+    /// <summary>PlacedDice가 비추는 주사위 칸.</summary>
+    public bool TryGetDiceCell(out Vector2Int cell)
     {
-        rect = default;
+        cell = default;
         if (_diceField == null) return false;
-        Vector2Int cell;
         if (LastDice.HasValue && _diceField.TryGetPlaced(LastDice.Value, out _)) cell = LastDice.Value;
         else if (_diceField.Placed.Count > 0) cell = _diceField.Placed[0].Cell;
         else return false;
+        return true;
+    }
+
+    private bool TryGetDice(out Rect rect)
+    {
+        rect = default;
+        if (!TryGetDiceCell(out Vector2Int cell)) return false;
 
         // 칸 바닥 네 모서리 + 주사위 윗면 가운데를 감싼다.
         float top = _diceField.TryGetSurface(cell, out float surface) ? surface : 0f;
