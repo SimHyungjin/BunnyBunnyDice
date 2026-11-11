@@ -34,8 +34,9 @@ public sealed class SO_LevelUpConfig : SO_Config
     [Header("선택")]
     [Tooltip("한 번에 보여 주는 카드 수. 후보가 모자라면 있는 만큼만.")]
     [Min(1)] public int ChoiceCount = 3;
-    [Tooltip("고르는 동안의 게임 속도 배율(기획: 50%). 카드를 끄는 감속과 겹치면 더 느린 쪽을 쓴다.")]
-    [Range(0.05f, 1f)] public float ChoiceTimeScale = 0.5f;
+    [Tooltip("고르는 동안의 게임 속도 배율. 카드를 끄는 감속과 겹치면 더 느린 쪽을 쓴다.\n" +
+             "0 = 멈춤(2026-11-11 플레이테스트 — 0.05로 거의 멈춰 두었더니 몬스터가 조금씩 움직이고, 고르지 않고 두면 판이 흘렀다. 혼자 하는 게임이라 흐를 이유가 없다).")]
+    [Range(0f, 1f)] public float ChoiceTimeScale = 0f;
     [Tooltip("레벨업마다 캐릭터 전용 카드(SO_HeroCharacter.ExclusiveCards 중 한 장)가 후보 한 자리에 나올 확률. 나오면 나머지 자리만 공용 카드로 뽑는다 " +
              "— 다 뽑은 뒤 덮어쓰면 레인보우의 '종류가 모두 다름'이 깨지고 고르려던 카드가 사라졌다(2026-10-29 사용자).")]
     [Range(0f, 1f)] public float ExclusiveChance = 0.2f;

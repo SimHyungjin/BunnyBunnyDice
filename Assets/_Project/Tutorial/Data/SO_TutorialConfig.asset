@@ -20,7 +20,7 @@ MonoBehaviour:
       TargetB: 0
       Action: 1
       InputArea: 6
-    - Text: "\uC8FC\uC0AC\uC704\uB294 \uC801\uC774 \uC9C0\uB098\uAC00\uB294 \uAE38\uC744 \uB9C9\uC2B5\uB2C8\uB2E4. \uB2E8, \uAE38\uC744 \uBAA8\uB450 \uB9C9\uC744 \uC218\uB294 \uC5C6\uC2B5\uB2C8\uB2E4."
+    - Text: "\uC8FC\uC0AC\uC704\uB294 \uC801\uC774 \uC9C0\uB098\uAC00\uB294 \uAE38\uC744 \uB9C9\uC2B5\uB2C8\uB2E4. <color=#FFE04A>\uB2E8, \uAE38\uC744 \uBAA8\uB450 \uB9C9\uC744 \uC218\uB294 \uC5C6\uC2B5\uB2C8\uB2E4.</color>"
       TargetA: 3
       TargetB: 0
       Action: 0
@@ -35,7 +35,7 @@ MonoBehaviour:
       TargetB: 2
       Action: 0
       InputArea: 0
-    - Text: "\uB208\uC774 20\uC774 \uB418\uBA74 \uC8FC\uC0AC\uC704\uAC00 \uAC01\uC131\uD574 \uD06C\uAC8C \uAC15\uD574\uC9D1\uB2C8\uB2E4."
+    - Text: "\uC8FC\uC0AC\uC704\uC758 \uB208\uC774 <color=#FFE04A>20</color>\uC774 \uB418\uBA74 \uAC01\uC131\uD574 \uD06C\uAC8C \uAC15\uD574\uC9D1\uB2C8\uB2E4."
       TargetA: 3
       TargetB: 0
       Action: 0

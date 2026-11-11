@@ -7,6 +7,7 @@ using UnityEngine.UI;
 /// 설정 창(기획서 12.2 — 로비·HUD 오른쪽 위 설정 버튼). 언어와 음량(전체·배경음·효과음). 선택 창과 같은 모양이고, 바깥·뒤로가기로 닫힌다.
 /// 값은 바꾸는 즉시 적용·저장된다(Core SettingsManager) — 확인 버튼이 없다.
 /// 판 중에 열면 아래에 "포기하기"가 붙는다. 확인 창은 두지 않는다 — 판 중 설정 창을 여는 일은 거의 포기뿐이라(사용자 결정) 한 번 더 묻는 건 번거롭기만 하다.
+/// 로비에서 열면 같은 자리에 "게임 종료"(PC만)가 붙는다 — 테스트 빌드에 끄는 버튼이 없었다(2026-11-11 플레이테스트).
 ///
 /// 언어 버튼은 번역표의 언어 수만큼 만든다(표에 언어를 더하면 저절로 늘어난다). 이름은 번역하지 않고 그 언어 자기 말로 적는다
 /// — 영어 화면에서도 "한국어"로 보여야 한국어 사용자가 찾는다.
@@ -55,6 +56,9 @@ public sealed class UI_SettingsPopup : UI_Popup
     [Header("판 중")]
     [Tooltip("판을 포기하고 결과 화면으로(판 중에 열 때만 보인다).")]
     [SerializeField] private Button _giveUpButton;
+    [Header("로비")]
+    [Tooltip("게임 종료(로비에서 열 때만, 모바일 제외 — 모바일 앱은 스스로 끄지 않는다). 포기하기와 같은 자리.")]
+    [SerializeField] private Button _quitButton;
 
     private readonly List<UI_SettingsLanguageButton> _languageButtons = new List<UI_SettingsLanguageButton>();
     private UI_SettingsLanguageButton _fullScreenButton;
@@ -78,6 +82,7 @@ public sealed class UI_SettingsPopup : UI_Popup
         Hook();
         _giveUp = giveUp;
         _giveUpButton.gameObject.SetActive(giveUp != null);
+        _quitButton.gameObject.SetActive(giveUp == null && !Application.isMobilePlatform);
         BuildLanguages();
         RefreshLanguages();
         // 값을 넣는 동안 onValueChanged가 저장을 다시 부르지 않게(같은 값이면 SettingsManager가 무시하지만 굳이 부르지 않는다).
@@ -97,6 +102,7 @@ public sealed class UI_SettingsPopup : UI_Popup
         _musicSlider.onValueChanged.AddListener(value => SetVolume(AudioChannelType.Music, value));
         _soundSlider.onValueChanged.AddListener(value => SetVolume(AudioChannelType.Sound, value));
         _giveUpButton.onClick.AddListener(OnGiveUp);
+        _quitButton.onClick.AddListener(Quit);
 
         _fullScreenButton = AddButton(_screenArea, () => SetFullScreen(true));
         _windowedButton = AddButton(_screenArea, () => SetFullScreen(false));
@@ -159,9 +165,12 @@ public sealed class UI_SettingsPopup : UI_Popup
         ApplyResolution();
     }
 
+    // 끝에서 반대쪽 끝으로 돈다 — 지금 해상도는 대개 모니터 최대(목록 맨 끝)라 막혀 있으면 ▶가 고장 난 것처럼 보였다(2026-11-11 플레이테스트).
     private void StepResolution(int step)
     {
-        int next = Mathf.Clamp(_resolutionIndex + step, 0, _resolutions.Count - 1);
+        int count = _resolutions.Count;
+        if (count == 0) return;
+        int next = ((_resolutionIndex + step) % count + count) % count;
         if (next == _resolutionIndex) return;
         _resolutionIndex = next;
         ApplyResolution();
@@ -215,6 +224,16 @@ public sealed class UI_SettingsPopup : UI_Popup
         System.Action giveUp = _giveUp;
         _giveUp = null;
         giveUp?.Invoke();
+    }
+
+    // 세이브는 Core가 종료 때 동기로 쓴다. 에디터에서는 Application.Quit이 아무 일도 하지 않아 플레이를 멈춘다.
+    private static void Quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     private void SetVolume(AudioChannelType channel, float value)
