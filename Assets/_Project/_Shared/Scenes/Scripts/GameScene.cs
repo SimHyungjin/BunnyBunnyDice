@@ -273,6 +273,13 @@ public sealed partial class GameScene : SceneBase
         _heroRaise.PipDrained += _waveLog.CountPipDrained;
         _skills.Used += _waveLog.CountSkillUse;
         _skills.EnemyCast += _waveLog.CountEnemyCast;
+        // 해금 진행도(기획서 12.4). 레이즈 = 영웅이 올라탄 횟수 + 레이즈 카드 — 하이 스테이크 특성이 둘 다 키운다.
+        _skills.Used += card =>
+        {
+            _run.CountSkillUse();
+            if (card is SO_SkillCard_Raise) _run.CountRaise();
+        };
+        _heroRaise.Mounted += _ => _run.CountRaise();
         // 영웅은 주사위·칩을 밟고 넘어가므로(기획서 4) 길이 바뀌어도 몬스터 길만 다시 계산한다.
         _diceField.DicePlaced += _ =>
         {
@@ -289,6 +296,7 @@ public sealed partial class GameScene : SceneBase
         _chips.ChipRemoved += _ => RebuildRoute();
         _chips.ChipPlaced += cell =>
         {
+            _run.CountChipPlaced();
             _diceField.RefreshAt(cell);
             RebuildRoute();
         };

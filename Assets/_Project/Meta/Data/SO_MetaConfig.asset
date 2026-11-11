@@ -13,8 +13,26 @@ MonoBehaviour:
   m_Name: SO_MetaConfig
   m_EditorClassIdentifier: Assembly-CSharp::SO_MetaConfig
   Unlocks:
+  - Character: {fileID: 11400000, guid: 5912655400a74ec2834a24849224cdb9, type: 2}
+    Kind: 5
+    Target: 100
+  - Character: {fileID: 11400000, guid: aef4a0983ccf437a8a3e5ccba1168a0a, type: 2}
+    Kind: 7
+    Target: 30
+  - Character: {fileID: 11400000, guid: d09c355a7d3a4f36872d735da0f96341, type: 2}
+    Kind: 6
+    Target: 40
+  - Character: {fileID: 11400000, guid: f8ef40a28ea14deaa4b53b63715affac, type: 2}
+    Kind: 8
+    Target: 100
+  - Character: {fileID: 11400000, guid: e2292d372847402fb1b83c10542a2c9f, type: 2}
+    Kind: 1
+    Target: 40
   - Character: {fileID: 11400000, guid: 64bebf3dc17f4c96b362c375792470ab, type: 2}
     Kind: 0
+    Target: 30
+  - Character: {fileID: 11400000, guid: d1050b0344224b9b86e3d7b4189d3412, type: 2}
+    Kind: 2
     Target: 15
   - Character: {fileID: 11400000, guid: d1050b0344224b9b86e3d7b4189d3412, type: 2}
     Kind: 1

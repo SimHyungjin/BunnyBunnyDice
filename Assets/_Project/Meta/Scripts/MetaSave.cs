@@ -25,6 +25,10 @@ public sealed class MetaSave : SaveSection
     public int JackpotKills;
     public int DicePlaced;
     public int Awakenings;
+    public int LevelUps;
+    public int SkillsUsed;
+    public int ChipsPlaced;
+    public int Raises;
 }
 
 /// <summary>캐릭터 하나의 세이브.</summary>

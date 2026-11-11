@@ -179,6 +179,10 @@
 잭팟 보스 {0}마리 처치,Jackpot bosses defeated: {0},UnlockText.cs:10
 {0}판 플레이,Runs played: {0},UnlockText.cs:11
 주사위 {0}개 배치,Dice placed: {0},UnlockText.cs:12
+레벨업 {0}회,Level-ups: {0},UnlockText.cs:13
+스킬 카드 {0}장 사용,Skill cards used: {0},UnlockText.cs:14
+칩 {0}개 놓기,Chips placed: {0},UnlockText.cs:15
+레이즈 {0}회,Raises: {0},UnlockText.cs:16
 {0} ({1}/{2}),{0} ({1}/{2}),UnlockText.cs:19
 전체 화면,Fullscreen,UI_SettingsPopup.cs:188
 창,Windowed,UI_SettingsPopup.cs:189

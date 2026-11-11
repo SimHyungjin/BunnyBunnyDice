@@ -106,6 +106,10 @@ public sealed class MetaProfile : IDisposable
             case UnlockKind.JackpotKills: return _save.JackpotKills;
             case UnlockKind.RunCount: return _save.RunCount;
             case UnlockKind.DicePlaced: return _save.DicePlaced;
+            case UnlockKind.LevelUps: return _save.LevelUps;
+            case UnlockKind.SkillsUsed: return _save.SkillsUsed;
+            case UnlockKind.ChipsPlaced: return _save.ChipsPlaced;
+            case UnlockKind.Raises: return _save.Raises;
             default: return 0;
         }
     }
@@ -151,6 +155,11 @@ public sealed class MetaProfile : IDisposable
         _save.JackpotKills += run.JackpotKills;
         _save.DicePlaced += run.DicePlaced;
         _save.Awakenings += run.Awakenings;
+        // 레벨은 0에서 시작하므로 최종 레벨 = 그 판의 레벨업 수.
+        _save.LevelUps += Mathf.Max(run.Level, 0);
+        _save.SkillsUsed += run.SkillsUsed;
+        _save.ChipsPlaced += run.ChipsPlaced;
+        _save.Raises += run.Raises;
         if (character != null)
         {
             CharacterSave save = GetOrCreate(character);

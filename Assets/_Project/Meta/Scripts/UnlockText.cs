@@ -10,6 +10,10 @@ public static class UnlockText
             case UnlockKind.JackpotKills: return App.Localize("잭팟 보스 {0}마리 처치", rule.Target);
             case UnlockKind.RunCount: return App.Localize("{0}판 플레이", rule.Target);
             case UnlockKind.DicePlaced: return App.Localize("주사위 {0}개 배치", rule.Target);
+            case UnlockKind.LevelUps: return App.Localize("레벨업 {0}회", rule.Target);
+            case UnlockKind.SkillsUsed: return App.Localize("스킬 카드 {0}장 사용", rule.Target);
+            case UnlockKind.ChipsPlaced: return App.Localize("칩 {0}개 놓기", rule.Target);
+            case UnlockKind.Raises: return App.Localize("레이즈 {0}회", rule.Target);
             default: return string.Empty;
         }
     }

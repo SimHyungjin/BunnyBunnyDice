@@ -12,6 +12,12 @@ public struct RunSummary
     public int DicePlaced;
     /// <summary>주사위가 각성한 횟수. 같은 주사위가 풀렸다가(다시 굴리기) 다시 각성하면 또 센다.</summary>
     public int Awakenings;
+    /// <summary>쓴 스킬 카드 수(전용 카드 포함).</summary>
+    public int SkillsUsed;
+    /// <summary>놓은 칩 수(바꿔 끼우기·빅 스택 포함).</summary>
+    public int ChipsPlaced;
+    /// <summary>영웅이 주사위에 올라탄 횟수 + 레이즈 카드 사용 수.</summary>
+    public int Raises;
 }
 
 /// <summary>
@@ -44,6 +50,12 @@ public sealed class RunStats
     public void CountDicePlaced() => _current.DicePlaced++;
 
     public void CountAwakening() => _current.Awakenings++;
+
+    public void CountSkillUse() => _current.SkillsUsed++;
+
+    public void CountChipPlaced() => _current.ChipsPlaced++;
+
+    public void CountRaise() => _current.Raises++;
 
     public RunSummary Finish(int wave, int level)
     {

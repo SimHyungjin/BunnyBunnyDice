@@ -18,6 +18,15 @@ public enum UnlockKind
     RunCount,
     /// <summary>주사위 누적 배치(빈 칸에 새로 놓은 것).</summary>
     DicePlaced,
+    // 아래는 특성과 닿는 행동(2026-11-11) — 해금을 기다리는 동안 그 캐릭터가 쓸 행동을 미리 해 보게. 위 순서는 SO에 숫자로 저장돼 뒤에만 더한다.
+    /// <summary>누적 레벨업(판의 최종 레벨을 더한다 — 보스 보상 고르기는 레벨을 올리지 않아 빠진다). 더블.</summary>
+    LevelUps,
+    /// <summary>스킬 카드 누적 사용(전용 카드 포함). 카드 카운터.</summary>
+    SkillsUsed,
+    /// <summary>칩 누적 놓기(바꿔 끼우기·빅 스택 포함, 맵에 처음 깔린 칩은 아님). 칩 리더.</summary>
+    ChipsPlaced,
+    /// <summary>레이즈 누적 — 영웅이 주사위에 올라탄 횟수 + 레이즈 카드 사용. 하이 스테이크.</summary>
+    Raises,
 }
 
 /// <summary>캐릭터 하나의 해금 조건.</summary>
