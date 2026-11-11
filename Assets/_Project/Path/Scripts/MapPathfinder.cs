@@ -87,4 +87,23 @@ public static class MapPathfinder
         field.Build(map, Passable, GoalCells, radius);
         return field;
     }
+
+    /// <summary>
+    /// cell을 막았을 때의 걷는 길 — 주사위·칩을 끄는 동안 놓으면 바뀔 길을 미리 보여 주려고(2026-11-11 플레이테스트).
+    /// 맵을 잠깐 막았다 되돌리지 않고 통과 판정에 그 칸을 뺀다 — 길 필드는 경로를 꺼낼 때(TryGetPath의 펴기) 맵을 다시 읽으므로,
+    /// 되돌린 맵이면 펴기가 벽을 못 보고 원래 길을 그렸다. 칸이 바뀔 때만 부르고, 120칸이라 충분히 싸다.
+    /// </summary>
+    public static GridRouteField BuildRouteFieldWithWall(MapData map, float radius, Vector2Int cell)
+    {
+        GoalCells.Clear();
+        RectInt goal = map.GoalRect;
+        for (int y = goal.yMin; y < goal.yMax; y++)
+            for (int x = goal.xMin; x < goal.xMax; x++)
+                GoalCells.Add(new Vector2Int(x, y));
+
+        Func<MapData, int, int, bool> passable = (m, x, y) => (x != cell.x || y != cell.y) && Passable(m, x, y);
+        GridRouteField field = new GridRouteField();
+        field.Build(map, passable, GoalCells, radius);
+        return field;
+    }
 }

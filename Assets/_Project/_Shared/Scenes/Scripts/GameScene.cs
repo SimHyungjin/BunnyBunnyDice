@@ -347,6 +347,9 @@ public sealed partial class GameScene : SceneBase
         MapPicker picker = new MapPicker(_mapRoot, _viewConfig);
         _drag = new CardDragController(_hand, dragConfig, picker, _preview, _diceField, _chips, _skills, _skillPreview, _placement,
             _speed, () => _map, () => Core.Camera.MainCamera);
+        // 끄는 동안 놓으면 바뀔 길을 보인다(2026-11-11 플레이테스트) — 놓은 뒤에야 길이 바뀌면 미로를 짜며 미리 읽을 수 없다.
+        // 몬스터는 그대로 지금 길을 걷는다(놓을 때 RebuildRoute가 바꾼다).
+        _drag.WallAimChanged += ShowRoutePreview;
         _drag.PlacingChanged += placing =>
         {
             _placing = placing;
@@ -607,6 +610,12 @@ public sealed partial class GameScene : SceneBase
     }
 
     // 몬스터와 경로 표시가 같은 길을 쓴다 — 표시가 실제 움직임과 어긋나지 않게.
+    private void ShowRoutePreview(Vector2Int? wall)
+    {
+        if (_map == null || _route == null) return;
+        _pathView.Rebuild(_map, wall.HasValue ? MapPathfinder.BuildRouteFieldWithWall(_map, _monsterConfig.Radius, wall.Value) : _route);
+    }
+
     private void RebuildRoute()
     {
         _route = MapPathfinder.BuildRouteField(_map, _monsterConfig.Radius);

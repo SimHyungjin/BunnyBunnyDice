@@ -41,6 +41,8 @@ public sealed class CardDragController : IDisposable
     // 범위·판 전체 스킬은 칸이 아니라 손가락 아래 바닥 점을 쓴다.
     private bool _hasPoint;
     private Vector2 _point;
+    // 지금 알린 새 벽 칸(WallAimChanged). 없으면 InvalidCell.
+    private Vector2Int _wallAim = InvalidCell;
 
     private static readonly Vector2Int InvalidCell = new Vector2Int(-1, -1);
 
@@ -55,6 +57,12 @@ public sealed class CardDragController : IDisposable
 
     /// <summary>카드가 데드존을 넘어 맵 위에 놓을 자리를 고르기 시작(true)하거나 끝냈을(false) 때. 칸 선 표시 등이 듣는다.</summary>
     public event Action<bool> PlacingChanged;
+
+    /// <summary>
+    /// 놓으면 새 벽이 되는 칸(빈 칸에 주사위·칩·빅 스택)을 겨누기 시작했거나(칸) 그만뒀다(null). 길 미리보기가 듣는다 — 끄는 쪽은 길을 모른다.
+    /// 얹기·주사위 밑 칩은 칸을 새로 막지 않아 길이 그대로라 알리지 않는다.
+    /// </summary>
+    public event Action<Vector2Int?> WallAimChanged;
 
     public CardDragController(CardHand hand, SO_CardDragConfig config, MapPicker picker, PlacementPreview preview,
         DiceField diceField, ChipField chips, SkillCaster skills, SkillPreview skillPreview, CardPlacement placement,
@@ -85,6 +93,7 @@ public sealed class CardDragController : IDisposable
         _hand.CardReleased -= OnReleased;
         _speed.Release(this);
         SetGhostCell(InvalidCell, float.NaN);
+        SetWallAim(InvalidCell);
     }
 
     /// <summary>
@@ -240,6 +249,9 @@ public sealed class CardDragController : IDisposable
         }
 
         HandCard held = _hand.Held.Card;
+        // 스킬 중 빈 칸을 막는 것은 빅 스택(칩)뿐이다.
+        bool walls = !held.IsSkill || held.Skill is SO_SkillCard_BigStack;
+        SetWallAim(walls && DicePlacement.IsAccepted(_cellResult) && map.IsWalkable(cell.x, cell.y) ? cell : InvalidCell);
         if (held.IsSkill && held.Skill is SO_SkillCard_BigStack bigStack)
         {
             // 칩 카드처럼 놓일 칩과 그 위 주사위의 사거리를 보인다. 주사위는 그대로 둔다.
@@ -323,6 +335,14 @@ public sealed class CardDragController : IDisposable
         _preview.Hide();
         _skillPreview.Hide();
         SetGhostCell(InvalidCell, float.NaN);
+        SetWallAim(InvalidCell);
+    }
+
+    private void SetWallAim(Vector2Int cell)
+    {
+        if (cell == _wallAim) return;
+        _wallAim = cell;
+        WallAimChanged?.Invoke(cell != InvalidCell ? cell : (Vector2Int?)null);
     }
 
     private void SetGhostCell(Vector2Int cell, float pipHeight)
