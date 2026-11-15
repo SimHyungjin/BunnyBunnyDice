@@ -16,14 +16,15 @@ MonoBehaviour:
   DisplayName: "\uBE68\uAC15"
   Color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   AttackName: "\uAC15\uD0C0"
-  Description: "\uB290\uB9AC\uC9C0\uB9CC \uAC15\uD55C \uD55C \uBC29."
-  AwakenDescription: "\uBAA8\uB4E0 \uACF5\uACA9\uC774 \uCE58\uBA85\uD0C0\uAC00 \uB41C\uB2E4"
+  Description: "\uB290\uB9AC\uC9C0\uB9CC \uAC15\uD55C \uD55C \uBC29. \uBAA8\uB4E0 \uACF5\uACA9\uC774 \uCE58\uBA85\uD0C0\uAC00 \uB41C\uB2E4."
+  AwakenDescription: "\uCE58\uBA85\uD0C0 \uD53C\uD574\uAC00 {AwakenCritBonus%} \uB354 \uCEE4\uC9C4\uB2E4."
   Damage: 90
   DamageGrowth: 0.6
   AttackSpeed: 1.5
   AttackSpeedGrowth: 0
   Range: 2.3
   MaxHealthDamage: 0
+  AwakenCritBonus: 1
   CardIcons:
   - Faces: 6
     Icon: {fileID: 21300000, guid: 86484ee016b74fce9ad4d4ae7074b3ce, type: 3}

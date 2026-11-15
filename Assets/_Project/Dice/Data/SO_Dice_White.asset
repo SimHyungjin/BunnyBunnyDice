@@ -15,19 +15,11 @@ MonoBehaviour:
   Colors: -1
   DisplayName: "\uD558\uC591"
   Color: {r: 1, g: 1, b: 1, a: 1}
-  AttackName: "난사"
-  Description: "\uC8FC\uBCC0\uC758 \uAC00\uAE4C\uC6B4 \uC801 {MaxTargets}\uB9C8\uB9AC\uAE4C\uC9C0 \uD53C\uD574\uB97C \uC900\uB2E4."
-  AwakenDescription: "한 번 더 난사한다(두 번째는 {AwakenRatio%})"
-  Damage: 40
-  DamageGrowth: 0.15
-  AttackSpeed: 1.5
-  AttackSpeedGrowth: 0
-  Range: 3.5
-  MaxHealthDamage: 0
-  MaxTargets: 20
-  HitSparkRadius: 0.35
-  AwakenDelay: 0.2
-  AwakenRatio: 0.5
+  AttackName: "\uB09C\uC0AC"
+  Description: "\uC8FC\uBCC0\uC758 \uAC00\uAE4C\uC6B4 \uC801 {MaxTargets}\uB9C8\uB9AC\uAE4C\uC9C0
+    \uD53C\uD574\uB97C \uC900\uB2E4."
+  AwakenDescription: "\uD55C \uBC88 \uB354 \uB09C\uC0AC\uD55C\uB2E4(\uB450 \uBC88\uC9F8\uB294
+    {AwakenRatio%})"
   CardIcons:
   - Faces: 6
     Icon: {fileID: 21300000, guid: 844361958de4488d9f444ac0361531c3, type: 3}
@@ -35,3 +27,13 @@ MonoBehaviour:
     Icon: {fileID: 21300000, guid: 5fc44de8102b44e99c4524c699ffc4f0, type: 3}
   - Faces: 20
     Icon: {fileID: 21300000, guid: b71a7f99620d447eb644fe96f8b0af79, type: 3}
+  Damage: 40
+  DamageGrowth: 0.15
+  AttackSpeed: 1.5
+  AttackSpeedGrowth: 0
+  Range: 3.5
+  MaxHealthDamage: 0
+  MaxTargets: 10
+  HitSparkRadius: 0.35
+  AwakenDelay: 0.2
+  AwakenRatio: 0.5

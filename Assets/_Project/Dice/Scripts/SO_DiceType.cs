@@ -62,4 +62,7 @@ public abstract class SO_DiceType : SO_Config
     [Tooltip("한 방마다 더하는 피해 = 맞은 적 최대 체력 × 이 값(2026-10-29 — 고정 피해만으로는 웨이브 체력 복리를 못 따라간다). " +
              "눈으로 자라지 않고 각성 때만 고정 피해와 함께 커진다(SO_DiceStatsConfig.AwakenDamageScale). 범위형은 맞은 적마다 — 그래서 단일형보다 훨씬 작게 둔다.")]
     [Min(0f)] public float MaxHealthDamage;
+
+    /// <summary>각성했을 때 공격 속도 배율. 속사(초록)만 1보다 크다 — 능력치 계산(DiceStats)이 공격 방식을 몰라도 되게 여기서 묻는다.</summary>
+    public virtual float AwakenAttackSpeedScale => 1f;
 }

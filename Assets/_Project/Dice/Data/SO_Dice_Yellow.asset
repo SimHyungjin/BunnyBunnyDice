@@ -19,6 +19,13 @@ MonoBehaviour:
   Description: "\uB9DE\uC740 \uC790\uB9AC\uC5D0\uC11C \uD3ED\uBC1C\uD574 \uC8FC\uBCC0
     \uC801\uC5D0\uAC8C\uB3C4 \uD53C\uD574\uB97C \uC900\uB2E4."
   AwakenDescription: "\uD3ED\uBC1C \uBC18\uACBD {1+AwakenExplosionRadiusBonus}\uBC30"
+  CardIcons:
+  - Faces: 6
+    Icon: {fileID: 21300000, guid: 48107e0e7236469cbbe07ddd019d2040, type: 3}
+  - Faces: 12
+    Icon: {fileID: 21300000, guid: fff04faf8f0f4951b16b629381859010, type: 3}
+  - Faces: 20
+    Icon: {fileID: 21300000, guid: 00be8ec6797646ffb0a882f551fbed17, type: 3}
   Damage: 40
   DamageGrowth: 0.3
   AttackSpeed: 2.25
@@ -28,12 +35,5 @@ MonoBehaviour:
   ExplosionRadius: 1
   ExplosionRadiusGrowth: 0
   MaxExplosionRadius: 2
-  ExplosionDamageRatio: 0.7
+  ExplosionDamageRatio: 1
   AwakenExplosionRadiusBonus: 1
-  CardIcons:
-  - Faces: 6
-    Icon: {fileID: 21300000, guid: 48107e0e7236469cbbe07ddd019d2040, type: 3}
-  - Faces: 12
-    Icon: {fileID: 21300000, guid: fff04faf8f0f4951b16b629381859010, type: 3}
-  - Faces: 20
-    Icon: {fileID: 21300000, guid: 00be8ec6797646ffb0a882f551fbed17, type: 3}

@@ -33,8 +33,8 @@
 이십면체,D20,SO_DiceConfig.Models[2].DisplayName
 파랑,Blue,SO_Dice_Blue.DisplayName
 저격,Snipe,SO_Dice_Blue.AttackName
-가장 멀리 닿는 공격.,The longest-reaching attack.,SO_Dice_Blue.Description
-멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%}).,Hits harder the farther the enemy is (+{FarDamagePerCell%} per tile).,SO_Dice_Blue.AwakenDescription
+가장 멀리 닿는 공격. 멀리 있는 적일수록 세게 맞힌다(한 칸마다 +{FarDamagePerCell%}).,The longest-reaching attack. Hits harder the farther the enemy is (+{FarDamagePerCell%} per tile).,SO_Dice_Blue.Description
+거리 보너스가 한 칸마다 +{AwakenFarDamagePerCell%} 더 붙는다.,The distance bonus grows by another +{AwakenFarDamagePerCell%} per tile.,SO_Dice_Blue.AwakenDescription
 검정,Black,SO_Dice_Clear.DisplayName
 기본 공격,Basic Attack,SO_Dice_Clear.AttackName
 색 주사위를 얹으면 그 색이 된다.,Takes the color of a colored die stacked on it.,SO_Dice_Clear.Description
@@ -45,20 +45,20 @@
 방어력을 {AwakenPenetration%} 무시한다,Ignores {AwakenPenetration%} of armor,SO_Dice_Cyan.AwakenDescription
 초록,Green,SO_Dice_Green.DisplayName
 속사,Rapid Fire,SO_Dice_Green.AttackName
-빠르게 쏘는 약한 공격.,"Fast, weak shots.",SO_Dice_Green.Description
-같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다.,Each consecutive hit on the same enemy deals {FocusBonusPerHit%} more damage.,SO_Dice_Green.AwakenDescription
+빠르게 쏘는 약한 공격. 같은 적을 이어 맞힐 때마다 피해가 {FocusBonusPerHit%}씩 오른다.,"Fast, weak shots. Each consecutive hit on the same enemy deals {FocusBonusPerHit%} more damage.",SO_Dice_Green.Description
+공격 속도가 {AwakenAttackSpeedBonus%} 빨라진다.,Attacks {AwakenAttackSpeedBonus%} faster.,SO_Dice_Green.AwakenDescription
 자홍,Magenta,SO_Dice_Magenta.DisplayName
 체인,Chain,SO_Dice_Magenta.AttackName
 가까운 적에게 튕긴다. 튕길 때마다 피해가 {Falloff%}로 줄어든다.,Bounces to nearby enemies. Each bounce deals {Falloff%} of the previous damage.,SO_Dice_Magenta.Description
 튕길 때마다 {1-AwakenFalloff%}만 줄어든다,Each bounce only loses {1-AwakenFalloff%},SO_Dice_Magenta.AwakenDescription
 빨강,Red,SO_Dice_Red.DisplayName
 강타,Smash,SO_Dice_Red.AttackName
-느리지만 강한 한 방.,A slow but powerful strike.,SO_Dice_Red.Description
-모든 공격이 치명타가 된다,Every attack is a critical hit,SO_Dice_Red.AwakenDescription
+느리지만 강한 한 방. 모든 공격이 치명타가 된다.,A slow but powerful strike. Every attack is a critical hit.,SO_Dice_Red.Description
+치명타 피해가 {AwakenCritBonus%} 더 커진다.,Critical hits deal {AwakenCritBonus%} more damage.,SO_Dice_Red.AwakenDescription
 하양,White,SO_Dice_White.DisplayName
 난사,Barrage,SO_Dice_White.AttackName
 주변의 가까운 적 {MaxTargets}마리까지 피해를 준다.,Damages the nearest enemies around it (max {MaxTargets}).,SO_Dice_White.Description
-한 번 더 난사한다(두 번째는 {AwakenRatio%}),"Fires one more barrage (the second at {AwakenRatio%})",SO_Dice_White.AwakenDescription
+한 번 더 난사한다(두 번째는 {AwakenRatio%}),Fires one more barrage (the second at {AwakenRatio%}),SO_Dice_White.AwakenDescription
 노랑,Yellow,SO_Dice_Yellow.DisplayName
 범위 폭발,Explosion,SO_Dice_Yellow.AttackName
 맞은 자리에서 폭발해 주변 적에게도 피해를 준다.,"Explodes on hit, damaging nearby enemies too.",SO_Dice_Yellow.Description

@@ -16,16 +16,16 @@ MonoBehaviour:
   DisplayName: "\uD30C\uB791"
   Color: {r: 0.2, g: 0.42, b: 0.95, a: 1}
   AttackName: "\uC800\uACA9"
-  Description: "\uAC00\uC7A5 \uBA40\uB9AC \uB2FF\uB294 \uACF5\uACA9."
-  AwakenDescription: "\uBA40\uB9AC \uC788\uB294 \uC801\uC77C\uC218\uB85D \uC138\uAC8C
-    \uB9DE\uD78C\uB2E4(\uD55C \uCE78\uB9C8\uB2E4 +{FarDamagePerCell%})."
+  Description: "\uAC00\uC7A5 \uBA40\uB9AC \uB2FF\uB294 \uACF5\uACA9. \uBA40\uB9AC \uC788\uB294 \uC801\uC77C\uC218\uB85D \uC138\uAC8C \uB9DE\uD78C\uB2E4(\uD55C \uCE78\uB9C8\uB2E4 +{FarDamagePerCell%})."
+  AwakenDescription: "\uAC70\uB9AC \uBCF4\uB108\uC2A4\uAC00 \uD55C \uCE78\uB9C8\uB2E4 +{AwakenFarDamagePerCell%} \uB354 \uBD99\uB294\uB2E4."
   Damage: 40
   DamageGrowth: 0.6
   AttackSpeed: 0.67
   AttackSpeedGrowth: 0
   Range: 5.5
   MaxHealthDamage: 0
-  FarDamagePerCell: 1
+  FarDamagePerCell: 0.5
+  AwakenFarDamagePerCell: 0.5
   CardIcons:
   - Faces: 6
     Icon: {fileID: 21300000, guid: bcece2d0d3aa46ecbedc051f4c961007, type: 3}

@@ -26,9 +26,9 @@ MonoBehaviour:
   Range: 3.5
   MaxHealthDamage: 0
   JumpRange: 1.6
-  Falloff: 0.9
+  Falloff: 0.8
   MinJumpDamage: 2
-  AwakenFalloff: 0.95
+  AwakenFalloff: 0.9
   CardIcons:
   - Faces: 6
     Icon: {fileID: 21300000, guid: fd314602ea604fa29d1e69c799f1fd4a, type: 3}

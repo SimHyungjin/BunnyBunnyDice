@@ -104,7 +104,7 @@ public sealed partial class GameBot
             _towers.Add(MakeTower(extraCell.Value, extraDice.Value, null, 1f));
     }
 
-    // 주사위 하나의 초당 피해(고정 + 최대 체력 피해 × 기준 체력) — 칩(공격력·공속)·각성(빨강 확정 치명) 포함. 디버프 칩이면 디버프 값도 담는다.
+    // 주사위 하나의 초당 피해(고정 + 최대 체력 피해 × 기준 체력) — 칩(공격력·공속)·빨강 확정 치명(각성 배율 포함)·초록 각성 공속 포함. 디버프 칩이면 디버프 값도 담는다.
     private Tower MakeTower(Vector2Int cell, DiceState dice, SO_ChipCard chip, float strength)
     {
         Tower tower = new Tower { Cell = cell };
@@ -124,7 +124,7 @@ public sealed partial class GameBot
         }
         tower.Range = stats.GetRange(rangeBonus);
         float hit = (stats.Damage + stats.MaxHealthRatio * _config.ModelRefHealth) * (1f + damageBonus);
-        if (dice.Colors == DiceColor.Red && _statsConfig.IsAwakened(dice)) hit *= _statsConfig.CritMultiplier;
+        if (type is SO_DiceType_Snipe snipe) hit *= _statsConfig.CritMultiplier + (_statsConfig.IsAwakened(dice) ? snipe.AwakenCritBonus : 0f);
         float interval = stats.AttackInterval / (1f + speedBonus);
         tower.Power = interval > 0f ? hit / interval : 0f;
         return tower;

@@ -15,7 +15,7 @@ public struct DiceStats
     public float Range;
     public float CritChance;
 
-    /// <summary>종류의 기본값을 눈으로 키운다(기획서 6.5). 색마다 다른 각성(빨강 확정 치명, 초록 이어 맞히기, 파랑 거리 보너스)은 공격 방식(DiceAttack)이 정한다.</summary>
+    /// <summary>종류의 기본값을 눈으로 키운다(기획서 6.5). 색마다 다른 효과(빨강 치명, 초록 이어 맞히기, 파랑 거리)는 공격 방식(DiceAttack)이 정한다 — 초록 각성의 공격 속도만 여기서.</summary>
     public static DiceStats Compute(in DiceState dice, SO_DiceType type, SO_DiceStatsConfig config) =>
         Compute(dice, type, config, config.IsAwakened(dice));
 
@@ -24,7 +24,7 @@ public struct DiceStats
     {
         if (type == null) return default;
         float growth = config.GetGrowth(dice.Pips);
-        float speed = type.AttackSpeed * (1f + type.AttackSpeedGrowth * growth);
+        float speed = type.AttackSpeed * (1f + type.AttackSpeedGrowth * growth) * (awakened ? type.AwakenAttackSpeedScale : 1f);
         if (speed <= 0f) return default;
         float range = type.Range;
 

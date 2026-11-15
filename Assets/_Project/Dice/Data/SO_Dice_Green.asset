@@ -16,16 +16,16 @@ MonoBehaviour:
   DisplayName: "\uCD08\uB85D"
   Color: {r: 0.2, g: 0.72, b: 0.3, a: 1}
   AttackName: "\uC18D\uC0AC"
-  Description: "\uBE60\uB974\uAC8C \uC3D8\uB294 \uC57D\uD55C \uACF5\uACA9."
-  AwakenDescription: "\uAC19\uC740 \uC801\uC744 \uC774\uC5B4 \uB9DE\uD790 \uB54C\uB9C8\uB2E4
-    \uD53C\uD574\uAC00 {FocusBonusPerHit%}\uC529 \uC624\uB978\uB2E4."
+  Description: "\uBE60\uB974\uAC8C \uC3D8\uB294 \uC57D\uD55C \uACF5\uACA9. \uAC19\uC740 \uC801\uC744 \uC774\uC5B4 \uB9DE\uD790 \uB54C\uB9C8\uB2E4 \uD53C\uD574\uAC00 {FocusBonusPerHit%}\uC529 \uC624\uB978\uB2E4."
+  AwakenDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 {AwakenAttackSpeedBonus%} \uBE68\uB77C\uC9C4\uB2E4."
   Damage: 18
   DamageGrowth: 0.6
   AttackSpeed: 3.4
   AttackSpeedGrowth: 0
   Range: 3.5
   MaxHealthDamage: 0
-  FocusBonusPerHit: 0.05
+  FocusBonusPerHit: 0.03
+  AwakenAttackSpeedBonus: 0.5
   CardIcons:
   - Faces: 6
     Icon: {fileID: 21300000, guid: f2f5811181a74b8492cb1b98d57b4695, type: 3}
