@@ -25,7 +25,7 @@ MonoBehaviour:
   RegenRatio: 0
   ShieldHits: 0
   ShieldPerWave: 0
-  EnrageSpeedBonus: 2
+  EnrageSpeedBonus: 1
   GoalDamageBonus: 0
   ExpBonus: 0
   ShieldDamageRatio: 1

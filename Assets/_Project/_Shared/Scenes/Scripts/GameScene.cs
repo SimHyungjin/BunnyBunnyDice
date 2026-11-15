@@ -320,7 +320,7 @@ public sealed partial class GameScene : SceneBase
                 int choices = type.IsJackpot ? waveConfig.JackpotRewardChoices : waveConfig.BossRewardChoices;
                 for (int i = 0; i < choices; i++) _levelUp?.Enqueue();
             }
-            // 후반(SO_WaveConfig.ExpBoostAfterWave 이후)은 처치 경험치가 배로.
+            // 2부(SO_WaveConfig.SecondActAfterWave 뒤)는 처치 경험치가 배로.
             GainExp(type.Exp * waveConfig.GetExpScale(_waves.Wave));
         };
         _result = new GameResult(Retry, EnterLobby, _metaDiceConfig);

@@ -50,8 +50,6 @@ public sealed class ColorPowerTest : IDisposable
     private bool _traitApplied;
     private readonly List<SO_MonsterTrait> _savedCycle = new List<SO_MonsterTrait>();
     private int _savedExtra;
-    private int _savedTraitMin;
-    private int _savedTraitMax;
 
     /// <summary>도는 중인지. 켜고 끄는 동안 GameScene이 테스트 상태(무적·경험치 막기·영웅 공격·적 이속)와 빠른 시뮬을 건다.</summary>
     public bool Running { get; private set; }
@@ -259,7 +257,7 @@ public sealed class ColorPowerTest : IDisposable
         _rangeType = null;
     }
 
-    // 이번 판의 특성 하나로 주기를 바꾼다. 빈 칸이면 특성 없는 몬스터만(무작위 규칙에 특성 0개).
+    // 이번 판의 특성 하나로 주기를 바꾼다. 빈 칸이면 주기가 비어 특성 없는 몬스터만 나온다.
     private void ApplyTrait()
     {
         RestoreTrait();
@@ -267,15 +265,11 @@ public sealed class ColorPowerTest : IDisposable
         _savedCycle.Clear();
         _savedCycle.AddRange(_waveConfig.CycleTraits);
         _savedExtra = _waveConfig.CycleExtraTraits;
-        _savedTraitMin = _waveConfig.RandomTraitMin;
-        _savedTraitMax = _waveConfig.RandomTraitMax;
         _traitApplied = true;
         SO_MonsterTrait trait = CurrentTrait;
         _waveConfig.CycleTraits.Clear();
         if (trait != null) _waveConfig.CycleTraits.Add(trait);
         _waveConfig.CycleExtraTraits = 0;
-        _waveConfig.RandomTraitMin = 0;
-        _waveConfig.RandomTraitMax = 0;
     }
 
     private void RestoreTrait()
@@ -284,8 +278,6 @@ public sealed class ColorPowerTest : IDisposable
         _waveConfig.CycleTraits.Clear();
         _waveConfig.CycleTraits.AddRange(_savedCycle);
         _waveConfig.CycleExtraTraits = _savedExtra;
-        _waveConfig.RandomTraitMin = _savedTraitMin;
-        _waveConfig.RandomTraitMax = _savedTraitMax;
         _traitApplied = false;
     }
 

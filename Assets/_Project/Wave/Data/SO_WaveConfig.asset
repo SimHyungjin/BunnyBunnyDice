@@ -16,18 +16,11 @@ MonoBehaviour:
   SpawnInterval: 0.2
   BaseCount: 6
   CountPerWave: 6
-  BossCount: 1
   MaxCount: 300
   HealthGrowth: 0.3
   HealthCompound: 0.06
-  GrowthEndWave: 50
   ArmorPerWave: 1.5
-  SpeedGrowthStartWave: 50
-  SpeedGrowth: 0.03
-  ExpBoostAfterWave: 50
-  ExpBoostScale: 2
   Monster: {fileID: 11400000, guid: 5146a3e9cb23695a2f38411fc7059de9, type: 2}
-  Waves: []
   CycleTraits:
   - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
   - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
@@ -36,15 +29,13 @@ MonoBehaviour:
   CycleExtraFromWave: 6
   CycleExtraTraits: 1
   CycleExtraStrength: 0.5
-  RandomTraits:
+  CycleExtraPool:
   - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
   - {fileID: 11400000, guid: 8b0e9cb899ae4c788a3c044b9060fc3e, type: 2}
   - {fileID: 11400000, guid: 15b61995e38b4d74840742b1cc206103, type: 2}
   - {fileID: 11400000, guid: dbb2a790461e49d2a32405c17cffa7d3, type: 2}
-  RandomVariants: 2
-  RandomTraitMin: 1
-  RandomTraitMax: 2
   BossInterval: 5
+  BossCount: 1
   BossTraits:
   - {fileID: 11400000, guid: a0d0a8141c3049f58b1bf780cf3c2b23, type: 2}
   BossExtraTraits:
@@ -53,11 +44,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dbb2a790461e49d2a32405c17cffa7d3, type: 2}
   - {fileID: 11400000, guid: 33c031e2b51d444b94b09fd4898d7320, type: 2}
   BossExtraStrength: 0.5
-  BossRandomTraits: 0
   BossHealthShare: 0.5
-  BossHealthMaxCount: 0
+  BossHealthMaxCount: 50
   BossRewardChoices: 1
   JackpotChance: 0.25
   JackpotTraits:
   - {fileID: 11400000, guid: 89b9115dd6bf4701aa23839d2bcd9f0a, type: 2}
   JackpotRewardChoices: 2
+  SecondActAfterWave: 50
+  SpeedGrowth: 0.05
+  ExpBoostScale: 2
+  SecondActBossEveryWave: 1
