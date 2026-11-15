@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fe8555558784d8f988894844860736d, type: 3}
+  m_Name: SO_RulesTableConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_RulesTableConfig
+  DeskPrefab: {fileID: 0}
+  Material: {fileID: 2100000, guid: bec1f74515334731886f02ba2bd36846, type: 2}
+  Gap: 0
+  Width: 4
+  DepthInset: 0.35
+  TopOffset: 0
+  TopThickness: 0.25
+  FeltInset: 0.3
+  LegSize: 0.35
+  LegInset: 0.35
+  NeonThickness: 0.08
+  NeonInset: 0.06
+  FrameColor: {r: 0.08, g: 0.04, b: 0.1, a: 1}
+  FeltColor: {r: 0.16, g: 0.05, b: 0.2, a: 1}
+  NeonColor: {r: 0.8, g: 0.016, b: 0.271, a: 1}
+  NeonIntensity: 1
+  ScreenPrefab: {fileID: 9110000000000000219, guid: dd2c8e7ffb224ea59e58aced57041f30, type: 3}
+  PageInterval: 5
+  ManualHoldTime: 10
+  SlideDuration: 0.35
+  TapSlop: 0.03
+  ScreenTilt: 0
+  ScreenLift: 0.005
+  ScreenBrightness: 1.4
+  ScreenBackground: {r: 0.02, g: 0.027, b: 0.047, a: 1}
+  TabActiveColor: {r: 0.961, g: 0.02, b: 0.424, a: 1}
+  TabActiveTextColor: {r: 0.1, g: 0.04, b: 0.12, a: 1}
+  TabIdleColor: {r: 0.247, g: 0.878, b: 1, a: 0.06}
+  TabIdleTextColor: {r: 0.8, g: 0.95, b: 1, a: 1}
+  MergeBase:
+    Colors: 1
+    Faces: 6
+    Pips: 4
+  MergeTop:
+    Colors: 4
+    Faces: 20
+    Pips: 18
+  FaceShapes:
+  - Faces: 6
+    Outline: {fileID: 21300000, guid: ce178c7f3a3d4473b617fc0e1eee0485, type: 3}
+  - Faces: 12
+    Outline: {fileID: 21300000, guid: fa836293fe4d4a82b3eab99e388672ae, type: 3}
+  - Faces: 20
+    Outline: {fileID: 21300000, guid: 01a682b433eb4504bacf6828014d6074, type: 3}
+  Attacks:
+  - Colors: 1
+    Shape: {fileID: 21300000, guid: f82ce74473bf4e2a9647493b3688b7f3, type: 3}
+    Mark: {fileID: 21300000, guid: b14b5d37627a4255924dbbdfa5d0007a, type: 3}
+  - Colors: 2
+    Shape: {fileID: 21300000, guid: a1db8969cb3845baba8bcc0219ac8607, type: 3}
+    Mark: {fileID: 21300000, guid: 39f5a17b18964ada98e079ca6e27e6d8, type: 3}
+  - Colors: 4
+    Shape: {fileID: 21300000, guid: 1d5e0f4f84dc430c9dcebe61ccaacdd0, type: 3}
+    Mark: {fileID: 21300000, guid: f8d6f67cd6be42dabcddc1e2331cdcc3, type: 3}
+  - Colors: 3
+    Shape: {fileID: 21300000, guid: cf4970d53fa3441d8146793497b95ec9, type: 3}
+    Mark: {fileID: 21300000, guid: 0024e63a20944e29bfd0dc887d5f56a3, type: 3}
+  - Colors: 5
+    Shape: {fileID: 21300000, guid: 7759896c9c3c4cfaa5901a11b171b16a, type: 3}
+    Mark: {fileID: 21300000, guid: 4ee8324844c848dba332208defbfa398, type: 3}
+  - Colors: 6
+    Shape: {fileID: 21300000, guid: df1b66553f75432fad00078c93979b25, type: 3}
+    Mark: {fileID: 21300000, guid: c88220aaad044f1da3ca8bf576c376e9, type: 3}
+  - Colors: 7
+    Shape: {fileID: 21300000, guid: d3ef178d31d24f819e171d490e97c4dc, type: 3}
+    Mark: {fileID: 21300000, guid: 8a5cf67fac0c42ddb417fed593785023, type: 3}
+  - Colors: 0
+    Shape: {fileID: 21300000, guid: 9436bfef814944c1ae9511c84a604ae9, type: 3}
+    Mark: {fileID: 21300000, guid: cb2da1c7d2d44106ba00406eecd56bd2, type: 3}
+  ClearColor: {r: 0.54, g: 0.54, b: 0.6, a: 1}
+  BuffChips:
+  - {fileID: 11400000, guid: 48e1711dd4bc48c09a1ec28d285cfce8, type: 2}
+  - {fileID: 11400000, guid: b9558d2b850147a182387c2fc3f65199, type: 2}
+  - {fileID: 11400000, guid: 4d29b19413e44eefb1707d3f35e0d42a, type: 2}
+  DebuffChips:
+  - {fileID: 11400000, guid: 4ce5d1a30c944a24a35a5b3a2a6843cb, type: 2}
+  - {fileID: 11400000, guid: f5fe4fd6ba32474ab4dba0498d2f3064, type: 2}
+  - {fileID: 11400000, guid: d9678aadcae949ebbf204fe059183e0f, type: 2}
+  - {fileID: 11400000, guid: 8a8873dcf6964162b85c80cc937d5985, type: 2}
+  ChipRing: {fileID: 21300000, guid: a7dd3b94a1384d7485b834fec630e380, type: 3}
+  BuffColor: {r: 0.247, g: 0.878, b: 1, a: 1}
+  DebuffColor: {r: 0.961, g: 0.02, b: 0.424, a: 1}

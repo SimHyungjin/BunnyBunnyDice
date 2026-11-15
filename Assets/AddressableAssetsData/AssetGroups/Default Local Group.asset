@@ -115,6 +115,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f70b34fd98643e9ab99dc11271d33ff
+    m_Address: SO_RulesTableConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8c746c47bf91448d9a08e4ec207b4c2d
     m_Address: UI_LevelUpPopup
     m_ReadOnly: 0

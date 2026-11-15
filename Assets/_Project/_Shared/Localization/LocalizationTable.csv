@@ -3,7 +3,7 @@
 칩 카드,Chip Card,SO_CardHandConfig.ChipSubText
 영웅 강화,Hero Upgrade,SO_CardHandConfig.HeroSubText
 전용 카드,Signature Card,SO_CardHandConfig.ExclusiveSubText
-칩,Chip,SO_CardHandConfig.ChipKindLabel
+칩,Chip,SO_CardHandConfig.ChipKindLabel | UI_RulesScreen/Tabs/Tab/Label
 빈 칸이나 주사위 밑에 놓는다.,Place on an empty tile or under a die.,SO_CardHandConfig.ChipKindText
 주사위,Die,SO_CardHandConfig.SkillDiceLabel
 주사위에 놓는다.,Place on a die.,SO_CardHandConfig.SkillDiceText
@@ -139,6 +139,19 @@
 해당 주사위의 면체를 한 단계 올리고 눈을 다시 굴린다. 이십면체는 눈만 다시 굴린다.,Upgrades the die to the next size and rerolls its pips. A D20 only rerolls its pips.,SO_SkillCard_Reroll.Description
 스택 덱,Stacked Deck,SO_SkillCard_StackedDeck.DisplayName
 손패의 스킬 카드가 종류마다 {AddPerStack}장씩 늘어난다.,Adds {AddPerStack} of each skill card in hand.,SO_SkillCard_StackedDeck.Description
+주사위 카드를 끌어서 판 위에 놓아 보세요.,Drag a dice card onto the board.,SO_TutorialConfig.Tips[0].Pages[0].Text
+"주사위는 적이 지나가는 길을 막습니다. <color=#FFE04A>단, 길을 모두 막을 수는 없습니다.</color>","Dice block the path enemies walk. <color=#FFE04A>You can't block every path, though.</color>",SO_TutorialConfig.Tips[0].Pages[1].Text
+주사위 눈이 클수록 공격력과 치명타 확률이 올라갑니다.,"The higher a die's pips, the higher its attack and critical chance.",SO_TutorialConfig.Tips[0].Pages[2].Text
+"놓인 주사위 위에 같은 면체나 더 큰 면체를 얹으면 눈이 높아지고, 색을 섞을 수도 있습니다. 눈이 가득 찼다면 더 큰 면체만 얹을 수 있습니다.","Put a die of the same or a bigger type on a placed die to raise its pips. You can mix colors this way too. Once the pips are full, only a bigger type fits.",SO_TutorialConfig.Tips[0].Pages[3].Text
+주사위의 눈이 <color=#FFE04A>20</color>이 되면 각성해 크게 강해집니다.,A die that reaches <color=#FFE04A>20</color> pips awakens and gets much stronger.,SO_TutorialConfig.Tips[0].Pages[4].Text
+▶ 버튼을 누르면 첫 웨이브가 시작됩니다.,Press ▶ to start the first wave.,SO_TutorialConfig.Tips[1].Pages[0].Text
+판을 누르면 영웅이 그곳으로 이동합니다.,Tap the board to move the hero there.,SO_TutorialConfig.Tips[2].Pages[0].Text
+"영웅이 주사위 위에 올라서면 그 주사위가 강해집니다. 대신 올라서 있는 동안 눈이 조금씩 깎이고, 깎인 눈은 돌아오지 않습니다.","A die the hero stands on gets stronger. But while the hero stays, its pips wear down little by little, and they don't come back.",SO_TutorialConfig.Tips[3].Pages[0].Text
+칩 카드는 빈 칸이나 주사위 밑에 깔 수 있습니다. 칩 위에 있는 주사위는 칩 효과를 받습니다.,Chip cards go on an empty tile or under a die. A die on a chip gets the chip's effect.,SO_TutorialConfig.Tips[4].Pages[0].Text
+"스킬 카드는 판 위에 끌어 놓으면 바로 발동하고, 한 번 쓰면 사라집니다.",Drag a skill card onto the board to use it right away. It's gone once used.,SO_TutorialConfig.Tips[5].Pages[0].Text
+전용 카드는 캐릭터별로 사용할 수 있는 고유 스킬 카드입니다.,A Signature Card is a skill card unique to each character.,SO_TutorialConfig.Tips[6].Pages[0].Text
+"영웅 강화는 고르는 즉시 적용되고, 이번 판이 끝날 때까지 유지됩니다.",A hero upgrade applies the moment you pick it and lasts until this run ends.,SO_TutorialConfig.Tips[7].Pages[0].Text
+손패에는 카드 뭉치를 {0}개까지 들 수 있습니다. 넘치면 그중 하나가 무작위로 사라집니다.,"Your hand holds up to {0} card stacks. If it overflows, a random one disappears.",SO_TutorialConfig.Tips[8].Pages[0].Text
 초당 공격,Attacks/s,CardView/Detail/DiceContent/StatLabel1
 각성,Awaken,CardView/Detail/DiceContent/AwakenLabel
 캐릭터 선택,Select Character,UI_CharacterSelectPopup/SafeRoot/Area/Window/TitleBand/Title
@@ -159,6 +172,8 @@
 다시 하기,Retry,UI_ResultPopup/SafeRoot/Area/Content/RetryButton/Label
 로비로,Lobby,UI_ResultPopup/SafeRoot/Area/Content/LobbyButton/Label
 재화,Coins,UI_ResultPopup/SafeRoot/Area/Content/RewardLabel
+합성,Merge,UI_RulesScreen/Tabs/Tab/Label
+공격,Attack,UI_RulesScreen/Tabs/Tab/Label
 언어,Language,UI_SettingsPopup/SafeRoot/Area/Window/Label_language
 전체 음량,Master Volume,UI_SettingsPopup/SafeRoot/Area/Window/Label_master
 배경음,Music,UI_SettingsPopup/SafeRoot/Area/Window/Label_music
@@ -168,12 +183,12 @@
 수직 동기화,VSync,UI_SettingsPopup/SafeRoot/Area/Window/Label_vsync
 포기하기,Give Up,UI_SettingsPopup/SafeRoot/Area/Window/GiveUpButton/Label
 게임 종료,Quit Game,UI_SettingsPopup/SafeRoot/Area/Window/QuitButton/Label
-"{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:150
-최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:163
+"{0} {1}, 눈 1~{2}",{0} {1} (pips 1–{2}),CardView.cs:152
+최대 체력의 {0} 피해를 더 준다.,Deals an extra {0} of max HP.,CardView.cs:165
 특성 없음,No Trait,UI_CharacterSelectPopup.cs:130 | UI_LobbyPopup.cs:89
 눌러서 열기,Tap to unlock,UI_CharacterSelectPopup.cs:131
 이동 속도,Move Speed,HeroStatText.cs:15
-웨이브 {0},Wave {0},UI_GameHud.cs:120
+웨이브 {0},Wave {0},UI_GameHud.cs:123
 {0} 다시 굴리기,Reroll {0},UI_LobbyPopup.cs:100
 웨이브 {0} 클리어,Wave {0} Cleared,UI_LobbyPopup.cs:106 | UnlockText.cs:8
 주사위 각성 {0}회,Dice awakenings: {0},UnlockText.cs:9
@@ -184,22 +199,11 @@
 스킬 카드 {0}장 사용,Skill cards used: {0},UnlockText.cs:14
 칩 {0}개 놓기,Chips placed: {0},UnlockText.cs:15
 레이즈로 {0}마리 처치,Kills by raised dice: {0},UnlockText.cs:16
-{0} ({1}/{2}),{0} ({1}/{2}),UnlockText.cs:19
-전체 화면,Fullscreen,UI_SettingsPopup.cs:188
-창,Windowed,UI_SettingsPopup.cs:189
-켬,On,UI_SettingsPopup.cs:200
-끔,Off,UI_SettingsPopup.cs:201
-주사위 카드를 끌어서 판 위에 놓아 보세요.,Drag a dice card onto the board.,SO_TutorialConfig.Tips
-"주사위는 적이 지나가는 길을 막습니다. <color=#FFE04A>단, 길을 모두 막을 수는 없습니다.</color>","Dice block the path enemies walk. <color=#FFE04A>You can't block every path, though.</color>",SO_TutorialConfig.Tips
-주사위 눈이 클수록 공격력과 치명타 확률이 올라갑니다.,"The higher a die's pips, the higher its attack and critical chance.",SO_TutorialConfig.Tips
-"놓인 주사위 위에 같은 면체나 더 큰 면체를 얹으면 눈이 높아지고, 색을 섞을 수도 있습니다. 눈이 가득 찼다면 더 큰 면체만 얹을 수 있습니다.","Put a die of the same or a bigger type on a placed die to raise its pips. You can mix colors this way too. Once the pips are full, only a bigger type fits.",SO_TutorialConfig.Tips
-"주사위의 눈이 <color=#FFE04A>20</color>이 되면 각성해 크게 강해집니다.","A die that reaches <color=#FFE04A>20</color> pips awakens and gets much stronger.",SO_TutorialConfig.Tips
-▶ 버튼을 누르면 첫 웨이브가 시작됩니다.,Press ▶ to start the first wave.,SO_TutorialConfig.Tips
-판을 누르면 영웅이 그곳으로 이동합니다.,Tap the board to move the hero there.,SO_TutorialConfig.Tips
-"영웅이 주사위 위에 올라서면 그 주사위가 강해집니다. 대신 올라서 있는 동안 눈이 조금씩 깎이고, 깎인 눈은 돌아오지 않습니다.","A die the hero stands on gets stronger. But while the hero stays, its pips wear down little by little, and they don't come back.",SO_TutorialConfig.Tips
-"영웅 강화는 고르는 즉시 적용되고, 이번 판이 끝날 때까지 유지됩니다.",A hero upgrade applies the moment you pick it and lasts until this run ends.,SO_TutorialConfig.Tips
-칩 카드는 빈 칸이나 주사위 밑에 깔 수 있습니다. 칩 위에 있는 주사위는 칩 효과를 받습니다.,Chip cards go on an empty tile or under a die. A die on a chip gets the chip's effect.,SO_TutorialConfig.Tips
-"스킬 카드는 판 위에 끌어 놓으면 바로 발동하고, 한 번 쓰면 사라집니다.",Drag a skill card onto the board to use it right away. It's gone once used.,SO_TutorialConfig.Tips
-전용 카드는 캐릭터별로 사용할 수 있는 고유 스킬 카드입니다.,A Signature Card is a skill card unique to each character.,SO_TutorialConfig.Tips
-손패에는 카드 뭉치를 {0}개까지 들 수 있습니다. 넘치면 그중 하나가 무작위로 사라집니다.,"Your hand holds up to {0} card stacks. If it overflows, a random one disappears.",SO_TutorialConfig.Tips
-눌러서 계속,Tap to continue,UI_TutorialOverlay.cs
+{0} ({1}/{2}),{0} ({1}/{2}),UnlockText.cs:23
+버프,Buff,UI_RulesChipPage.cs:23
+디버프,Debuff,UI_RulesChipPage.cs:24
+전체 화면,Fullscreen,UI_SettingsPopup.cs:197
+창,Windowed,UI_SettingsPopup.cs:198
+켬,On,UI_SettingsPopup.cs:209
+끔,Off,UI_SettingsPopup.cs:210
+눌러서 계속,Tap to continue,UI_TutorialOverlay.cs:100

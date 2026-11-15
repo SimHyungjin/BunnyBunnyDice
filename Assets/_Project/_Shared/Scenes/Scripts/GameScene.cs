@@ -30,6 +30,8 @@ public sealed partial class GameScene : SceneBase
     private MapView _mapView;
     private MapGridView _grid;
     private EnvironmentView _environment;
+    // 당구대 옆 규칙 책상(RulesTable).
+    private RulesTableView _rulesTable;
     private BoardRollPresenter _boardRoll;
     // 판 치우기(다시 하기·로비로): 판 위 주사위·칩이 하늘로 날아간다.
     private BoardSweep _sweep;
@@ -56,6 +58,8 @@ public sealed partial class GameScene : SceneBase
     private bool _mapPending;
     private SO_GameSpeedConfig _speedConfig;
     private HeroTapInput _tapInput;
+    // 규칙 책상 화면의 탭 누르기.
+    private RulesScreenTapInput _rulesTapInput;
     // 영웅 레이즈(영웅이 올라탄 주사위, 기획서 10.5)와 그 표시.
     private HeroRaise _heroRaise;
     private HeroRaiseView _heroRaiseView;
@@ -125,6 +129,7 @@ public sealed partial class GameScene : SceneBase
             Core.Resource.LoadAsync<SO_SkillCutInConfig>(ct: token),
             Core.Resource.LoadAsync<SO_GameSounds>(ct: token),
             Core.Resource.LoadAsync<SO_TutorialConfig>(ct: token));
+        SO_RulesTableConfig rulesTableAsset = await Core.Resource.LoadAsync<SO_RulesTableConfig>(ct: token);
         var (pathAsset, previewAsset, dragAsset, environmentAsset, lightingAsset, heroAsset, boardRollAsset) = await UniTask.WhenAll(
             Core.Resource.LoadAsync<SO_MapPathViewConfig>(ct: token),
             Core.Resource.LoadAsync<SO_PlacementPreviewConfig>(ct: token),
@@ -163,6 +168,7 @@ public sealed partial class GameScene : SceneBase
         SO_TutorialConfig tutorialConfig = _tuning.Copy(tutorialAsset);
         SO_CardDragConfig dragConfig = _tuning.Copy(dragAsset);
         SO_EnvironmentConfig environmentConfig = _tuning.Copy(environmentAsset);
+        SO_RulesTableConfig rulesTableConfig = _tuning.Copy(rulesTableAsset);
         SO_LightingConfig lightingConfig = _tuning.Copy(lightingAsset);
         SO_HeroConfig heroConfig = _tuning.Copy(heroAsset);
         SO_BoardRollConfig boardRollConfig = _tuning.Copy(boardRollAsset);
@@ -191,6 +197,7 @@ public sealed partial class GameScene : SceneBase
         _mapView = new MapView(_mapRoot, _viewConfig, _lighting.OutlineMaterial);
         _grid = new MapGridView(_mapRoot, _viewConfig);
         _environment = new EnvironmentView(_mapRoot, environmentConfig);
+        _rulesTable = new RulesTableView(_mapRoot, rulesTableConfig, diceConfig, diceStatsConfig);
         _pathView = new MapPathView(_mapRoot, pathConfig);
         // 영웅 능력치·특성은 주사위 굴림(특성)·스킬 피해·카드 글이 함께 쓰므로 먼저 만든다.
         _heroStats = new HeroStats(heroConfig);
@@ -373,6 +380,7 @@ public sealed partial class GameScene : SceneBase
         _playLog = new PlayLog(() => !IsAutoPlaying, () => _waves.Wave, () => _level.Level, () => _goal.Current, _diceField, _chips, _placement,
             _skills, _levelUp, _hero, _heroRaise, _monsters, _waves, diceStatsConfig);
         _tapInput = new HeroTapInput(_hud.TouchArea, _hero, picker, () => _map, () => Core.Camera.MainCamera, () => _drag.Busy);
+        _rulesTapInput = new RulesScreenTapInput(_hud.TouchArea, _rulesTable.Screen, rulesTableConfig, () => Core.Camera.MainCamera);
         DealStartHand();
         // 손패를 다 쓰면 판을 아래로 넓히고, 카드가 들어오면 되돌린다(아래 여백만 섞는다).
         _handFraming = new HandFraming(() => _cameraConfig, () => handConfig, () => _hand.Count, () => _drag.Busy, FitCamera);
@@ -435,7 +443,9 @@ public sealed partial class GameScene : SceneBase
             _diceField.RebuildViews(_map);
             _preview.Reset();
         };
-        environmentConfig.Changed += () => _environment.Build(_map, _seed);
+        // 책상 자리가 바뀌면 카메라가 미는 정도도 바뀐다(MapCameraFitter).
+        environmentConfig.Changed += () => { BuildEnvironment(); FitCamera(); };
+        rulesTableConfig.Changed += () => { _rulesTable.Build(_environment.TableBounds); FitCamera(); };
         lightingConfig.Changed += () => _lighting.Apply(Core.Camera.MainCamera);
         // 캐릭터 SO(하위 설정)를 고쳐도 heroConfig.Changed가 불린다(ConfigTuning). 능력치는 HeroStats가 읽을 때마다 계산하므로 겉모습만 다시 만든다.
         _heroStats.CharacterChanged += _hero.RebuildView;
@@ -472,6 +482,7 @@ public sealed partial class GameScene : SceneBase
         _pathView?.Dispose();
         _grid?.Dispose();
         _tapInput?.Dispose();
+        _rulesTapInput?.Dispose();
         _hero?.Dispose();
         _waves?.Dispose();
         _waveLog?.Dispose();
@@ -499,6 +510,7 @@ public sealed partial class GameScene : SceneBase
         _boardRoll?.Dispose();
         _sweep?.Dispose();
         _environment?.Dispose();
+        _rulesTable?.Dispose();
         _levelUp?.Cancel();
         _result?.Close();
         _speed.Dispose();
@@ -587,11 +599,18 @@ public sealed partial class GameScene : SceneBase
         _chips.RebuildViews();
         _grid.Build(_map);
         // 테이블 펠트가 판 바닥이고 인쇄 선이 둘레 벽·출현 구역 자리를 따르므로 지형과 함께 다시 만든다.
-        _environment.Build(_map, _seed);
+        BuildEnvironment();
         _diceField.RebuildViews(_map);
         // 칩을 다시 만들면 보이게 되므로, 로비에서는 다시 숨긴다(뛰어든 뒤 판 주사위 연출이 떨어뜨린다).
         if (_lobbyStage.IsActive) _boardRoll.Hold();
         FitCamera();
+    }
+
+    // 규칙 책상은 당구대 경계에 붙으므로 당구대를 놓은 뒤 만든다.
+    private void BuildEnvironment()
+    {
+        _environment.Build(_map, _seed);
+        _rulesTable.Build(_environment.TableBounds);
     }
 
     // 영웅이 밟고 서는 높이: 목표물 칩 위면 그 윗면, 주사위가 있으면 몸체 윗면, 아니면 칸 윗면(칩 위면 칩 윗면).
@@ -783,7 +802,8 @@ public sealed partial class GameScene : SceneBase
     private void FitCamera()
     {
         if (_map == null) return;
-        MapCameraFitter.Fit(Core.Camera.MainCamera, _mapRoot, _map, _cameraConfig, _viewConfig, _handFraming != null ? _handFraming.Weight : 0f);
+        MapCameraFitter.Fit(Core.Camera.MainCamera, _mapRoot, _map, _cameraConfig, _viewConfig, _handFraming != null ? _handFraming.Weight : 0f,
+            _rulesTable.IsBuilt ? _rulesTable.DeskBounds : (Bounds?)null, _environment.TableBounds);
         _lobbyStage.ApplyCamera();
     }
 

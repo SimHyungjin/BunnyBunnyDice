@@ -36,6 +36,11 @@ public sealed class EnvironmentView : IDisposable
     // 테이블 모델 밑면 높이. 카펫을 이 높이에 깐다.
     private float _tableBottom;
 
+    /// <summary>
+    /// 당구대가 차지하는 상자(맵 루트 기준). 옆에 놓는 것(규칙 책상)이 여기에 붙는다. 모델이 없으면 맵 칸 영역 + 바닥 높이.
+    /// </summary>
+    public Bounds TableBounds { get; private set; }
+
     public EnvironmentView(Transform parent, SO_EnvironmentConfig config)
     {
         _config = config;
@@ -66,6 +71,9 @@ public sealed class EnvironmentView : IDisposable
 
     private void PlaceTable(MapData map)
     {
+        Bounds cells = new Bounds();
+        cells.SetMinMax(new Vector3(-0.5f, _config.FloorHeight, -0.5f), new Vector3(map.Width - 0.5f, 0f, map.Height - 0.5f));
+        TableBounds = cells;
         if (_config.TablePrefab == null) return;
         _table = Object.Instantiate(_config.TablePrefab, _root, false);
         _table.GetComponentsInChildren(true, _renderers);
@@ -88,6 +96,8 @@ public sealed class EnvironmentView : IDisposable
         Vector3 offset = mapCenter - new Vector3(bounds.center.x, 0f, bounds.center.z);
         _table.transform.localPosition += offset;
         _tableBottom = bounds.min.y;
+        bounds.center += offset;
+        TableBounds = bounds;
     }
 
     // 맵 가운데를 중심으로 넓은 사각 판 하나. 무늬는 위에서 본 좌표로 깔아 칸과 같은 방향으로 반복된다.
